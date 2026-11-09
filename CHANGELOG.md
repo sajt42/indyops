@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 – 2026-11-09
+
+- Fix: the Help page showed all three languages at once; now only the selected language is shown
+- Hidden elements stay hidden everywhere, regardless of their own styling
+
 ## 1.0.2 – 2026-11-09
 
 - Version shown in the header next to the name; build date in bug reports
