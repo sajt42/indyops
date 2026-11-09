@@ -492,7 +492,6 @@ window.I18N.de={
  "reprocess": "Reprocess",
  "{0} marad": "{0} bleiben übrig",
  "Az első {0} tétel látszik ({1}-ból). Szűkíts a szűrőkkel.": "Die ersten {0} Gegenstände werden angezeigt (von {1}). Grenze mit den Filtern ein.",
- "Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a „Jita árak a kijelöltekre” gomb pontosítja. A „marad” a portion alatti maradék, az nem dolgozható fel.": "Werte sind Jita-Verkaufspreise. Mit ~ markierte Zeilen haben noch keinen aktuellen Jita-Preis und nutzen den ESI-Durchschnittspreis als Schätzung; der Button „Jita-Preise für Auswahl“ macht sie genau. „Übrig“ ist der Rest unter einer Portion, der nicht verarbeitet werden kann.",
  "Még nincs karakter.": "Noch keine Charaktere.",
  "Ki reprocesszál": "Wer reprocesst",
  "a legjobb hozamú karakter": "der Charakter mit der besten Ausbeute",
@@ -557,5 +556,9 @@ window.I18N.de={
  "EVE Ref: {0} ismeretlen hely neve meglett.": "EVE Ref: Name von {0} unbekannten Orten gefunden.",
  "EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).": "EVE Ref: die unbekannten Orte sind nicht gelistet (vermutlich private Strukturen).",
  "{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).": "Bei {0} Orten ist der Name unbekannt (Spielerstrukturen ohne Andockrechte).",
- "Elnevezés a Beállításokban": "In den Einstellungen benennen"
+ "Elnevezés a Beállításokban": "In den Einstellungen benennen",
+ "Kik dolgozzanak?": "Wer arbeitet?",
+ "A kipipált karakterek közül választ a tool, amikor javasol: ki gyártson, ki inventáljon és kutasson, ki adjon el, ki reprocesszáljon. Mindenkinél a saját skilljeivel számol, és a legjobbat választja. A többi karakter készlete, blueprintjei és hajói ugyanúgy számítanak, csak munkát nem kapnak (a BP-t át kell adni). Ha egyik sincs kipipálva, mindenki dolgozik.": "Wenn IndyOps vorschlägt, wer baut, erfindet, forscht, verkauft oder reprocesst, wählt es unter den angehakten Charakteren, jeweils mit deren eigenen Skills, und nimmt den besten. Bestand, Blueprints und Schiffe der anderen Charaktere zählen weiterhin; sie bekommen nur keine Arbeit (Blueprints müssen übergeben werden). Ist keiner angehakt, arbeiten alle.",
+ "Jita és {0} árak a kijelöltekre": "Jita- und {0}-Preise für Auswahl",
+ "Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.": "Werte sind Jita-Verkaufspreise. Mit ~ markierte Zeilen haben noch keinen aktuellen Jita-Preis und nutzen den ESI-Durchschnittspreis als Schätzung; der Preis-Button für die Auswahl macht sie genau (auch für den zweiten Markt). „Übrig“ ist der Rest unter einer Portion, der nicht verarbeitet werden kann."
 };

@@ -34,7 +34,7 @@ bind('#sStructME','structME',1);bind('#sStructRes','structRes',1);bind('#sStruct
 $('#sProdLoc').addEventListener('change',e=>{S.prodLoc=e.target.value;saveS();LASTRENDER&&LASTRENDER()});
 $('#sWallet').addEventListener('change',e=>{S.wallet=e.target.checked;saveS();renderChars()});
 $('#sMarket2').addEventListener('change',e=>{S.market2=e.target.value?Number(e.target.value):'';saveS();renderSettings();status(T('Második piac: {0}. Az árak a következő számolásnál töltődnek le.',S.market2?m2Short():T('nincs')))});
-$('#sSkillChar').addEventListener('change',e=>{S.skillChar=Number(e.target.value);saveS();renderSettings()});
+$('#sWorkChars').addEventListener('change',e=>{const ids=$$('#sWorkChars input[data-wc]').filter(x=>x.checked).map(x=>Number(x.dataset.wc));const all=CHARS.filter(c=>DATA[c.id]).length;S.workChars=ids.length&&ids.length<all?ids:null;saveS();renderAll();try{LASTRENDER&&LASTRENDER()}catch(e){}});
 $('#clearPrices').onclick=()=>{PRICES={at:0,p:{}};store('prices',PRICES);status('árak törölve')};
 $('#clearRef').onclick=()=>{REFC={t:{},b:{},v3:1};BPPROD={};store('ref',REFC);status('receptek törölve')};
 $('#clearAllBtn').onclick=()=>$('#clearConfirm').hidden=false;$('#clearNo').onclick=()=>$('#clearConfirm').hidden=true;

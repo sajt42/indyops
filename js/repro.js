@@ -31,7 +31,7 @@ function repYield(cid,l,ti){
     g=L.k==='struct'?(50+L.rig)/100*(1+(L.rig?L.secm:0))*(1+L.sm)*sk:L.base/100*sk}
   return {g,y:g*(1-L.tax/100)};
 }
-function repChars(){const c=repCfg().char;const all=CHARS.filter(x=>DATA[x.id]).map(x=>x.id);return c&&all.includes(Number(c))?[Number(c)]:all}
+function repChars(){const c=repCfg().char;const all=workChars();return c&&all.includes(Number(c))?[Number(c)]:all}
 function repPick(r){
   const ti=REFC.t[r.t];let best=null;
   for(const cid of repChars()){const y=repYield(cid,r.l,ti);if(!y)continue;
@@ -119,11 +119,11 @@ function renderRepro(){
     const verdict=!x.pick||!x.inV&&!x.outV?'':x.outV>x.inV?'<span class="pill ok">reprocess</span>':'<span class="pill warn">eladás</span>';
     return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k)?'checked':''}></td><td>${esc(NAMES[r.t]||r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest?`<div class="small muted">${T('{0} marad',fmt(x.rest))}</div>`:''}</td><td class="small">${who}</td><td class="small">${top||'–'}</td><td class="num">${x.inV?(repPrice(r.t).a?'~':'')+isk(x.inV):'–'}${m2On()&&x.in2?`<div class="small muted">${esc(m2Short())} ${isk(x.in2)}</div>`:''}</td><td class="num">${x.outV?(x.out.some(([m])=>repPrice(m).a)?'~':'')+isk(x.outV):'–'}${m2On()&&x.out2?`<div class="small muted">${esc(m2Short())} ${isk(x.out2)}</div>`:''}</td><td>${verdict}</td></tr>`}).join('')}</tbody></table></div>
   ${rows.length>LIM?`<p class="small muted">${T('Az első {0} tétel látszik ({1}-ból). Szűkíts a szűrőkkel.',LIM,fmt(rows.length))}</p>`:''}
-  <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a „Jita árak a kijelöltekre” gomb pontosítja. A „marad” a portion alatti maradék, az nem dolgozható fel.</p>`+m2Hint();
+  <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.</p>`+m2Hint();
   renderRepSum();
 }
 function renderRepChars(){
-  const el=$('#repChars');if(!el)return;const cs=CHARS.filter(c=>DATA[c.id]);
+  const el=$('#repChars');if(!el)return;const cs=workChars().map(id=>CHARS.find(c=>c.id===id));
   if(!cs.length){el.innerHTML='<p class="muted">Még nincs karakter.</p>';return}
   const cfg=repCfg();const imps=[[0,'nincs'],[1,'RX-801 (1%)'],[2,'RX-802 (2%)'],[4,'RX-804 (4%)']];
   el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs.map(c=>`<tr><td>${esc(c.name)}</td><td class="num">${lvlOf(c.id,SK.repro)}</td><td class="num">${lvlOf(c.id,SK.reproEff)}</td><td class="num">${lvlOf(c.id,SCRAP)}</td><td>${(()=>{const man=cfg.imp[c.id];const isMan=man!=null&&man!==''&&man!=='auto';const a=impAuto(c.id);const an=a==null?T('nem ismert'):(imps.find(x=>x[0]===a)||[0,a+'%'])[1];return `<select data-imp="${c.id}"><option value="auto" ${isMan?'':'selected'}>${esc(T('ESI szerint: {0}',an))}</option>${imps.map(([v,n])=>`<option value="${v}" ${isMan&&Number(man)===v?'selected':''}>${n}</option>`).join('')}</select>${a==null?`<div class="small muted">${T('Jelentkezz be újra, hogy az implant automatikus legyen.')}</div>`:''}`})()}</td></tr>`).join('')}</tbody></table></div>
@@ -156,10 +156,10 @@ function renderRepSum(){
   let cover='';
   if(typeof LASTPLAN!=='undefined'&&LASTPLAN){const need=[...LASTPLAN.buyList].filter(([t])=>mats.has(t));
     cover=need.length?`<h3>${T('A „{0}” terv hiányából',esc(LASTPLAN.title||''))}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need.map(([t,q])=>{const b=mats.get(t)||0;return `<tr><td>${esc(NAMES[t]||t)}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b>=q?'ok':'warn'}">${fmt(Math.min(100,b/q*100))}%</span></td></tr>`}).join('')}</tbody></table></div>`:`<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.',esc(LASTPLAN.title||''))}</p>`}
-  el.innerHTML=`<div class="row"><b>${T('{0} tétel kijelölve',fmt(sel.length))}</b><button class="btn" id="repPrice">Jita árak a kijelöltekre</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
+  el.innerHTML=`<div class="row"><b>${T('{0} tétel kijelölve',fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On()?T('Jita és {0} árak a kijelöltekre',esc(m2Short())):T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
   <div class="grid2" style="margin-top:10px"><div>
-  <h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num">Érték</th></tr></thead><tbody>${ml.map(([m,q])=>{const p=repPrice(m);return `<tr><td>${esc(NAMES[m]||m)}</td><td class="num">${fmt(q)}</td><td class="num">${p.a?'~':''}${isk(q*p.v)}</td></tr>`}).join('')}
-  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a?'~':''}${isk(outV)}</b></td></tr></tbody></table></div>
+  <h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num">Érték</th>${m2On()?`<th class="num">${esc(m2Short())}</th>`:''}</tr></thead><tbody>${ml.map(([m,q])=>{const p=repPrice(m);return `<tr><td>${esc(NAMES[m]||m)}</td><td class="num">${fmt(q)}</td><td class="num">${p.a?'~':''}${isk(q*p.v)}</td>${m2On()?`<td class="num">${sell2(m)?isk(q*sell2(m)):'–'}</td>`:''}</tr>`}).join('')}
+  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a?'~':''}${isk(outV)}</b></td>${m2On()?`<td class="num"><b>${isk(out2)}</b></td>`:''}</tr></tbody></table></div>
   <p class="small">${T('Egyben eladva: {0} · szétszedve: {1}',(a?'~':'')+isk(inV),(a?'~':'')+isk(outV))} · <span class="pill ${outV>inV?'ok':'warn'}">${outV>inV?T('reprocess +{0}',isk(outV-inV)):T('eladás +{0}',isk(inV-outV))}</span></p>
   ${m2On()&&(in2||out2)?`<p class="small">${esc(m2Short())}: ${T('Egyben eladva: {0} · szétszedve: {1}',isk(in2),isk(out2))}</p>`:''}
   ${sellerHtml()}

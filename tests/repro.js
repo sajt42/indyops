@@ -48,5 +48,8 @@ const rows=sel=>[...d.querySelectorAll(sel+' tbody tr')].map(r=>r.textContent.re
   console.log('SELLER:',d.querySelector('#repSum .small b')&&[...d.querySelectorAll('#repSum p.small')].map(p=>p.textContent.replace(/\s+/g,' ').trim()).join(' | '));
   T.S.market2=L2;await w.eval('ensurePrices([1230,34,35])');T.renderRepro();await tick();
   console.log('STRUCT M2:',rows('#repOut')[0]);
+  T.S.workChars=[1];T.S.market2='';T.renderRepro();const all2=d.querySelector('#repAll');all2.checked=true;all2.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();
+  console.log('WORK A ONLY:',[...d.querySelectorAll('#repSum .seltab tbody tr')].map(r=>r.textContent.replace(/\s+/g,' ').trim()).join(' / '),'| chars table:',[...d.querySelectorAll('#repChars tbody tr')].length);
+  T.S.workChars=null;
   console.log('saved:',JSON.stringify(T.S.repro));
 })().catch(e=>console.error('FAIL',e));

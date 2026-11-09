@@ -47,7 +47,7 @@ function renderSettings(){
   {const sel=$('#sProdLoc');sel.innerHTML='<option value="">automatikus: a BP helye</option>'+allLocs().sort((a,b)=>locName(a).localeCompare(locName(b))).map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');sel.value=S.prodLoc||''}
   {const sel=$('#sMarket2');const hubs=HUBS.filter(h=>h[0]!==JITA_STATION);const own=allLocs().filter(l=>locKind(l)==='npc'&&l!==JITA_STATION&&!hubs.some(h=>h[0]===l)).sort((a,b)=>locName(a).localeCompare(locName(b)));
     sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'')+(()=>{const st=allLocs().filter(l=>locKind(l)==='struct').sort((a,b)=>locName(a).localeCompare(locName(b)));return st.length?'<optgroup label="'+esc(T('Struktúrák, ahol van cuccod'))+'">'+st.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':''})();sel.value=S.market2||''}
-  $('#sSkillChar').innerHTML=CHARS.map(c=>`<option value="${c.id}" ${c.id==S.skillChar?'selected':''}>${esc(c.name)}</option>`).join('');
+  {const w=workChars();const cs=CHARS.filter(c=>DATA[c.id]);$('#sWorkChars').innerHTML=cs.length?cs.map(c=>`<label class="inline"><input type="checkbox" data-wc="${c.id}" ${w.includes(c.id)?'checked':''}> ${esc(c.name)}</label>`).join(''):'<span class="muted small">'+esc(T('Még nincs karakter.'))+'</span>'}
 }
 function renderPlanOptions(){
   const names=[...new Set(allBPs().map(b=>NAMES[b.t]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'hu'));
@@ -89,7 +89,7 @@ async function runPlan(){
   }catch(e){$('#planOut').innerHTML='<div class="notice err"><p>'+esc(e.message)+'</p></div>';log(e.stack||e.message)}
 }
 function assignChars(jobs){ // ki csinálja: skill + idő + szabad slot alapján, LPT elosztás
-  const cs=CHARS.map(c=>c.id).filter(id=>DATA[id]);if(!cs.length)return;
+  const cs=workChars();if(!cs.length)return;
   const load={};cs.forEach(c=>load[c]={m:0,r:0,s:0});
   const free=(c,k)=>{const sl=slotsOf(c),bz=busyOf(c);return Math.max(1,sl[k]-bz[k])};
   const tFor=(j,c)=>{const o=j.who;j.who=c;const t=jobTime(j);j.who=o;return t};

@@ -82,7 +82,7 @@ async function makeMulti(items,opt,shared){
 }
 const DECS={34201:{n:'Accelerant Decryptor',p:1.2,me:2,te:10,runs:1},34202:{n:'Attainment Decryptor',p:1.8,me:-1,te:4,runs:4},34203:{n:'Augmentation Decryptor',p:0.6,me:-2,te:2,runs:9},34204:{n:'Parity Decryptor',p:1.5,me:1,te:-2,runs:3},34205:{n:'Process Decryptor',p:1.1,me:3,te:6,runs:0},34206:{n:'Symmetry Decryptor',p:1,me:1,te:8,runs:2},34207:{n:'Optimized Attainment Decryptor',p:1.9,me:1,te:-2,runs:2},34208:{n:'Optimized Augmentation Decryptor',p:0.9,me:2,te:0,runs:7}};
 function invChance(cid,inv,dec,pi=0){let sci=0,enc=0;for(const sk of Object.keys(inv.rs||{})){const l=lvlOf(cid,sk);if(/Encryption/i.test(NAMES[sk]||''))enc=l;else sci+=l}return Math.min(1,inv.p[pi][2]*(1+sci/30+enc/40)*(dec?DECS[dec].p:1))}
-function invInfo(t1bp,dec,pi=0){const inv=t1bp.i;pi=Math.min(pi,inv.p.length-1);const cs=CHARS.map(c=>c.id).filter(id=>DATA[id]);let best=cs[0]??null,bc=-1;for(const c of cs){const ch=invChance(c,inv,dec,pi);if(ch>bc){bc=ch;best=c}}const d=dec?DECS[dec]:null;
+function invInfo(t1bp,dec,pi=0){const inv=t1bp.i;pi=Math.min(pi,inv.p.length-1);const cs=workChars();let best=cs[0]??null,bc=-1;for(const c of cs){const ch=invChance(c,inv,dec,pi);if(ch>bc){bc=ch;best=c}}const d=dec?DECS[dec]:null;
   return {chance:bc<0?inv.p[pi][2]*(d?d.p:1):bc,runsPer:Math.max(1,inv.p[pi][1]+(d?d.runs:0)),me:2+(d?d.me:0),te:4+(d?d.te:0),char:best,t2bp:inv.p[pi][0],pi}}
 async function virtualItem(t1copy,dec,runs,label,expected,pi=0){ // inventálandó T2 BPC mint "virtuális" példány
   const t1bp=await refGet('b',t1copy.t);if(!t1bp||!t1bp.i||!t1bp.i.p.length)return null;

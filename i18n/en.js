@@ -492,7 +492,6 @@ window.I18N.en={
  "reprocess": "reprocess",
  "{0} marad": "{0} left over",
  "Az első {0} tétel látszik ({1}-ból). Szűkíts a szűrőkkel.": "Showing the first {0} items (of {1}). Narrow it down with the filters.",
- "Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a „Jita árak a kijelöltekre” gomb pontosítja. A „marad” a portion alatti maradék, az nem dolgozható fel.": "Values are Jita sell prices. Rows marked ~ have no fresh Jita price yet and use the ESI average price as an estimate; the “Jita prices for selection” button makes them exact. “Left over” is the remainder below one portion, which can't be reprocessed.",
  "Még nincs karakter.": "No characters yet.",
  "Ki reprocesszál": "Who reprocesses",
  "a legjobb hozamú karakter": "the character with the best yield",
@@ -557,5 +556,9 @@ window.I18N.en={
  "EVE Ref: {0} ismeretlen hely neve meglett.": "EVE Ref: found the name of {0} unknown locations.",
  "EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).": "EVE Ref: the unknown locations aren't listed (probably private structures).",
  "{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).": "{0} locations have no known name (player structures where you have no docking access).",
- "Elnevezés a Beállításokban": "Name them in Settings"
+ "Elnevezés a Beállításokban": "Name them in Settings",
+ "Kik dolgozzanak?": "Who does the work?",
+ "A kipipált karakterek közül választ a tool, amikor javasol: ki gyártson, ki inventáljon és kutasson, ki adjon el, ki reprocesszáljon. Mindenkinél a saját skilljeivel számol, és a legjobbat választja. A többi karakter készlete, blueprintjei és hajói ugyanúgy számítanak, csak munkát nem kapnak (a BP-t át kell adni). Ha egyik sincs kipipálva, mindenki dolgozik.": "When IndyOps suggests who should build, invent, research, sell or reprocess, it picks from the ticked characters, using each one's own skills and choosing the best. The other characters' stock, blueprints and ships still count; they just get no work (blueprints have to be handed over). If none is ticked, everyone works.",
+ "Jita és {0} árak a kijelöltekre": "Jita and {0} prices for selection",
+ "Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.": "Values are Jita sell prices. Rows marked ~ have no fresh Jita price yet and use the ESI average price as an estimate; the prices-for-selection button makes them exact (including the second market). “Left over” is the remainder below one portion, which can't be reprocessed."
 };

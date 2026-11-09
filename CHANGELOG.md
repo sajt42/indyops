@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0 – 2026-11-09
+
+- Settings: “Who does the work?” checklist replaces the single skill-character dropdown; suggestions (build, invent, research, sell, reprocess) pick the best among the ticked characters, everyone's stock still counts
+- Reprocess: the price button also refreshes the second market and says so; the output table has a second-market column
+
 ## 1.4.0 – 2026-11-09
 
 - Unknown locations: names looked up in EVE Ref's public structure list (once a day, only if you have unknown locations)

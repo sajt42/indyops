@@ -15,8 +15,8 @@ function stockMap(onlyPlan){
       let arr=m.get(a.t);if(!arr){arr=[];m.set(a.t,arr)}const ex=arr.find(x=>x.l===a.l&&x.cid==cid);if(ex)ex.q+=a.q;else arr.push({l:a.l,cid:Number(cid),q:a.q})}}
   return m;
 }
-function skillsOf(){const c=S.skillChar!=null&&DATA[S.skillChar]?DATA[S.skillChar]:Object.values(DATA)[0];return c?c.skills:{}}
-const lvl=id=>skillsOf()[id]||0;
+// kik dolgoznak: a javaslatok (gyártás, invention, kutatás, eladás, reprocess) csak közülük választanak; a készlet mindenkié számít
+function workChars(){const all=CHARS.map(c=>c.id).filter(id=>DATA[id]);const w=Array.isArray(S.workChars)?all.filter(id=>S.workChars.includes(id)):all;return w.length?w:all}
 const lvlOf=(cid,id)=>((DATA[cid]&&DATA[cid].skills)||{})[id]||0;
 function missingSkills(cid,rec){return Object.entries((rec&&rec.rs)||{}).filter(([sk,l])=>lvlOf(cid,sk)<l).map(([sk,l])=>[Number(sk),l,lvlOf(cid,sk)])}
 function recOf(bpType){const b=REFC.b[bpType];if(!b)return null;return b.m||b.r}
@@ -25,7 +25,7 @@ function busyOf(cid){const d=DATA[cid];const o={m:0,r:0,s:0};if(!d)return o;for(
 // eladási díjak karakterenként (a Beállításokban megadott érték mindenkire felülírja)
 function salesTaxOf(cid){return S.salesTax!==''&&S.salesTax!=null?Number(S.salesTax)/100:0.075*(1-0.11*lvlOf(cid,SK.accounting))}
 function brokerFeeOf(cid){return S.broker!==''&&S.broker!=null?Number(S.broker)/100:Math.max(0.01,0.03-0.003*lvlOf(cid,SK.broker))}
-function sellers(){return CHARS.filter(c=>DATA[c.id]).map(c=>({cid:c.id,tax:salesTaxOf(c.id),broker:brokerFeeOf(c.id)})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
+function sellers(){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id)})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
 function bestSeller(){return sellers()[0]||null} // akinek a legkisebb az eladási díja
 function salesTax(){const b=bestSeller();return b?b.tax:salesTaxOf(null)}
 function brokerFee(){const b=bestSeller();return b?b.broker:brokerFeeOf(null)}
@@ -80,7 +80,7 @@ function oreYieldFor(cid,rsSkill){
   return (Number(S.yieldBase)/100)*(1+0.03*lvlOf(cid,SK.repro))*(1+0.02*lvlOf(cid,SK.reproEff))*(1+0.02*(rsSkill?lvlOf(cid,rsSkill):0))*(1+impOf(cid)/100);
 }
 function bestRepro(rsSkill){ // melyik karakter reprocesszálja ezt a fajtát a legjobb hozammal
-  let who=null,y=-1;for(const c of CHARS){if(!DATA[c.id])continue;const v=oreYieldFor(c.id,rsSkill);if(v>y){y=v;who=c.id}}
+  let who=null,y=-1;for(const id of workChars()){const v=oreYieldFor(id,rsSkill);if(v>y){y=v;who=id}}
   if(who==null)return {who:null,y:(Number(S.yieldBase)/100)*(1+Number(S.implant||0)/100)};return {who,y};
 }
 function oreYield(rsSkill){return bestRepro(rsSkill).y}

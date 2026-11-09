@@ -41,7 +41,6 @@ async function completeLogin(code,state){
     const c={id,name:p.name,refresh:j.refresh_token,access:j.access_token,exp:Date.now()+j.expires_in*1000,scp:scpOf(j.access_token),cid};
     CHARS=CHARS.filter(x=>x.id!==id).concat(c); store('chars',CHARS); store('pkce',null);
     $('#loginPaste').hidden=true; renderChars(); log('Bejelentkezve: '+c.name);
-    if(S.skillChar==null){S.skillChar=id;saveS()}
     await refreshChar(c);
   }catch(e){alertBox(e.message);log(e.message)}
   status('kész');
