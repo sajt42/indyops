@@ -560,5 +560,18 @@ window.I18N.de={
  "Kik dolgozzanak?": "Wer arbeitet?",
  "A kipipált karakterek közül választ a tool, amikor javasol: ki gyártson, ki inventáljon és kutasson, ki adjon el, ki reprocesszáljon. Mindenkinél a saját skilljeivel számol, és a legjobbat választja. A többi karakter készlete, blueprintjei és hajói ugyanúgy számítanak, csak munkát nem kapnak (a BP-t át kell adni). Ha egyik sincs kipipálva, mindenki dolgozik.": "Wenn IndyOps vorschlägt, wer baut, erfindet, forscht, verkauft oder reprocesst, wählt es unter den angehakten Charakteren, jeweils mit deren eigenen Skills, und nimmt den besten. Bestand, Blueprints und Schiffe der anderen Charaktere zählen weiterhin; sie bekommen nur keine Arbeit (Blueprints müssen übergeben werden). Ist keiner angehakt, arbeiten alle.",
  "Jita és {0} árak a kijelöltekre": "Jita- und {0}-Preise für Auswahl",
- "Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.": "Werte sind Jita-Verkaufspreise. Mit ~ markierte Zeilen haben noch keinen aktuellen Jita-Preis und nutzen den ESI-Durchschnittspreis als Schätzung; der Preis-Button für die Auswahl macht sie genau (auch für den zweiten Markt). „Übrig“ ist der Rest unter einer Portion, der nicht verarbeitet werden kann."
+ "Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.": "Werte sind Jita-Verkaufspreise. Mit ~ markierte Zeilen haben noch keinen aktuellen Jita-Preis und nutzen den ESI-Durchschnittspreis als Schätzung; der Preis-Button für die Auswahl macht sie genau (auch für den zweiten Markt). „Übrig“ ist der Rest unter einer Portion, der nicht verarbeitet werden kann.",
+ "Eladás vagy reprocess": "Verkaufen oder reprocessen",
+ "Piac": "Markt",
+ "Egyben eladva": "Am Stück verkauft",
+ "Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.": "Bruttowerte ohne Verkaufsgebühren; die würden beide Seiten gleich belasten.",
+ "kinél: {0}": "bei: {0}",
+ "hangár: {0}": "Hangar: {0}",
+ "Asset safety: a tárgyak egy megszűnt vagy elérhetetlen struktúrából kerültek ki; a játékban az Assets ablak „Asset Safety” részén látszanak, onnan kivehetők.": "Asset Safety: Die Gegenstände stammen aus einer zerstörten oder unerreichbaren Struktur; im Spiel stehen sie im Assets-Fenster unter „Asset Safety“ und können von dort herausgeholt werden.",
+ "ESI hely-típus: {0}": "ESI-Ortstyp: {0}",
+ "konténerek: {0}": "Container: {0}",
+ "market ordered van itt, régió: {0}": "du hast hier eine Marktorder, Region: {0}",
+ "{0} industry job fut itt": "{0} Industry-Jobs laufen hier",
+ "{0} tranzakció történt itt": "{0} Transaktionen hier",
+ "egyéb hely (pl. asset safety vagy deliveries)": "sonstiger Ort (z. B. Asset Safety oder Deliveries)"
 };

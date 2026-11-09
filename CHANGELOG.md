@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.1 – 2026-11-09
+
+- Reprocess: separate columns per market (Jita and the second market) for “as is” and “reprocessed”; the verdict says which market is better; summary table per market
+- Unknown locations: clues to identify them (which character, hangar flags such as Asset Safety, ESI location type, container names, market orders' region, industry jobs, transactions); needs a data refresh
+
 ## 1.5.0 – 2026-11-09
 
 - Settings: “Who does the work?” checklist replaces the single skill-character dropdown; suggestions (build, invent, research, sell, reprocess) pick the best among the ticked characters, everyone's stock still counts

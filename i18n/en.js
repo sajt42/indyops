@@ -560,5 +560,18 @@ window.I18N.en={
  "Kik dolgozzanak?": "Who does the work?",
  "A kipipált karakterek közül választ a tool, amikor javasol: ki gyártson, ki inventáljon és kutasson, ki adjon el, ki reprocesszáljon. Mindenkinél a saját skilljeivel számol, és a legjobbat választja. A többi karakter készlete, blueprintjei és hajói ugyanúgy számítanak, csak munkát nem kapnak (a BP-t át kell adni). Ha egyik sincs kipipálva, mindenki dolgozik.": "When IndyOps suggests who should build, invent, research, sell or reprocess, it picks from the ticked characters, using each one's own skills and choosing the best. The other characters' stock, blueprints and ships still count; they just get no work (blueprints have to be handed over). If none is ticked, everyone works.",
  "Jita és {0} árak a kijelöltekre": "Jita and {0} prices for selection",
- "Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.": "Values are Jita sell prices. Rows marked ~ have no fresh Jita price yet and use the ESI average price as an estimate; the prices-for-selection button makes them exact (including the second market). “Left over” is the remainder below one portion, which can't be reprocessed."
+ "Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.": "Values are Jita sell prices. Rows marked ~ have no fresh Jita price yet and use the ESI average price as an estimate; the prices-for-selection button makes them exact (including the second market). “Left over” is the remainder below one portion, which can't be reprocessed.",
+ "Eladás vagy reprocess": "Sell or reprocess",
+ "Piac": "Market",
+ "Egyben eladva": "Sold as is",
+ "Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.": "Gross values without sales fees, which would hit both sides the same way.",
+ "kinél: {0}": "held by: {0}",
+ "hangár: {0}": "hangar: {0}",
+ "Asset safety: a tárgyak egy megszűnt vagy elérhetetlen struktúrából kerültek ki; a játékban az Assets ablak „Asset Safety” részén látszanak, onnan kivehetők.": "Asset safety: the items came out of a destroyed or unreachable structure; in game they're under “Asset Safety” in the Assets window, and you can move them out from there.",
+ "ESI hely-típus: {0}": "ESI location type: {0}",
+ "konténerek: {0}": "containers: {0}",
+ "market ordered van itt, régió: {0}": "you have a market order here, region: {0}",
+ "{0} industry job fut itt": "{0} industry jobs running here",
+ "{0} tranzakció történt itt": "{0} transactions here",
+ "egyéb hely (pl. asset safety vagy deliveries)": "other location (e.g. asset safety or deliveries)"
 };

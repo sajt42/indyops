@@ -117,6 +117,22 @@ async function everefLocs(force){
     status('kész');if(n)renderAll();return n}
   catch(e){log('EVE Ref struktúralista: '+e.message);status('kész');return 0}
 }
+// nyomok egy ismeretlen helyhez: ESI hely-típus, hangár-flagek, konténernevek, orderek régiója, jobok, ki birtokolja
+function locClues(l){
+  const c=[];const fl={};let lt=null;const cn=new Set(),who=new Set();let reg=null,jobs=0,tx=0;
+  for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(x=>x.id==cid))continue;const m=d.lm&&d.lm[l];if(m){lt=m.t;for(const [k,v] of Object.entries(m.f))fl[k]=(fl[k]||0)+v}
+    let has=false;for(const a of d.assets)if(a.l===l){has=true;if(a.cn)cn.add(a.cn)}for(const b of d.bps)if(b.l===l)has=true;if(has)who.add(Number(cid));
+    for(const o of d.orders||[])if(o.l===l)reg=o.reg;for(const j of d.jobs||[])if(j.loc===l)jobs++;for(const x of d.tx||[])if(x.l===l)tx++}
+  if(who.size)c.push(T('kinél: {0}',[...who].map(charName).join(', ')));
+  if(Object.keys(fl).length)c.push(T('hangár: {0}',Object.entries(fl).map(([k,v])=>k+' ×'+v).join(', ')));
+  if(fl.AssetSafety)c.push(T('Asset safety: a tárgyak egy megszűnt vagy elérhetetlen struktúrából kerültek ki; a játékban az Assets ablak „Asset Safety” részén látszanak, onnan kivehetők.'));
+  if(lt)c.push(T('ESI hely-típus: {0}',lt));
+  if(cn.size)c.push(T('konténerek: {0}',[...cn].slice(0,5).map(esc).join(', ')));
+  if(reg)c.push(T('market ordered van itt, régió: {0}',esc(NAMES[reg]||reg)));
+  if(jobs)c.push(T('{0} industry job fut itt',jobs));
+  if(tx)c.push(T('{0} tranzakció történt itt',tx));
+  if(lt==='other')c.push(T('egyéb hely (pl. asset safety vagy deliveries)'));
+  return c.length?`<div class="src">${c.join(' · ')}</div>`:''}
 function renderUnknownLocs(){
   const el=document.getElementById('unkLocs');if(!el)return;const ls=unknownLocs();
   const card=el.closest('.card');if(card)card.hidden=!ls.length;
@@ -125,5 +141,5 @@ function renderUnknownLocs(){
   el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Azonosító</th><th>Mi van ott</th><th>Név</th></tr></thead><tbody>${ls.map(l=>{
     const items=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets)if(a.l===l)items.set(a.t,(items.get(a.t)||0)+a.q);for(const b of d.bps)if(b.l===l)items.set(b.t,(items.get(b.t)||0)+1)}
     const top=[...items.keys()].slice(0,5).map(t=>esc(NAMES[t]||t)).join(', ');
-    return `<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy',fmt(items.size))}${top?': '+top+(items.size>5?' …':''):''}</td><td><input data-locname="${l}" value="${esc((S.locNames&&S.locNames[l])||'')}" placeholder="${esc(T('pl. a játék Assets ablakából'))}" style="width:100%"></td></tr>`}).join('')}</tbody></table></div>`;
+    return `<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy',fmt(items.size))}${top?': '+top+(items.size>5?' …':''):''}${locClues(l)}</td><td><input data-locname="${l}" value="${esc((S.locNames&&S.locNames[l])||'')}" placeholder="${esc(T('pl. a játék Assets ablakából'))}" style="width:100%"></td></tr>`}).join('')}</tbody></table></div>`;
 }

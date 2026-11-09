@@ -16,7 +16,7 @@ const T=w.__t,d=w.document,tick=()=>new Promise(r=>setTimeout(r,30));
   T.LI[1000000000010]={name:'Ismeretlen hely #1000000000010',system:null}; // régi, jelző nélküli bejegyzés
   T.LI[60000004]={name:'Test Station I',system:30001};
   Object.assign(T.names,{638:'Raven',34:'Tritanium'});
-  T.setData({1:{assets:[{t:638,q:1,l:1000000000009,f:'Hangar'},{t:34,q:500,l:1000000000010,f:'Hangar'},{t:638,q:1,l:1000000000010,f:'Hangar'},{t:34,q:1,l:60000004,f:'Hangar'}],bps:[],skills:{},jobs:[]}});
+  T.setData({1:{assets:[{t:638,q:1,l:1000000000009,f:'Hangar'},{t:34,q:500,l:1000000000010,f:'Hangar'},{t:638,q:1,l:1000000000010,f:'Hangar'},{t:34,q:1,l:60000004,f:'Hangar'}],bps:[],skills:{},jobs:[],lm:{1000000000010:{t:'item',f:{Hangar:1,AssetSafety:1}}}}});
   T.renderAll();
   console.log('before:',T.locName(1000000000009),'|',T.locName(1000000000010));
   console.log('stock note:',d.querySelector('#unkNote').textContent.trim());
