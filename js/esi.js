@@ -61,6 +61,10 @@ async function accessToken(c){
 /* ============ hálózat ============ */
 let inflight=0;const queue=[];
 function limit(fn){return new Promise((res,rej)=>{const run=async()=>{inflight++;try{res(await fn())}catch(e){rej(e)}finally{inflight--;const n=queue.shift();if(n)n()}};inflight<6?run():queue.push(run)})}
+// EVE Ref statikus CDN: külön, nagyobb párhuzamosság, hogy ne foglalja az ESI helyeit
+let refIn=0;const refQ=[];
+function refLimit(fn){return new Promise((res,rej)=>{const run=async()=>{refIn++;try{res(await fn())}catch(e){rej(e)}finally{refIn--;const n=refQ.shift();if(n)n()}};refIn<16?run():refQ.push(run)})}
+async function fetchT(u,ms=30000){const ac=new AbortController();const t=setTimeout(()=>ac.abort(),ms);try{return await fetch(u,{signal:ac.signal})}catch(e){if(e.name==='AbortError')throw new Error('időtúllépés: '+u);throw e}finally{clearTimeout(t)}}
 async function esi(path,{char,method='GET',body,paged=false}={}){
   const go=async(page)=>limit(async()=>{
     const u=new URL(ESI+path);u.searchParams.set('datasource','tranquility');if(page)u.searchParams.set('page',page);
@@ -82,7 +86,7 @@ async function esi(path,{char,method='GET',body,paged=false}={}){
 async function refGet(kind,id){ // kind 't' types, 'b' blueprints
   const c=REFC[kind][id]; if(c!==undefined) return c;
   const path=kind==='t'?'/types/':'/blueprints/';
-  const j=await limit(async()=>{const r=await fetch(REF+path+id);if(r.status===404)return null;if(!r.ok)throw new Error('EVE Ref '+r.status+' '+path+id);return r.json()});
+  const j=await refLimit(async()=>{const r=await fetchT(REF+path+id);if(r.status===404)return null;if(!r.ok)throw new Error('EVE Ref '+r.status+' '+path+id);return r.json()});
   let v=null;
   if(j&&kind==='t'){
     v={n:j.name&&(j.name.en||j.name),g:j.group_id,c:j.category_id,p:j.portion_size||1,vol:j.packaged_volume||j.volume||0,

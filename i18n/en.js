@@ -520,5 +520,12 @@ window.I18N.en={
  "{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).": "{0} items are somewhere they can't be reprocessed (e.g. in space).",
  "Hol és ki": "Where and who",
  "Tétel": "Items",
- "Át kell adni tőle: {0}": "Hand over from: {0}"
+ "Át kell adni tőle: {0}": "Hand over from: {0}",
+ "Beolvasás: {0} / {1} tárgytípus": "Reading: {0} / {1} item types",
+ "Helyszínek és árak…": "Locations and prices…",
+ "{0} tárgytípus a készletben, receptek lekérése az EVE Refről…": "{0} item types in stock, fetching recipes from EVE Ref…",
+ "reprocesszálható": "reprocessable",
+ "{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…": "{0} reprocessable items, {1} locations. Fetching locations…",
+ "Jita árak lekérése: {0} típus…": "Fetching Jita prices: {0} types…",
+ "Kész: {0} tétel, {1} mp.": "Done: {0} items, {1} s."
 };

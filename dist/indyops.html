@@ -111,6 +111,7 @@ button.btn.mini{padding:2px 7px;font-size:11px}
 .help ul{padding-left:20px;margin:0}
 .help ul li{margin-bottom:6px}
 .brand .ver{font:500 11px var(--f-mono);color:var(--muted);text-transform:none;letter-spacing:0}
+.replog{margin:10px 0 0;height:150px;overflow:auto;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:6px;font:12px/1.45 var(--f-mono);color:var(--muted);white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -359,6 +360,7 @@ button.btn.mini{padding:2px 7px;font-size:11px}
       <div class="row" style="margin-top:8px">
         <button class="btn primary" id="repLoad">Készlet beolvasása</button>
       </div>
+      <pre id="repLog" class="replog" hidden data-noi18n></pre>
     </div>
     <div class="card">
       <h2>Skillek és implant</h2>
@@ -1168,7 +1170,14 @@ window.I18N.en={
  "{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).": "{0} items are somewhere they can't be reprocessed (e.g. in space).",
  "Hol és ki": "Where and who",
  "Tétel": "Items",
- "Át kell adni tőle: {0}": "Hand over from: {0}"
+ "Át kell adni tőle: {0}": "Hand over from: {0}",
+ "Beolvasás: {0} / {1} tárgytípus": "Reading: {0} / {1} item types",
+ "Helyszínek és árak…": "Locations and prices…",
+ "{0} tárgytípus a készletben, receptek lekérése az EVE Refről…": "{0} item types in stock, fetching recipes from EVE Ref…",
+ "reprocesszálható": "reprocessable",
+ "{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…": "{0} reprocessable items, {1} locations. Fetching locations…",
+ "Jita árak lekérése: {0} típus…": "Fetching Jita prices: {0} types…",
+ "Kész: {0} tétel, {1} mp.": "Done: {0} items, {1} s."
 };
 </script>
 <script>
@@ -1695,7 +1704,14 @@ window.I18N.de={
  "{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).": "{0} Gegenstände liegen an einem Ort, an dem man nicht reprocessen kann (z. B. im Weltraum).",
  "Hol és ki": "Wo und wer",
  "Tétel": "Gegenstände",
- "Át kell adni tőle: {0}": "Übergeben von: {0}"
+ "Át kell adni tőle: {0}": "Übergeben von: {0}",
+ "Beolvasás: {0} / {1} tárgytípus": "Einlesen: {0} / {1} Gegenstandstypen",
+ "Helyszínek és árak…": "Orte und Preise…",
+ "{0} tárgytípus a készletben, receptek lekérése az EVE Refről…": "{0} Gegenstandstypen im Bestand, Rezepte werden von EVE Ref geladen…",
+ "reprocesszálható": "reprocessbar",
+ "{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…": "{0} reprocessbare Gegenstände, {1} Orte. Orte werden geladen…",
+ "Jita árak lekérése: {0} típus…": "Jita-Preise werden geladen: {0} Typen…",
+ "Kész: {0} tétel, {1} mp.": "Fertig: {0} Gegenstände, {1} s."
 };
 </script>
 <script>
@@ -1716,7 +1732,7 @@ const SK={industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,repr
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.1.0',built:'2026-11-09',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.1.1',built:'2026-11-09',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -1850,6 +1866,10 @@ async function accessToken(c){
 /* ============ hálózat ============ */
 let inflight=0;const queue=[];
 function limit(fn){return new Promise((res,rej)=>{const run=async()=>{inflight++;try{res(await fn())}catch(e){rej(e)}finally{inflight--;const n=queue.shift();if(n)n()}};inflight<6?run():queue.push(run)})}
+// EVE Ref statikus CDN: külön, nagyobb párhuzamosság, hogy ne foglalja az ESI helyeit
+let refIn=0;const refQ=[];
+function refLimit(fn){return new Promise((res,rej)=>{const run=async()=>{refIn++;try{res(await fn())}catch(e){rej(e)}finally{refIn--;const n=refQ.shift();if(n)n()}};refIn<16?run():refQ.push(run)})}
+async function fetchT(u,ms=30000){const ac=new AbortController();const t=setTimeout(()=>ac.abort(),ms);try{return await fetch(u,{signal:ac.signal})}catch(e){if(e.name==='AbortError')throw new Error('időtúllépés: '+u);throw e}finally{clearTimeout(t)}}
 async function esi(path,{char,method='GET',body,paged=false}={}){
   const go=async(page)=>limit(async()=>{
     const u=new URL(ESI+path);u.searchParams.set('datasource','tranquility');if(page)u.searchParams.set('page',page);
@@ -1871,7 +1891,7 @@ async function esi(path,{char,method='GET',body,paged=false}={}){
 async function refGet(kind,id){ // kind 't' types, 'b' blueprints
   const c=REFC[kind][id]; if(c!==undefined) return c;
   const path=kind==='t'?'/types/':'/blueprints/';
-  const j=await limit(async()=>{const r=await fetch(REF+path+id);if(r.status===404)return null;if(!r.ok)throw new Error('EVE Ref '+r.status+' '+path+id);return r.json()});
+  const j=await refLimit(async()=>{const r=await fetchT(REF+path+id);if(r.status===404)return null;if(!r.ok)throw new Error('EVE Ref '+r.status+' '+path+id);return r.json()});
   let v=null;
   if(j&&kind==='t'){
     v={n:j.name&&(j.name.en||j.name),g:j.group_id,c:j.category_id,p:j.portion_size||1,vol:j.packaged_volume||j.volume||0,
@@ -2704,6 +2724,9 @@ const SCRAP=12196,ATHANOR=35835,TATARA=35836;
 let SYSSEC=load('syssec',{});
 const REP={rows:null,sel:new Set(),busy:false};
 const repKey=r=>r.l+'|'+r.t;
+let REPLOG=[];
+function repLog(m){const el=$('#repLog');if(!el)return;el.hidden=false;REPLOG.push(new Date().toLocaleTimeString(LOC())+'  '+m);if(REPLOG.length>300)REPLOG=REPLOG.slice(-300);
+  const atEnd=el.scrollTop+el.clientHeight>=el.scrollHeight-20;el.textContent=REPLOG.join('\n');if(atEnd)el.scrollTop=el.scrollHeight}
 function repCfg(){if(!S.repro)S.repro={};const c=S.repro;c.loc=c.loc||{};c.imp=c.imp||{};if(c.char==null)c.char='';return c}
 function impOf(cid){const v=repCfg().imp[cid];return v!=null&&v!==''?Number(v):Number(S.implant||0)}
 function locKind(l){l=Number(l);return l>=60000000&&l<64000000?'npc':l>1e12?'struct':'none'}
@@ -2750,22 +2773,27 @@ async function repLoad(){
   if(REP.busy)return;if(!Object.keys(DATA).length){alertBox('Előbb jelentkezz be, és frissítsd az adatokat.');return}
   REP.busy=true;$('#repLoad').disabled=true;
   try{
-    const sm=stockMap(false);const types=[...sm.keys()];
-    status(T('reprocess adatok: {0} tétel…',fmt(types.length)));
-    await Promise.all(types.map(t=>refGet('t',t).catch(()=>null)));
+    const t0=Date.now();REPLOG=[];const sm=stockMap(false);const types=[...sm.keys()];
+    repLog(T('{0} tárgytípus a készletben, receptek lekérése az EVE Refről…',fmt(types.length)));
+    const btn=$('#repLoad');let done=0;const prog=()=>{const m=T('Beolvasás: {0} / {1} tárgytípus',fmt(done),fmt(types.length));btn.textContent=m;status(m)};prog();
+    const tick=setInterval(prog,400);
+    try{await Promise.all(types.map(t=>(REFC.t[t]!==undefined?Promise.resolve(REFC.t[t]):refGet('t',t).then(v=>{repLog((v&&v.n||'#'+t)+(v&&v.tm&&v.tm.length?'  ✓ '+T('reprocesszálható'):''));return v})).catch(e=>{repLog('✗ #'+t+'  '+e.message);log('EVE Ref: '+t+' '+e.message);return null}).finally(()=>done++)))}finally{clearInterval(tick)}
+    btn.textContent=T('Helyszínek és árak…');status(T('Helyszínek és árak…'));
     const rows=[],locs=new Set();
     for(const [t,arr] of sm){const ti=REFC.t[t];if(!ti||!ti.tm||!ti.tm.length||ti.c===9)continue;
       const byL=new Map();
       for(const x of arr){if(!(x.q>0))continue;let r=byL.get(x.l);if(!r){r={t,l:x.l,q:0,own:new Map()};byL.set(x.l,r)}r.q+=x.q;r.own.set(x.cid,(r.own.get(x.cid)||0)+x.q)}
       for(const r of byL.values()){rows.push(r);locs.add(r.l)}}
+    repLog(T('{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…',fmt(rows.length),fmt(locs.size)));
     await Promise.all([...locs].map(l=>resolveLoc(l).catch(()=>null)));
-    await repLocExtra([...locs]);
+    await repLocExtra([...locs]);for(const l of locs){const L=locStats(l);repLog(locName(l)+'  · '+(L.k==='npc'?T('NPC állomás'):L.k==='struct'?(NAMES[L.st]||'Upwell'):T('űrben – itt nem lehet'))+(L.sec!=null?'  sec '+fmt(L.sec,2):''))}
     const mats=new Set(rows.flatMap(r=>REFC.t[r.t].tm.map(x=>x[0])));
     await resolveNames([...mats,...rows.map(r=>r.t),...rows.map(r=>REFC.t[r.t].rs).filter(Boolean),SCRAP,SK.repro,SK.reproEff]);
-    const its=[...new Set(rows.map(r=>r.t))];await ensurePrices(its.length<=200?[...mats,...its]:[...mats]); // sok tételnél csak a kijelöltekre, gombbal
+    const its=[...new Set(rows.map(r=>r.t))];repLog(T('Jita árak lekérése: {0} típus…',fmt(its.length<=200?mats.size+its.length:mats.size)));await ensurePrices(its.length<=200?[...mats,...its]:[...mats]); // sok tételnél csak a kijelöltekre, gombbal
+    repLog(T('Kész: {0} tétel, {1} mp.',fmt(rows.length),fmt((Date.now()-t0)/1000,1)));
     REP.rows=rows;for(const k of [...REP.sel])if(!rows.some(r=>repKey(r)===k))REP.sel.delete(k);
-  }catch(e){log('Reprocess hiba: '+e.message);alertBox(T('Hiba: {0}',e.message))}
-  finally{REP.busy=false;$('#repLoad').disabled=false;status('kész')}
+  }catch(e){repLog('✗ '+e.message);log('Reprocess hiba: '+e.message);alertBox(T('Hiba: {0}',e.message))}
+  finally{REP.busy=false;const b=$('#repLoad');b.disabled=false;b.textContent=T('Készlet beolvasása');status('kész')}
   renderRepro();
 }
 async function repPrices(){

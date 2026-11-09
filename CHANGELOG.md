@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1 – 2026-11-09
+
+- Reprocess: live log while reading the stock (each item type, locations, prices) and a progress counter on the button
+- Faster recipe loading: EVE Ref requests run 16 at a time on their own queue, with a 30 s timeout, without blocking ESI calls
+
 ## 1.1.0 – 2026-11-09
 
 - New Reprocess tab: everything reprocessable in your stock (ore, ice, modules, loot), what comes out and who gets the best yield

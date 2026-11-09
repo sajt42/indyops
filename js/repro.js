@@ -5,6 +5,9 @@ const SCRAP=12196,ATHANOR=35835,TATARA=35836;
 let SYSSEC=load('syssec',{});
 const REP={rows:null,sel:new Set(),busy:false};
 const repKey=r=>r.l+'|'+r.t;
+let REPLOG=[];
+function repLog(m){const el=$('#repLog');if(!el)return;el.hidden=false;REPLOG.push(new Date().toLocaleTimeString(LOC())+'  '+m);if(REPLOG.length>300)REPLOG=REPLOG.slice(-300);
+  const atEnd=el.scrollTop+el.clientHeight>=el.scrollHeight-20;el.textContent=REPLOG.join('\n');if(atEnd)el.scrollTop=el.scrollHeight}
 function repCfg(){if(!S.repro)S.repro={};const c=S.repro;c.loc=c.loc||{};c.imp=c.imp||{};if(c.char==null)c.char='';return c}
 function impOf(cid){const v=repCfg().imp[cid];return v!=null&&v!==''?Number(v):Number(S.implant||0)}
 function locKind(l){l=Number(l);return l>=60000000&&l<64000000?'npc':l>1e12?'struct':'none'}
@@ -51,22 +54,27 @@ async function repLoad(){
   if(REP.busy)return;if(!Object.keys(DATA).length){alertBox('Előbb jelentkezz be, és frissítsd az adatokat.');return}
   REP.busy=true;$('#repLoad').disabled=true;
   try{
-    const sm=stockMap(false);const types=[...sm.keys()];
-    status(T('reprocess adatok: {0} tétel…',fmt(types.length)));
-    await Promise.all(types.map(t=>refGet('t',t).catch(()=>null)));
+    const t0=Date.now();REPLOG=[];const sm=stockMap(false);const types=[...sm.keys()];
+    repLog(T('{0} tárgytípus a készletben, receptek lekérése az EVE Refről…',fmt(types.length)));
+    const btn=$('#repLoad');let done=0;const prog=()=>{const m=T('Beolvasás: {0} / {1} tárgytípus',fmt(done),fmt(types.length));btn.textContent=m;status(m)};prog();
+    const tick=setInterval(prog,400);
+    try{await Promise.all(types.map(t=>(REFC.t[t]!==undefined?Promise.resolve(REFC.t[t]):refGet('t',t).then(v=>{repLog((v&&v.n||'#'+t)+(v&&v.tm&&v.tm.length?'  ✓ '+T('reprocesszálható'):''));return v})).catch(e=>{repLog('✗ #'+t+'  '+e.message);log('EVE Ref: '+t+' '+e.message);return null}).finally(()=>done++)))}finally{clearInterval(tick)}
+    btn.textContent=T('Helyszínek és árak…');status(T('Helyszínek és árak…'));
     const rows=[],locs=new Set();
     for(const [t,arr] of sm){const ti=REFC.t[t];if(!ti||!ti.tm||!ti.tm.length||ti.c===9)continue;
       const byL=new Map();
       for(const x of arr){if(!(x.q>0))continue;let r=byL.get(x.l);if(!r){r={t,l:x.l,q:0,own:new Map()};byL.set(x.l,r)}r.q+=x.q;r.own.set(x.cid,(r.own.get(x.cid)||0)+x.q)}
       for(const r of byL.values()){rows.push(r);locs.add(r.l)}}
+    repLog(T('{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…',fmt(rows.length),fmt(locs.size)));
     await Promise.all([...locs].map(l=>resolveLoc(l).catch(()=>null)));
-    await repLocExtra([...locs]);
+    await repLocExtra([...locs]);for(const l of locs){const L=locStats(l);repLog(locName(l)+'  · '+(L.k==='npc'?T('NPC állomás'):L.k==='struct'?(NAMES[L.st]||'Upwell'):T('űrben – itt nem lehet'))+(L.sec!=null?'  sec '+fmt(L.sec,2):''))}
     const mats=new Set(rows.flatMap(r=>REFC.t[r.t].tm.map(x=>x[0])));
     await resolveNames([...mats,...rows.map(r=>r.t),...rows.map(r=>REFC.t[r.t].rs).filter(Boolean),SCRAP,SK.repro,SK.reproEff]);
-    const its=[...new Set(rows.map(r=>r.t))];await ensurePrices(its.length<=200?[...mats,...its]:[...mats]); // sok tételnél csak a kijelöltekre, gombbal
+    const its=[...new Set(rows.map(r=>r.t))];repLog(T('Jita árak lekérése: {0} típus…',fmt(its.length<=200?mats.size+its.length:mats.size)));await ensurePrices(its.length<=200?[...mats,...its]:[...mats]); // sok tételnél csak a kijelöltekre, gombbal
+    repLog(T('Kész: {0} tétel, {1} mp.',fmt(rows.length),fmt((Date.now()-t0)/1000,1)));
     REP.rows=rows;for(const k of [...REP.sel])if(!rows.some(r=>repKey(r)===k))REP.sel.delete(k);
-  }catch(e){log('Reprocess hiba: '+e.message);alertBox(T('Hiba: {0}',e.message))}
-  finally{REP.busy=false;$('#repLoad').disabled=false;status('kész')}
+  }catch(e){repLog('✗ '+e.message);log('Reprocess hiba: '+e.message);alertBox(T('Hiba: {0}',e.message))}
+  finally{REP.busy=false;const b=$('#repLoad');b.disabled=false;b.textContent=T('Készlet beolvasása');status('kész')}
   renderRepro();
 }
 async function repPrices(){
