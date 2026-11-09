@@ -67,11 +67,11 @@ $('#impFile').addEventListener('change',e=>{
 
 $('#langSel').innerHTML=Object.entries(LANGS).map(([k,v])=>`<option value="${k}" ${k===LANG?'selected':''}>${v.name}</option>`).join('');
 $('#langSel').addEventListener('change',e=>setLang(e.target.value));
-$('#appVer').textContent='v'+APP.version;$('#srcLink').href='https://github.com/'+APP.repo;$('#cidNote').hidden=!HOSTED;
+$('#appVer').textContent='v'+APP.version;$('#hdrVer').textContent='v'+APP.version;$('#hdrVer').title=APP.built;$('#srcLink').href='https://github.com/'+APP.repo;$('#cidNote').hidden=!HOSTED;
 $('#bugBtn').addEventListener('click',()=>{
   const logTxt=($('#log').textContent||'').split('\n').slice(0,30).join('\n').slice(0,2500);
   const tab=((document.querySelector('#tabs button[aria-selected="true"]')||{}).dataset||{}).tab||'';
-  const body=T('**Mi történt?**')+'\n\n\n'+T('**Mit vártál helyette?**')+'\n\n\n---\n'+APP.name+' v'+APP.version+' · '+LANG+' · '+(HOSTED?'web':'local')+' · tab: '+tab+'\n'+navigator.userAgent+'\n\n'+T('Napló (a jelentés nyilvános: küldés előtt töröld belőle, amit nem szeretnél megosztani):')+'\n```\n'+logTxt+'\n```\n';
+  const body=T('**Mi történt?**')+'\n\n\n'+T('**Mit vártál helyette?**')+'\n\n\n---\n'+APP.name+' v'+APP.version+' ('+APP.built+') · '+LANG+' · '+(HOSTED?'web':'local')+' · tab: '+tab+'\n'+navigator.userAgent+'\n\n'+T('Napló (a jelentés nyilvános: küldés előtt töröld belőle, amit nem szeretnél megosztani):')+'\n```\n'+logTxt+'\n```\n';
   $('#bugBtn').href='https://github.com/'+APP.repo+'/issues/new?'+new URLSearchParams({title:'[bug] ',body}).toString();
 });
 renderAll();

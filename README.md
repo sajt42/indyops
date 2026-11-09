@@ -69,6 +69,13 @@ node tools/bundle.mjs          # rebuild dist/indyops.html
 cd tests && npm install && npm test
 ```
 
+**Versioning:** every change that goes to `main` gets a new version ([semver](https://semver.org): fix → patch, feature → minor, breaking → major), a CHANGELOG entry and a git tag. The version is shown in the header and footer and included in bug reports, so `vX.Y.Z` in a report points straight at the tag.
+
+```
+node tools/release.mjs patch "What changed"     # bumps version, CHANGELOG, cache busting, rebuilds dist/
+git commit -am "vX.Y.Z: what changed" && git tag vX.Y.Z && git push origin main --tags
+```
+
 **Translations:** copy `i18n/en.js` to a new language file, translate the values (keep `#` and `{0}` placeholders), add it to `index.html` and to `LANGS` in `js/core.js`.
 
 ## Legal

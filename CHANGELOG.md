@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2 – 2026-11-09
+
+- Version shown in the header next to the name; build date in bug reports
+- Cache busting: file URLs carry the version so browsers load the new code right after an update
+- Release tool (tools/release.mjs) and versioning rules in the README
+
 ## 1.0.1 – 2026-11-09
 
 - In-app Help tab (English, German, Hungarian): what IndyOps is, getting started, every tab, how it calculates, privacy, FAQ

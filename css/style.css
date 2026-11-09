@@ -100,3 +100,4 @@ button.btn.mini{padding:2px 7px;font-size:11px}
 .helpdl dd{margin:3px 0 0}
 .help ul{padding-left:20px;margin:0}
 .help ul li{margin-bottom:6px}
+.brand .ver{font:500 11px var(--f-mono);color:var(--muted);text-transform:none;letter-spacing:0}

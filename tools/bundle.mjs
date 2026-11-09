@@ -10,10 +10,10 @@ const read = (p) => readFileSync(join(root, p), 'utf8');
 
 let html = read('index.html');
 
-html = html.replace(/<link rel="stylesheet" href="(css\/[^"]+)">/g, (_, href) =>
+html = html.replace(/<link rel="stylesheet" href="(css\/[^"?]+)(?:\?[^"]*)?">/g, (_, href) =>
   `<style>\n${read(href)}</style>`);
 
-html = html.replace(/<script src="((?:js|i18n)\/[^"]+)"><\/script>/g, (_, src) =>
+html = html.replace(/<script src="((?:js|i18n)\/[^"?]+)(?:\?[^"]*)?"><\/script>/g, (_, src) =>
   `<script>\n/* ${src} */\n${read(src).replace(/<\/script/gi, '<\\/script')}</script>`);
 
 mkdirSync(join(root, 'dist'), { recursive: true });
