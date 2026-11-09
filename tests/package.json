@@ -1,0 +1,7 @@
+{
+  "name": "indyops-tests",
+  "private": true,
+  "description": "Headless tests for IndyOps (run against dist/indyops.html)",
+  "scripts": { "test": "node run-all.mjs" },
+  "devDependencies": { "jsdom": "^24.0.0" }
+}

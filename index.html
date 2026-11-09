@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="IndyOps – EVE Online industry planner: full material trees, invention, research, hauling and selling, straight from your characters via ESI. Runs entirely in your browser.">
+<title>IndyOps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header><div class="hwrap">
+  <div class="brand" data-noi18n>Indy<span>Ops</span></div>
+  <nav role="tablist" id="tabs">
+    <button role="tab" data-tab="chars" aria-selected="true">Karakterek</button>
+    <button role="tab" data-tab="plan">Tervező</button>
+    <button role="tab" data-tab="proj">Projektek</button>
+    <button role="tab" data-tab="profit">Mit érdemes?</button>
+    <button role="tab" data-tab="inv">Invention</button>
+    <button role="tab" data-tab="research">Kutatás & copy</button>
+    <button role="tab" data-tab="sales">Eladás</button>
+    <button role="tab" data-tab="canbuild">Vásárlás nélkül</button>
+    <button role="tab" data-tab="bps">Blueprintek</button>
+    <button role="tab" data-tab="stock">Készlet</button>
+    <button role="tab" data-tab="mine">Bányászat</button>
+    <button role="tab" data-tab="settings">Beállítások</button>
+  </nav>
+  <a class="btn bugbtn" id="bugBtn" href="#" target="_blank" rel="noopener" title="A hibajelentés nyilvános a GitHubon. Küldés előtt nézd át.">Hiba jelentése</a>
+  <label class="langsel" data-noi18n><span class="small muted">🌐</span><select id="langSel" aria-label="Language"></select></label>
+  <div class="status" id="status">kész</div>
+</div></header>
+<main>
+<div id="storageWarn" class="notice err" hidden><p><b>A böngésző tárhelye megtelt.</b> Az IndyOps nem tud több adatot elmenteni, ezért a legutóbbi adatok csak a lap bezárásáig maradnak meg. A Beállításokban töröld a gyorsítótárakat, vagy kevesebb karakterrel/helyszínnel dolgozz.</p></div>
+
+<!-- KARAKTEREK -->
+<section id="tab-chars">
+  <div id="setupBox" class="card" hidden>
+    <h2>Első beállítás</h2>
+    <ol class="steps">
+      <li>Nyisd meg a <a href="https://developers.eveonline.com/applications" target="_blank" rel="noopener">developers.eveonline.com</a> oldalt, jelentkezz be, és hozz létre egy új alkalmazást (<b>Create new application</b>). A név bármi lehet, pl. „IndyOps”.</li>
+      <li>A <b>Callback URL</b> legyen pontosan: <code id="cbUrl"></code></li>
+      <li>Engedélyek (scopes): <code id="scopeList"></code></li>
+      <li>Mentés után másold ki a <b>Client ID</b>-t, és írd ide. Ez nem titkos adat, a jelszavadhoz semmi köze.</li>
+    </ol>
+    <div class="row" style="margin-top:8px">
+      <label>Client ID <input id="clientIdInput" style="width:340px" placeholder="pl. 3f2a…"></label>
+      <button class="btn primary" id="saveClientId">Mentés</button>
+    </div>
+  </div>
+
+  <div id="charBox" class="card" style="margin-top:16px">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Karakterek</h2>
+      <div class="row">
+        <button class="btn primary" id="addChar">Karakter hozzáadása</button>
+        <button class="btn" id="refreshAll">Minden adat frissítése</button>
+      </div>
+    </div>
+    <div id="loginPaste" class="notice" hidden style="margin-top:12px">
+      <p><b>Bejelentkezés:</b> új lapon megnyílt az EVE bejelentkezés. Utána a böngésző egy nem elérhető oldalra visz (<code>https://localhost/callback?code=…</code>). Ez így jó. Másold ki a teljes címet a címsorból, és illeszd be ide:</p>
+      <div class="row"><input id="cbPaste" style="flex:1;min-width:260px" placeholder="https://localhost/callback?code=…&amp;state=…"><button class="btn primary" id="cbSubmit">Bejelentkezés befejezése</button><button class="btn" id="cbCancel">Mégse</button></div>
+      <p class="small muted" style="margin-top:6px">Ha nem nyílt meg új lap, ezt a címet nyisd meg: <a id="authLink" target="_blank" rel="noopener">bejelentkezés</a></p>
+    </div>
+    <div class="chars" id="charList" style="margin-top:14px"></div>
+    <p class="muted small" id="noChars" style="margin-top:10px">Még nincs karakter. Add hozzá a két fő karakteredet a fenti gombbal.</p>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3 style="margin-top:0">Futó industry jobok</h3>
+    <div class="tablewrap"><table id="jobsTable"><thead><tr><th>Karakter</th><th>Tevékenység</th><th>Blueprint</th><th class="num">Run</th><th>Hely</th><th>Kész</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <details style="margin-top:12px"><summary>Napló</summary><div class="log" id="log" data-noi18n></div></details>
+</section>
+
+<!-- TERVEZŐ -->
+<section id="tab-plan" hidden>
+  <div class="card">
+    <h2>Gyártástervező</h2>
+    <div class="row">
+      <label style="flex:1;min-width:260px">Blueprint (saját)
+        <input id="planSearch" list="bpOptions" placeholder="kezdd el gépelni, pl. Raven">
+        <datalist id="bpOptions"></datalist>
+      </label>
+      <label>Melyik példány
+        <select id="planCopy" style="min-width:280px"></select>
+      </label>
+      <label>Runok száma <input type="number" id="planRuns" min="1" value="1"></label>
+      <button class="btn primary" id="planGo">Számolás</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label class="inline"><input type="checkbox" id="optBuildOwn" checked> Komponenseket gyártom, ha van rá saját BP</label>
+      <label class="inline"><input type="checkbox" id="optUseStock" checked> Saját készletet felhasználom</label>
+      <label class="inline"><input type="checkbox" id="optOre"> Készletben lévő érc beszámítása (reprocess után)</label>
+      <label class="inline"><input type="checkbox" id="optStockFree"> Saját készlet ingyen (nem piaci áron számolva)</label>
+      <label class="inline"><input type="checkbox" id="optIncoming" checked> Futó jobok termékei beszámítanak</label>
+    </div>
+    <p class="small muted" style="margin-top:8px">A készlet a <a href="#" data-goto="settings">Beállításokban</a> kijelölt helyszínekről számít. A fában egy komponens sorára kattintva ki-be kapcsolhatod, hogy gyártod vagy veszed.</p>
+  </div>
+  <div id="planOut" style="margin-top:16px"></div>
+</section>
+
+<!-- PROJEKTEK -->
+<section id="tab-proj" hidden>
+  <div class="projgrid">
+    <div class="card">
+      <h2>Projektek</h2>
+      <div class="row"><input id="pNew" placeholder="pl. Orca rendelés" style="flex:1;min-width:140px"><button class="btn primary" id="pAdd">Új projekt</button></div>
+      <div id="pList" style="margin-top:12px"></div>
+      <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+        <label class="inline"><input type="checkbox" id="pIncoming" checked> Futó jobok termékei beszámítanak</label>
+        <div class="row" style="margin-top:8px"><button class="btn primary" id="pAll">Minden aktív projekt együtt</button></div>
+        <p class="small muted" style="margin-top:8px">A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot és a BPC-runokat. A többi beállítás (komponensgyártás, érc, készlet) a Tervező fülről jön.</p>
+      </div>
+    </div>
+    <div class="card" id="pEdit"></div>
+  </div>
+  <div id="pOut" style="margin-top:16px"></div>
+</section>
+
+<!-- PROFIT -->
+<section id="tab-profit" hidden>
+  <div class="card">
+    <h2>Mivel lehet a legjobban keresni?</h2>
+    <p>Minden saját gyártási BP-re kiszámolja a profitot a teljes anyagfával, mai Jita-árakon, job costtal és eladási díjakkal. A napi forgalom mutatja, el is tudod-e adni.</p>
+    <div class="row">
+      <label>Kategória <select id="prCat"><option value="">mind</option></select></label>
+      <label class="inline"><input type="checkbox" id="prBuildOwn" checked> Komponenseket gyártom, ha van rá BP</label>
+      <button class="btn primary" id="prGo">Számolás</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label class="inline"><input type="checkbox" id="prOnlyPos"> csak a nyereségesek</label>
+      <label>Min. napi forgalom (db) <input type="number" id="prMinVol" min="0" value="0"></label>
+    </div>
+  </div>
+  <div id="prOut" style="margin-top:16px"></div>
+</section>
+
+<!-- INVENTION -->
+<section id="tab-inv" hidden>
+  <div class="card">
+    <h2>Invention és T2</h2>
+    <p>Minden saját T1 blueprintre, amiből inventálni lehet, kiszámolja az esélyt a skilljeidből, kipróbálja mind a 8 decryptort és a decryptor nélküli változatot, és megmutatja, melyikkel hozza a legtöbbet egy T2 BPC.</p>
+    <div class="row">
+      <label class="inline"><input type="checkbox" id="ivBuildOwn" checked> T2 komponenseket gyártom, ha van rá BP</label>
+      <button class="btn primary" id="ivGo">Számolás</button>
+    </div>
+  </div>
+  <div id="ivOut" style="margin-top:16px"></div>
+</section>
+
+<!-- KUTATÁS -->
+<section id="tab-research" hidden>
+  <div class="card">
+    <h2>Kutatás és copy</h2>
+    <p>Minden saját BPO-ra: mennyi idő és pénz a következő ME szint, mennyit spórol gyártott runonként, és hány run után térül meg. Mellette a teljes kutatás ME10-ig és TE20-ig, valamint a copy ideje.</p>
+    <div class="row">
+      <input id="rsFilter" placeholder="szűrés névre">
+      <label class="inline"><input type="checkbox" id="rsNotMax" checked> csak a nem max kutatottak</label>
+      <button class="btn primary" id="rsGo">Számolás</button>
+    </div>
+  </div>
+  <div id="rsOut" style="margin-top:16px"></div>
+</section>
+
+<!-- ELADÁS -->
+<section id="tab-sales" hidden>
+  <div class="card">
+    <h2>Eladás</h2>
+    <p>A karaktereid aktív market orderjei: hol ígértek alá, mennyivel, és mi lenne az új ár. A wallet-engedéllyel a ténylegesen eladott tételek is látszanak.</p>
+    <div class="row"><button class="btn primary" id="slGo">Ellenőrzés</button><span class="small muted">Előtte frissítsd a karaktereket, hogy az orderlista friss legyen.</span></div>
+  </div>
+  <div id="slOut" style="margin-top:16px"></div>
+</section>
+
+<!-- VÁSÁRLÁS NÉLKÜL -->
+<section id="tab-canbuild" hidden>
+  <div class="card">
+    <h2>Mit gyárthatok vásárlás nélkül?</h2>
+    <p>Minden saját gyártási BP-re kiszámolja, hány runt tudsz legyártani csak a kijelölt helyszínek készletéből, a komponensek saját gyártásával együtt (ha van rá BP). A szűk keresztmetszet is látszik.</p>
+    <div class="row">
+      <label>Szűrés kategóriára
+        <select id="cbCat"><option value="">mind</option></select>
+      </label>
+      <label class="inline"><input type="checkbox" id="cbOre"> Érc a készletben beszámít</label>
+      <button class="btn primary" id="cbGo">Számolás</button>
+    </div>
+  </div>
+  <div id="cbOut" style="margin-top:16px"></div>
+</section>
+
+<!-- BLUEPRINTEK -->
+<section id="tab-bps" hidden>
+  <div class="row" style="justify-content:space-between;margin-bottom:12px">
+    <h2 style="margin:0">Blueprintek</h2>
+    <div class="row">
+      <input id="bpFilter" placeholder="szűrés névre / helyre">
+      <select id="bpKind"><option value="">BPO + BPC</option><option value="bpo">csak BPO</option><option value="bpc">csak BPC</option></select>
+      <label class="inline"><input type="checkbox" id="bpNotMax"> csak nem max kutatott BPO</label>
+    </div>
+  </div>
+  <div class="tablewrap"><table id="bpTable"><thead><tr>
+    <th class="sortable" data-k="name">Név</th><th>Típus</th><th class="num sortable" data-k="me">ME</th><th class="num sortable" data-k="te">TE</th><th class="num sortable" data-k="runs">Run</th><th class="sortable" data-k="char">Karakter</th><th class="sortable" data-k="loc">Hely</th><th>Állapot</th>
+  </tr></thead><tbody></tbody></table></div>
+  <p class="small muted" id="bpCount" style="margin-top:6px"></p>
+</section>
+
+<!-- KÉSZLET -->
+<section id="tab-stock" hidden>
+  <div class="row" style="justify-content:space-between;margin-bottom:12px">
+    <h2 style="margin:0">Készlet</h2>
+    <div class="row">
+      <input id="stFilter" placeholder="szűrés névre">
+      <select id="stLoc"><option value="">minden hely</option></select>
+      <label class="inline"><input type="checkbox" id="stOnlyPlan"> csak a tervezőben számító helyek</label>
+    </div>
+  </div>
+  <div class="tablewrap"><table id="stTable"><thead><tr><th>Tárgy</th><th class="num">Összesen</th><th>Hol</th></tr></thead><tbody></tbody></table></div>
+  <p class="small muted" id="stCount" style="margin-top:6px"></p>
+</section>
+
+<!-- BÁNYÁSZAT -->
+<section id="tab-mine" hidden>
+  <div class="grid2">
+    <div class="card">
+      <h2>Survey scan</h2>
+      <p>Játékban a Survey Scanner ablakban jelöld ki a sorokat (Ctrl+A), másold (Ctrl+C), és illeszd be ide.</p>
+      <textarea id="scanIn" placeholder="Veldspar II-Grade&#9;366,104&#9;12 km"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="btn primary" id="scanGo">Kiértékelés</button>
+        <span class="small muted" id="yieldInfo"></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Mihez kell?</h2>
+      <p>Ha a Tervezőben számoltál valamit, az ásványhiánya itt összevethető a belt tartalmával.</p>
+      <div id="mineNeed" class="small muted">Még nincs terv. Számolj egyet a Tervezőben.</div>
+    </div>
+  </div>
+  <div id="scanOut" style="margin-top:16px"></div>
+</section>
+
+<!-- BEÁLLÍTÁSOK -->
+<section id="tab-settings" hidden>
+  <div class="grid2">
+    <div class="card">
+      <h2>Gyártás</h2>
+      <div class="row">
+        <label>Struktúra ME bónusz % <input type="number" step="0.1" id="sStructME"></label>
+        <label>Struktúra időbónusz % <input type="number" step="0.1" id="sStructTE"></label>
+        <label>Struktúra kutatási bónusz % <input type="number" step="0.1" id="sStructRes"></label>
+        <label>Létesítmény adó % <input type="number" step="0.01" id="sFacTax"></label>
+        <label>SCC pótdíj % <input type="number" step="0.1" id="sScc"></label>
+      </div>
+      <p class="small muted" style="margin-top:8px">NPC állomáson a struktúra-bónusz 0. Raitaru: ME 1%, idő 15%, plusz a rigek. A rendszer cost indexét az eszköz az ESI-ből veszi a BP helyszíne alapján.</p>
+      <div class="row" style="margin-top:8px">
+        <label>Gyártási rendszer (felülírás) <input id="sSystem" placeholder="üresen: a BP helye"></label>
+        <label>Gyártási helyszín a szállításhoz <select id="sProdLoc"><option value="">automatikus: a BP helye</option></select></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Eladás és reprocess</h2>
+      <div class="row">
+        <label>Sales tax % <input type="number" step="0.01" id="sSalesTax"></label>
+        <label>Broker fee % <input type="number" step="0.01" id="sBroker"></label>
+        <label>Reprocess alaphozam % <input type="number" step="0.1" id="sYieldBase"></label>
+        <label>Implant bónusz % <input type="number" step="0.1" id="sImplant"></label>
+      </div>
+      <p class="small muted" style="margin-top:8px">Üresen hagyva a sales taxot és a broker fee-t a karakter skilljeiből számolja (Accounting, Broker Relations, standing nélkül). NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.</p>
+      <div class="row" style="margin-top:8px">
+        <label>Melyik karakter skilljeivel számoljon <select id="sSkillChar"></select></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Helyszínek a tervezőhöz</h2>
+      <p class="small muted">Csak a kipipált helyszínek készlete számít a tervezésben és a „vásárlás nélkül” számításban.</p>
+      <div class="row" style="margin-bottom:6px"><button class="btn" id="locAll">Mind</button><button class="btn" id="locNone">Egyik sem</button></div>
+      <div class="loclist" id="locList"><span class="muted small">Előbb frissítsd a karakterek adatait.</span></div>
+    </div>
+    <div class="card">
+      <h2>Adatok</h2>
+      <div class="row" style="margin-bottom:8px">
+        <label>Client ID <input id="sClientId" style="width:300px"></label>
+      </div>
+      <p class="small muted" id="cidNote" style="margin:-4px 0 8px">Üresen hagyva az IndyOps közös alkalmazását használja. Saját Client ID csak akkor kell, ha a helyi fájlból futtatod.</p>
+      <label class="inline" style="margin-bottom:6px"><input type="checkbox" id="sWallet"> Wallet-tranzakciók olvasása (opcionális, az Eladás fülhöz)</label>
+      <p class="small muted" style="margin-bottom:8px">Bekapcsolás után add hozzá a <code>esi-wallet.read_character_wallet.v1</code> engedélyt az alkalmazásodhoz a developers.eveonline.com-on, majd jelentkezz be újra a karakterekkel. A wallet egyenlegét az eszköz nem olvassa, csak az elmúlt 30 nap vételeit és eladásait.</p>
+      <h3 style="margin-top:4px">Mentés és visszatöltés</h3>
+      <p class="small muted">A projektek és a beállítások csak ebben a böngészőben élnek. Ments időnként fájlba, és azzal másik gépen vagy böngészőben is visszatöltheted őket.</p>
+      <div class="row">
+        <button class="btn primary" id="expBtn">Mentés fájlba</button>
+        <label class="inline"><input type="checkbox" id="expTokens"> bejelentkezések is</label>
+        <label class="btn" for="impFile" style="display:inline-block;cursor:pointer">Visszatöltés fájlból</label>
+        <input type="file" id="impFile" accept=".json,application/json" hidden>
+      </div>
+      <p class="small" id="expWarn" hidden style="color:var(--warn);margin-top:6px">A bejelentkezésekkel együtt mentett fájllal bárki olvashatja a karaktereid adatait, amíg vissza nem vonod az engedélyt. Ne oszd meg, és ne tárold nyilvános helyen.</p>
+      <div id="impConfirm" class="notice" hidden style="margin-top:8px"></div>
+      <h3>Gyorsítótárak</h3>
+      <div class="row">
+        <button class="btn" id="clearPrices">Árak gyorsítótárának törlése</button>
+        <button class="btn" id="clearRef">Receptek gyorsítótárának törlése</button>
+        <button class="btn" id="clearAllBtn">Minden helyi adat törlése</button>
+      </div>
+      <div id="clearConfirm" class="notice err" hidden><p>Biztosan törlöd? A karakterek tokenjei is elvesznek, újra be kell jelentkezni.</p><div class="row"><button class="btn primary" id="clearYes">Igen, törlöm</button><button class="btn" id="clearNo">Mégse</button></div></div>
+      <p class="small muted" style="margin-top:8px">Minden adat csak ebben a böngészőben, a te gépeden tárolódik. Az eszköz kizárólag a CCP szervereihez (bejelentkezés, ESI) és az EVE Ref receptadatbázisához kapcsolódik.</p>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="foot"><div class="fwrap">
+  <p><b data-noi18n>IndyOps</b> <span class="mono" id="appVer" data-noi18n></span> · <span>készítette</span> <span data-noi18n>SajT</span> · <span>MIT licenc</span> · <a id="srcLink" href="#" target="_blank" rel="noopener">Forráskód és hibajelentés a GitHubon</a> · <span>Receptadatok:</span> <a href="https://everef.net" target="_blank" rel="noopener" data-noi18n>EVE Ref</a> · <span>Játékadatok:</span> <a href="https://esi.evetech.net" target="_blank" rel="noopener" data-noi18n>ESI</a></p>
+  <p>Az IndyOps rajongói eszköz, a CCP hf.-nek nincs köze hozzá, és nem is támogatja. Adatot nem gyűjt: minden a te böngésződben marad.</p>
+  <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
+</div></footer>
+
+<script src="i18n/en.js"></script>
+<script src="i18n/de.js"></script>
+<script src="js/core.js"></script>
+<script src="js/esi.js"></script>
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/views.js"></script>
+<script src="js/tabs.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
