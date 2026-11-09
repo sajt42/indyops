@@ -92,3 +92,11 @@ button.btn.mini{padding:2px 7px;font-size:11px}
 .fwrap p{margin:0;max-width:none}
 .legal{opacity:.8}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+.intro{border-left:3px solid var(--accent)}
+.help{display:flex;flex-direction:column;gap:6px;max-width:900px}
+.help p,.help li,.help dd{max-width:80ch}
+.helpdl{margin:0}
+.helpdl dt{font-weight:600;margin-top:12px}
+.helpdl dd{margin:3px 0 0}
+.help ul{padding-left:20px;margin:0}
+.help ul li{margin-bottom:6px}

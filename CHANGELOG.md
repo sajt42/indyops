@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 – 2026-11-09
+
+- In-app Help tab (English, German, Hungarian): what IndyOps is, getting started, every tab, how it calculates, privacy, FAQ
+- Welcome box for new visitors on the Characters tab, Help link in the footer
+
 ## 1.0.0 – 2026-11-09
 
 First public version (formerly the private "Gyártópult" tool).

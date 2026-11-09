@@ -75,5 +75,6 @@ $('#bugBtn').addEventListener('click',()=>{
   $('#bugBtn').href='https://github.com/'+APP.repo+'/issues/new?'+new URLSearchParams({title:'[bug] ',body}).toString();
 });
 renderAll();
+updateHelpLang();
 startI18n();
 handleRedirect();

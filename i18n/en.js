@@ -458,5 +458,9 @@ window.I18N.en={
  "Üresen hagyva az IndyOps közös alkalmazását használja. Saját Client ID csak akkor kell, ha a helyi fájlból futtatod.": "Leave empty to use the shared IndyOps application. You only need your own Client ID when running the local file.",
  "**Mi történt?**": "**What happened?**",
  "**Mit vártál helyette?**": "**What did you expect instead?**",
- "Napló (a jelentés nyilvános: küldés előtt töröld belőle, amit nem szeretnél megosztani):": "Log (this report is public: remove anything you don't want to share before sending):"
+ "Napló (a jelentés nyilvános: küldés előtt töröld belőle, amit nem szeretnél megosztani):": "Log (this report is public: remove anything you don't want to share before sending):",
+ "Súgó": "Help",
+ "Üdv az IndyOpsban!": "Welcome to IndyOps!",
+ "Gyártástervező EVE Online-hoz: a karaktereid hangárjaiból számolja ki, mit érdemes gyártani, mit kell venni, ki gyártsa és mit hova vigyél. Kezdéshez add hozzá a karaktereidet lent.": "An EVE Online industry planner: from your characters' hangars it works out what's worth building, what to buy, who should build it and what to haul where. To start, add your characters below.",
+ "Mi ez és hogyan működik?": "What is this and how does it work?"
 };

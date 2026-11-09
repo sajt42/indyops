@@ -25,6 +25,7 @@
     <button role="tab" data-tab="stock">Készlet</button>
     <button role="tab" data-tab="mine">Bányászat</button>
     <button role="tab" data-tab="settings">Beállítások</button>
+    <button role="tab" data-tab="help">Súgó</button>
   </nav>
   <a class="btn bugbtn" id="bugBtn" href="#" target="_blank" rel="noopener" title="A hibajelentés nyilvános a GitHubon. Küldés előtt nézd át.">Hiba jelentése</a>
   <label class="langsel" data-noi18n><span class="small muted">🌐</span><select id="langSel" aria-label="Language"></select></label>
@@ -49,6 +50,11 @@
     </div>
   </div>
 
+  <div id="introBox" class="card intro">
+    <h2>Üdv az IndyOpsban!</h2>
+    <p>Gyártástervező EVE Online-hoz: a karaktereid hangárjaiból számolja ki, mit érdemes gyártani, mit kell venni, ki gyártsa és mit hova vigyél. Kezdéshez add hozzá a karaktereidet lent.</p>
+    <p><a href="#" data-goto="help">Mi ez és hogyan működik?</a></p>
+  </div>
   <div id="charBox" class="card" style="margin-top:16px">
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Karakterek</h2>
@@ -306,9 +312,174 @@
     </div>
   </div>
 </section>
+<!-- SÚGÓ -->
+<section id="tab-help" hidden>
+<div class="help" data-lang="hu" data-noi18n>
+  <div class="card">
+    <h2>Mi az IndyOps?</h2>
+    <p>Az IndyOps egy EVE Online gyártástervező, ami a böngésződben fut. Bejelentkezel a karaktereiddel, és az eszköz az ESI-ből látja a hangáraidat, blueprintjeidet, skilljeidet és jobjaidat. Ebből megmondja, mit érdemes gyártani, mi van már meg, mit kell venni, melyik karakter gyártsa, és mit hova kell vinni. Kézzel semmit nem kell bevinni.</p>
+    <p>Szerver nincs: minden adat a te böngésződben marad, az eszköz csak a CCP-hez és az EVE Ref receptadatbázisához kapcsolódik.</p>
+  </div>
+
+  <h3>Első lépések</h3>
+  <ol class="steps">
+    <li><b>Karakter hozzáadása</b> (Karakterek fül): átirányít az EVE bejelentkezéshez. Válaszd ki a karaktert, fogadd el az engedélyeket, és az oldal bejelentkezve visszavisz. Az altjaiddal ugyanígy.</li>
+    <li><b>Minden adat frissítése</b>: letölti az asseteket, blueprinteket, skilleket és jobokat. Nagy hangárnál ez fél percig is eltarthat. Később is ezzel frissítesz.</li>
+    <li><b>Beállítások</b>: pipáld ki, mely helyszínek készlete számítson, és ha struktúrában gyártasz, add meg a bónuszokat (pl. Raitaru: ME 1%, idő 15%, plusz a rigek).</li>
+    <li><b>Tervező</b>: kezdd el gépelni egy saját blueprinted nevét, add meg a runok számát, és nyomd meg a <b>Számolás</b> gombot.</li>
+  </ol>
+
+  <h3>A fülek</h3>
+  <dl class="helpdl">
+    <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között.</dd>
+    <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak.</dd>
+    <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze.</dd>
+    <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
+    <dt>Kutatás &amp; copy</dt><dd>BPO-nként a következő ME szint ideje és költsége, mennyit spórol runonként, mikor térül meg, plusz a copy ideje és a science slotjaid.</dd>
+    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is.</dd>
+    <dt>Vásárlás nélkül</dt><dd>Hány runt tudsz legyártani csak abból, ami megvan, és mi fogy el először.</dd>
+    <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően.</dd>
+    <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
+    <dt>Beállítások</dt><dd>Helyszínek, struktúra-bónuszok, adók, reprocess-hozam, mentés fájlba és visszatöltés.</dd>
+  </dl>
+
+  <h3>Hogyan számol?</h3>
+  <ul>
+    <li><b>Árak</b>: Jita 4-4, a legalacsonyabb sell ár (ha nincs, a legmagasabb buy). Fél óránként frissül.</li>
+    <li><b>Anyagmennyiség</b>: a játék szabálya szerint jobonként kerekít felfelé, a BP saját ME-jével és a struktúra-bónusszal.</li>
+    <li><b>Job cost</b>: becsült tárgyérték (EIV) × a rendszer cost indexe az ESI-ből, plusz a létesítmény adója és az SCC pótdíj.</li>
+    <li><b>Saját készlet</b>: alapból piaci áron számít, mert el is adhatnád. A Tervezőben ez kikapcsolható („saját készlet ingyen”).</li>
+    <li><b>Invention</b>: átlagos költség, vagyis a kísérletek ára osztva az eséllyel. Projektben a kísérletek száma felfelé kerekítve.</li>
+    <li><b>Szállítás</b>: durva becslés a highsec ugrások és a hajód raktere alapján. Csak a cargo holddal számol.</li>
+  </ul>
+
+  <h3>Adatvédelem és engedélyek</h3>
+  <p>Az IndyOps csak olvasási engedélyeket kér: assetek, blueprintek, skillek, industry jobok, struktúranevek, market orderek és (opcionálisan) wallet-tranzakciók. A wallet egyenlegét sosem olvassa. Minden a böngésződ helyi tárolójában marad. Az engedélyt bármikor visszavonhatod az EVE fiókkezelésben, a <i>Third Party Applications</i> résznél.</p>
+
+  <h3>Gyakori kérdések</h3>
+  <dl class="helpdl">
+    <dt>„Ismeretlen hely” látszik egy citadella helyett.</dt><dd>A struktúra nevét csak akkor adja ki az ESI, ha a karakterednek van dokkolási joga. Ha a struktúra megszűnt, a tárgyak asset safetyben lehetnek.</dd>
+    <dt>Bejelentkeztem, de nincs adat.</dt><dd>Nyomd meg a „Minden adat frissítése” gombot. Ha egy karakterkártya új engedélyt kér, jelentkezz be újra azzal a karakterrel.</dd>
+    <dt>Kicsit más számot mutat, mint a játék.</dt><dd>Nézd meg a Beállításokban a struktúra-bónuszokat és az adót. A cost index óránként változik, a piaci árak fél óránként frissülnek.</dd>
+    <dt>Másik gépen is használnám.</dt><dd>Beállítások → Mentés fájlba, és a másik gépen Visszatöltés fájlból. A bejelentkezéseket csak akkor mentsd, ha a fájlt biztonságos helyen tartod.</dd>
+    <dt>Megtelt a böngésző tárhelye.</dt><dd>Nagyon nagy hangároknál előfordulhat. Töröld a gyorsítótárakat a Beállításokban, vagy jelölj ki kevesebb helyszínt.</dd>
+    <dt>Offline, fájlból szeretném futtatni.</dt><dd>A GitHubról letölthető a <code>dist/indyops.html</code>. Ehhez saját alkalmazás kell a developers.eveonline.com-on, a részleteket a README írja le.</dd>
+  </dl>
+  <p>Hibát találtál, vagy van egy ötleted? A fejlécben a <b>Hiba jelentése</b> gomb kitölti a fontos adatokat, neked csak le kell írnod, mi történt.</p>
+</div>
+
+<div class="help" data-lang="en" data-noi18n hidden>
+  <div class="card">
+    <h2>What is IndyOps?</h2>
+    <p>IndyOps is an EVE Online industry planner that runs in your browser. You log in with your characters and it reads your hangars, blueprints, skills and jobs from ESI. From that it tells you what is worth building, what you already have, what to buy, which character should build it and what to haul where. No manual data entry.</p>
+    <p>There is no server: all data stays in your browser. The tool only talks to CCP and to the EVE Ref recipe database.</p>
+  </div>
+
+  <h3>Getting started</h3>
+  <ol class="steps">
+    <li><b>Add character</b> (Characters tab): you are sent to the EVE login. Pick the character, accept the permissions and you come back logged in. Repeat for your alts.</li>
+    <li><b>Refresh all data</b>: downloads assets, blueprints, skills and jobs. With a big hangar this can take half a minute. Use it again whenever you want fresh data.</li>
+    <li><b>Settings</b>: tick which locations' stock should count, and if you build in a structure, enter its bonuses (e.g. Raitaru: ME 1%, time 15%, plus rigs).</li>
+    <li><b>Planner</b>: start typing the name of one of your blueprints, set the number of runs and press <b>Calculate</b>.</li>
+  </ol>
+
+  <h3>The tabs</h3>
+  <dl class="helpdl">
+    <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it.</dd>
+    <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock.</dd>
+    <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together.</dd>
+    <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
+    <dt>Research &amp; copy</dt><dd>Per BPO: time and cost of the next ME level, how much it saves per run, when it pays off, plus copy time and your science slots.</dd>
+    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days.</dd>
+    <dt>No-buy builds</dt><dd>How many runs you can build from what you already have, and what runs out first.</dd>
+    <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters.</dd>
+    <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
+    <dt>Settings</dt><dd>Locations, structure bonuses, taxes, reprocessing yield, backup to file and restore.</dd>
+  </dl>
+
+  <h3>How does it calculate?</h3>
+  <ul>
+    <li><b>Prices</b>: Jita 4-4, lowest sell order (highest buy if there is none). Refreshed every half hour.</li>
+    <li><b>Material quantities</b>: rounded up per job as in the game, with the BP's own ME and the structure bonus.</li>
+    <li><b>Job cost</b>: estimated item value (EIV) × the system's cost index from ESI, plus facility tax and the SCC surcharge.</li>
+    <li><b>Own stock</b>: valued at market price by default, since you could sell it. In the Planner you can switch this off ("own stock is free").</li>
+    <li><b>Invention</b>: expected cost, i.e. the cost of the attempts divided by the chance. In projects the number of attempts is rounded up.</li>
+    <li><b>Hauling</b>: a rough estimate from highsec jumps and your ship's cargo hold. Only the cargo hold counts.</li>
+  </ul>
+
+  <h3>Privacy and permissions</h3>
+  <p>IndyOps only asks for read permissions: assets, blueprints, skills, industry jobs, structure names, market orders and (optionally) wallet transactions. It never reads your wallet balance. Everything stays in your browser's local storage. You can revoke access at any time in your EVE account management under <i>Third Party Applications</i>.</p>
+
+  <h3>FAQ</h3>
+  <dl class="helpdl">
+    <dt>I see "Unknown location" instead of a citadel.</dt><dd>ESI only returns a structure's name if your character has docking access. If the structure is gone, your items may be in asset safety.</dd>
+    <dt>I logged in but there is no data.</dt><dd>Press "Refresh all data". If a character card asks for a new permission, log in again with that character.</dd>
+    <dt>The numbers differ a bit from the game.</dt><dd>Check structure bonuses and taxes in Settings. Cost indices change hourly and market prices refresh every half hour.</dd>
+    <dt>I want to use it on another computer.</dt><dd>Settings → Save to file, then Restore from file on the other computer. Only include logins if you keep the file somewhere safe.</dd>
+    <dt>Browser storage is full.</dt><dd>This can happen with very large hangars. Clear the caches in Settings or select fewer locations.</dd>
+    <dt>I want to run it offline from a file.</dt><dd>Download <code>dist/indyops.html</code> from GitHub. You need your own application on developers.eveonline.com; the README explains how.</dd>
+  </dl>
+  <p>Found a bug or have an idea? The <b>Report a bug</b> button in the header fills in the important details; you only need to describe what happened.</p>
+</div>
+
+<div class="help" data-lang="de" data-noi18n hidden>
+  <div class="card">
+    <h2>Was ist IndyOps?</h2>
+    <p>IndyOps ist ein Industrieplaner für EVE Online, der in deinem Browser läuft. Du meldest dich mit deinen Charakteren an, und das Tool liest deine Hangars, Blueprints, Skills und Jobs aus ESI. Daraus zeigt es dir, was sich zu bauen lohnt, was schon vorhanden ist, was du kaufen musst, welcher Charakter es bauen sollte und was wohin transportiert werden muss. Ohne manuelle Eingaben.</p>
+    <p>Es gibt keinen Server: alle Daten bleiben in deinem Browser. Das Tool verbindet sich nur mit CCP und der Rezeptdatenbank von EVE Ref.</p>
+  </div>
+
+  <h3>Erste Schritte</h3>
+  <ol class="steps">
+    <li><b>Charakter hinzufügen</b> (Reiter Charaktere): du wirst zum EVE-Login weitergeleitet. Wähle den Charakter, bestätige die Berechtigungen und du kommst angemeldet zurück. Dasselbe für deine Alts.</li>
+    <li><b>Alle Daten aktualisieren</b>: lädt Assets, Blueprints, Skills und Jobs. Bei großen Hangars kann das eine halbe Minute dauern. Damit aktualisierst du auch später.</li>
+    <li><b>Einstellungen</b>: hake an, welche Orte im Bestand zählen, und trage bei Produktion in einer Struktur deren Boni ein (z. B. Raitaru: ME 1 %, Zeit 15 %, plus Rigs).</li>
+    <li><b>Planer</b>: tippe den Namen eines deiner Blueprints, gib die Anzahl Runs ein und drücke <b>Berechnen</b>.</li>
+  </ol>
+
+  <h3>Die Reiter</h3>
+  <dl class="helpdl">
+    <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen.</dd>
+    <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand.</dd>
+    <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen.</dd>
+    <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
+    <dt>Forschung &amp; Kopie</dt><dd>Pro BPO: Zeit und Kosten der nächsten ME-Stufe, Ersparnis pro Run, wann es sich lohnt, dazu Kopierzeit und deine Science-Slots.</dd>
+    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage.</dd>
+    <dt>Ohne Einkauf</dt><dd>Wie viele Runs du nur aus deinem Bestand bauen kannst und was zuerst ausgeht.</dd>
+    <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar.</dd>
+    <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
+    <dt>Einstellungen</dt><dd>Orte, Strukturboni, Steuern, Reprocessing-Ausbeute, Sicherung in eine Datei und Wiederherstellung.</dd>
+  </dl>
+
+  <h3>Wie wird gerechnet?</h3>
+  <ul>
+    <li><b>Preise</b>: Jita 4-4, niedrigste Verkaufsorder (falls keine, höchste Kauforder). Alle 30 Minuten aktualisiert.</li>
+    <li><b>Materialmengen</b>: wie im Spiel pro Job aufgerundet, mit dem ME des jeweiligen BPs und dem Strukturbonus.</li>
+    <li><b>Jobkosten</b>: geschätzter Gegenstandswert (EIV) × Kostenindex des Systems aus ESI, plus Anlagensteuer und SCC-Zuschlag.</li>
+    <li><b>Eigener Bestand</b>: standardmäßig zum Marktpreis bewertet, denn du könntest ihn verkaufen. Im Planer abschaltbar („eigener Bestand kostenlos“).</li>
+    <li><b>Invention</b>: Erwartungswert, also Kosten der Versuche geteilt durch die Chance. In Projekten wird die Zahl der Versuche aufgerundet.</li>
+    <li><b>Transport</b>: grobe Schätzung aus Highsec-Sprüngen und dem Frachtraum deines Schiffs. Nur der Frachtraum zählt.</li>
+  </ul>
+
+  <h3>Datenschutz und Berechtigungen</h3>
+  <p>IndyOps fragt nur Leseberechtigungen an: Assets, Blueprints, Skills, Industry-Jobs, Strukturnamen, Marktorders und (optional) Wallet-Transaktionen. Den Kontostand liest es nie. Alles bleibt im lokalen Speicher deines Browsers. Du kannst den Zugriff jederzeit in der EVE-Accountverwaltung unter <i>Third Party Applications</i> widerrufen.</p>
+
+  <h3>Häufige Fragen</h3>
+  <dl class="helpdl">
+    <dt>Statt einer Citadel steht „Unbekannter Ort“ da.</dt><dd>ESI liefert den Namen einer Struktur nur, wenn dein Charakter Andockrechte hat. Wenn die Struktur weg ist, liegen deine Sachen eventuell in Asset Safety.</dd>
+    <dt>Ich bin angemeldet, sehe aber keine Daten.</dt><dd>Drücke „Alle Daten aktualisieren“. Wenn eine Charakterkarte eine neue Berechtigung verlangt, melde dich mit diesem Charakter erneut an.</dd>
+    <dt>Die Zahlen weichen leicht vom Spiel ab.</dt><dd>Prüfe Strukturboni und Steuern in den Einstellungen. Kostenindizes ändern sich stündlich, Marktpreise werden alle 30 Minuten aktualisiert.</dd>
+    <dt>Ich möchte es auf einem anderen Rechner nutzen.</dt><dd>Einstellungen → In Datei sichern, dann auf dem anderen Rechner Aus Datei wiederherstellen. Anmeldungen nur mitsichern, wenn du die Datei sicher aufbewahrst.</dd>
+    <dt>Der Browserspeicher ist voll.</dt><dd>Kann bei sehr großen Hangars passieren. Leere die Caches in den Einstellungen oder wähle weniger Orte aus.</dd>
+    <dt>Ich möchte es offline aus einer Datei nutzen.</dt><dd>Lade <code>dist/indyops.html</code> von GitHub herunter. Dafür brauchst du eine eigene Anwendung auf developers.eveonline.com; die README erklärt wie.</dd>
+  </dl>
+  <p>Einen Fehler gefunden oder eine Idee? Der Button <b>Fehler melden</b> oben füllt die wichtigen Angaben aus, du musst nur beschreiben, was passiert ist.</p>
+</div>
+</section>
+
 </main>
 <footer class="foot"><div class="fwrap">
-  <p><b data-noi18n>IndyOps</b> <span class="mono" id="appVer" data-noi18n></span> · <span>készítette</span> <span data-noi18n>SajT <i class="motto">(“Temporary solution since a while.”)</i></span> · <span>MIT licenc</span> · <a id="srcLink" href="#" target="_blank" rel="noopener">Forráskód és hibajelentés a GitHubon</a> · <span>Receptadatok:</span> <a href="https://everef.net" target="_blank" rel="noopener" data-noi18n>EVE Ref</a> · <span>Játékadatok:</span> <a href="https://esi.evetech.net" target="_blank" rel="noopener" data-noi18n>ESI</a></p>
+  <p><b data-noi18n>IndyOps</b> <span class="mono" id="appVer" data-noi18n></span> · <span>készítette</span> <span data-noi18n>SajT <i class="motto">(“Temporary solution since a while.”)</i></span> · <span>MIT licenc</span> · <a href="#" data-goto="help">Súgó</a> · <a id="srcLink" href="#" target="_blank" rel="noopener">Forráskód és hibajelentés a GitHubon</a> · <span>Receptadatok:</span> <a href="https://everef.net" target="_blank" rel="noopener" data-noi18n>EVE Ref</a> · <span>Játékadatok:</span> <a href="https://esi.evetech.net" target="_blank" rel="noopener" data-noi18n>ESI</a></p>
   <p>Az IndyOps rajongói eszköz, a CCP hf.-nek nincs köze hozzá, és nem is támogatja. Adatot nem gyűjt: minden a te böngésződben marad.</p>
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>

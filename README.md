@@ -4,7 +4,7 @@
 
 IndyOps reads your characters' assets, blueprints, skills and jobs through ESI and turns them into a production plan: what to build, what you already have, what to buy, which character should build it, and where to haul it.
 
-**Open it:** https://sajt42.github.io/indyops/
+**Open it:** https://sajt42.github.io/indyops/ · new here? Open the **Help** tab in the app.
 
 [Magyar leírás lent](#magyarul)
 
@@ -89,7 +89,7 @@ Code: [MIT License](LICENSE) © 2026 SajT – *Temporary solution since a while.
 
 Az IndyOps az ESI-n keresztül olvassa a karaktereid asseteit, blueprintjeit, skilljeit és jobjait, és gyártási tervet készít belőlük: mit érdemes gyártani, mi van már meg, mit kell venni, melyik karakter gyártsa, és mit hova kell vinni.
 
-**Megnyitás:** https://sajt42.github.io/indyops/
+**Megnyitás:** https://sajt42.github.io/indyops/ · új vagy? Az oldalon a **Súgó** fül mindent elmagyaráz.
 
 - **Több karakter, több helyszín**, a teljes anyagfa saját BP-kkel, példányonkénti ME/TE-vel.
 - **Projektek** közös készletből, sorrendben; a futó jobok termékei beszámítanak.
