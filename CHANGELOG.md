@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0 – 2026-11-09
+
+- New Reprocess tab: everything reprocessable in your stock (ore, ice, modules, loot), what comes out and who gets the best yield
+- Per-location yield: NPC station or Upwell structure (Athanor, Tatara), rig, system security, tax
+- Per-character skills and implant; select items one by one or all; sell vs. reprocess comparison; coverage of the latest plan's shortfall
+- Mining: the implant set per character is used there too
+
 ## 1.0.5 – 2026-11-09
 
 - Help and README: questions go to GitHub Discussions

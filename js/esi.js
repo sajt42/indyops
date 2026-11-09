@@ -119,7 +119,7 @@ async function resolveLoc(locId,char){
     if(locId>=60000000&&locId<64000000){const s=await esi('/universe/stations/'+locId+'/');info={name:s.name,system:s.system_id}}
     else if(locId>=30000000&&locId<33000000){await resolveNames([locId]);info={name:(NAMES[locId]||locId)+' (űrben)',system:locId}}
     else if(locId>1e12){
-      for(const c of (char?[char]:[]).concat(CHARS)){try{const s=await esi('/universe/structures/'+locId+'/',{char:c});info={name:s.name,system:s.solar_system_id};break}catch(e){}}
+      for(const c of (char?[char]:[]).concat(CHARS)){try{const s=await esi('/universe/structures/'+locId+'/',{char:c});info={name:s.name,system:s.solar_system_id,stype:s.type_id||0};break}catch(e){}}
     }
   }catch(e){log('Hely feloldása sikertelen: '+locId)}
   LOCINFO[locId]=info;store('locinfo',LOCINFO);return info;

@@ -22,6 +22,7 @@ IndyOps reads your characters' assets, blueprints, skills and jobs through ESI a
 - **Selling**: your market orders, who undercut you and the suggested new price; optional 30-day sales from wallet transactions.
 - **Hauling**: what goes from where to where, packaged m³, jumps, and which of your ships (with your skills) can carry it in how many trips.
 - **Mining**: paste a survey scan; yields per character from your reprocessing skills, coverage of your plan's mineral shortfall.
+- **Reprocess**: everything reprocessable in your stock (ore, ice, modules, loot) with per-character skills and implants and per-location yield (NPC station or Upwell structure, rigs, security, tax); select some or all, compare selling as is vs. reprocessing.
 - **Build or buy**: per component, the unit price built yourself vs. Jita.
 - **Languages**: English, Deutsch, Magyar.
 
@@ -58,6 +59,7 @@ js/data.js          aggregated stock/blueprints, prices, ore reprocessing
 js/engine.js        production engine: trees, BPC runs, invention, cost, time
 js/views.js         rendering: characters, blueprints, stock, plans, hauling
 js/tabs.js          projects, profit, invention, research, selling, mining
+js/repro.js         reprocess calculator (stock, skills, location yield)
 js/main.js          event wiring, backup/restore, bug report, start-up
 i18n/en.js, de.js   translations (keys are the Hungarian source strings)
 tools/bundle.mjs    builds the single-file dist/indyops.html
@@ -104,7 +106,7 @@ Az IndyOps az ESI-n keresztül olvassa a karaktereid asseteit, blueprintjeit, sk
 - **Projektek** közös készletből, sorrendben; a futó jobok termékei beszámítanak.
 - **Ki gyártsa**: skillek, idő és szabad slotok alapján, BP-átadási javaslattal.
 - **Mit érdemes?**: profit/run, margó, profit/óra, napi forgalom.
-- **Invention**, **kutatás & copy**, **eladás** (alá-ígérés figyelés), **szállítás** saját hajókkal, **bányászat** survey scanből.
+- **Invention**, **kutatás & copy**, **eladás** (alá-ígérés figyelés), **szállítás** saját hajókkal, **bányászat** survey scanből, **reprocess** a készletből (érc, ice, modul, loot) skillekkel és helyszínenkénti hozammal.
 - **Nyelvek**: angol, német, magyar.
 
 **Adatkezelés:** nincs szerver és nincs követés. Minden a te böngésződben marad, az eszköz csak a CCP-hez (bejelentkezés, ESI) és az EVE Refhez kapcsolódik. Csak olvasási jogot kér, a wallet egyenlegét sosem olvassa.

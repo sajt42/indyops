@@ -2,7 +2,7 @@
 "use strict";
 /* ============ események ============ */
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(!b)return;showTab(b.dataset.tab)});
-function showTab(t){$$('#tabs button').forEach(x=>x.setAttribute('aria-selected',x.dataset.tab===t));$$('main>section').forEach(s=>s.hidden=s.id!=='tab-'+t);if(t==='mine')renderMineNeed()}
+function showTab(t){$$('#tabs button').forEach(x=>x.setAttribute('aria-selected',x.dataset.tab===t));$$('main>section').forEach(s=>s.hidden=s.id!=='tab-'+t);if(t==='mine')renderMineNeed();if(t==='repro')renderRepro()}
 document.addEventListener('click',e=>{const a=e.target.closest('[data-goto]');if(a){e.preventDefault();showTab(a.dataset.goto)}});
 $('#saveClientId').onclick=()=>{S.clientId=$('#clientIdInput').value.trim();saveS();renderAll()};
 $('#addChar').onclick=startLogin;$('#cbSubmit').onclick=finishLogin;$('#cbCancel').onclick=()=>$('#loginPaste').hidden=true;

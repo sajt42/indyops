@@ -7,7 +7,7 @@
 <title>IndyOps</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.0.5">
+<link rel="stylesheet" href="css/style.css?v=1.1.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -24,6 +24,7 @@
     <button role="tab" data-tab="bps">Blueprintek</button>
     <button role="tab" data-tab="stock">Készlet</button>
     <button role="tab" data-tab="mine">Bányászat</button>
+    <button role="tab" data-tab="repro">Reprocess</button>
     <button role="tab" data-tab="settings">Beállítások</button>
     <button role="tab" data-tab="help">Súgó</button>
   </nav>
@@ -246,6 +247,40 @@
   <div id="scanOut" style="margin-top:16px"></div>
 </section>
 
+<section id="tab-repro" hidden>
+  <div class="grid2">
+    <div class="card">
+      <h2>Reprocess</h2>
+      <p>Mi jön ki a készletedből, ha reprocesszálod: érc, ice, modulok és loot, a karakterek skilljeivel és a helyszínek hozamával. Jelöld ki, amit szét akarsz szedni, és alul összesíti.</p>
+      <div class="row" style="margin-top:8px">
+        <button class="btn primary" id="repLoad">Készlet beolvasása</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Skillek és implant</h2>
+      <div id="repChars"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2>Helyszínek</h2>
+    <div id="repLocs"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2>Tételek</h2>
+    <div class="row" style="margin-bottom:8px">
+      <label>Helyszín <select id="repLoc"><option value="">minden helyszín</option></select></label>
+      <label>Fajta <select id="repCat"><option value="">mind</option><option value="ore">érc és ice</option><option value="loot">modulok és loot</option></select></label>
+      <label>Keresés <input id="repQ" type="search" placeholder="név"></label>
+      <label class="inline"><input type="checkbox" id="repBetter"> csak ami reprocesszálva ér többet</label>
+    </div>
+    <div id="repOut"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2>Kijelölt tételek</h2>
+    <div id="repSum"></div>
+  </div>
+</section>
+
 <!-- BEÁLLÍTÁSOK -->
 <section id="tab-settings" hidden>
   <div class="grid2">
@@ -340,6 +375,7 @@
     <dt>Vásárlás nélkül</dt><dd>Hány runt tudsz legyártani csak abból, ami megvan, és mi fogy el először.</dd>
     <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
+    <dt>Reprocess</dt><dd>Végignézi a készletet, és kilistázza, mi reprocesszálható belőle (érc, ice, modulok, loot): mennyi anyag jön ki, melyik karakterrel a legjobb a hozam, és egyben eladva vagy szétszedve ér-e többet. Helyszínenként számol: NPC állomás vagy Upwell struktúra (Athanor, Tatara), rig, a rendszer biztonsága és az adó. Kijelölhetsz egyenként vagy mindet, és összesíti, mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Beállítások</dt><dd>Helyszínek, struktúra-bónuszok, adók, reprocess-hozam, mentés fájlba és visszatöltés.</dd>
   </dl>
 
@@ -400,6 +436,7 @@
     <dt>No-buy builds</dt><dd>How many runs you can build from what you already have, and what runs out first.</dd>
     <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
+    <dt>Reprocess</dt><dd>Goes through your stock and lists what can be reprocessed (ore, ice, modules, loot): how much comes out, which character gets the best yield, and whether it's worth more sold as is or broken down. Each location counts separately: NPC station or Upwell structure (Athanor, Tatara), rig, system security and tax. Select items one by one or all at once, and it sums up how much of your latest plan's shortfall they cover.</dd>
     <dt>Settings</dt><dd>Locations, structure bonuses, taxes, reprocessing yield, backup to file and restore.</dd>
   </dl>
 
@@ -460,6 +497,7 @@
     <dt>Ohne Einkauf</dt><dd>Wie viele Runs du nur aus deinem Bestand bauen kannst und was zuerst ausgeht.</dd>
     <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
+    <dt>Reprocess</dt><dd>Geht deinen Bestand durch und listet auf, was sich reprocessen lässt (Erz, Eis, Module, Loot): wie viel herauskommt, welcher Charakter die beste Ausbeute hat und ob es am Stück oder zerlegt mehr wert ist. Jeder Ort zählt einzeln: NPC-Station oder Upwell-Struktur (Athanor, Tatara), Rig, Systemsicherheit und Steuer. Wähle einzeln oder alles aus, dann wird zusammengefasst, wie viel vom Bedarf deines letzten Plans gedeckt ist.</dd>
     <dt>Einstellungen</dt><dd>Orte, Strukturboni, Steuern, Reprocessing-Ausbeute, Sicherung in eine Datei und Wiederherstellung.</dd>
   </dl>
 
@@ -502,14 +540,15 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.0.5"></script>
-<script src="i18n/de.js?v=1.0.5"></script>
-<script src="js/core.js?v=1.0.5"></script>
-<script src="js/esi.js?v=1.0.5"></script>
-<script src="js/data.js?v=1.0.5"></script>
-<script src="js/engine.js?v=1.0.5"></script>
-<script src="js/views.js?v=1.0.5"></script>
-<script src="js/tabs.js?v=1.0.5"></script>
-<script src="js/main.js?v=1.0.5"></script>
+<script src="i18n/en.js?v=1.1.0"></script>
+<script src="i18n/de.js?v=1.1.0"></script>
+<script src="js/core.js?v=1.1.0"></script>
+<script src="js/esi.js?v=1.1.0"></script>
+<script src="js/data.js?v=1.1.0"></script>
+<script src="js/engine.js?v=1.1.0"></script>
+<script src="js/views.js?v=1.1.0"></script>
+<script src="js/tabs.js?v=1.1.0"></script>
+<script src="js/repro.js?v=1.1.0"></script>
+<script src="js/main.js?v=1.1.0"></script>
 </body>
 </html>

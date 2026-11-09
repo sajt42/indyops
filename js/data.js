@@ -51,7 +51,7 @@ async function ensureOres(){
   ORES=ids;store('ores',ORES);status('kész');return ORES;
 }
 function oreYieldFor(cid,rsSkill){
-  return (Number(S.yieldBase)/100)*(1+0.03*lvlOf(cid,SK.repro))*(1+0.02*lvlOf(cid,SK.reproEff))*(1+0.02*(rsSkill?lvlOf(cid,rsSkill):0))*(1+Number(S.implant||0)/100);
+  return (Number(S.yieldBase)/100)*(1+0.03*lvlOf(cid,SK.repro))*(1+0.02*lvlOf(cid,SK.reproEff))*(1+0.02*(rsSkill?lvlOf(cid,rsSkill):0))*(1+impOf(cid)/100);
 }
 function bestRepro(rsSkill){ // melyik karakter reprocesszálja ezt a fajtát a legjobb hozammal
   let who=null,y=-1;for(const c of CHARS){if(!DATA[c.id])continue;const v=oreYieldFor(c.id,rsSkill);if(v>y){y=v;who=c.id}}
