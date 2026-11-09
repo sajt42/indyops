@@ -45,11 +45,12 @@ const unitPrice2=t=>sell2(t)??buy2(t)??0;
 
 /* ============ árak ============ */
 async function ensurePrices(typeIds){
-  const now=Date.now();const m2=m2On()?Number(S.market2):null;const reg2=m2?await regionOf(m2):null;PRICES.p2=PRICES.p2||{};
+  const now=Date.now();const m2=m2On()?Number(S.market2):null;const isStr=m2&&m2>1e12;const reg2=m2&&!isStr?await regionOf(m2):null;PRICES.p2=PRICES.p2||{};
   const stale=(x,loc)=>!x||now-x.at>30*60000||(loc!=null&&x.loc!==loc);
   const all=[...new Set(typeIds)];const need=all.filter(t=>stale(PRICES.p[t])||(m2&&reg2===JITA_REGION&&stale(PRICES.p2[t],m2)));
   const need2=m2&&reg2&&reg2!==JITA_REGION?all.filter(t=>stale(PRICES.p2[t],m2)):[];
   const best=(o,loc)=>{let s=Infinity,b=0;for(const x of o){if(x.location_id!==loc)continue;if(x.is_buy_order){if(x.price>b)b=x.price}else if(x.price<s)s=x.price}return {s:s===Infinity?null:s,b:b||null,at:now,loc}};
+  if(isStr){const n2=all.filter(t=>stale(PRICES.p2[t],m2));if(n2.length){const bk=await structBook(m2);for(const t of n2){const x=bk&&bk.m.get(t);PRICES.p2[t]={s:x&&x.s<Infinity?x.s:null,b:x&&x.b||null,at:bk?bk.at:now,loc:m2}}}}
   status('árak: '+(need.length+need2.length)+' tétel…');
   await Promise.all(need.map(async t=>{
     try{const o=await esi('/markets/'+JITA_REGION+'/orders/?type_id='+t+'&order_type=all',{paged:true});
@@ -88,3 +89,14 @@ async function oreToMinerals(typeId,units,cid){
   const out=t.tm.map(([m,q])=>[m,Math.floor(portions*q*b.y)]);out.who=b.who;out.y=b.y;out.rs=t.rs;return out;
 }
 function m2Cell(jita,v,buying){if(v==null||!v)return '–';const better=jita?(buying?v<jita:v>jita):false;const d=jita?(v/jita-1)*100:null;return `<span class="${better?'pos':''}">${isk(v)}</span>${d!=null?`<div class="small muted">${d>0?'+':''}${fmt(d,1)}%</div>`:''}`}
+// játékos-struktúra teljes piaca egyszerre (esi-markets.structure_markets.v1, dokkolási jog kell), 30 percig tárolva
+let STRBOOK=null;
+async function structBook(id){
+  if(STRBOOK&&STRBOOK.id===id&&Date.now()-STRBOOK.at<30*60000)return STRBOOK;
+  const cs=CHARS.filter(c=>hasScope(c,'esi-markets.structure_markets.v1'));
+  if(!cs.length){log('Struktúra piac: egyik karakternek sincs meg az engedély, jelentkezz be újra.');return null}
+  for(const c of cs){try{status(T('{0} piaca…',m2Short()));const o=await esi('/markets/structures/'+id+'/',{char:c,paged:true});const m=new Map();
+    for(const x of o){let r=m.get(x.type_id);if(!r){r={s:Infinity,b:0};m.set(x.type_id,r)}if(x.is_buy_order){if(x.price>r.b)r.b=x.price}else if(x.price<r.s)r.s=x.price}
+    STRBOOK={id,at:Date.now(),m};log(T('{0} piaca: {1} order',m2Short(),fmt(o.length)));return STRBOOK}catch(e){log('Struktúra piac ('+c.name+'): '+e.message)}}
+  alertBox(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));return null;
+}

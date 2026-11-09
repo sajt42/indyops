@@ -149,10 +149,11 @@ async function refreshChar(c){
     const B=bps.map(b=>({i:b.item_id,t:b.type_id,me:b.material_efficiency,te:b.time_efficiency,r:b.runs,q:b.quantity,l:root(b.location_id),cn:contNames[b.location_id]||null}));
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
-    let O=[],TX=[];
+    let O=[],TX=[],IMP=null;
+    if(hasScope(c,'esi-clones.read_implants.v1')){try{IMP=await esi('/characters/'+c.id+'/implants/',{char:c});await resolveNames(IMP)}catch(e){log('Implantok: '+e.message)}}
     if(hasScope(c,'esi-markets.read_character_orders.v1')){try{O=(await esi('/characters/'+c.id+'/orders/',{char:c})).map(o=>({id:o.order_id,t:o.type_id,l:o.location_id,reg:o.region_id,p:o.price,rem:o.volume_remain,tot:o.volume_total,buy:!!o.is_buy_order,iss:o.issued,dur:o.duration}))}catch(e){log('Orderek: '+e.message)}}
     if(S.wallet&&hasScope(c,WALLET_SCOPE)){try{const lim=Date.now()-30*86400000;TX=(await esi('/characters/'+c.id+'/wallet/transactions/',{char:c})).filter(x=>new Date(x.date).getTime()>=lim).map(x=>({d:x.date,t:x.type_id,q:x.quantity,p:x.unit_price,buy:x.is_buy,l:x.location_id}))}catch(e){log('Wallet: '+e.message)}}
-    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,at:Date.now()};
+    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,at:Date.now()};
     await resolveNames(O.map(o=>o.t).concat(TX.map(x=>x.t)));for(const l of new Set(O.map(o=>o.l)))await resolveLoc(l,c);
     await resolveNames(A.map(a=>a.t).concat(B.map(b=>b.t),J.map(j=>j.bp)));
     const locs=[...new Set(A.map(a=>a.l).concat(B.map(b=>b.l),J.map(j=>j.loc)))];

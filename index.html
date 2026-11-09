@@ -7,7 +7,7 @@
 <title>IndyOps</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.2.0">
+<link rel="stylesheet" href="css/style.css?v=1.3.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -312,7 +312,7 @@
       <div class="row" style="margin-top:8px">
         <label>Második piac a Jita mellé <select id="sMarket2"></select></label>
       </div>
-      <p class="small muted" style="margin-top:6px">A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot vagy olyan NPC állomást, ahol van cuccod. Játékos-struktúrák piaca ehhez külön engedélyt kérne, ezért most nem választható.</p>
+      <p class="small muted" style="margin-top:6px">A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.</p>
       <div class="row" style="margin-top:8px">
         <label>Melyik karakter skilljeivel számoljon <select id="sSkillChar"></select></label>
       </div>
@@ -395,7 +395,7 @@
   </ul>
 
   <h3>Adatvédelem és engedélyek</h3>
-  <p>Az IndyOps csak olvasási engedélyeket kér: assetek, blueprintek, skillek, industry jobok, struktúranevek, market orderek és (opcionálisan) wallet-tranzakciók. A wallet egyenlegét sosem olvassa. Minden a böngésződ helyi tárolójában marad. Az engedélyt bármikor visszavonhatod az EVE fiókkezelésben, a <i>Third Party Applications</i> résznél.</p>
+  <p>Az IndyOps csak olvasási engedélyeket kér: assetek, blueprintek, skillek, industry jobok, struktúranevek, market orderek, az aktív klón implantjai, a struktúrák piaca és (opcionálisan) wallet-tranzakciók. A wallet egyenlegét sosem olvassa. Minden a böngésződ helyi tárolójában marad. Az engedélyt bármikor visszavonhatod az EVE fiókkezelésben, a <i>Third Party Applications</i> résznél.</p>
 
   <h3>Gyakori kérdések</h3>
   <dl class="helpdl">
@@ -456,7 +456,7 @@
   </ul>
 
   <h3>Privacy and permissions</h3>
-  <p>IndyOps only asks for read permissions: assets, blueprints, skills, industry jobs, structure names, market orders and (optionally) wallet transactions. It never reads your wallet balance. Everything stays in your browser's local storage. You can revoke access at any time in your EVE account management under <i>Third Party Applications</i>.</p>
+  <p>IndyOps only asks for read permissions: assets, blueprints, skills, industry jobs, structure names, market orders, your active clone's implants, structure markets and (optionally) wallet transactions. It never reads your wallet balance. Everything stays in your browser's local storage. You can revoke access at any time in your EVE account management under <i>Third Party Applications</i>.</p>
 
   <h3>FAQ</h3>
   <dl class="helpdl">
@@ -517,7 +517,7 @@
   </ul>
 
   <h3>Datenschutz und Berechtigungen</h3>
-  <p>IndyOps fragt nur Leseberechtigungen an: Assets, Blueprints, Skills, Industry-Jobs, Strukturnamen, Marktorders und (optional) Wallet-Transaktionen. Den Kontostand liest es nie. Alles bleibt im lokalen Speicher deines Browsers. Du kannst den Zugriff jederzeit in der EVE-Accountverwaltung unter <i>Third Party Applications</i> widerrufen.</p>
+  <p>IndyOps fragt nur Leseberechtigungen an: Assets, Blueprints, Skills, Industry-Jobs, Strukturnamen, Marktorders, die Implantate des aktiven Klons, Strukturmärkte und (optional) Wallet-Transaktionen. Den Kontostand liest es nie. Alles bleibt im lokalen Speicher deines Browsers. Du kannst den Zugriff jederzeit in der EVE-Accountverwaltung unter <i>Third Party Applications</i> widerrufen.</p>
 
   <h3>Häufige Fragen</h3>
   <dl class="helpdl">
@@ -545,15 +545,15 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.2.0"></script>
-<script src="i18n/de.js?v=1.2.0"></script>
-<script src="js/core.js?v=1.2.0"></script>
-<script src="js/esi.js?v=1.2.0"></script>
-<script src="js/data.js?v=1.2.0"></script>
-<script src="js/engine.js?v=1.2.0"></script>
-<script src="js/views.js?v=1.2.0"></script>
-<script src="js/tabs.js?v=1.2.0"></script>
-<script src="js/repro.js?v=1.2.0"></script>
-<script src="js/main.js?v=1.2.0"></script>
+<script src="i18n/en.js?v=1.3.0"></script>
+<script src="i18n/de.js?v=1.3.0"></script>
+<script src="js/core.js?v=1.3.0"></script>
+<script src="js/esi.js?v=1.3.0"></script>
+<script src="js/data.js?v=1.3.0"></script>
+<script src="js/engine.js?v=1.3.0"></script>
+<script src="js/views.js?v=1.3.0"></script>
+<script src="js/tabs.js?v=1.3.0"></script>
+<script src="js/repro.js?v=1.3.0"></script>
+<script src="js/main.js?v=1.3.0"></script>
 </body>
 </html>

@@ -9,7 +9,9 @@ let REPLOG=[];
 function repLog(m){const el=$('#repLog');if(!el)return;el.hidden=false;REPLOG.push(new Date().toLocaleTimeString(LOC())+'  '+m);if(REPLOG.length>300)REPLOG=REPLOG.slice(-300);
   const atEnd=el.scrollTop+el.clientHeight>=el.scrollHeight-20;el.textContent=REPLOG.join('\n');if(atEnd)el.scrollTop=el.scrollHeight}
 function repCfg(){if(!S.repro)S.repro={};const c=S.repro;c.loc=c.loc||{};c.imp=c.imp||{};if(c.char==null)c.char='';return c}
-function impOf(cid){const v=repCfg().imp[cid];return v!=null&&v!==''?Number(v):Number(S.implant||0)}
+// reprocess implant az ESI-ből (Zainou 'Beancounter' Reprocessing RX-801/802/804 = 1/2/4%); null, ha nincs meg az engedély
+function impAuto(cid){const d=DATA[cid];if(!d||!Array.isArray(d.imp))return null;let v=0;for(const t of d.imp){const m=/Beancounter.{0,3} Reprocessing RX-80(\d)/i.exec(NAMES[t]||'');if(m)v=Math.max(v,{1:1,2:2,4:4}[m[1]]||0)}return v}
+function impOf(cid){const v=repCfg().imp[cid];if(v!=null&&v!==''&&v!=='auto')return Number(v);const a=impAuto(cid);return a!=null?a:Number(S.implant||0)}
 function locKind(l){l=Number(l);return l>=60000000&&l<64000000?'npc':l>1e12?'struct':'none'}
 function secMod(sys){if(!sys)return 0;if(sys>=31000000&&sys<32000000)return 0.12;const s=SYSSEC[sys];if(s==null)return 0;return s>=0.45?0:s>0?0.06:0.12}
 function locStats(l){
@@ -124,9 +126,9 @@ function renderRepChars(){
   const el=$('#repChars');if(!el)return;const cs=CHARS.filter(c=>DATA[c.id]);
   if(!cs.length){el.innerHTML='<p class="muted">Még nincs karakter.</p>';return}
   const cfg=repCfg();const imps=[[0,'nincs'],[1,'RX-801 (1%)'],[2,'RX-802 (2%)'],[4,'RX-804 (4%)']];
-  el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs.map(c=>`<tr><td>${esc(c.name)}</td><td class="num">${lvlOf(c.id,SK.repro)}</td><td class="num">${lvlOf(c.id,SK.reproEff)}</td><td class="num">${lvlOf(c.id,SCRAP)}</td><td><select data-imp="${c.id}">${imps.map(([v,n])=>`<option value="${v}" ${impOf(c.id)===v?'selected':''}>${n}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>
+  el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs.map(c=>`<tr><td>${esc(c.name)}</td><td class="num">${lvlOf(c.id,SK.repro)}</td><td class="num">${lvlOf(c.id,SK.reproEff)}</td><td class="num">${lvlOf(c.id,SCRAP)}</td><td>${(()=>{const man=cfg.imp[c.id];const isMan=man!=null&&man!==''&&man!=='auto';const a=impAuto(c.id);const an=a==null?T('nem ismert'):(imps.find(x=>x[0]===a)||[0,a+'%'])[1];return `<select data-imp="${c.id}"><option value="auto" ${isMan?'':'selected'}>${esc(T('ESI szerint: {0}',an))}</option>${imps.map(([v,n])=>`<option value="${v}" ${isMan&&Number(man)===v?'selected':''}>${n}</option>`).join('')}</select>${a==null?`<div class="small muted">${T('Jelentkezz be újra, hogy az implant automatikus legyen.')}</div>`:''}`})()}</td></tr>`).join('')}</tbody></table></div>
   <div class="row" style="margin-top:8px"><label>Ki reprocesszál <select id="repWho"><option value="">a legjobb hozamú karakter</option>${cs.map(c=>`<option value="${c.id}" ${String(cfg.char)===String(c.id)?'selected':''}>${esc(c.name)}</option>`).join('')}</select></label></div>
-  <p class="small muted" style="margin-top:6px">Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI nem adja ki ezzel az engedéllyel, ezért itt kell beállítani. Modulra és lootra csak a Scrapmetal Processing hat.</p>`;
+  <p class="small muted" style="margin-top:6px">Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.</p>`;
 }
 function renderRepLocs(locs){
   const el=$('#repLocs');const cs=repChars();
@@ -180,7 +182,7 @@ function renderRepSum(){
     if(t.dataset.rk){t.checked?REP.sel.add(t.dataset.rk):REP.sel.delete(t.dataset.rk);renderRepSum();
       const all=$('#repAll');if(all){const bs=[...tab.querySelectorAll('[data-rk]')];all.checked=bs.length&&bs.every(b=>b.checked)}}
     else if(t.id==='repAll'){tab.querySelectorAll('[data-rk]').forEach(b=>{b.checked=t.checked;t.checked?REP.sel.add(b.dataset.rk):REP.sel.delete(b.dataset.rk)});renderRepSum()}
-    else if(t.dataset.imp){cfg.imp[t.dataset.imp]=Number(t.value);save()}
+    else if(t.dataset.imp){if(t.value==='auto')delete cfg.imp[t.dataset.imp];else cfg.imp[t.dataset.imp]=Number(t.value);save()}
     else if(t.id==='repWho'){cfg.char=t.value;save()}
     else if(t.dataset.rig){(cfg.loc[t.dataset.rig]=cfg.loc[t.dataset.rig]||{}).rig=Number(t.value);save()}
     else if(t.dataset.tax!=null&&t.dataset.tax!==''){(cfg.loc[t.dataset.tax]=cfg.loc[t.dataset.tax]||{}).tax=t.value;save()}

@@ -417,7 +417,7 @@ button.btn.mini{padding:2px 7px;font-size:11px}
       <div class="row" style="margin-top:8px">
         <label>Második piac a Jita mellé <select id="sMarket2"></select></label>
       </div>
-      <p class="small muted" style="margin-top:6px">A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot vagy olyan NPC állomást, ahol van cuccod. Játékos-struktúrák piaca ehhez külön engedélyt kérne, ezért most nem választható.</p>
+      <p class="small muted" style="margin-top:6px">A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.</p>
       <div class="row" style="margin-top:8px">
         <label>Melyik karakter skilljeivel számoljon <select id="sSkillChar"></select></label>
       </div>
@@ -500,7 +500,7 @@ button.btn.mini{padding:2px 7px;font-size:11px}
   </ul>
 
   <h3>Adatvédelem és engedélyek</h3>
-  <p>Az IndyOps csak olvasási engedélyeket kér: assetek, blueprintek, skillek, industry jobok, struktúranevek, market orderek és (opcionálisan) wallet-tranzakciók. A wallet egyenlegét sosem olvassa. Minden a böngésződ helyi tárolójában marad. Az engedélyt bármikor visszavonhatod az EVE fiókkezelésben, a <i>Third Party Applications</i> résznél.</p>
+  <p>Az IndyOps csak olvasási engedélyeket kér: assetek, blueprintek, skillek, industry jobok, struktúranevek, market orderek, az aktív klón implantjai, a struktúrák piaca és (opcionálisan) wallet-tranzakciók. A wallet egyenlegét sosem olvassa. Minden a böngésződ helyi tárolójában marad. Az engedélyt bármikor visszavonhatod az EVE fiókkezelésben, a <i>Third Party Applications</i> résznél.</p>
 
   <h3>Gyakori kérdések</h3>
   <dl class="helpdl">
@@ -561,7 +561,7 @@ button.btn.mini{padding:2px 7px;font-size:11px}
   </ul>
 
   <h3>Privacy and permissions</h3>
-  <p>IndyOps only asks for read permissions: assets, blueprints, skills, industry jobs, structure names, market orders and (optionally) wallet transactions. It never reads your wallet balance. Everything stays in your browser's local storage. You can revoke access at any time in your EVE account management under <i>Third Party Applications</i>.</p>
+  <p>IndyOps only asks for read permissions: assets, blueprints, skills, industry jobs, structure names, market orders, your active clone's implants, structure markets and (optionally) wallet transactions. It never reads your wallet balance. Everything stays in your browser's local storage. You can revoke access at any time in your EVE account management under <i>Third Party Applications</i>.</p>
 
   <h3>FAQ</h3>
   <dl class="helpdl">
@@ -622,7 +622,7 @@ button.btn.mini{padding:2px 7px;font-size:11px}
   </ul>
 
   <h3>Datenschutz und Berechtigungen</h3>
-  <p>IndyOps fragt nur Leseberechtigungen an: Assets, Blueprints, Skills, Industry-Jobs, Strukturnamen, Marktorders und (optional) Wallet-Transaktionen. Den Kontostand liest es nie. Alles bleibt im lokalen Speicher deines Browsers. Du kannst den Zugriff jederzeit in der EVE-Accountverwaltung unter <i>Third Party Applications</i> widerrufen.</p>
+  <p>IndyOps fragt nur Leseberechtigungen an: Assets, Blueprints, Skills, Industry-Jobs, Strukturnamen, Marktorders, die Implantate des aktiven Klons, Strukturmärkte und (optional) Wallet-Transaktionen. Den Kontostand liest es nie. Alles bleibt im lokalen Speicher deines Browsers. Du kannst den Zugriff jederzeit in der EVE-Accountverwaltung unter <i>Third Party Applications</i> widerrufen.</p>
 
   <h3>Häufige Fragen</h3>
   <dl class="helpdl">
@@ -1150,7 +1150,6 @@ window.I18N.en={
  "Még nincs karakter.": "No characters yet.",
  "Ki reprocesszál": "Who reprocesses",
  "a legjobb hozamú karakter": "the character with the best yield",
- "Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI nem adja ki ezzel az engedéllyel, ezért itt kell beállítani. Modulra és lootra csak a Scrapmetal Processing hat.": "Ore and ice processing skills (e.g. Simple Ore Processing) are applied per item. ESI doesn't provide implants with these permissions, so set them here. For modules and loot only Scrapmetal Processing counts.",
  "NPC állomás": "NPC station",
  "űrben – itt nem lehet": "in space – not possible here",
  "Adó %": "Tax %",
@@ -1183,13 +1182,22 @@ window.I18N.en={
  "Kész: {0} tétel, {1} mp.": "Done: {0} items, {1} s.",
  "Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.": "If left empty, sales tax and broker fee are calculated per character from skills (Accounting, Broker Relations, without standings), and the character with the lowest fees is suggested for selling; profits use that character too. NPC station base yield is 50%. Reprocessing skills come from ESI.",
  "Második piac a Jita mellé": "Second market next to Jita",
- "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot vagy olyan NPC állomást, ahol van cuccod. Játékos-struktúrák piaca ehhez külön engedélyt kérne, ezért most nem választható.": "Next to Jita prices, this station's best sell price is shown too (Planner, What pays?, Selling, Reprocess). Pick a trade hub or an NPC station where you have stuff. Player structure markets would need an extra permission, so they can't be chosen for now.",
  "Kereskedelmi központok": "Trade hubs",
  "Állomások, ahol van cuccod": "Stations where you have stuff",
  "Második piac: {0}. Az árak a következő számolásnál töltődnek le.": "Second market: {0}. Prices load with the next calculation.",
  "eladó: {0}": "seller: {0}",
  "Eladásra javasolt karakter: {0} (sales tax {1}%, broker {2}%).": "Suggested seller: {0} (sales tax {1}%, broker {2}%).",
- "{0}: {1}% összesen": "{0}: {1}% total"
+ "{0}: {1}% összesen": "{0}: {1}% total",
+ "Struktúrák, ahol van cuccod": "Structures where you have stuff",
+ "{0} piaca…": "{0} market…",
+ "{0} piaca: {1} order": "{0} market: {1} orders",
+ "A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).": "None of your characters can access the market at {0} (docking rights needed, or no market module).",
+ "ESI szerint: {0}": "from ESI: {0}",
+ "nem ismert": "unknown",
+ "Jelentkezz be újra, hogy az implant automatikus legyen.": "Log in again to read the implant automatically.",
+ "Új funkciókhoz új engedély kell ehhez a karakterhez. Nyomd meg az „Újra bejelentkezés” gombot.": "New features need a new permission for this character. Press “Log in again”.",
+ "Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.": "Ore and ice processing skills (e.g. Simple Ore Processing) are applied per item. The implant is read from ESI (active clone); if you switch clones to reprocess, set it here by hand. For modules and loot only Scrapmetal Processing counts.",
+ "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.": "Next to Jita prices, this station's best sell price is shown too (Planner, What pays?, Selling, Reprocess). Pick a trade hub, or a station or structure where you have stuff. For a structure, one of your characters needs docking rights and it must run a market module."
 };
 </script>
 <script>
@@ -1692,7 +1700,6 @@ window.I18N.de={
  "Még nincs karakter.": "Noch keine Charaktere.",
  "Ki reprocesszál": "Wer reprocesst",
  "a legjobb hozamú karakter": "der Charakter mit der besten Ausbeute",
- "Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI nem adja ki ezzel az engedéllyel, ezért itt kell beállítani. Modulra és lootra csak a Scrapmetal Processing hat.": "Erz- und Eisverarbeitungs-Skills (z. B. Simple Ore Processing) werden pro Gegenstand berücksichtigt. Implantate liefert ESI mit diesen Berechtigungen nicht, daher hier einstellen. Für Module und Loot zählt nur Scrapmetal Processing.",
  "NPC állomás": "NPC-Station",
  "űrben – itt nem lehet": "im Weltraum – hier nicht möglich",
  "Adó %": "Steuer %",
@@ -1725,13 +1732,22 @@ window.I18N.de={
  "Kész: {0} tétel, {1} mp.": "Fertig: {0} Gegenstände, {1} s.",
  "Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.": "Leer gelassen werden Sales Tax und Broker Fee pro Charakter aus den Skills berechnet (Accounting, Broker Relations, ohne Standings), und der Charakter mit den niedrigsten Gebühren wird zum Verkaufen vorgeschlagen; auch der Profit wird damit berechnet. Die Basisausbeute einer NPC-Station ist 50 %. Reprocessing-Skills kommen aus ESI.",
  "Második piac a Jita mellé": "Zweiter Markt neben Jita",
- "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot vagy olyan NPC állomást, ahol van cuccod. Játékos-struktúrák piaca ehhez külön engedélyt kérne, ezért most nem választható.": "Neben den Jita-Preisen wird auch der beste Verkaufspreis dieser Station angezeigt (Planer, Was lohnt sich?, Verkauf, Reprocess). Wähle einen Handelsknoten oder eine NPC-Station, an der du Sachen hast. Märkte von Spielerstrukturen bräuchten eine zusätzliche Berechtigung und sind daher vorerst nicht wählbar.",
  "Kereskedelmi központok": "Handelsknoten",
  "Állomások, ahol van cuccod": "Stationen mit deinen Sachen",
  "Második piac: {0}. Az árak a következő számolásnál töltődnek le.": "Zweiter Markt: {0}. Die Preise werden bei der nächsten Berechnung geladen.",
  "eladó: {0}": "Verkäufer: {0}",
  "Eladásra javasolt karakter: {0} (sales tax {1}%, broker {2}%).": "Empfohlener Verkäufer: {0} (Sales Tax {1} %, Broker {2} %).",
- "{0}: {1}% összesen": "{0}: {1} % gesamt"
+ "{0}: {1}% összesen": "{0}: {1} % gesamt",
+ "Struktúrák, ahol van cuccod": "Strukturen mit deinen Sachen",
+ "{0} piaca…": "Markt {0}…",
+ "{0} piaca: {1} order": "Markt {0}: {1} Orders",
+ "A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).": "Keiner deiner Charaktere erreicht den Markt in {0} (Andockrechte nötig, oder kein Marktmodul).",
+ "ESI szerint: {0}": "laut ESI: {0}",
+ "nem ismert": "unbekannt",
+ "Jelentkezz be újra, hogy az implant automatikus legyen.": "Melde dich erneut an, damit das Implantat automatisch gelesen wird.",
+ "Új funkciókhoz új engedély kell ehhez a karakterhez. Nyomd meg az „Újra bejelentkezés” gombot.": "Neue Funktionen brauchen eine neue Berechtigung für diesen Charakter. Drücke „Erneut anmelden“.",
+ "Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.": "Erz- und Eisverarbeitungs-Skills (z. B. Simple Ore Processing) werden pro Gegenstand berücksichtigt. Das Implantat wird aus ESI gelesen (aktiver Klon); wenn du zum Reprocessen den Klon wechselst, stelle es hier von Hand ein. Für Module und Loot zählt nur Scrapmetal Processing.",
+ "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.": "Neben den Jita-Preisen wird auch der beste Verkaufspreis dieses Ortes angezeigt (Planer, Was lohnt sich?, Verkauf, Reprocess). Wähle einen Handelsknoten oder eine Station oder Struktur mit deinen Sachen. Bei einer Struktur braucht einer deiner Charaktere Andockrechte, und dort muss ein Marktmodul laufen."
 };
 </script>
 <script>
@@ -1740,7 +1756,7 @@ window.I18N.de={
 "use strict";
 /* ============ alapok ============ */
 const CALLBACK_LOCAL='https://localhost/callback';
-const SCOPES=['esi-assets.read_assets.v1','esi-characters.read_blueprints.v1','esi-skills.read_skills.v1','esi-industry.read_character_jobs.v1','esi-universe.read_structures.v1','esi-markets.read_character_orders.v1'];
+const SCOPES=['esi-assets.read_assets.v1','esi-characters.read_blueprints.v1','esi-skills.read_skills.v1','esi-industry.read_character_jobs.v1','esi-universe.read_structures.v1','esi-markets.read_character_orders.v1','esi-clones.read_implants.v1','esi-markets.structure_markets.v1'];
 const WALLET_SCOPE='esi-wallet.read_character_wallet.v1';
 function scopesNeeded(){return S.wallet?SCOPES.concat([WALLET_SCOPE]):SCOPES.slice()}
 function scpOf(token){try{const v=jwtPayload(token).scp;return Array.isArray(v)?v:(v?[v]:[])}catch(e){return []}}
@@ -1752,7 +1768,7 @@ const SK={industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,repr
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.2.0',built:'2026-11-09',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.3.0',built:'2026-11-09',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -1974,10 +1990,11 @@ async function refreshChar(c){
     const B=bps.map(b=>({i:b.item_id,t:b.type_id,me:b.material_efficiency,te:b.time_efficiency,r:b.runs,q:b.quantity,l:root(b.location_id),cn:contNames[b.location_id]||null}));
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
-    let O=[],TX=[];
+    let O=[],TX=[],IMP=null;
+    if(hasScope(c,'esi-clones.read_implants.v1')){try{IMP=await esi('/characters/'+c.id+'/implants/',{char:c});await resolveNames(IMP)}catch(e){log('Implantok: '+e.message)}}
     if(hasScope(c,'esi-markets.read_character_orders.v1')){try{O=(await esi('/characters/'+c.id+'/orders/',{char:c})).map(o=>({id:o.order_id,t:o.type_id,l:o.location_id,reg:o.region_id,p:o.price,rem:o.volume_remain,tot:o.volume_total,buy:!!o.is_buy_order,iss:o.issued,dur:o.duration}))}catch(e){log('Orderek: '+e.message)}}
     if(S.wallet&&hasScope(c,WALLET_SCOPE)){try{const lim=Date.now()-30*86400000;TX=(await esi('/characters/'+c.id+'/wallet/transactions/',{char:c})).filter(x=>new Date(x.date).getTime()>=lim).map(x=>({d:x.date,t:x.type_id,q:x.quantity,p:x.unit_price,buy:x.is_buy,l:x.location_id}))}catch(e){log('Wallet: '+e.message)}}
-    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,at:Date.now()};
+    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,at:Date.now()};
     await resolveNames(O.map(o=>o.t).concat(TX.map(x=>x.t)));for(const l of new Set(O.map(o=>o.l)))await resolveLoc(l,c);
     await resolveNames(A.map(a=>a.t).concat(B.map(b=>b.t),J.map(j=>j.bp)));
     const locs=[...new Set(A.map(a=>a.l).concat(B.map(b=>b.l),J.map(j=>j.loc)))];
@@ -2038,11 +2055,12 @@ const unitPrice2=t=>sell2(t)??buy2(t)??0;
 
 /* ============ árak ============ */
 async function ensurePrices(typeIds){
-  const now=Date.now();const m2=m2On()?Number(S.market2):null;const reg2=m2?await regionOf(m2):null;PRICES.p2=PRICES.p2||{};
+  const now=Date.now();const m2=m2On()?Number(S.market2):null;const isStr=m2&&m2>1e12;const reg2=m2&&!isStr?await regionOf(m2):null;PRICES.p2=PRICES.p2||{};
   const stale=(x,loc)=>!x||now-x.at>30*60000||(loc!=null&&x.loc!==loc);
   const all=[...new Set(typeIds)];const need=all.filter(t=>stale(PRICES.p[t])||(m2&&reg2===JITA_REGION&&stale(PRICES.p2[t],m2)));
   const need2=m2&&reg2&&reg2!==JITA_REGION?all.filter(t=>stale(PRICES.p2[t],m2)):[];
   const best=(o,loc)=>{let s=Infinity,b=0;for(const x of o){if(x.location_id!==loc)continue;if(x.is_buy_order){if(x.price>b)b=x.price}else if(x.price<s)s=x.price}return {s:s===Infinity?null:s,b:b||null,at:now,loc}};
+  if(isStr){const n2=all.filter(t=>stale(PRICES.p2[t],m2));if(n2.length){const bk=await structBook(m2);for(const t of n2){const x=bk&&bk.m.get(t);PRICES.p2[t]={s:x&&x.s<Infinity?x.s:null,b:x&&x.b||null,at:bk?bk.at:now,loc:m2}}}}
   status('árak: '+(need.length+need2.length)+' tétel…');
   await Promise.all(need.map(async t=>{
     try{const o=await esi('/markets/'+JITA_REGION+'/orders/?type_id='+t+'&order_type=all',{paged:true});
@@ -2081,6 +2099,17 @@ async function oreToMinerals(typeId,units,cid){
   const out=t.tm.map(([m,q])=>[m,Math.floor(portions*q*b.y)]);out.who=b.who;out.y=b.y;out.rs=t.rs;return out;
 }
 function m2Cell(jita,v,buying){if(v==null||!v)return '–';const better=jita?(buying?v<jita:v>jita):false;const d=jita?(v/jita-1)*100:null;return `<span class="${better?'pos':''}">${isk(v)}</span>${d!=null?`<div class="small muted">${d>0?'+':''}${fmt(d,1)}%</div>`:''}`}
+// játékos-struktúra teljes piaca egyszerre (esi-markets.structure_markets.v1, dokkolási jog kell), 30 percig tárolva
+let STRBOOK=null;
+async function structBook(id){
+  if(STRBOOK&&STRBOOK.id===id&&Date.now()-STRBOOK.at<30*60000)return STRBOOK;
+  const cs=CHARS.filter(c=>hasScope(c,'esi-markets.structure_markets.v1'));
+  if(!cs.length){log('Struktúra piac: egyik karakternek sincs meg az engedély, jelentkezz be újra.');return null}
+  for(const c of cs){try{status(T('{0} piaca…',m2Short()));const o=await esi('/markets/structures/'+id+'/',{char:c,paged:true});const m=new Map();
+    for(const x of o){let r=m.get(x.type_id);if(!r){r={s:Infinity,b:0};m.set(x.type_id,r)}if(x.is_buy_order){if(x.price>r.b)r.b=x.price}else if(x.price<r.s)r.s=x.price}
+    STRBOOK={id,at:Date.now(),m};log(T('{0} piaca: {1} order',m2Short(),fmt(o.length)));return STRBOOK}catch(e){log('Struktúra piac ('+c.name+'): '+e.message)}}
+  alertBox(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));return null;
+}
 </script>
 <script>
 /* js/engine.js */
@@ -2226,7 +2255,7 @@ function renderChars(){
   {const ib=document.getElementById('introBox');if(ib)ib.hidden=CHARS.length>0}
   $('#cbUrl').textContent=callbackUrl();$('#scopeList').textContent=scopesNeeded().join(' ');
   $('#noChars').hidden=CHARS.length>0;
-  $('#charList').innerHTML=CHARS.map(c=>{const d=DATA[c.id];return `<div class="card char"><img alt="" src="https://images.evetech.net/characters/${c.id}/portrait?size=64"><div style="flex:1;min-width:0"><div class="nm">${esc(c.name)}</div><div class="small muted">${d?T('{0} tárgy · {1} BP · frissítve {2}',fmt(d.assets.length),fmt(d.bps.length),new Date(d.at).toLocaleString(LOC())):T('még nincs letöltve')}</div>${(()=>{if(!c.scp)return '';const miss=scopesNeeded().filter(x=>!c.scp.includes(x));return miss.length?`<div class="notice" style="margin:6px 0 0"><p class="small">Új engedély kell ehhez a karakterhez: <code>${esc(miss.join(' '))}</code>. Előbb add hozzá az alkalmazásodhoz a developers.eveonline.com-on, aztán jelentkezz be újra ezzel a karakterrel.</p></div>`:''})()}<div class="row" style="margin-top:6px"><button class="btn" data-ref="${c.id}">Frissítés</button><button class="btn" data-relog="${c.id}">Újra bejelentkezés</button><button class="btn" data-del="${c.id}">Eltávolítás</button></div></div></div>`}).join('');
+  $('#charList').innerHTML=CHARS.map(c=>{const d=DATA[c.id];return `<div class="card char"><img alt="" src="https://images.evetech.net/characters/${c.id}/portrait?size=64"><div style="flex:1;min-width:0"><div class="nm">${esc(c.name)}</div><div class="small muted">${d?T('{0} tárgy · {1} BP · frissítve {2}',fmt(d.assets.length),fmt(d.bps.length),new Date(d.at).toLocaleString(LOC())):T('még nincs letöltve')}</div>${(()=>{if(!c.scp)return '';const miss=scopesNeeded().filter(x=>!c.scp.includes(x));return miss.length?`<div class="notice" style="margin:6px 0 0"><p class="small">${HOSTED?`${T('Új funkciókhoz új engedély kell ehhez a karakterhez. Nyomd meg az „Újra bejelentkezés” gombot.')} <code>${esc(miss.join(' '))}</code>`:`Új engedély kell ehhez a karakterhez: <code>${esc(miss.join(' '))}</code>. Előbb add hozzá az alkalmazásodhoz a developers.eveonline.com-on, aztán jelentkezz be újra ezzel a karakterrel.`}</p></div>`:''})()}<div class="row" style="margin-top:6px"><button class="btn" data-ref="${c.id}">Frissítés</button><button class="btn" data-relog="${c.id}">Újra bejelentkezés</button><button class="btn" data-del="${c.id}">Eltávolítás</button></div></div></div>`}).join('');
 }
 function renderJobs(){
   const rows=[];const acts={1:'Gyártás',3:'TE kutatás',4:'ME kutatás',5:'Másolás',8:'Invention',9:'Reakció',11:'Reakció'};
@@ -2264,7 +2293,7 @@ function renderSettings(){
   $('#sSalesTax').placeholder=fmt(salesTax()*100,2);$('#sBroker').placeholder=fmt(brokerFee()*100,2);
   {const sel=$('#sProdLoc');sel.innerHTML='<option value="">automatikus: a BP helye</option>'+allLocs().sort((a,b)=>locName(a).localeCompare(locName(b))).map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');sel.value=S.prodLoc||''}
   {const sel=$('#sMarket2');const hubs=HUBS.filter(h=>h[0]!==JITA_STATION);const own=allLocs().filter(l=>locKind(l)==='npc'&&l!==JITA_STATION&&!hubs.some(h=>h[0]===l)).sort((a,b)=>locName(a).localeCompare(locName(b)));
-    sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'');sel.value=S.market2||''}
+    sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'')+(()=>{const st=allLocs().filter(l=>locKind(l)==='struct').sort((a,b)=>locName(a).localeCompare(locName(b)));return st.length?'<optgroup label="'+esc(T('Struktúrák, ahol van cuccod'))+'">'+st.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':''})();sel.value=S.market2||''}
   $('#sSkillChar').innerHTML=CHARS.map(c=>`<option value="${c.id}" ${c.id==S.skillChar?'selected':''}>${esc(c.name)}</option>`).join('');
 }
 function renderPlanOptions(){
@@ -2776,7 +2805,9 @@ let REPLOG=[];
 function repLog(m){const el=$('#repLog');if(!el)return;el.hidden=false;REPLOG.push(new Date().toLocaleTimeString(LOC())+'  '+m);if(REPLOG.length>300)REPLOG=REPLOG.slice(-300);
   const atEnd=el.scrollTop+el.clientHeight>=el.scrollHeight-20;el.textContent=REPLOG.join('\n');if(atEnd)el.scrollTop=el.scrollHeight}
 function repCfg(){if(!S.repro)S.repro={};const c=S.repro;c.loc=c.loc||{};c.imp=c.imp||{};if(c.char==null)c.char='';return c}
-function impOf(cid){const v=repCfg().imp[cid];return v!=null&&v!==''?Number(v):Number(S.implant||0)}
+// reprocess implant az ESI-ből (Zainou 'Beancounter' Reprocessing RX-801/802/804 = 1/2/4%); null, ha nincs meg az engedély
+function impAuto(cid){const d=DATA[cid];if(!d||!Array.isArray(d.imp))return null;let v=0;for(const t of d.imp){const m=/Beancounter.{0,3} Reprocessing RX-80(\d)/i.exec(NAMES[t]||'');if(m)v=Math.max(v,{1:1,2:2,4:4}[m[1]]||0)}return v}
+function impOf(cid){const v=repCfg().imp[cid];if(v!=null&&v!==''&&v!=='auto')return Number(v);const a=impAuto(cid);return a!=null?a:Number(S.implant||0)}
 function locKind(l){l=Number(l);return l>=60000000&&l<64000000?'npc':l>1e12?'struct':'none'}
 function secMod(sys){if(!sys)return 0;if(sys>=31000000&&sys<32000000)return 0.12;const s=SYSSEC[sys];if(s==null)return 0;return s>=0.45?0:s>0?0.06:0.12}
 function locStats(l){
@@ -2891,9 +2922,9 @@ function renderRepChars(){
   const el=$('#repChars');if(!el)return;const cs=CHARS.filter(c=>DATA[c.id]);
   if(!cs.length){el.innerHTML='<p class="muted">Még nincs karakter.</p>';return}
   const cfg=repCfg();const imps=[[0,'nincs'],[1,'RX-801 (1%)'],[2,'RX-802 (2%)'],[4,'RX-804 (4%)']];
-  el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs.map(c=>`<tr><td>${esc(c.name)}</td><td class="num">${lvlOf(c.id,SK.repro)}</td><td class="num">${lvlOf(c.id,SK.reproEff)}</td><td class="num">${lvlOf(c.id,SCRAP)}</td><td><select data-imp="${c.id}">${imps.map(([v,n])=>`<option value="${v}" ${impOf(c.id)===v?'selected':''}>${n}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>
+  el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs.map(c=>`<tr><td>${esc(c.name)}</td><td class="num">${lvlOf(c.id,SK.repro)}</td><td class="num">${lvlOf(c.id,SK.reproEff)}</td><td class="num">${lvlOf(c.id,SCRAP)}</td><td>${(()=>{const man=cfg.imp[c.id];const isMan=man!=null&&man!==''&&man!=='auto';const a=impAuto(c.id);const an=a==null?T('nem ismert'):(imps.find(x=>x[0]===a)||[0,a+'%'])[1];return `<select data-imp="${c.id}"><option value="auto" ${isMan?'':'selected'}>${esc(T('ESI szerint: {0}',an))}</option>${imps.map(([v,n])=>`<option value="${v}" ${isMan&&Number(man)===v?'selected':''}>${n}</option>`).join('')}</select>${a==null?`<div class="small muted">${T('Jelentkezz be újra, hogy az implant automatikus legyen.')}</div>`:''}`})()}</td></tr>`).join('')}</tbody></table></div>
   <div class="row" style="margin-top:8px"><label>Ki reprocesszál <select id="repWho"><option value="">a legjobb hozamú karakter</option>${cs.map(c=>`<option value="${c.id}" ${String(cfg.char)===String(c.id)?'selected':''}>${esc(c.name)}</option>`).join('')}</select></label></div>
-  <p class="small muted" style="margin-top:6px">Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI nem adja ki ezzel az engedéllyel, ezért itt kell beállítani. Modulra és lootra csak a Scrapmetal Processing hat.</p>`;
+  <p class="small muted" style="margin-top:6px">Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.</p>`;
 }
 function renderRepLocs(locs){
   const el=$('#repLocs');const cs=repChars();
@@ -2947,7 +2978,7 @@ function renderRepSum(){
     if(t.dataset.rk){t.checked?REP.sel.add(t.dataset.rk):REP.sel.delete(t.dataset.rk);renderRepSum();
       const all=$('#repAll');if(all){const bs=[...tab.querySelectorAll('[data-rk]')];all.checked=bs.length&&bs.every(b=>b.checked)}}
     else if(t.id==='repAll'){tab.querySelectorAll('[data-rk]').forEach(b=>{b.checked=t.checked;t.checked?REP.sel.add(b.dataset.rk):REP.sel.delete(b.dataset.rk)});renderRepSum()}
-    else if(t.dataset.imp){cfg.imp[t.dataset.imp]=Number(t.value);save()}
+    else if(t.dataset.imp){if(t.value==='auto')delete cfg.imp[t.dataset.imp];else cfg.imp[t.dataset.imp]=Number(t.value);save()}
     else if(t.id==='repWho'){cfg.char=t.value;save()}
     else if(t.dataset.rig){(cfg.loc[t.dataset.rig]=cfg.loc[t.dataset.rig]||{}).rig=Number(t.value);save()}
     else if(t.dataset.tax!=null&&t.dataset.tax!==''){(cfg.loc[t.dataset.tax]=cfg.loc[t.dataset.tax]||{}).tax=t.value;save()}

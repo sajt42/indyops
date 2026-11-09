@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0 – 2026-11-09
+
+- Implants read from ESI (active clone): the Beancounter reprocessing implant is detected automatically; manual override stays
+- Second market can be a player structure where you have stuff (structure market, docking rights needed)
+- Characters tab: on the web, a missing permission only needs a new login
+
 ## 1.2.0 – 2026-11-09
 
 - Selling: suggests which character should sell (lowest sales tax + broker fee from skills); profit calculations use that character
