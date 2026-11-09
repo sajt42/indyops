@@ -1,6 +1,6 @@
 # IndyOps
 
-**EVE Online industry planning, straight from your hangars.**
+**Less spreadsheet, more ISK.**
 
 IndyOps reads your characters' assets, blueprints, skills and jobs through ESI and turns them into a production plan: what to build, what you already have, what to buy, which character should build it, and where to haul it.
 
@@ -79,13 +79,13 @@ IndyOps is a fan-made tool and is not affiliated with or endorsed by CCP hf.
 
 Blueprint recipe data: [EVE Ref](https://everef.net). Game data: [ESI](https://esi.evetech.net).
 
-Code: [MIT License](LICENSE) © 2026 SajT
+Code: [MIT License](LICENSE) © 2026 SajT – *Temporary solution since a while.*
 
 ---
 
 ## Magyarul
 
-**EVE Online gyártástervezés, egyenesen a hangárjaidból.**
+**Kevesebb táblázat, több ISK.**
 
 Az IndyOps az ESI-n keresztül olvassa a karaktereid asseteit, blueprintjeit, skilljeit és jobjait, és gyártási tervet készít belőlük: mit érdemes gyártani, mi van már meg, mit kell venni, melyik karakter gyártsa, és mit hova kell vinni.
 
