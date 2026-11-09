@@ -43,7 +43,7 @@ Enter its **Client ID** (never the secret) in IndyOps. After logging in, the bro
 
 ## Bugs and ideas
 
-Use the **Report a bug** button in the app (it pre-fills version, browser and log), or open an [issue](https://github.com/sajt42/indyops/issues). Reports are public, so check the log before sending.
+Use the **Report a bug** button in the app (it pre-fills version, browser and log), or open an [issue](https://github.com/sajt42/indyops/issues). Reports are public, so check the log before sending. Questions: [Discussions](https://github.com/sajt42/indyops/discussions).
 
 ## Development
 
@@ -111,4 +111,4 @@ Az IndyOps az ESI-n keresztül olvassa a karaktereid asseteit, blueprintjeit, sk
 
 **Helyi használat:** töltsd le a `dist/indyops.html` fájlt. Ehhez saját alkalmazás kell a developers.eveonline.com-on (callback: `https://localhost/callback`, a fenti engedélyekkel), és a **Client ID**-ját kell megadni (a Secretet soha).
 
-**Hibajelentés:** az alkalmazásban a „Hiba jelentése” gombbal, vagy GitHub issue-ként.
+**Hibajelentés:** az alkalmazásban a „Hiba jelentése” gombbal, vagy GitHub issue-ként. Kérdés: [Discussions](https://github.com/sajt42/indyops/discussions).

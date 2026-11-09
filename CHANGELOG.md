@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5 – 2026-11-09
+
+- Help and README: questions go to GitHub Discussions
+
 ## 1.0.4 – 2026-11-09
 
 - Help: Contact section (bug reports, source code, author) in every language; direct link to the offline file and the README
