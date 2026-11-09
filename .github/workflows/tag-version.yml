@@ -1,0 +1,34 @@
+# Creates a git tag vX.Y.Z for every version of js/core.js on main,
+# pointing at the last commit that had that version (= what was live).
+name: Tag versions
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create missing tags
+        run: |
+          git fetch --tags
+          declare -A last
+          # a version is final once a newer version exists; the current one is tagged at HEAD
+          for c in $(git rev-list --reverse HEAD); do
+            v=$(git show "$c:js/core.js" 2>/dev/null | grep -oP "version:'\K[0-9]+\.[0-9]+\.[0-9]+" | head -1)
+            [ -n "$v" ] && last[$v]=$c
+          done
+          for v in "${!last[@]}"; do
+            t="v$v"
+            if git rev-parse -q --verify "refs/tags/$t" >/dev/null; then
+              [ "$(git rev-parse "$t^{commit}")" = "${last[$v]}" ] && continue
+              git tag -f "$t" "${last[$v]}"; git push -f origin "$t"
+            else
+              git tag "$t" "${last[$v]}"; git push origin "$t"
+            fi
+            echo "$t -> ${last[$v]}"
+          done

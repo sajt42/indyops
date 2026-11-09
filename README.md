@@ -73,8 +73,10 @@ cd tests && npm install && npm test
 
 ```
 node tools/release.mjs patch "What changed"     # bumps version, CHANGELOG, cache busting, rebuilds dist/
-git commit -am "vX.Y.Z: what changed" && git tag vX.Y.Z && git push origin main --tags
+git commit -am "vX.Y.Z: what changed" && git push origin main
 ```
+
+The `Tag versions` GitHub Action then tags the release (`vX.Y.Z`) automatically.
 
 **Translations:** copy `i18n/en.js` to a new language file, translate the values (keep `#` and `{0}` placeholders), add it to `index.html` and to `LANGS` in `js/core.js`.
 

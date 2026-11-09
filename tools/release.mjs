@@ -1,7 +1,7 @@
 // Release helper: bumps the version, adds a CHANGELOG entry, updates cache-busting
 // query strings in index.html and rebuilds dist/indyops.html.
 // Usage: node tools/release.mjs <patch|minor|major> "Change 1" "Change 2" ...
-// Then: git commit -am "vX.Y.Z: ..." && git tag vX.Y.Z && git push origin main --tags
+// Then: git commit -am "vX.Y.Z: ..." && git push origin main  (the Tag versions action creates the tag)
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,4 +38,4 @@ writeFileSync(p('CHANGELOG.md'), log);
 
 // 4. single-file build
 execFileSync('node', [p('tools/bundle.mjs')], { stdio: 'inherit' });
-console.log(`Released ${ver}. Next: git commit -am "v${ver}: ..." && git tag v${ver} && git push origin main --tags`);
+console.log(`Released ${ver}. Next: git commit -am "v${ver}: ..." && git push origin main  (tag v${ver} is created by the Tag versions action)`);
