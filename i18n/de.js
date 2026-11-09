@@ -388,7 +388,6 @@ window.I18N.de={
  "Broker fee %": "Brokergebühr %",
  "Reprocess alaphozam %": "Reprocessing-Grundausbeute %",
  "Implant bónusz %": "Implantat-Bonus %",
- "Üresen hagyva a sales taxot és a broker fee-t a karakter skilljeiből számolja (Accounting, Broker Relations, standing nélkül). NPC állomás alaphozama #%. A reprocess skilleket az ESI-ből veszi.": "Leer gelassen werden Verkaufssteuer und Brokergebühr aus den Skills des Charakters berechnet (Accounting, Broker Relations, ohne Standings). Grundausbeute einer NPC-Station: # %. Reprocessing-Skills kommen aus ESI.",
  "Melyik karakter skilljeivel számoljon": "Mit den Skills welches Charakters rechnen",
  "Helyszínek a tervezőhöz": "Orte für den Planer",
  "Csak a kipipált helyszínek készlete számít a tervezésben és a „vásárlás nélkül” számításban.": "Nur der Bestand an angehakten Orten zählt in der Planung und bei „Ohne Einkauf“.",
@@ -527,5 +526,14 @@ window.I18N.de={
  "reprocesszálható": "reprocessbar",
  "{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…": "{0} reprocessbare Gegenstände, {1} Orte. Orte werden geladen…",
  "Jita árak lekérése: {0} típus…": "Jita-Preise werden geladen: {0} Typen…",
- "Kész: {0} tétel, {1} mp.": "Fertig: {0} Gegenstände, {1} s."
+ "Kész: {0} tétel, {1} mp.": "Fertig: {0} Gegenstände, {1} s.",
+ "Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.": "Leer gelassen werden Sales Tax und Broker Fee pro Charakter aus den Skills berechnet (Accounting, Broker Relations, ohne Standings), und der Charakter mit den niedrigsten Gebühren wird zum Verkaufen vorgeschlagen; auch der Profit wird damit berechnet. Die Basisausbeute einer NPC-Station ist 50 %. Reprocessing-Skills kommen aus ESI.",
+ "Második piac a Jita mellé": "Zweiter Markt neben Jita",
+ "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot vagy olyan NPC állomást, ahol van cuccod. Játékos-struktúrák piaca ehhez külön engedélyt kérne, ezért most nem választható.": "Neben den Jita-Preisen wird auch der beste Verkaufspreis dieser Station angezeigt (Planer, Was lohnt sich?, Verkauf, Reprocess). Wähle einen Handelsknoten oder eine NPC-Station, an der du Sachen hast. Märkte von Spielerstrukturen bräuchten eine zusätzliche Berechtigung und sind daher vorerst nicht wählbar.",
+ "Kereskedelmi központok": "Handelsknoten",
+ "Állomások, ahol van cuccod": "Stationen mit deinen Sachen",
+ "Második piac: {0}. Az árak a következő számolásnál töltődnek le.": "Zweiter Markt: {0}. Die Preise werden bei der nächsten Berechnung geladen.",
+ "eladó: {0}": "Verkäufer: {0}",
+ "Eladásra javasolt karakter: {0} (sales tax {1}%, broker {2}%).": "Empfohlener Verkäufer: {0} (Sales Tax {1} %, Broker {2} %).",
+ "{0}: {1}% összesen": "{0}: {1} % gesamt"
 };

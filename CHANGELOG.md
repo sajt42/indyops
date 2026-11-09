@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0 – 2026-11-09
+
+- Selling: suggests which character should sell (lowest sales tax + broker fee from skills); profit calculations use that character
+- Second market next to Jita (Settings): trade hub or an NPC station where you have stuff; its prices appear in Planner, What pays?, Selling and Reprocess
+
 ## 1.1.1 – 2026-11-09
 
 - Reprocess: live log while reading the stock (each item type, locations, prices) and a progress counter on the button

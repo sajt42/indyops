@@ -12,6 +12,7 @@ const prices={34:4,35:10,1230:15,2001:2000};
 const dom=new JSDOM(html,{runScripts:'outside-only',url:'https://example.org/'});const w=dom.window;
 w.fetch=async(u,o)=>{u=String(u);const J=d=>({ok:true,status:200,headers:{get:()=>null},json:async()=>d,text:async()=>JSON.stringify(d)});let m;
   if(m=u.match(/everef\.net\/types\/(\d+)/))return types[m[1]]?J(types[m[1]]):{ok:false,status:404,headers:{get:()=>null}};
+  if(m=u.match(/markets\/10000043\/orders\/\?type_id=(\d+)/)){const p=prices[m[1]];return J(p?[{location_id:60008494,is_buy_order:false,price:p*1.1}]:[])}
   if(m=u.match(/orders\/\?type_id=(\d+)/)){const p=prices[m[1]];return J(p?[{location_id:60003760,is_buy_order:false,price:p}]:[])}
   if(u.includes('/markets/prices/'))return J([{type_id:34,adjusted_price:3},{type_id:35,adjusted_price:9},{type_id:2001,adjusted_price:1500}]);
   if(u.includes('/industry/systems/'))return J([]);
@@ -21,14 +22,14 @@ w.fetch=async(u,o)=>{u=String(u);const J=d=>({ok:true,status:200,headers:{get:()
   if(m=u.match(/universe\/systems\/(\d+)/))return J({security_status:m[1]==='30001'?0.9:0.3});
   throw new Error('unmocked '+u)};
 const code=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
-w.localStorage.setItem('indyops.settings',JSON.stringify({lang:process.env.LANGX||'hu'}));
+w.localStorage.setItem('indyops.settings',JSON.stringify({lang:process.env.LANGX||'hu',market2:60008494}));
 w.eval(code+`;window.__t={repLoad,renderRepro,setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,get S(){return S},REP,showTab};`);
 const T=w.__t,d=w.document,tick=()=>new Promise(r=>setTimeout(r,30));
 const rows=sel=>[...d.querySelectorAll(sel+' tbody tr')].map(r=>r.textContent.replace(/\s+/g,' ').trim());
 (async()=>{
   T.setChars([{id:1,name:'Pilot A',refresh:'x',access:'x',exp:Date.now()+1e9},{id:2,name:'Pilot B',refresh:'x',access:'x',exp:Date.now()+1e9}]);
   T.setData({1:{assets:[{t:1230,q:1000,l:L1,f:'Hangar'},{t:2001,q:3,l:L1,f:'Hangar'},{t:2002,q:1,l:L1,f:'Hangar'},{t:3645,q:5,l:L1,f:'Hangar'},{t:2001,q:1,l:L1,f:'HiSlot0'}],bps:[],skills:{3385:5,3389:4,60377:4},jobs:[]},
-             2:{assets:[{t:1230,q:1050,l:L2,f:'Hangar'}],bps:[],skills:{3385:5,3389:5,60377:5,12196:5},jobs:[]}});
+             2:{assets:[{t:1230,q:1050,l:L2,f:'Hangar'}],bps:[],skills:{3385:5,3389:5,60377:5,12196:5,16622:4,3446:3},jobs:[]}});
   Object.assign(T.names,{34:'Tritanium',35:'Pyerite',60377:'Simple Ore Processing',35836:'Tatara'});
   T.showTab('repro');await T.repLoad();await tick();
   console.log('LOCS1:',rows('#repLocs').join(' / '));
@@ -43,5 +44,6 @@ const rows=sel=>[...d.querySelectorAll(sel+' tbody tr')].map(r=>r.textContent.re
   console.log('A ONLY:',rows('#repOut').join(' / '));
   const cat=d.querySelector('#repCat');cat.value='loot';cat.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();
   console.log('LOOT:',rows('#repOut').join(' / '));
+  console.log('SELLER:',d.querySelector('#repSum .small b')&&[...d.querySelectorAll('#repSum p.small')].map(p=>p.textContent.replace(/\s+/g,' ').trim()).join(' | '));
   console.log('saved:',JSON.stringify(T.S.repro));
 })().catch(e=>console.error('FAIL',e));

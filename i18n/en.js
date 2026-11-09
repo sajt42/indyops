@@ -387,7 +387,6 @@ window.I18N.en={
  "Broker fee %": "Broker fee %",
  "Reprocess alaphozam %": "Reprocessing base yield %",
  "Implant bónusz %": "Implant bonus %",
- "Üresen hagyva a sales taxot és a broker fee-t a karakter skilljeiből számolja (Accounting, Broker Relations, standing nélkül). NPC állomás alaphozama #%. A reprocess skilleket az ESI-ből veszi.": "If left empty, sales tax and broker fee are calculated from the character's skills (Accounting, Broker Relations, without standings). NPC station base yield is #%. Reprocessing skills come from ESI.",
  "Melyik karakter skilljeivel számoljon": "Which character's skills to use",
  "Helyszínek a tervezőhöz": "Locations for the planner",
  "Csak a kipipált helyszínek készlete számít a tervezésben és a „vásárlás nélkül” számításban.": "Only stock at the ticked locations counts in planning and in the “no-buy” calculation.",
@@ -527,5 +526,14 @@ window.I18N.en={
  "reprocesszálható": "reprocessable",
  "{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…": "{0} reprocessable items, {1} locations. Fetching locations…",
  "Jita árak lekérése: {0} típus…": "Fetching Jita prices: {0} types…",
- "Kész: {0} tétel, {1} mp.": "Done: {0} items, {1} s."
+ "Kész: {0} tétel, {1} mp.": "Done: {0} items, {1} s.",
+ "Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.": "If left empty, sales tax and broker fee are calculated per character from skills (Accounting, Broker Relations, without standings), and the character with the lowest fees is suggested for selling; profits use that character too. NPC station base yield is 50%. Reprocessing skills come from ESI.",
+ "Második piac a Jita mellé": "Second market next to Jita",
+ "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot vagy olyan NPC állomást, ahol van cuccod. Játékos-struktúrák piaca ehhez külön engedélyt kérne, ezért most nem választható.": "Next to Jita prices, this station's best sell price is shown too (Planner, What pays?, Selling, Reprocess). Pick a trade hub or an NPC station where you have stuff. Player structure markets would need an extra permission, so they can't be chosen for now.",
+ "Kereskedelmi központok": "Trade hubs",
+ "Állomások, ahol van cuccod": "Stations where you have stuff",
+ "Második piac: {0}. Az árak a következő számolásnál töltődnek le.": "Second market: {0}. Prices load with the next calculation.",
+ "eladó: {0}": "seller: {0}",
+ "Eladásra javasolt karakter: {0} (sales tax {1}%, broker {2}%).": "Suggested seller: {0} (sales tax {1}%, broker {2}%).",
+ "{0}: {1}% összesen": "{0}: {1}% total"
 };

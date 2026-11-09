@@ -79,7 +79,7 @@ async function repLoad(){
 }
 async function repPrices(){
   const sel=(REP.rows||[]).filter(r=>REP.sel.has(repKey(r)));if(!sel.length){alertBox('Jelölj ki legalább egy tételt.');return}
-  await ensurePrices(sel.map(r=>r.t));renderRepro();
+  const mats=new Set(sel.flatMap(r=>REFC.t[r.t].tm.map(x=>x[0])));await ensurePrices([...sel.map(r=>r.t),...mats]);renderRepro();
 }
 
 function repFiltered(){
@@ -95,7 +95,8 @@ function repCalc(r){
   const out=repOut(r,pick);const pi=repPrice(r.t);let a=pi.a,outV=0;
   for(const [m,q] of out){const p=repPrice(m);if(p.a)a=true;outV+=q*p.v}
   const ti=REFC.t[r.t];const rest=r.q%(ti.p||1);
-  return {pick,out,inV:(r.q-rest)*pi.v,outV,a,rest};
+  const in2=(r.q-rest)*(sell2(r.t)||0),out2=out.reduce((s,[m,q])=>s+q*(sell2(m)||0),0);
+  return {pick,out,inV:(r.q-rest)*pi.v,outV,a,rest,in2,out2};
 }
 
 function renderRepro(){
@@ -114,7 +115,7 @@ function renderRepro(){
     const who=x.pick?`${esc(charName(x.pick.cid))} · <span class="mono">${fmt(x.pick.y.y*100,1)}%</span>${r.own.has(x.pick.cid)?'':` <span class="pill warn" title="${T('A tárgy másik karakternél van, át kell adni.')}">⇄</span>`}`:'<span class="muted">itt nem lehet</span>';
     const top=x.out.slice().sort((a,b)=>b[1]*repPrice(b[0]).v-a[1]*repPrice(a[0]).v).slice(0,4).map(([m,q])=>esc(NAMES[m]||m)+' '+fmt(q)).join(', ')+(x.out.length>4?' …':'');
     const verdict=!x.pick||!x.inV&&!x.outV?'':x.outV>x.inV?'<span class="pill ok">reprocess</span>':'<span class="pill warn">eladás</span>';
-    return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k)?'checked':''}></td><td>${esc(NAMES[r.t]||r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest?`<div class="small muted">${T('{0} marad',fmt(x.rest))}</div>`:''}</td><td class="small">${who}</td><td class="small">${top||'–'}</td><td class="num">${x.inV?(repPrice(r.t).a?'~':'')+isk(x.inV):'–'}</td><td class="num">${x.outV?(x.out.some(([m])=>repPrice(m).a)?'~':'')+isk(x.outV):'–'}</td><td>${verdict}</td></tr>`}).join('')}</tbody></table></div>
+    return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k)?'checked':''}></td><td>${esc(NAMES[r.t]||r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest?`<div class="small muted">${T('{0} marad',fmt(x.rest))}</div>`:''}</td><td class="small">${who}</td><td class="small">${top||'–'}</td><td class="num">${x.inV?(repPrice(r.t).a?'~':'')+isk(x.inV):'–'}${m2On()&&x.in2?`<div class="small muted">${esc(m2Short())} ${isk(x.in2)}</div>`:''}</td><td class="num">${x.outV?(x.out.some(([m])=>repPrice(m).a)?'~':'')+isk(x.outV):'–'}${m2On()&&x.out2?`<div class="small muted">${esc(m2Short())} ${isk(x.out2)}</div>`:''}</td><td>${verdict}</td></tr>`}).join('')}</tbody></table></div>
   ${rows.length>LIM?`<p class="small muted">${T('Az első {0} tétel látszik ({1}-ból). Szűkíts a szűrőkkel.',LIM,fmt(rows.length))}</p>`:''}
   <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a „Jita árak a kijelöltekre” gomb pontosítja. A „marad” a portion alatti maradék, az nem dolgozható fel.</p>`;
   renderRepSum();
@@ -144,8 +145,8 @@ function renderRepLocs(locs){
 function renderRepSum(){
   const el=$('#repSum');const sel=(REP.rows||[]).filter(r=>REP.sel.has(repKey(r)));
   if(!sel.length){el.innerHTML='<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>';return}
-  const mats=new Map(),steps=new Map();let inV=0,outV=0,a=false,none=0;
-  for(const r of sel){const c=repCalc(r);if(!c.pick){none++;continue}inV+=c.inV;outV+=c.outV;if(c.a)a=true;
+  const mats=new Map(),steps=new Map();let inV=0,outV=0,in2=0,out2=0,a=false,none=0;
+  for(const r of sel){const c=repCalc(r);if(!c.pick){none++;continue}inV+=c.inV;outV+=c.outV;in2+=c.in2;out2+=c.out2;if(c.a)a=true;
     c.out.forEach(([m,q])=>mats.set(m,(mats.get(m)||0)+q));
     const k=r.l+'|'+c.pick.cid;let s=steps.get(k);if(!s){s={l:r.l,cid:c.pick.cid,n:0,from:new Set()};steps.set(k,s)}s.n++;
     for(const o of r.own.keys())if(o!==c.pick.cid)s.from.add(o)}
@@ -158,6 +159,8 @@ function renderRepSum(){
   <h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num">Érték</th></tr></thead><tbody>${ml.map(([m,q])=>{const p=repPrice(m);return `<tr><td>${esc(NAMES[m]||m)}</td><td class="num">${fmt(q)}</td><td class="num">${p.a?'~':''}${isk(q*p.v)}</td></tr>`}).join('')}
   <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a?'~':''}${isk(outV)}</b></td></tr></tbody></table></div>
   <p class="small">${T('Egyben eladva: {0} · szétszedve: {1}',(a?'~':'')+isk(inV),(a?'~':'')+isk(outV))} · <span class="pill ${outV>inV?'ok':'warn'}">${outV>inV?T('reprocess +{0}',isk(outV-inV)):T('eladás +{0}',isk(inV-outV))}</span></p>
+  ${m2On()&&(in2||out2)?`<p class="small">${esc(m2Short())}: ${T('Egyben eladva: {0} · szétszedve: {1}',isk(in2),isk(out2))}</p>`:''}
+  ${sellerHtml()}
   ${none?`<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).',none)}</p>`:''}
   </div><div>
   <h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s=>`<tr><td>${esc(locName(s.l))}</td><td>${esc(charName(s.cid))}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size?T('Át kell adni tőle: {0}',[...s.from].map(charName).join(', ')):''}</td></tr>`).join('')}</tbody></table></div>
