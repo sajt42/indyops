@@ -7,7 +7,7 @@
 <title>IndyOps</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.3.1">
+<link rel="stylesheet" href="css/style.css?v=1.4.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -214,6 +214,7 @@
 
 <!-- KÉSZLET -->
 <section id="tab-stock" hidden>
+  <div id="unkNote"></div>
   <div class="row" style="justify-content:space-between;margin-bottom:12px">
     <h2 style="margin:0">Készlet</h2>
     <div class="row">
@@ -317,6 +318,12 @@
         <label>Melyik karakter skilljeivel számoljon <select id="sSkillChar"></select></label>
       </div>
     </div>
+    <div class="card" hidden>
+      <h2>Ismeretlen helyek</h2>
+      <p class="small muted">Ezek játékos-struktúrák, amelyeknek a nevét az ESI nem adja ki, mert egyik karakterednek sincs ott dokkolási joga. Az EVE Ref nyilvános struktúralistájában is kerestük, ott sincs. Adj nekik nevet, és onnantól mindenhol az látszik (csak a böngésződben tárolódik). A játékban az Assets ablak mutatja, hol vannak.</p>
+      <div id="unkLocs"></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="unkEveref">Újrakeresés az EVE Refben</button></div>
+    </div>
     <div class="card">
       <h2>Helyszínek a tervezőhöz</h2>
       <p class="small muted">Csak a kipipált helyszínek készlete számít a tervezésben és a „vásárlás nélkül” számításban.</p>
@@ -399,7 +406,7 @@
 
   <h3>Gyakori kérdések</h3>
   <dl class="helpdl">
-    <dt>„Ismeretlen hely” látszik egy citadella helyett.</dt><dd>A struktúra nevét csak akkor adja ki az ESI, ha a karakterednek van dokkolási joga. Ha a struktúra megszűnt, a tárgyak asset safetyben lehetnek.</dd>
+    <dt>„Ismeretlen hely” látszik egy citadella helyett.</dt><dd>A struktúra nevét csak akkor adja ki az ESI, ha a karakterednek van dokkolási joga. Ha a struktúra megszűnt, a tárgyak asset safetyben lehetnek. Az IndyOps megpróbálja a nevet az EVE Ref nyilvános struktúralistájából kideríteni; ha ott sincs, a Beállítások „Ismeretlen helyek” kártyáján elnevezheted.</dd>
     <dt>Bejelentkeztem, de nincs adat.</dt><dd>Nyomd meg a „Minden adat frissítése” gombot. Ha egy karakterkártya új engedélyt kér, jelentkezz be újra azzal a karakterrel.</dd>
     <dt>Kicsit más számot mutat, mint a játék.</dt><dd>Nézd meg a Beállításokban a struktúra-bónuszokat és az adót. A cost index óránként változik, a piaci árak fél óránként frissülnek.</dd>
     <dt>Másik gépen is használnám.</dt><dd>Beállítások → Mentés fájlba, és a másik gépen Visszatöltés fájlból. A bejelentkezéseket csak akkor mentsd, ha a fájlt biztonságos helyen tartod.</dd>
@@ -460,7 +467,7 @@
 
   <h3>FAQ</h3>
   <dl class="helpdl">
-    <dt>I see "Unknown location" instead of a citadel.</dt><dd>ESI only returns a structure's name if your character has docking access. If the structure is gone, your items may be in asset safety.</dd>
+    <dt>I see "Unknown location" instead of a citadel.</dt><dd>ESI only returns a structure's name if your character has docking access. If the structure is gone, your items may be in asset safety. IndyOps tries to find the name in EVE Ref's public structure list; if it isn't there either, you can name it on the “Unknown locations” card in Settings.</dd>
     <dt>I logged in but there is no data.</dt><dd>Press "Refresh all data". If a character card asks for a new permission, log in again with that character.</dd>
     <dt>The numbers differ a bit from the game.</dt><dd>Check structure bonuses and taxes in Settings. Cost indices change hourly and market prices refresh every half hour.</dd>
     <dt>I want to use it on another computer.</dt><dd>Settings → Save to file, then Restore from file on the other computer. Only include logins if you keep the file somewhere safe.</dd>
@@ -521,7 +528,7 @@
 
   <h3>Häufige Fragen</h3>
   <dl class="helpdl">
-    <dt>Statt einer Citadel steht „Unbekannter Ort“ da.</dt><dd>ESI liefert den Namen einer Struktur nur, wenn dein Charakter Andockrechte hat. Wenn die Struktur weg ist, liegen deine Sachen eventuell in Asset Safety.</dd>
+    <dt>Statt einer Citadel steht „Unbekannter Ort“ da.</dt><dd>ESI liefert den Namen einer Struktur nur, wenn dein Charakter Andockrechte hat. Wenn die Struktur weg ist, liegen deine Sachen eventuell in Asset Safety. IndyOps versucht, den Namen in der öffentlichen Strukturliste von EVE Ref zu finden; steht er dort auch nicht, kannst du ihn auf der Karte „Unbekannte Orte“ in den Einstellungen benennen.</dd>
     <dt>Ich bin angemeldet, sehe aber keine Daten.</dt><dd>Drücke „Alle Daten aktualisieren“. Wenn eine Charakterkarte eine neue Berechtigung verlangt, melde dich mit diesem Charakter erneut an.</dd>
     <dt>Die Zahlen weichen leicht vom Spiel ab.</dt><dd>Prüfe Strukturboni und Steuern in den Einstellungen. Kostenindizes ändern sich stündlich, Marktpreise werden alle 30 Minuten aktualisiert.</dd>
     <dt>Ich möchte es auf einem anderen Rechner nutzen.</dt><dd>Einstellungen → In Datei sichern, dann auf dem anderen Rechner Aus Datei wiederherstellen. Anmeldungen nur mitsichern, wenn du die Datei sicher aufbewahrst.</dd>
@@ -545,15 +552,15 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.3.1"></script>
-<script src="i18n/de.js?v=1.3.1"></script>
-<script src="js/core.js?v=1.3.1"></script>
-<script src="js/esi.js?v=1.3.1"></script>
-<script src="js/data.js?v=1.3.1"></script>
-<script src="js/engine.js?v=1.3.1"></script>
-<script src="js/views.js?v=1.3.1"></script>
-<script src="js/tabs.js?v=1.3.1"></script>
-<script src="js/repro.js?v=1.3.1"></script>
-<script src="js/main.js?v=1.3.1"></script>
+<script src="i18n/en.js?v=1.4.0"></script>
+<script src="i18n/de.js?v=1.4.0"></script>
+<script src="js/core.js?v=1.4.0"></script>
+<script src="js/esi.js?v=1.4.0"></script>
+<script src="js/data.js?v=1.4.0"></script>
+<script src="js/engine.js?v=1.4.0"></script>
+<script src="js/views.js?v=1.4.0"></script>
+<script src="js/tabs.js?v=1.4.0"></script>
+<script src="js/repro.js?v=1.4.0"></script>
+<script src="js/main.js?v=1.4.0"></script>
 </body>
 </html>

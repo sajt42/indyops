@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 – 2026-11-09
+
+- Unknown locations: names looked up in EVE Ref's public structure list (once a day, only if you have unknown locations)
+- Unknown locations can be named by hand in Settings; the name shows everywhere; the Stock tab points there
+- Unknown structures are retried every 6 hours (e.g. after you get docking rights back)
+
 ## 1.3.1 – 2026-11-09
 
 - Settings: the second-market selector no longer breaks the card layout with long station names

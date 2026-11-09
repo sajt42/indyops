@@ -75,7 +75,10 @@ $('#bugBtn').addEventListener('click',()=>{
   const body=T('**Mi történt?**')+'\n\n\n'+T('**Mit vártál helyette?**')+'\n\n\n---\n'+APP.name+' v'+APP.version+' ('+APP.built+') · '+LANG+' · '+(HOSTED?'web':'local')+' · tab: '+tab+'\n'+navigator.userAgent+'\n\n'+T('Napló (a jelentés nyilvános: küldés előtt töröld belőle, amit nem szeretnél megosztani):')+'\n```\n'+logTxt+'\n```\n';
   $('#bugBtn').href='https://github.com/'+APP.repo+'/issues/new?'+new URLSearchParams({title:'[bug] ',body}).toString();
 });
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.locname){S.locNames=S.locNames||{};const v=t.value.trim();if(v)S.locNames[t.dataset.locname]=v;else delete S.locNames[t.dataset.locname];saveS();renderAll()}});
+$('#unkEveref').addEventListener('click',async e=>{e.target.disabled=true;const n=await everefLocs(true);e.target.disabled=false;status(n?T('EVE Ref: {0} ismeretlen hely neve meglett.',n):T('EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).'))});
 renderAll();
 updateHelpLang();
 startI18n();
 handleRedirect();
+everefLocs(false);

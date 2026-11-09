@@ -324,6 +324,7 @@ select{max-width:100%;text-overflow:ellipsis}
 
 <!-- KÉSZLET -->
 <section id="tab-stock" hidden>
+  <div id="unkNote"></div>
   <div class="row" style="justify-content:space-between;margin-bottom:12px">
     <h2 style="margin:0">Készlet</h2>
     <div class="row">
@@ -427,6 +428,12 @@ select{max-width:100%;text-overflow:ellipsis}
         <label>Melyik karakter skilljeivel számoljon <select id="sSkillChar"></select></label>
       </div>
     </div>
+    <div class="card" hidden>
+      <h2>Ismeretlen helyek</h2>
+      <p class="small muted">Ezek játékos-struktúrák, amelyeknek a nevét az ESI nem adja ki, mert egyik karakterednek sincs ott dokkolási joga. Az EVE Ref nyilvános struktúralistájában is kerestük, ott sincs. Adj nekik nevet, és onnantól mindenhol az látszik (csak a böngésződben tárolódik). A játékban az Assets ablak mutatja, hol vannak.</p>
+      <div id="unkLocs"></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="unkEveref">Újrakeresés az EVE Refben</button></div>
+    </div>
     <div class="card">
       <h2>Helyszínek a tervezőhöz</h2>
       <p class="small muted">Csak a kipipált helyszínek készlete számít a tervezésben és a „vásárlás nélkül” számításban.</p>
@@ -509,7 +516,7 @@ select{max-width:100%;text-overflow:ellipsis}
 
   <h3>Gyakori kérdések</h3>
   <dl class="helpdl">
-    <dt>„Ismeretlen hely” látszik egy citadella helyett.</dt><dd>A struktúra nevét csak akkor adja ki az ESI, ha a karakterednek van dokkolási joga. Ha a struktúra megszűnt, a tárgyak asset safetyben lehetnek.</dd>
+    <dt>„Ismeretlen hely” látszik egy citadella helyett.</dt><dd>A struktúra nevét csak akkor adja ki az ESI, ha a karakterednek van dokkolási joga. Ha a struktúra megszűnt, a tárgyak asset safetyben lehetnek. Az IndyOps megpróbálja a nevet az EVE Ref nyilvános struktúralistájából kideríteni; ha ott sincs, a Beállítások „Ismeretlen helyek” kártyáján elnevezheted.</dd>
     <dt>Bejelentkeztem, de nincs adat.</dt><dd>Nyomd meg a „Minden adat frissítése” gombot. Ha egy karakterkártya új engedélyt kér, jelentkezz be újra azzal a karakterrel.</dd>
     <dt>Kicsit más számot mutat, mint a játék.</dt><dd>Nézd meg a Beállításokban a struktúra-bónuszokat és az adót. A cost index óránként változik, a piaci árak fél óránként frissülnek.</dd>
     <dt>Másik gépen is használnám.</dt><dd>Beállítások → Mentés fájlba, és a másik gépen Visszatöltés fájlból. A bejelentkezéseket csak akkor mentsd, ha a fájlt biztonságos helyen tartod.</dd>
@@ -570,7 +577,7 @@ select{max-width:100%;text-overflow:ellipsis}
 
   <h3>FAQ</h3>
   <dl class="helpdl">
-    <dt>I see "Unknown location" instead of a citadel.</dt><dd>ESI only returns a structure's name if your character has docking access. If the structure is gone, your items may be in asset safety.</dd>
+    <dt>I see "Unknown location" instead of a citadel.</dt><dd>ESI only returns a structure's name if your character has docking access. If the structure is gone, your items may be in asset safety. IndyOps tries to find the name in EVE Ref's public structure list; if it isn't there either, you can name it on the “Unknown locations” card in Settings.</dd>
     <dt>I logged in but there is no data.</dt><dd>Press "Refresh all data". If a character card asks for a new permission, log in again with that character.</dd>
     <dt>The numbers differ a bit from the game.</dt><dd>Check structure bonuses and taxes in Settings. Cost indices change hourly and market prices refresh every half hour.</dd>
     <dt>I want to use it on another computer.</dt><dd>Settings → Save to file, then Restore from file on the other computer. Only include logins if you keep the file somewhere safe.</dd>
@@ -631,7 +638,7 @@ select{max-width:100%;text-overflow:ellipsis}
 
   <h3>Häufige Fragen</h3>
   <dl class="helpdl">
-    <dt>Statt einer Citadel steht „Unbekannter Ort“ da.</dt><dd>ESI liefert den Namen einer Struktur nur, wenn dein Charakter Andockrechte hat. Wenn die Struktur weg ist, liegen deine Sachen eventuell in Asset Safety.</dd>
+    <dt>Statt einer Citadel steht „Unbekannter Ort“ da.</dt><dd>ESI liefert den Namen einer Struktur nur, wenn dein Charakter Andockrechte hat. Wenn die Struktur weg ist, liegen deine Sachen eventuell in Asset Safety. IndyOps versucht, den Namen in der öffentlichen Strukturliste von EVE Ref zu finden; steht er dort auch nicht, kannst du ihn auf der Karte „Unbekannte Orte“ in den Einstellungen benennen.</dd>
     <dt>Ich bin angemeldet, sehe aber keine Daten.</dt><dd>Drücke „Alle Daten aktualisieren“. Wenn eine Charakterkarte eine neue Berechtigung verlangt, melde dich mit diesem Charakter erneut an.</dd>
     <dt>Die Zahlen weichen leicht vom Spiel ab.</dt><dd>Prüfe Strukturboni und Steuern in den Einstellungen. Kostenindizes ändern sich stündlich, Marktpreise werden alle 30 Minuten aktualisiert.</dd>
     <dt>Ich möchte es auf einem anderen Rechner nutzen.</dt><dd>Einstellungen → In Datei sichern, dann auf dem anderen Rechner Aus Datei wiederherstellen. Anmeldungen nur mitsichern, wenn du die Datei sicher aufbewahrst.</dd>
@@ -1204,7 +1211,19 @@ window.I18N.en={
  "Ki adjon el?": "Who should sell?",
  "javasolt": "suggested",
  "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.": "Fees come from skills (Accounting, Broker Relations). ESI doesn't provide standings, so the real broker fee may be a bit lower; you can enter it by hand in Settings.",
- "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tip: you can set a second market next to Jita (e.g. Amarr, or a station or structure where you have stuff), and its prices show up here too."
+ "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tip: you can set a second market next to Jita (e.g. Amarr, or a station or structure where you have stuff), and its prices show up here too.",
+ "Ismeretlen helyek": "Unknown locations",
+ "Ezek játékos-struktúrák, amelyeknek a nevét az ESI nem adja ki, mert egyik karakterednek sincs ott dokkolási joga. Az EVE Ref nyilvános struktúralistájában is kerestük, ott sincs. Adj nekik nevet, és onnantól mindenhol az látszik (csak a böngésződben tárolódik). A játékban az Assets ablak mutatja, hol vannak.": "These are player structures whose names ESI doesn't return because none of your characters has docking access there. We also looked in EVE Ref's public structure list; they aren't there either. Give them a name and it shows everywhere from then on (stored only in your browser). In game, the Assets window shows where they are.",
+ "Újrakeresés az EVE Refben": "Search EVE Ref again",
+ "Azonosító": "ID",
+ "Mi van ott": "What's there",
+ "{0} féle tárgy": "{0} kinds of items",
+ "pl. a játék Assets ablakából": "e.g. from the in-game Assets window",
+ "ismeretlen helyek keresése az EVE Refben…": "looking up unknown locations in EVE Ref…",
+ "EVE Ref: {0} ismeretlen hely neve meglett.": "EVE Ref: found the name of {0} unknown locations.",
+ "EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).": "EVE Ref: the unknown locations aren't listed (probably private structures).",
+ "{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).": "{0} locations have no known name (player structures where you have no docking access).",
+ "Elnevezés a Beállításokban": "Name them in Settings"
 };
 </script>
 <script>
@@ -1756,7 +1775,19 @@ window.I18N.de={
  "Ki adjon el?": "Wer soll verkaufen?",
  "javasolt": "empfohlen",
  "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations). Standings liefert ESI nicht, daher kann die echte Broker Fee etwas niedriger sein; in den Einstellungen kannst du sie von Hand eintragen.",
- "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tipp: Du kannst neben Jita einen zweiten Markt einstellen (z. B. Amarr oder eine Station oder Struktur mit deinen Sachen); dessen Preise erscheinen dann auch hier."
+ "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tipp: Du kannst neben Jita einen zweiten Markt einstellen (z. B. Amarr oder eine Station oder Struktur mit deinen Sachen); dessen Preise erscheinen dann auch hier.",
+ "Ismeretlen helyek": "Unbekannte Orte",
+ "Ezek játékos-struktúrák, amelyeknek a nevét az ESI nem adja ki, mert egyik karakterednek sincs ott dokkolási joga. Az EVE Ref nyilvános struktúralistájában is kerestük, ott sincs. Adj nekik nevet, és onnantól mindenhol az látszik (csak a böngésződben tárolódik). A játékban az Assets ablak mutatja, hol vannak.": "Das sind Spielerstrukturen, deren Namen ESI nicht liefert, weil keiner deiner Charaktere dort Andockrechte hat. Auch in der öffentlichen Strukturliste von EVE Ref stehen sie nicht. Gib ihnen einen Namen, dann erscheint er überall (nur in deinem Browser gespeichert). Im Spiel zeigt das Assets-Fenster, wo sie sind.",
+ "Újrakeresés az EVE Refben": "Erneut bei EVE Ref suchen",
+ "Azonosító": "ID",
+ "Mi van ott": "Was liegt dort",
+ "{0} féle tárgy": "{0} Arten von Gegenständen",
+ "pl. a játék Assets ablakából": "z. B. aus dem Assets-Fenster im Spiel",
+ "ismeretlen helyek keresése az EVE Refben…": "unbekannte Orte werden bei EVE Ref gesucht…",
+ "EVE Ref: {0} ismeretlen hely neve meglett.": "EVE Ref: Name von {0} unbekannten Orten gefunden.",
+ "EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).": "EVE Ref: die unbekannten Orte sind nicht gelistet (vermutlich private Strukturen).",
+ "{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).": "Bei {0} Orten ist der Name unbekannt (Spielerstrukturen ohne Andockrechte).",
+ "Elnevezés a Beállításokban": "In den Einstellungen benennen"
 };
 </script>
 <script>
@@ -1777,7 +1808,7 @@ const SK={industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,repr
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.3.1',built:'2026-11-09',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.4.0',built:'2026-11-09',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -1967,8 +1998,8 @@ async function resolveNames(ids){
   scheduleSave('names');
 }
 async function resolveLoc(locId,char){
-  if(LOCINFO[locId]) return LOCINFO[locId];
-  let info={name:'Ismeretlen hely #'+locId,system:null};
+  const old=LOCINFO[locId];if(old&&!(unkInfo(old)&&Date.now()-(old.tried||0)>6*3600000)) return old;
+  let info={name:'Ismeretlen hely #'+locId,system:null,unk:1,tried:Date.now()};
   try{
     if(locId>=60000000&&locId<64000000){const s=await esi('/universe/stations/'+locId+'/');info={name:s.name,system:s.system_id}}
     else if(locId>=30000000&&locId<33000000){await resolveNames([locId]);info={name:(NAMES[locId]||locId)+' (űrben)',system:locId}}
@@ -1976,6 +2007,7 @@ async function resolveLoc(locId,char){
       for(const c of (char?[char]:[]).concat(CHARS)){try{const s=await esi('/universe/structures/'+locId+'/',{char:c});info={name:s.name,system:s.solar_system_id,stype:s.type_id||0};break}catch(e){}}
     }
   }catch(e){log('Hely feloldása sikertelen: '+locId)}
+  if(info.unk&&old&&old.ev){old.tried=info.tried;info=old}
   LOCINFO[locId]=info;store('locinfo',LOCINFO);return info;
 }
 
@@ -2013,7 +2045,7 @@ async function refreshChar(c){
   }catch(e){log('Hiba ('+c.name+'): '+e.message);alertBox(T('Nem sikerült frissíteni: {0}. {1}',c.name,e.message))}
   status('kész');renderAll();
 }
-async function refreshAll(){for(const c of CHARS) await refreshChar(c)}
+async function refreshAll(){for(const c of CHARS) await refreshChar(c);await everefLocs(true)}
 </script>
 <script>
 /* js/data.js */
@@ -2021,7 +2053,7 @@ async function refreshAll(){for(const c of CHARS) await refreshChar(c)}
 "use strict";
 /* ============ összesített nézetek ============ */
 function allLocs(){const m=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets)m.set(a.l,true);for(const b of d.bps)m.set(b.l,true)}return [...m.keys()]}
-function locName(l){if(LOCINFO[l]&&LOCINFO[l].name){const n=LOCINFO[l].name;if(n.startsWith('Ismeretlen hely #'))return T('Ismeretlen hely #{0}',n.slice(17));return n.endsWith(' (űrben)')?n.slice(0,-8)+' '+T('(űrben)'):n}if(l===JITA_STATION)return 'Jita IV - Moon 4 - Caldari Navy Assembly Plant';return '#'+l}
+function locName(l){const mn=S.locNames&&S.locNames[l];if(mn)return mn;if(LOCINFO[l]&&LOCINFO[l].name){const n=LOCINFO[l].name;if(n.startsWith('Ismeretlen hely #'))return T('Ismeretlen hely #{0}',n.slice(17));return n.endsWith(' (űrben)')?n.slice(0,-8)+' '+T('(űrben)'):n}if(l===JITA_STATION)return 'Jita IV - Moon 4 - Caldari Navy Assembly Plant';return '#'+l}
 function charName(id){const c=CHARS.find(x=>x.id==id);return c?c.name:'#'+id}
 function planLocs(){return S.locs?new Set(S.locs.map(Number)):new Set(allLocs())}
 function allBPs(){const out=[];for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const b of d.bps)out.push(Object.assign({cid:Number(cid)},b))}return out}
@@ -2119,6 +2151,32 @@ async function structBook(id){
     for(const x of o){let r=m.get(x.type_id);if(!r){r={s:Infinity,b:0};m.set(x.type_id,r)}if(x.is_buy_order){if(x.price>r.b)r.b=x.price}else if(x.price<r.s)r.s=x.price}
     STRBOOK={id,at:Date.now(),m};log(T('{0} piaca: {1} order',m2Short(),fmt(o.length)));return STRBOOK}catch(e){log('Struktúra piac ('+c.name+'): '+e.message)}}
   alertBox(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));return null;
+}
+
+/* ============ ismeretlen helyek ============ */
+const unkInfo=i=>!!i&&!i.ev&&!i.system&&(!!i.unk||String(i.name||'').startsWith('Ismeretlen hely #'));
+const isUnknownLoc=l=>unkInfo(LOCINFO[l]);
+function unknownLocs(){return allLocs().filter(l=>isUnknownLoc(l)||(S.locNames&&S.locNames[l]))}
+// az EVE Ref nyilvános struktúralistájából próbálja kitalálni a nevet (csak ha van ismeretlen hely; naponta egyszer)
+async function everefLocs(force){
+  const un=allLocs().filter(l=>isUnknownLoc(l)&&l>1e12);if(!un.length)return 0;
+  const last=load('everef_at',0);if(!force&&Date.now()-last<24*3600000)return 0;
+  try{status(T('ismeretlen helyek keresése az EVE Refben…'));const r=await fetchT('https://data.everef.net/structures/structures-latest.v2.json',60000);if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();store('everef_at',Date.now());let n=0;
+    for(const l of un){const x=j[l];if(x&&x.name){LOCINFO[l]={name:x.name,system:x.solar_system_id,stype:x.type_id||0,ev:1,tried:Date.now()};n++}}
+    if(n){store('locinfo',LOCINFO);log(T('EVE Ref: {0} ismeretlen hely neve meglett.',n))}else log(T('EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).'));
+    status('kész');if(n)renderAll();return n}
+  catch(e){log('EVE Ref struktúralista: '+e.message);status('kész');return 0}
+}
+function renderUnknownLocs(){
+  const el=document.getElementById('unkLocs');if(!el)return;const ls=unknownLocs();
+  const card=el.closest('.card');if(card)card.hidden=!ls.length;
+  const nn=ls.filter(l=>!(S.locNames&&S.locNames[l])).length;const note=document.getElementById('unkNote');if(note)note.innerHTML=nn?`<div class="notice"><p class="small">${T('{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).',nn)} <a href="#" data-goto="settings">${T('Elnevezés a Beállításokban')}</a></p></div>`:'';
+  if(!ls.length){el.innerHTML='';return}
+  el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Azonosító</th><th>Mi van ott</th><th>Név</th></tr></thead><tbody>${ls.map(l=>{
+    const items=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets)if(a.l===l)items.set(a.t,(items.get(a.t)||0)+a.q);for(const b of d.bps)if(b.l===l)items.set(b.t,(items.get(b.t)||0)+1)}
+    const top=[...items.keys()].slice(0,5).map(t=>esc(NAMES[t]||t)).join(', ');
+    return `<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy',fmt(items.size))}${top?': '+top+(items.size>5?' …':''):''}</td><td><input data-locname="${l}" value="${esc((S.locNames&&S.locNames[l])||'')}" placeholder="${esc(T('pl. a játék Assets ablakából'))}" style="width:100%"></td></tr>`}).join('')}</tbody></table></div>`;
 }
 </script>
 <script>
@@ -2258,7 +2316,7 @@ async function sysFor(bp){
 /* IndyOps – Rendering: characters, blueprints, stock, settings, plan results, hauling. */
 "use strict";
 /* ============ RENDER ============ */
-function renderAll(){renderProjects();renderChars();renderJobs();renderBPs();renderStock();renderLocList();renderPlanOptions();renderSettings()}
+function renderAll(){renderProjects();renderChars();renderJobs();renderBPs();renderStock();renderLocList();renderPlanOptions();renderSettings();renderUnknownLocs()}
 function alertBox(msg){const d=document.createElement('div');d.className='notice err';d.innerHTML='<p>'+esc(msg)+'</p>';const host=document.querySelector('section:not([hidden])')||document.body;host.prepend(d);setTimeout(()=>d.remove(),12000)}
 function renderChars(){
   $('#setupBox').hidden=!!clientId();
@@ -3078,10 +3136,13 @@ $('#bugBtn').addEventListener('click',()=>{
   const body=T('**Mi történt?**')+'\n\n\n'+T('**Mit vártál helyette?**')+'\n\n\n---\n'+APP.name+' v'+APP.version+' ('+APP.built+') · '+LANG+' · '+(HOSTED?'web':'local')+' · tab: '+tab+'\n'+navigator.userAgent+'\n\n'+T('Napló (a jelentés nyilvános: küldés előtt töröld belőle, amit nem szeretnél megosztani):')+'\n```\n'+logTxt+'\n```\n';
   $('#bugBtn').href='https://github.com/'+APP.repo+'/issues/new?'+new URLSearchParams({title:'[bug] ',body}).toString();
 });
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.locname){S.locNames=S.locNames||{};const v=t.value.trim();if(v)S.locNames[t.dataset.locname]=v;else delete S.locNames[t.dataset.locname];saveS();renderAll()}});
+$('#unkEveref').addEventListener('click',async e=>{e.target.disabled=true;const n=await everefLocs(true);e.target.disabled=false;status(n?T('EVE Ref: {0} ismeretlen hely neve meglett.',n):T('EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).'))});
 renderAll();
 updateHelpLang();
 startI18n();
 handleRedirect();
+everefLocs(false);
 </script>
 </body>
 </html>

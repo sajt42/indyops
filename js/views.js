@@ -1,7 +1,7 @@
 /* IndyOps – Rendering: characters, blueprints, stock, settings, plan results, hauling. */
 "use strict";
 /* ============ RENDER ============ */
-function renderAll(){renderProjects();renderChars();renderJobs();renderBPs();renderStock();renderLocList();renderPlanOptions();renderSettings()}
+function renderAll(){renderProjects();renderChars();renderJobs();renderBPs();renderStock();renderLocList();renderPlanOptions();renderSettings();renderUnknownLocs()}
 function alertBox(msg){const d=document.createElement('div');d.className='notice err';d.innerHTML='<p>'+esc(msg)+'</p>';const host=document.querySelector('section:not([hidden])')||document.body;host.prepend(d);setTimeout(()=>d.remove(),12000)}
 function renderChars(){
   $('#setupBox').hidden=!!clientId();

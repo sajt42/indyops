@@ -2,7 +2,7 @@
 "use strict";
 /* ============ összesített nézetek ============ */
 function allLocs(){const m=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets)m.set(a.l,true);for(const b of d.bps)m.set(b.l,true)}return [...m.keys()]}
-function locName(l){if(LOCINFO[l]&&LOCINFO[l].name){const n=LOCINFO[l].name;if(n.startsWith('Ismeretlen hely #'))return T('Ismeretlen hely #{0}',n.slice(17));return n.endsWith(' (űrben)')?n.slice(0,-8)+' '+T('(űrben)'):n}if(l===JITA_STATION)return 'Jita IV - Moon 4 - Caldari Navy Assembly Plant';return '#'+l}
+function locName(l){const mn=S.locNames&&S.locNames[l];if(mn)return mn;if(LOCINFO[l]&&LOCINFO[l].name){const n=LOCINFO[l].name;if(n.startsWith('Ismeretlen hely #'))return T('Ismeretlen hely #{0}',n.slice(17));return n.endsWith(' (űrben)')?n.slice(0,-8)+' '+T('(űrben)'):n}if(l===JITA_STATION)return 'Jita IV - Moon 4 - Caldari Navy Assembly Plant';return '#'+l}
 function charName(id){const c=CHARS.find(x=>x.id==id);return c?c.name:'#'+id}
 function planLocs(){return S.locs?new Set(S.locs.map(Number)):new Set(allLocs())}
 function allBPs(){const out=[];for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const b of d.bps)out.push(Object.assign({cid:Number(cid)},b))}return out}
@@ -100,4 +100,30 @@ async function structBook(id){
     for(const x of o){let r=m.get(x.type_id);if(!r){r={s:Infinity,b:0};m.set(x.type_id,r)}if(x.is_buy_order){if(x.price>r.b)r.b=x.price}else if(x.price<r.s)r.s=x.price}
     STRBOOK={id,at:Date.now(),m};log(T('{0} piaca: {1} order',m2Short(),fmt(o.length)));return STRBOOK}catch(e){log('Struktúra piac ('+c.name+'): '+e.message)}}
   alertBox(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));return null;
+}
+
+/* ============ ismeretlen helyek ============ */
+const unkInfo=i=>!!i&&!i.ev&&!i.system&&(!!i.unk||String(i.name||'').startsWith('Ismeretlen hely #'));
+const isUnknownLoc=l=>unkInfo(LOCINFO[l]);
+function unknownLocs(){return allLocs().filter(l=>isUnknownLoc(l)||(S.locNames&&S.locNames[l]))}
+// az EVE Ref nyilvános struktúralistájából próbálja kitalálni a nevet (csak ha van ismeretlen hely; naponta egyszer)
+async function everefLocs(force){
+  const un=allLocs().filter(l=>isUnknownLoc(l)&&l>1e12);if(!un.length)return 0;
+  const last=load('everef_at',0);if(!force&&Date.now()-last<24*3600000)return 0;
+  try{status(T('ismeretlen helyek keresése az EVE Refben…'));const r=await fetchT('https://data.everef.net/structures/structures-latest.v2.json',60000);if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();store('everef_at',Date.now());let n=0;
+    for(const l of un){const x=j[l];if(x&&x.name){LOCINFO[l]={name:x.name,system:x.solar_system_id,stype:x.type_id||0,ev:1,tried:Date.now()};n++}}
+    if(n){store('locinfo',LOCINFO);log(T('EVE Ref: {0} ismeretlen hely neve meglett.',n))}else log(T('EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).'));
+    status('kész');if(n)renderAll();return n}
+  catch(e){log('EVE Ref struktúralista: '+e.message);status('kész');return 0}
+}
+function renderUnknownLocs(){
+  const el=document.getElementById('unkLocs');if(!el)return;const ls=unknownLocs();
+  const card=el.closest('.card');if(card)card.hidden=!ls.length;
+  const nn=ls.filter(l=>!(S.locNames&&S.locNames[l])).length;const note=document.getElementById('unkNote');if(note)note.innerHTML=nn?`<div class="notice"><p class="small">${T('{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).',nn)} <a href="#" data-goto="settings">${T('Elnevezés a Beállításokban')}</a></p></div>`:'';
+  if(!ls.length){el.innerHTML='';return}
+  el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Azonosító</th><th>Mi van ott</th><th>Név</th></tr></thead><tbody>${ls.map(l=>{
+    const items=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets)if(a.l===l)items.set(a.t,(items.get(a.t)||0)+a.q);for(const b of d.bps)if(b.l===l)items.set(b.t,(items.get(b.t)||0)+1)}
+    const top=[...items.keys()].slice(0,5).map(t=>esc(NAMES[t]||t)).join(', ');
+    return `<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy',fmt(items.size))}${top?': '+top+(items.size>5?' …':''):''}</td><td><input data-locname="${l}" value="${esc((S.locNames&&S.locNames[l])||'')}" placeholder="${esc(T('pl. a játék Assets ablakából'))}" style="width:100%"></td></tr>`}).join('')}</tbody></table></div>`;
 }

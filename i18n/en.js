@@ -545,5 +545,17 @@ window.I18N.en={
  "Ki adjon el?": "Who should sell?",
  "javasolt": "suggested",
  "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.": "Fees come from skills (Accounting, Broker Relations). ESI doesn't provide standings, so the real broker fee may be a bit lower; you can enter it by hand in Settings.",
- "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tip: you can set a second market next to Jita (e.g. Amarr, or a station or structure where you have stuff), and its prices show up here too."
+ "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tip: you can set a second market next to Jita (e.g. Amarr, or a station or structure where you have stuff), and its prices show up here too.",
+ "Ismeretlen helyek": "Unknown locations",
+ "Ezek játékos-struktúrák, amelyeknek a nevét az ESI nem adja ki, mert egyik karakterednek sincs ott dokkolási joga. Az EVE Ref nyilvános struktúralistájában is kerestük, ott sincs. Adj nekik nevet, és onnantól mindenhol az látszik (csak a böngésződben tárolódik). A játékban az Assets ablak mutatja, hol vannak.": "These are player structures whose names ESI doesn't return because none of your characters has docking access there. We also looked in EVE Ref's public structure list; they aren't there either. Give them a name and it shows everywhere from then on (stored only in your browser). In game, the Assets window shows where they are.",
+ "Újrakeresés az EVE Refben": "Search EVE Ref again",
+ "Azonosító": "ID",
+ "Mi van ott": "What's there",
+ "{0} féle tárgy": "{0} kinds of items",
+ "pl. a játék Assets ablakából": "e.g. from the in-game Assets window",
+ "ismeretlen helyek keresése az EVE Refben…": "looking up unknown locations in EVE Ref…",
+ "EVE Ref: {0} ismeretlen hely neve meglett.": "EVE Ref: found the name of {0} unknown locations.",
+ "EVE Ref: nem találtam az ismeretlen helyeket (valószínűleg privát struktúrák).": "EVE Ref: the unknown locations aren't listed (probably private structures).",
+ "{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).": "{0} locations have no known name (player structures where you have no docking access).",
+ "Elnevezés a Beállításokban": "Name them in Settings"
 };
