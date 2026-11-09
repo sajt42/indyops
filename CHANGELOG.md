@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4 – 2026-11-09
+
+- Help: Contact section (bug reports, source code, author) in every language; direct link to the offline file and the README
+- Footer: SajT links to the author's GitHub profile
+
 ## 1.0.3 – 2026-11-09
 
 - Fix: the Help page showed all three languages at once; now only the selected language is shown
