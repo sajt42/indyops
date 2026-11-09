@@ -29,8 +29,9 @@ function sellers(){return CHARS.filter(c=>DATA[c.id]).map(c=>({cid:c.id,tax:sale
 function bestSeller(){return sellers()[0]||null} // akinek a legkisebb az eladási díja
 function salesTax(){const b=bestSeller();return b?b.tax:salesTaxOf(null)}
 function brokerFee(){const b=bestSeller();return b?b.broker:brokerFeeOf(null)}
-function sellerHtml(){const ss=sellers();if(!ss.length)return '';const b=ss[0];
-  return `<p class="small">${T('Eladásra javasolt karakter: {0} (sales tax {1}%, broker {2}%).',`<b>${esc(charName(b.cid))}</b>`,fmt(b.tax*100,2),fmt(b.broker*100,2))}${ss.length>1?' '+ss.slice(1).map(x=>T('{0}: {1}% összesen',esc(charName(x.cid)),fmt(x.fee*100,2))).join(' · '):''}</p>`}
+function sellerHtml(){const ss=sellers();if(!ss.length)return '';
+  return `<h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee</th><th class="num">Összesen</th><th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td><td class="num"><b>${fmt(x.fee*100,2)}%</b></td><td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.</p>`}
+function m2Hint(){return m2On()?'':`<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`}
 
 /* ============ második piac ============ */
 const HUBS=[[60003760,10000002,'Jita IV - Moon 4 - Caldari Navy Assembly Plant'],[60008494,10000043,'Amarr VIII (Oris) - Emperor Family Academy'],[60011866,10000032,'Dodixie IX - Moon 20 - Federation Navy Assembly Plant'],[60004588,10000030,'Rens VI - Moon 8 - Brutor Tribe Treasury'],[60005686,10000042,'Hek VIII - Moon 12 - Boundless Creation Factory']];

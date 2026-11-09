@@ -532,8 +532,6 @@ window.I18N.en={
  "Állomások, ahol van cuccod": "Stations where you have stuff",
  "Második piac: {0}. Az árak a következő számolásnál töltődnek le.": "Second market: {0}. Prices load with the next calculation.",
  "eladó: {0}": "seller: {0}",
- "Eladásra javasolt karakter: {0} (sales tax {1}%, broker {2}%).": "Suggested seller: {0} (sales tax {1}%, broker {2}%).",
- "{0}: {1}% összesen": "{0}: {1}% total",
  "Struktúrák, ahol van cuccod": "Structures where you have stuff",
  "{0} piaca…": "{0} market…",
  "{0} piaca: {1} order": "{0} market: {1} orders",
@@ -543,5 +541,9 @@ window.I18N.en={
  "Jelentkezz be újra, hogy az implant automatikus legyen.": "Log in again to read the implant automatically.",
  "Új funkciókhoz új engedély kell ehhez a karakterhez. Nyomd meg az „Újra bejelentkezés” gombot.": "New features need a new permission for this character. Press “Log in again”.",
  "Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.": "Ore and ice processing skills (e.g. Simple Ore Processing) are applied per item. The implant is read from ESI (active clone); if you switch clones to reprocess, set it here by hand. For modules and loot only Scrapmetal Processing counts.",
- "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.": "Next to Jita prices, this station's best sell price is shown too (Planner, What pays?, Selling, Reprocess). Pick a trade hub, or a station or structure where you have stuff. For a structure, one of your characters needs docking rights and it must run a market module."
+ "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.": "Next to Jita prices, this station's best sell price is shown too (Planner, What pays?, Selling, Reprocess). Pick a trade hub, or a station or structure where you have stuff. For a structure, one of your characters needs docking rights and it must run a market module.",
+ "Ki adjon el?": "Who should sell?",
+ "javasolt": "suggested",
+ "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.": "Fees come from skills (Accounting, Broker Relations). ESI doesn't provide standings, so the real broker fee may be a bit lower; you can enter it by hand in Settings.",
+ "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tip: you can set a second market next to Jita (e.g. Amarr, or a station or structure where you have stuff), and its prices show up here too."
 };

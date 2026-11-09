@@ -102,3 +102,8 @@ button.btn.mini{padding:2px 7px;font-size:11px}
 .help ul li{margin-bottom:6px}
 .brand .ver{font:500 11px var(--f-mono);color:var(--muted);text-transform:none;letter-spacing:0}
 .replog{margin:10px 0 0;height:150px;overflow:auto;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:6px;font:12px/1.45 var(--f-mono);color:var(--muted);white-space:pre-wrap}
+select{max-width:100%;text-overflow:ellipsis}
+.row>label{min-width:0;max-width:100%}
+#sMarket2{width:100%}
+.m2hint{margin-top:6px}
+.seltab td,.seltab th{padding-top:4px;padding-bottom:4px}

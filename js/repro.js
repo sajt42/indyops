@@ -119,7 +119,7 @@ function renderRepro(){
     const verdict=!x.pick||!x.inV&&!x.outV?'':x.outV>x.inV?'<span class="pill ok">reprocess</span>':'<span class="pill warn">eladás</span>';
     return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k)?'checked':''}></td><td>${esc(NAMES[r.t]||r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest?`<div class="small muted">${T('{0} marad',fmt(x.rest))}</div>`:''}</td><td class="small">${who}</td><td class="small">${top||'–'}</td><td class="num">${x.inV?(repPrice(r.t).a?'~':'')+isk(x.inV):'–'}${m2On()&&x.in2?`<div class="small muted">${esc(m2Short())} ${isk(x.in2)}</div>`:''}</td><td class="num">${x.outV?(x.out.some(([m])=>repPrice(m).a)?'~':'')+isk(x.outV):'–'}${m2On()&&x.out2?`<div class="small muted">${esc(m2Short())} ${isk(x.out2)}</div>`:''}</td><td>${verdict}</td></tr>`}).join('')}</tbody></table></div>
   ${rows.length>LIM?`<p class="small muted">${T('Az első {0} tétel látszik ({1}-ból). Szűkíts a szűrőkkel.',LIM,fmt(rows.length))}</p>`:''}
-  <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a „Jita árak a kijelöltekre” gomb pontosítja. A „marad” a portion alatti maradék, az nem dolgozható fel.</p>`;
+  <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a „Jita árak a kijelöltekre” gomb pontosítja. A „marad” a portion alatti maradék, az nem dolgozható fel.</p>`+m2Hint();
   renderRepSum();
 }
 function renderRepChars(){

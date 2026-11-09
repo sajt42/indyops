@@ -203,10 +203,10 @@ function renderResult(el,R,rerun){
     <div class="kpi"><div class="k">Vásárolni kell</div><div class="v">${isk(buyCost)}</div></div>
     <div class="kpi"><div class="k">Saját készlet értéke</div><div class="v">${free?'ingyen':isk(stockCost)}</div></div>
     <div class="kpi"><div class="k">Job költség</div><div class="v">${isk(jcT)}</div></div>
-    <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div></div>
+    <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?`<div class="small muted">${esc(m2Short())}: ${isk(R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0)*(1-fee))}</div>`:''}</div>
     <div class="kpi"><div class="k">Profit</div><div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div></div>
   </div>`;
-  h+=`<p class="small muted">${T('Gyártási rendszer: {0}',esc(NAMES[R.sys]||R.sys||T('ismeretlen')))}${ixm!=null?' · cost index '+fmt(ixm*100,2)+'%':''} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`;
+  h+=`<p class="small muted">${T('Gyártási rendszer: {0}',esc(NAMES[R.sys]||R.sys||T('ismeretlen')))}${ixm!=null?' · cost index '+fmt(ixm*100,2)+'%':''} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
   R.warn.forEach(w=>h+=`<div class="notice">${esc(warnText(w))}</div>`);
   // termékenként
   h+=`<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi?'<th>Projekt</th>':''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On()?`<th class="num">${esc(m2Short())} sell / db</th>`:''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r=>`<tr>${multi?`<td>${esc(r.x.item.label||'')}</td>`:''}<td>${esc(NAMES[r.p]||r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On()?`<td class="num">${m2Cell(sell(r.p),sell2(r.p))}</td>`:''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.profit>=0?'pos':'neg'}">${isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
@@ -224,12 +224,13 @@ function renderResult(el,R,rerun){
   h+=renderHaul(R);
   // fák
   h+=`<h3>Anyagfa</h3><p class="small muted">Komponens sorára kattintva: gyártom ↔ veszem. A „Gyártva / Jita” oszlop egy darab árát mutatja: saját gyártásban (anyag piaci áron + job) és megvéve. A zöld az olcsóbb. A „Honnan” oszlopban a hely is látszik.</p>`;
-  R.trees.forEach(x=>{h+=`<details ${multi?'':'open'} style="margin-bottom:8px"><summary>${esc((x.item.label?x.item.label+' · ':'')+fmt(x.made)+' × '+(NAMES[x.tree.t]||x.tree.t))}</summary><div class="tablewrap" style="margin-top:6px"><table class="tree"><thead><tr><th>Tárgy</th><th class="num">Kell</th><th class="num">Készletből</th><th class="num">Gyártom</th><th class="num">Veszem</th><th class="num">Gyártva / Jita (db)</th><th>Honnan</th></tr></thead><tbody>${treeRows(x.tree,0,R.sys)}</tbody></table></div></details>`});
+  R.trees.forEach(x=>{h+=`<details ${multi?'':'open'} style="margin-bottom:8px"><summary>${esc((x.item.label?x.item.label+' · ':'')+fmt(x.made)+' × '+(NAMES[x.tree.t]||x.tree.t))}</summary><div class="tablewrap" style="margin-top:6px"><table class="tree"><thead><tr><th>Tárgy</th><th class="num">Kell</th><th class="num">Készletből</th><th class="num">Gyártom</th><th class="num">Veszem</th><th class="num">Gyártva / Jita (db)${m2On()?'<span data-noi18n> · '+esc(m2Short())+'</span>':''}</th><th>Honnan</th></tr></thead><tbody>${treeRows(x.tree,0,R.sys)}</tbody></table></div></details>`});
   el.innerHTML=h;
   const cb=el.querySelector('[data-copybuy]');cb&&cb.addEventListener('click',()=>{const txt=bl.map(([t,q])=>(NAMES[t]||t)+'\t'+q).join('\n');navigator.clipboard.writeText(txt).then(()=>status('lista vágólapon'),()=>status('másolás nem sikerült'))});
   el.querySelectorAll('tr[data-toggle]').forEach(tr=>tr.addEventListener('click',()=>{const t=Number(tr.dataset.toggle);if(S.buyOverride[t])delete S.buyOverride[t];else S.buyOverride[t]=true;saveS();rerun()}));
 }
-function bbCell(n,d,sys){const up=unitPrice(n.t);if(!n.build)return up?isk(up):'–';const ub=buildUnit(n,sys);if(ub==null)return '–';if(!up)return isk(ub)+' / –';const cheaper=ub<=up;return `<span class="${cheaper?'pos':''}">${isk(ub)}</span> / <span class="${cheaper?'':'pos'}">${isk(up)}</span>`}
+function bbCell(n,d,sys){const up=unitPrice(n.t);const m2=m2On()&&sell2(n.t)?`<div class="small muted">${esc(m2Short())} ${isk(sell2(n.t))}</div>`:'';return bbCell0(n,d,sys,up)+m2}
+function bbCell0(n,d,sys,up){if(!n.build)return up?isk(up):'–';const ub=buildUnit(n,sys);if(ub==null)return '–';if(!up)return isk(ub)+' / –';const cheaper=ub<=up;return `<span class="${cheaper?'pos':''}">${isk(ub)}</span> / <span class="${cheaper?'':'pos'}">${isk(up)}</span>`}
 function treeRows(n,d,sys){
   const st=n.stock.reduce((s,x)=>s+x.q,0);const canToggle=d>0&&(ownedFor(n.t).length>0);
   const src=n.stock.map(x=>x.l==='surplus'?T('felesleg más jobból'):x.l==='job'?T('futó job ({0})',charName(x.cid)):locName(x.l)+(x.ore?' '+T('(ércből)'):''));

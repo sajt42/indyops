@@ -532,8 +532,6 @@ window.I18N.de={
  "Állomások, ahol van cuccod": "Stationen mit deinen Sachen",
  "Második piac: {0}. Az árak a következő számolásnál töltődnek le.": "Zweiter Markt: {0}. Die Preise werden bei der nächsten Berechnung geladen.",
  "eladó: {0}": "Verkäufer: {0}",
- "Eladásra javasolt karakter: {0} (sales tax {1}%, broker {2}%).": "Empfohlener Verkäufer: {0} (Sales Tax {1} %, Broker {2} %).",
- "{0}: {1}% összesen": "{0}: {1} % gesamt",
  "Struktúrák, ahol van cuccod": "Strukturen mit deinen Sachen",
  "{0} piaca…": "Markt {0}…",
  "{0} piaca: {1} order": "Markt {0}: {1} Orders",
@@ -543,5 +541,9 @@ window.I18N.de={
  "Jelentkezz be újra, hogy az implant automatikus legyen.": "Melde dich erneut an, damit das Implantat automatisch gelesen wird.",
  "Új funkciókhoz új engedély kell ehhez a karakterhez. Nyomd meg az „Újra bejelentkezés” gombot.": "Neue Funktionen brauchen eine neue Berechtigung für diesen Charakter. Drücke „Erneut anmelden“.",
  "Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.": "Erz- und Eisverarbeitungs-Skills (z. B. Simple Ore Processing) werden pro Gegenstand berücksichtigt. Das Implantat wird aus ESI gelesen (aktiver Klon); wenn du zum Reprocessen den Klon wechselst, stelle es hier von Hand ein. Für Module und Loot zählt nur Scrapmetal Processing.",
- "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.": "Neben den Jita-Preisen wird auch der beste Verkaufspreis dieses Ortes angezeigt (Planer, Was lohnt sich?, Verkauf, Reprocess). Wähle einen Handelsknoten oder eine Station oder Struktur mit deinen Sachen. Bei einer Struktur braucht einer deiner Charaktere Andockrechte, und dort muss ein Marktmodul laufen."
+ "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.": "Neben den Jita-Preisen wird auch der beste Verkaufspreis dieses Ortes angezeigt (Planer, Was lohnt sich?, Verkauf, Reprocess). Wähle einen Handelsknoten oder eine Station oder Struktur mit deinen Sachen. Bei einer Struktur braucht einer deiner Charaktere Andockrechte, und dort muss ein Marktmodul laufen.",
+ "Ki adjon el?": "Wer soll verkaufen?",
+ "javasolt": "empfohlen",
+ "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations). Standings liefert ESI nicht, daher kann die echte Broker Fee etwas niedriger sein; in den Einstellungen kannst du sie von Hand eintragen.",
+ "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tipp: Du kannst neben Jita einen zweiten Markt einstellen (z. B. Amarr oder eine Station oder Struktur mit deinen Sachen); dessen Preise erscheinen dann auch hier."
 };

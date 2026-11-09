@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.1 – 2026-11-09
+
+- Settings: the second-market selector no longer breaks the card layout with long station names
+- Second market shown wherever Jita prices are: Planner (sales KPI, products, shopping list, material tree), What pays?, Invention, Selling, Mining, Reprocess; when not set, a tip links to Settings
+- Who should sell: the same table everywhere (character, sales tax, broker fee, total, suggested)
+
 ## 1.3.0 – 2026-11-09
 
 - Implants read from ESI (active clone): the Beancounter reprocessing implant is detected automatically; manual override stays
