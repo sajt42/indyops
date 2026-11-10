@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.7 – 2026-11-10
+
+- Docs: ARCHITECTURE.md describes the modules and their load order, every global and who writes it, and the data flow (login and refresh, network layer, planning pipeline, rendering and translation, backup).
+
 ## 1.12.6 – 2026-11-10
 
 - Code: the long functions are split into named steps: character refresh (refreshChar), the planning engine (makeMulti → planNode, allocateRuns, jobMaterialQty, addInvention), plan rendering (renderResult → planTotals and one function per section), backup validation, and the reprocess summary and loading. No change in behavior: the tests and the rendered plan HTML are identical.

@@ -74,7 +74,7 @@ cd tests && npm install && npm test
 
 `tests/regress.js` holds assertion-based checks. Every other scenario in `tests/` is a characterization test: its output (with dates and times masked) must match `tests/golden/<name>.txt`, so any change in what the app shows is caught. After an intended change, review the reported difference and refresh the reference with `UPDATE_GOLDEN=1 node run-all.mjs <name>`.
 
-**Code style:** the sources are formatted with [Prettier](https://prettier.io) (settings in `.prettierrc.json`): `npx prettier@3.3.3 --write "js/*.js" "i18n/*.js" "tools/*.mjs" "tests/*.js" "tests/*.mjs"`. Code and comments are in English; the UI strings in the code are the Hungarian source texts that serve as translation keys.
+**Code style:** the sources are formatted with [Prettier](https://prettier.io) (settings in `.prettierrc.json`): `npx prettier@3.3.3 --write "js/*.js" "i18n/*.js" "tools/*.mjs" "tests/*.js" "tests/*.mjs"`. Code and comments are in English; the UI strings in the code are the Hungarian source texts that serve as translation keys. How the modules, the global state and the planning pipeline fit together is described in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 **Versioning:** every change that goes to `main` gets a new version ([semver](https://semver.org): fix → patch, feature → minor, breaking → major), a CHANGELOG entry and a git tag. The version is shown in the header and footer and included in bug reports, so `vX.Y.Z` in a report points straight at the tag.
 
