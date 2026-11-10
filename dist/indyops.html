@@ -527,7 +527,7 @@ select{max-width:100%;text-overflow:ellipsis}
   </ul>
 
   <h3>Adatvédelem és engedélyek</h3>
-  <p>Az IndyOps csak olvasási engedélyeket kér: assetek, blueprintek, skillek, industry jobok, struktúranevek, market orderek, az aktív klón implantjai, a struktúrák piaca és (opcionálisan) wallet-tranzakciók. A wallet egyenlegét sosem olvassa. Minden a böngésződ helyi tárolójában marad. Az engedélyt bármikor visszavonhatod az EVE fiókkezelésben, a <i>Third Party Applications</i> résznél.</p>
+  <p>Az IndyOps csak olvasási engedélyeket kér: assetek, blueprintek, skillek, industry jobok, struktúranevek, market orderek, az aktív klón implantjai, a standingek, a struktúrák piaca és (opcionálisan) wallet-tranzakciók. A wallet egyenlegét sosem olvassa. Minden a böngésződ helyi tárolójában marad. Az engedélyt bármikor visszavonhatod az EVE fiókkezelésben, a <i>Third Party Applications</i> résznél.</p>
 
   <h3>Gyakori kérdések</h3>
   <dl class="helpdl">
@@ -588,7 +588,7 @@ select{max-width:100%;text-overflow:ellipsis}
   </ul>
 
   <h3>Privacy and permissions</h3>
-  <p>IndyOps only asks for read permissions: assets, blueprints, skills, industry jobs, structure names, market orders, your active clone's implants, structure markets and (optionally) wallet transactions. It never reads your wallet balance. Everything stays in your browser's local storage. You can revoke access at any time in your EVE account management under <i>Third Party Applications</i>.</p>
+  <p>IndyOps only asks for read permissions: assets, blueprints, skills, industry jobs, structure names, market orders, your active clone's implants, standings, structure markets and (optionally) wallet transactions. It never reads your wallet balance. Everything stays in your browser's local storage. You can revoke access at any time in your EVE account management under <i>Third Party Applications</i>.</p>
 
   <h3>FAQ</h3>
   <dl class="helpdl">
@@ -649,7 +649,7 @@ select{max-width:100%;text-overflow:ellipsis}
   </ul>
 
   <h3>Datenschutz und Berechtigungen</h3>
-  <p>IndyOps fragt nur Leseberechtigungen an: Assets, Blueprints, Skills, Industry-Jobs, Strukturnamen, Marktorders, die Implantate des aktiven Klons, Strukturmärkte und (optional) Wallet-Transaktionen. Den Kontostand liest es nie. Alles bleibt im lokalen Speicher deines Browsers. Du kannst den Zugriff jederzeit in der EVE-Accountverwaltung unter <i>Third Party Applications</i> widerrufen.</p>
+  <p>IndyOps fragt nur Leseberechtigungen an: Assets, Blueprints, Skills, Industry-Jobs, Strukturnamen, Marktorders, die Implantate des aktiven Klons, Standings, Strukturmärkte und (optional) Wallet-Transaktionen. Den Kontostand liest es nie. Alles bleibt im lokalen Speicher deines Browsers. Du kannst den Zugriff jederzeit in der EVE-Accountverwaltung unter <i>Third Party Applications</i> widerrufen.</p>
 
   <h3>Häufige Fragen</h3>
   <dl class="helpdl">
@@ -1223,7 +1223,6 @@ window.I18N.en={
  "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.": "Next to Jita prices, this station's best sell price is shown too (Planner, What pays?, Selling, Reprocess). Pick a trade hub, or a station or structure where you have stuff. For a structure, one of your characters needs docking rights and it must run a market module.",
  "Ki adjon el?": "Who should sell?",
  "javasolt": "suggested",
- "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.": "Fees come from skills (Accounting, Broker Relations). ESI doesn't provide standings, so the real broker fee may be a bit lower; you can enter it by hand in Settings.",
  "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tip: you can set a second market next to Jita (e.g. Amarr, or a station or structure where you have stuff), and its prices show up here too.",
  "Ismeretlen helyek": "Unknown locations",
  "Ezek játékos-struktúrák, amelyeknek a nevét az ESI nem adja ki, mert egyik karakterednek sincs ott dokkolási joga. Az EVE Ref nyilvános struktúralistájában is kerestük, ott sincs. Adj nekik nevet, és onnantól mindenhol az látszik (csak a böngésződben tárolódik). A játékban az Assets ablak mutatja, hol vannak.": "These are player structures whose names ESI doesn't return because none of your characters has docking access there. We also looked in EVE Ref's public structure list; they aren't there either. Give them a name and it shows everywhere from then on (stored only in your browser). In game, the Assets window shows where they are.",
@@ -1254,8 +1253,11 @@ window.I18N.en={
  "{0} industry job fut itt": "{0} industry jobs running here",
  "{0} tranzakció történt itt": "{0} transactions here",
  "egyéb hely (pl. asset safety vagy deliveries)": "other location (e.g. asset safety or deliveries)",
- "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adó jó standinggel kevesebb (6,67-nél 0%), ezt kézzel átírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Ore yield: without ore processing skills; the per-item skill is included in the list. Upwell structures: base 50%, plus rig (T1 +1, T2 +3), system security (lowsec +6%, null and WH +12%, only with a rig) and structure bonus (Athanor +2%, Tatara +5.5%). For NPC stations, base yield, base tax and whether reprocessing is available come from ESI; with good standings the tax is lower (0% at 6.67), you can overwrite it. ESI doesn't provide a structure's rigs or tax, so set those yourself. Tax is deducted from the output.",
- "NPC állomás – nincs reprocessing": "NPC station – no reprocessing"
+ "NPC állomás – nincs reprocessing": "NPC station – no reprocessing",
+ "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Ore yield: without ore processing skills; the per-item skill is included in the list. Upwell structures: base 50%, plus rig (T1 +1, T2 +3), system security (lowsec +6%, null and WH +12%, only with a rig) and structure bonus (Athanor +2%, Tatara +5.5%). For NPC stations, base yield, base tax and whether reprocessing is available come from ESI; the tax is lowered per character by standing towards the owner corporation (0% at 6.67); you can overwrite it. ESI doesn't provide a structure's rigs or tax, so set those yourself. Tax is deducted from the output.",
+ "adó {0}%": "tax {0}%",
+ "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.": "Fees come from skills (Accounting, Broker Relations). Log in again with your characters to include standings; until then the real broker fee may be a bit lower.",
+ "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Fees come from skills (Accounting, Broker Relations) and standing towards the station owner (Connections and Diplomacy included). In player structures the owner sets the broker fee."
 };
 </script>
 <script>
@@ -1804,7 +1806,6 @@ window.I18N.de={
  "A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.": "Neben den Jita-Preisen wird auch der beste Verkaufspreis dieses Ortes angezeigt (Planer, Was lohnt sich?, Verkauf, Reprocess). Wähle einen Handelsknoten oder eine Station oder Struktur mit deinen Sachen. Bei einer Struktur braucht einer deiner Charaktere Andockrechte, und dort muss ein Marktmodul laufen.",
  "Ki adjon el?": "Wer soll verkaufen?",
  "javasolt": "empfohlen",
- "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations). Standings liefert ESI nicht, daher kann die echte Broker Fee etwas niedriger sein; in den Einstellungen kannst du sie von Hand eintragen.",
  "Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.": "Tipp: Du kannst neben Jita einen zweiten Markt einstellen (z. B. Amarr oder eine Station oder Struktur mit deinen Sachen); dessen Preise erscheinen dann auch hier.",
  "Ismeretlen helyek": "Unbekannte Orte",
  "Ezek játékos-struktúrák, amelyeknek a nevét az ESI nem adja ki, mert egyik karakterednek sincs ott dokkolási joga. Az EVE Ref nyilvános struktúralistájában is kerestük, ott sincs. Adj nekik nevet, és onnantól mindenhol az látszik (csak a böngésződben tárolódik). A játékban az Assets ablak mutatja, hol vannak.": "Das sind Spielerstrukturen, deren Namen ESI nicht liefert, weil keiner deiner Charaktere dort Andockrechte hat. Auch in der öffentlichen Strukturliste von EVE Ref stehen sie nicht. Gib ihnen einen Namen, dann erscheint er überall (nur in deinem Browser gespeichert). Im Spiel zeigt das Assets-Fenster, wo sie sind.",
@@ -1835,8 +1836,11 @@ window.I18N.de={
  "{0} industry job fut itt": "{0} Industry-Jobs laufen hier",
  "{0} tranzakció történt itt": "{0} Transaktionen hier",
  "egyéb hely (pl. asset safety vagy deliveries)": "sonstiger Ort (z. B. Asset Safety oder Deliveries)",
- "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adó jó standinggel kevesebb (6,67-nél 0%), ezt kézzel átírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Erz-Ausbeute: ohne Erzverarbeitungs-Skill; der Skill pro Gegenstand steckt in der Liste. Upwell-Strukturen: Basis 50 %, plus Rig (T1 +1, T2 +3), Systemsicherheit (Lowsec +6 %, Null und WH +12 %, nur mit Rig) und Strukturbonus (Athanor +2 %, Tatara +5,5 %). Bei NPC-Stationen kommen Basisausbeute, Grundsteuer und ob Reprocessing verfügbar ist aus ESI; mit gutem Standing ist die Steuer niedriger (0 % bei 6,67), du kannst sie überschreiben. Rigs und Steuer einer Struktur liefert ESI nicht, die musst du selbst einstellen. Die Steuer wird von der Ausbeute abgezogen.",
- "NPC állomás – nincs reprocessing": "NPC-Station – kein Reprocessing"
+ "NPC állomás – nincs reprocessing": "NPC-Station – kein Reprocessing",
+ "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Erz-Ausbeute: ohne Erzverarbeitungs-Skill; der Skill pro Gegenstand steckt in der Liste. Upwell-Strukturen: Basis 50 %, plus Rig (T1 +1, T2 +3), Systemsicherheit (Lowsec +6 %, Null und WH +12 %, nur mit Rig) und Strukturbonus (Athanor +2 %, Tatara +5,5 %). Bei NPC-Stationen kommen Basisausbeute, Grundsteuer und ob Reprocessing verfügbar ist aus ESI; die Steuer sinkt pro Charakter mit dem Standing zur Besitzer-Corporation (0 % bei 6,67); du kannst sie überschreiben. Rigs und Steuer einer Struktur liefert ESI nicht, die musst du selbst einstellen. Die Steuer wird von der Ausbeute abgezogen.",
+ "adó {0}%": "Steuer {0} %",
+ "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations). Melde dich mit deinen Charakteren erneut an, damit Standings zählen; bis dahin kann die echte Broker Fee etwas niedriger sein.",
+ "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations) und dem Standing zum Stationsbesitzer (Connections und Diplomacy eingerechnet). In Spielerstrukturen legt der Besitzer die Broker Fee fest."
 };
 </script>
 <script>
@@ -1845,7 +1849,7 @@ window.I18N.de={
 "use strict";
 /* ============ alapok ============ */
 const CALLBACK_LOCAL='https://localhost/callback';
-const SCOPES=['esi-assets.read_assets.v1','esi-characters.read_blueprints.v1','esi-skills.read_skills.v1','esi-industry.read_character_jobs.v1','esi-universe.read_structures.v1','esi-markets.read_character_orders.v1','esi-clones.read_implants.v1','esi-markets.structure_markets.v1'];
+const SCOPES=['esi-assets.read_assets.v1','esi-characters.read_blueprints.v1','esi-skills.read_skills.v1','esi-industry.read_character_jobs.v1','esi-universe.read_structures.v1','esi-markets.read_character_orders.v1','esi-clones.read_implants.v1','esi-markets.structure_markets.v1','esi-characters.read_standings.v1'];
 const WALLET_SCOPE='esi-wallet.read_character_wallet.v1';
 function scopesNeeded(){return S.wallet?SCOPES.concat([WALLET_SCOPE]):SCOPES.slice()}
 function scpOf(token){try{const v=jwtPayload(token).scp;return Array.isArray(v)?v:(v?[v]:[])}catch(e){return []}}
@@ -1853,11 +1857,11 @@ const hasScope=(c,sc)=>!!(c&&c.scp&&c.scp.includes(sc));
 const ESI='https://esi.evetech.net/latest';
 const REF='https://ref-data.everef.net';
 const JITA_REGION=10000002, JITA_STATION=60003760;
-const SK={industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,reproEff:3389,massProd:3387,advMassProd:24625,massReac:45748,advMassReac:45749,science:3402,labOp:3406,advLabOp:24624,metallurgy:3409,research:3403};
+const SK={connections:3359,diplomacy:3357,industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,reproEff:3389,massProd:3387,advMassProd:24625,massReac:45748,advMassReac:45749,science:3402,labOp:3406,advLabOp:24624,metallurgy:3409,research:3403};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.6.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.7.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2046,7 +2050,7 @@ async function resolveNames(ids){
   scheduleSave('names');
 }
 // NPC állomás reprocess-adatai: hatékonyság (pl. 0.5), alapadó (pl. 0.05), van-e reprocessing szolgáltatás
-function stationRepro(s){return {reff:s.reprocessing_efficiency??null,rtake:s.reprocessing_stations_take??null,rsvc:Array.isArray(s.services)?s.services.includes('reprocessing-plant'):null}}
+function stationRepro(s){return {owner:s.owner??null,reff:s.reprocessing_efficiency??null,rtake:s.reprocessing_stations_take??null,rsvc:Array.isArray(s.services)?s.services.includes('reprocessing-plant'):null}}
 async function resolveLoc(locId,char){
   const old=LOCINFO[locId];if(old&&!(unkInfo(old)&&Date.now()-(old.tried||0)>6*3600000)) return old;
   let info={name:'Ismeretlen hely #'+locId,system:null,unk:1,tried:Date.now()};
@@ -2082,11 +2086,12 @@ async function refreshChar(c){
     const LM={};for(const a of assets){if(byItem.has(a.location_id))continue;const m=LM[a.location_id]=LM[a.location_id]||{t:a.location_type,f:{}};m.f[a.location_flag]=(m.f[a.location_flag]||0)+1}
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
-    let O=[],TX=[],IMP=null;
+    let O=[],TX=[],IMP=null,STD=null;
+    if(hasScope(c,'esi-characters.read_standings.v1')){try{STD={};(await esi('/characters/'+c.id+'/standings/',{char:c})).forEach(x=>STD[x.from_id]=x.standing)}catch(e){log('Standingek: '+e.message)}}
     if(hasScope(c,'esi-clones.read_implants.v1')){try{IMP=await esi('/characters/'+c.id+'/implants/',{char:c});await resolveNames(IMP)}catch(e){log('Implantok: '+e.message)}}
     if(hasScope(c,'esi-markets.read_character_orders.v1')){try{O=(await esi('/characters/'+c.id+'/orders/',{char:c})).map(o=>({id:o.order_id,t:o.type_id,l:o.location_id,reg:o.region_id,p:o.price,rem:o.volume_remain,tot:o.volume_total,buy:!!o.is_buy_order,iss:o.issued,dur:o.duration}))}catch(e){log('Orderek: '+e.message)}}
     if(S.wallet&&hasScope(c,WALLET_SCOPE)){try{const lim=Date.now()-30*86400000;TX=(await esi('/characters/'+c.id+'/wallet/transactions/',{char:c})).filter(x=>new Date(x.date).getTime()>=lim).map(x=>({d:x.date,t:x.type_id,q:x.quantity,p:x.unit_price,buy:x.is_buy,l:x.location_id}))}catch(e){log('Wallet: '+e.message)}}
-    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,lm:LM,at:Date.now()};
+    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,std:STD,lm:LM,at:Date.now()};
     await resolveNames(O.map(o=>o.t).concat(TX.map(x=>x.t),O.map(o=>o.reg)));for(const l of new Set(O.map(o=>o.l)))await resolveLoc(l,c);
     await resolveNames(A.map(a=>a.t).concat(B.map(b=>b.t),J.map(j=>j.bp)));
     const locs=[...new Set(A.map(a=>a.l).concat(B.map(b=>b.l),J.map(j=>j.loc)))];
@@ -2126,13 +2131,26 @@ function slotsOf(cid){return {m:1+lvlOf(cid,SK.massProd)+lvlOf(cid,SK.advMassPro
 function busyOf(cid){const d=DATA[cid];const o={m:0,r:0,s:0};if(!d)return o;for(const j of d.jobs){if(j.st!=='active')continue;if(j.act===1)o.m++;else if(j.act===9||j.act===11)o.r++;else if([3,4,5,7,8].includes(j.act))o.s++}return o}
 // eladási díjak karakterenként (a Beállításokban megadott érték mindenkire felülírja)
 function salesTaxOf(cid){return S.salesTax!==''&&S.salesTax!=null?Number(S.salesTax)/100:0.075*(1-0.11*lvlOf(cid,SK.accounting))}
-function brokerFeeOf(cid){return S.broker!==''&&S.broker!=null?Number(S.broker)/100:Math.max(0.01,0.03-0.003*lvlOf(cid,SK.broker))}
-function sellers(){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id)})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
+// standing: a nyers értéket a Connections (pozitív) / Diplomacy (negatív) skill javítja; null, ha nincs meg az engedély
+function hasStd(cid){return !!(DATA[cid]&&DATA[cid].std)}
+function effStd(cid,from){const d=DATA[cid];if(!d||!d.std||from==null)return 0;const r=d.std[from]||0;const sk=r>=0?lvlOf(cid,SK.connections):lvlOf(cid,SK.diplomacy);return r+(10-r)*0.04*sk}
+let CORPFAC=load('corpfac',{});
+function stationOwner(l){const i=LOCINFO[l];if(!i||i.owner==null)return null;return {corp:i.owner,fac:CORPFAC[i.owner]??null}}
+async function ensureOwners(locs){let ch=false;
+  for(const l of locs){if(!l||locKind(l)!=='npc')continue;let i=LOCINFO[l];
+    if(!i||i.owner===undefined){try{const s=await esi('/universe/stations/'+l+'/');i=LOCINFO[l]=Object.assign(i||{},{name:s.name,system:s.system_id},stationRepro(s));ch=true}catch(e){continue}}
+    if(i.owner!=null&&CORPFAC[i.owner]===undefined){try{const c=await esi('/corporations/'+i.owner+'/');CORPFAC[i.owner]=c.faction_id??0}catch(e){CORPFAC[i.owner]=0}store('corpfac',CORPFAC)}}
+  if(ch)store('locinfo',LOCINFO)}
+// broker fee egy adott helyen: NPC állomáson a tulaj corp és faction felé vett standinggel csökken
+function brokerFeeOf(cid,l){if(S.broker!==''&&S.broker!=null)return Number(S.broker)/100;
+  let f=0.03-0.003*lvlOf(cid,SK.broker);const o=l!=null&&locKind(l)==='npc'?stationOwner(l):null;
+  if(o&&hasStd(cid))f-=0.0003*effStd(cid,o.fac)+0.0002*effStd(cid,o.corp);return Math.max(0.01,f)}
+function sellers(l=JITA_STATION){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id,l),b2:m2On()&&locKind(Number(S.market2))==='npc'?brokerFeeOf(id,Number(S.market2)):null})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
 function bestSeller(){return sellers()[0]||null} // akinek a legkisebb az eladási díja
 function salesTax(){const b=bestSeller();return b?b.tax:salesTaxOf(null)}
 function brokerFee(){const b=bestSeller();return b?b.broker:brokerFeeOf(null)}
-function sellerHtml(){const ss=sellers();if(!ss.length)return '';
-  return `<h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee</th><th class="num">Összesen</th><th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td><td class="num"><b>${fmt(x.fee*100,2)}%</b></td><td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.</p>`}
+function sellerHtml(){const ss=sellers();if(!ss.length)return '';const m2=ss.some(x=>x.b2!=null);const noStd=workChars().some(id=>!hasStd(id));
+  return `<h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2?`<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th><th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td>${m2?`<td class="num">${x.b2!=null?fmt(x.b2*100,2)+'%':'–'}</td>`:''}<td class="num"><b>${fmt(x.fee*100,2)}%</b></td><td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">${noStd?T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.'):T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p>`}
 function m2Hint(){return m2On()?'':`<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`}
 
 /* ============ második piac ============ */
@@ -2164,6 +2182,7 @@ async function ensurePrices(typeIds){
     catch(e){PRICES.p2[t]={s:null,b:null,at:now,loc:m2};log('Ár hiba ('+m2Short()+') '+t)}
   })));
   store('prices',PRICES);
+  try{await ensureOwners([JITA_STATION,m2])}catch(e){}
   if(now-ADJ.at>6*3600000){try{const a=await esi('/markets/prices/');ADJ={at:now,p:{}};a.forEach(x=>ADJ.p[x.type_id]=x.adjusted_price||x.average_price||0);store('adj',ADJ)}catch(e){log('Adjusted ár hiba')}}
   if(now-IDX.at>3*3600000){try{const a=await esi('/industry/systems/');IDX={at:now,p:{}};a.forEach(x=>{const o={};x.cost_indices.forEach(y=>o[y.activity]=y.cost_index);IDX.p[x.solar_system_id]=o});store('idx2',IDX)}catch(e){log('Cost index hiba')}}
   status('kész');
@@ -2955,15 +2974,18 @@ function locStats(l){
     baseAuto:k==='npc'&&info.reff!=null?info.reff*100:50,taxAuto:k==='npc'?(info.rtake!=null?info.rtake*100:5):0,
     sm:st===TATARA?0.055:st===ATHANOR?0.02:0,
     secm:secMod(info.system),
+    taxMan:c.tax!=null&&c.tax!==''?Number(c.tax):null,owner:info.owner??null,
     tax:c.tax!=null&&c.tax!==''?Number(c.tax):(k==='npc'?(info.rtake!=null?info.rtake*100:5):0)};
 }
+// reprocess-adó karakterenként: NPC állomáson az alapadó a tulaj corp felé vett standinggel lineárisan csökken, 6,67-nél 0
+function repTax(cid,L){if(L.taxMan!=null)return L.taxMan;if(L.k!=='npc')return L.tax;if(!hasStd(cid)||L.owner==null)return L.taxAuto;return Math.max(0,L.taxAuto*(1-effStd(cid,L.owner)/6.67))}
 // hozam az adó előtt (g) és után (y); null, ha ott nem lehet reprocesszálni
 function repYield(cid,l,ti){
   const L=locStats(l);if(L.k==='none'||L.k==='nosvc')return null;let g;
   if(!ti.rs)g=(L.k==='npc'?L.base:50)/100*(1+0.02*lvlOf(cid,SCRAP)); // modul, loot: csak Scrapmetal Processing, rig és implant nem számít
   else{const sk=(1+0.03*lvlOf(cid,SK.repro))*(1+0.02*lvlOf(cid,SK.reproEff))*(1+0.02*lvlOf(cid,ti.rs))*(1+impOf(cid)/100);
     g=L.k==='struct'?(50+L.rig)/100*(1+(L.rig?L.secm:0))*(1+L.sm)*sk:L.base/100*sk}
-  return {g,y:g*(1-L.tax/100)};
+  const tx=repTax(cid,L);return {g,y:g*(1-tx/100),tax:tx};
 }
 function repChars(){const c=repCfg().char;const all=workChars();return c&&all.includes(Number(c))?[Number(c)]:all}
 function repPick(r){
@@ -2981,10 +3003,11 @@ async function repLocExtra(locs){
   for(const l of locs){const info=LOCINFO[l];if(!info)continue;
     if(locKind(l)==='struct'&&info.stype===undefined){info.stype=0;
       for(const c of CHARS){try{const s=await esi('/universe/structures/'+l+'/',{char:c});info.stype=s.type_id||0;if(!info.system)info.system=s.solar_system_id;break}catch(e){}}ch=true}
-    if(locKind(l)==='npc'&&info.rsvc===undefined){try{Object.assign(info,stationRepro(await esi('/universe/stations/'+l+'/')));ch=true}catch(e){}}
+    if(locKind(l)==='npc'&&(info.rsvc===undefined||info.owner===undefined)){try{Object.assign(info,stationRepro(await esi('/universe/stations/'+l+'/')));ch=true}catch(e){}}
     if(info.system&&SYSSEC[info.system]==null){try{const s=await esi('/universe/systems/'+info.system+'/');SYSSEC[info.system]=s.security_status}catch(e){}}
   }
   if(ch)store('locinfo',LOCINFO);store('syssec',SYSSEC);
+  try{await ensureOwners(locs)}catch(e){}
   const st=[...new Set(locs.map(l=>LOCINFO[l]&&LOCINFO[l].stype).filter(Boolean))];if(st.length)await resolveNames(st);
 }
 async function repLoad(){
@@ -3070,15 +3093,15 @@ function renderRepLocs(locs){
   const el=$('#repLocs');const cs=repChars();
   const kindName=(L)=>L.k==='npc'?T('NPC állomás'):L.k==='nosvc'?T('NPC állomás – nincs reprocessing'):L.k==='struct'?(L.st?(NAMES[L.st]||'Upwell'):'Upwell'):T('űrben – itt nem lehet');
   el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Típus</th><th class="num">Sec</th><th>Rig</th><th class="num">Adó %</th><th class="num">Alap %</th><th class="num">Érc hozam</th><th class="num">Loot hozam</th></tr></thead><tbody>${locs.map(l=>{const L=locStats(l);const c=repCfg().loc[l]||{};
-    const best=(ti)=>{let b=null;for(const cid of cs){const y=repYield(cid,l,ti);if(y&&(!b||y.y>b.y))b={y:y.y,cid}}return b};
+    const best=(ti)=>{let b=null;for(const cid of cs){const y=repYield(cid,l,ti);if(y&&(!b||y.y>b.y))b={y:y.y,cid,tax:y.tax}}return b};
     const yo=best({rs:-1,c:25,tm:[]}),yl=best({rs:null,c:7,tm:[]});
-    const show=b=>b?`<span class="mono">${fmt(b.y*100,1)}%</span>${cs.length>1?`<div class="small muted">${esc(charName(b.cid))}</div>`:''}`:'–';
+    const show=b=>b?`<span class="mono">${fmt(b.y*100,1)}%</span><div class="small muted">${cs.length>1?esc(charName(b.cid))+' · ':''}${T('adó {0}%',fmt(b.tax,2))}</div>`:'–';
     return `<tr><td>${esc(locName(l))}</td><td class="small">${esc(kindName(L))}</td><td class="num">${L.sec!=null?fmt(L.sec,2):'–'}</td>
     <td>${L.k==='struct'?`<select data-rig="${l}">${[[0,'nincs'],[1,'T1'],[3,'T2']].map(([v,n])=>`<option value="${v}" ${L.rig===v?'selected':''}>${n}</option>`).join('')}</select>`:'<span class="muted">–</span>'}</td>
     <td class="num">${L.k==='none'||L.k==='nosvc'?'–':`<input type="number" step="0.1" min="0" max="100" style="width:70px" data-tax="${l}" value="${c.tax!=null&&c.tax!==''?c.tax:''}" placeholder="${fmt(L.taxAuto,1)}">`}</td>
     <td class="num">${L.k==='npc'?`<input type="number" step="1" min="0" max="100" style="width:60px" data-base="${l}" value="${c.base!=null&&c.base!==''?c.base:''}" placeholder="${fmt(L.baseAuto,0)}">`:L.k==='struct'?'50':'–'}</td>
     <td class="num">${show(yo)}</td><td class="num">${show(yl)}</td></tr>`}).join('')}</tbody></table></div>
-  <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adó jó standinggel kevesebb (6,67-nél 0%), ezt kézzel átírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`;
+  <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`;
 }
 function renderRepSum(){
   const el=$('#repSum');const sel=(REP.rows||[]).filter(r=>REP.sel.has(repKey(r)));

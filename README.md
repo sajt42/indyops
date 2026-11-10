@@ -28,7 +28,7 @@ IndyOps is a free, browser-only **EVE Online industry calculator and manufacturi
 
 - **No server, no tracking.** IndyOps is a static web page. Everything (tokens, stock, projects) stays in your own browser's local storage.
 - It connects only to CCP (EVE SSO login, ESI) and to [EVE Ref](https://everef.net) for blueprint recipes.
-- **Read-only permissions**: assets, blueprints, skills, industry jobs, structure names, market orders, active clone implants, structure markets, wallet transactions (optional). Your wallet balance is never read.
+- **Read-only permissions**: assets, blueprints, skills, industry jobs, structure names, market orders, active clone implants, standings, structure markets, wallet transactions (optional). Your wallet balance is never read.
 - You can revoke access any time under *Third Party Applications* in your EVE account settings.
 
 ## Using it locally
@@ -36,7 +36,7 @@ IndyOps is a free, browser-only **EVE Online industry calculator and manufacturi
 Download `dist/indyops.html` and open it in your browser. When running from a local file you need your own application on [developers.eveonline.com](https://developers.eveonline.com/applications):
 
 - Callback URL: `https://localhost/callback`
-- Scopes: `esi-assets.read_assets.v1 esi-characters.read_blueprints.v1 esi-skills.read_skills.v1 esi-industry.read_character_jobs.v1 esi-universe.read_structures.v1 esi-markets.read_character_orders.v1 esi-clones.read_implants.v1 esi-markets.structure_markets.v1 esi-wallet.read_character_wallet.v1`
+- Scopes: `esi-assets.read_assets.v1 esi-characters.read_blueprints.v1 esi-skills.read_skills.v1 esi-industry.read_character_jobs.v1 esi-universe.read_structures.v1 esi-markets.read_character_orders.v1 esi-clones.read_implants.v1 esi-markets.structure_markets.v1 esi-characters.read_standings.v1 esi-wallet.read_character_wallet.v1`
 
 Enter its **Client ID** (never the secret) in IndyOps. After logging in, the browser lands on an unreachable `https://localhost/callback?...` page; copy that address back into IndyOps.
 

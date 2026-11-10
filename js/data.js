@@ -24,13 +24,26 @@ function slotsOf(cid){return {m:1+lvlOf(cid,SK.massProd)+lvlOf(cid,SK.advMassPro
 function busyOf(cid){const d=DATA[cid];const o={m:0,r:0,s:0};if(!d)return o;for(const j of d.jobs){if(j.st!=='active')continue;if(j.act===1)o.m++;else if(j.act===9||j.act===11)o.r++;else if([3,4,5,7,8].includes(j.act))o.s++}return o}
 // eladási díjak karakterenként (a Beállításokban megadott érték mindenkire felülírja)
 function salesTaxOf(cid){return S.salesTax!==''&&S.salesTax!=null?Number(S.salesTax)/100:0.075*(1-0.11*lvlOf(cid,SK.accounting))}
-function brokerFeeOf(cid){return S.broker!==''&&S.broker!=null?Number(S.broker)/100:Math.max(0.01,0.03-0.003*lvlOf(cid,SK.broker))}
-function sellers(){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id)})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
+// standing: a nyers értéket a Connections (pozitív) / Diplomacy (negatív) skill javítja; null, ha nincs meg az engedély
+function hasStd(cid){return !!(DATA[cid]&&DATA[cid].std)}
+function effStd(cid,from){const d=DATA[cid];if(!d||!d.std||from==null)return 0;const r=d.std[from]||0;const sk=r>=0?lvlOf(cid,SK.connections):lvlOf(cid,SK.diplomacy);return r+(10-r)*0.04*sk}
+let CORPFAC=load('corpfac',{});
+function stationOwner(l){const i=LOCINFO[l];if(!i||i.owner==null)return null;return {corp:i.owner,fac:CORPFAC[i.owner]??null}}
+async function ensureOwners(locs){let ch=false;
+  for(const l of locs){if(!l||locKind(l)!=='npc')continue;let i=LOCINFO[l];
+    if(!i||i.owner===undefined){try{const s=await esi('/universe/stations/'+l+'/');i=LOCINFO[l]=Object.assign(i||{},{name:s.name,system:s.system_id},stationRepro(s));ch=true}catch(e){continue}}
+    if(i.owner!=null&&CORPFAC[i.owner]===undefined){try{const c=await esi('/corporations/'+i.owner+'/');CORPFAC[i.owner]=c.faction_id??0}catch(e){CORPFAC[i.owner]=0}store('corpfac',CORPFAC)}}
+  if(ch)store('locinfo',LOCINFO)}
+// broker fee egy adott helyen: NPC állomáson a tulaj corp és faction felé vett standinggel csökken
+function brokerFeeOf(cid,l){if(S.broker!==''&&S.broker!=null)return Number(S.broker)/100;
+  let f=0.03-0.003*lvlOf(cid,SK.broker);const o=l!=null&&locKind(l)==='npc'?stationOwner(l):null;
+  if(o&&hasStd(cid))f-=0.0003*effStd(cid,o.fac)+0.0002*effStd(cid,o.corp);return Math.max(0.01,f)}
+function sellers(l=JITA_STATION){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id,l),b2:m2On()&&locKind(Number(S.market2))==='npc'?brokerFeeOf(id,Number(S.market2)):null})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
 function bestSeller(){return sellers()[0]||null} // akinek a legkisebb az eladási díja
 function salesTax(){const b=bestSeller();return b?b.tax:salesTaxOf(null)}
 function brokerFee(){const b=bestSeller();return b?b.broker:brokerFeeOf(null)}
-function sellerHtml(){const ss=sellers();if(!ss.length)return '';
-  return `<h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee</th><th class="num">Összesen</th><th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td><td class="num"><b>${fmt(x.fee*100,2)}%</b></td><td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">A díjak a skillekből jönnek (Accounting, Broker Relations). A standinget az ESI nem adja ki, ezért a broker fee a valóságban kicsit kisebb lehet; a Beállításokban kézzel is megadhatod.</p>`}
+function sellerHtml(){const ss=sellers();if(!ss.length)return '';const m2=ss.some(x=>x.b2!=null);const noStd=workChars().some(id=>!hasStd(id));
+  return `<h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2?`<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th><th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td>${m2?`<td class="num">${x.b2!=null?fmt(x.b2*100,2)+'%':'–'}</td>`:''}<td class="num"><b>${fmt(x.fee*100,2)}%</b></td><td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">${noStd?T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.'):T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p>`}
 function m2Hint(){return m2On()?'':`<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`}
 
 /* ============ második piac ============ */
@@ -62,6 +75,7 @@ async function ensurePrices(typeIds){
     catch(e){PRICES.p2[t]={s:null,b:null,at:now,loc:m2};log('Ár hiba ('+m2Short()+') '+t)}
   })));
   store('prices',PRICES);
+  try{await ensureOwners([JITA_STATION,m2])}catch(e){}
   if(now-ADJ.at>6*3600000){try{const a=await esi('/markets/prices/');ADJ={at:now,p:{}};a.forEach(x=>ADJ.p[x.type_id]=x.adjusted_price||x.average_price||0);store('adj',ADJ)}catch(e){log('Adjusted ár hiba')}}
   if(now-IDX.at>3*3600000){try{const a=await esi('/industry/systems/');IDX={at:now,p:{}};a.forEach(x=>{const o={};x.cost_indices.forEach(y=>o[y.activity]=y.cost_index);IDX.p[x.solar_system_id]=o});store('idx2',IDX)}catch(e){log('Cost index hiba')}}
   status('kész');

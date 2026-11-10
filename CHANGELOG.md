@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0 – 2026-11-10
+
+- Standings (new permission): broker fee at NPC stations uses standing towards the owner corporation and faction (Connections/Diplomacy included); the seller table shows the broker fee at Jita and at the second market
+- Reprocess: NPC station tax per character from standing towards the owner corporation (0% at 6.67); the locations table shows the tax next to the yield
+
 ## 1.6.0 – 2026-11-10
 
 - Reprocess: NPC stations' own reprocessing efficiency, base tax and reprocessing service read from ESI; stations without reprocessing are marked and never suggested

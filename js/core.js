@@ -2,7 +2,7 @@
 "use strict";
 /* ============ alapok ============ */
 const CALLBACK_LOCAL='https://localhost/callback';
-const SCOPES=['esi-assets.read_assets.v1','esi-characters.read_blueprints.v1','esi-skills.read_skills.v1','esi-industry.read_character_jobs.v1','esi-universe.read_structures.v1','esi-markets.read_character_orders.v1','esi-clones.read_implants.v1','esi-markets.structure_markets.v1'];
+const SCOPES=['esi-assets.read_assets.v1','esi-characters.read_blueprints.v1','esi-skills.read_skills.v1','esi-industry.read_character_jobs.v1','esi-universe.read_structures.v1','esi-markets.read_character_orders.v1','esi-clones.read_implants.v1','esi-markets.structure_markets.v1','esi-characters.read_standings.v1'];
 const WALLET_SCOPE='esi-wallet.read_character_wallet.v1';
 function scopesNeeded(){return S.wallet?SCOPES.concat([WALLET_SCOPE]):SCOPES.slice()}
 function scpOf(token){try{const v=jwtPayload(token).scp;return Array.isArray(v)?v:(v?[v]:[])}catch(e){return []}}
@@ -10,11 +10,11 @@ const hasScope=(c,sc)=>!!(c&&c.scp&&c.scp.includes(sc));
 const ESI='https://esi.evetech.net/latest';
 const REF='https://ref-data.everef.net';
 const JITA_REGION=10000002, JITA_STATION=60003760;
-const SK={industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,reproEff:3389,massProd:3387,advMassProd:24625,massReac:45748,advMassReac:45749,science:3402,labOp:3406,advLabOp:24624,metallurgy:3409,research:3403};
+const SK={connections:3359,diplomacy:3357,industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,reproEff:3389,massProd:3387,advMassProd:24625,massReac:45748,advMassReac:45749,science:3402,labOp:3406,advLabOp:24624,metallurgy:3409,research:3403};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.6.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.7.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
