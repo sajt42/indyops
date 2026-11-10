@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.12.3 – 2026-11-10
+
+- Hauling: a route preparation is published only if it still matches the current assignment (switching A → B → back to A no longer lets B's result in)
+- Tests: switch-back race case; full order-insensitive comparison of the backup round trip (41 checks)
+
 ## 1.12.2 – 2026-11-10
 
 - Fix: restoring a backup with “buy instead of build” overrides failed validation (they are booleans); numeric settings may also be empty

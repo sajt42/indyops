@@ -20,7 +20,7 @@ w.fetch=async(u,o)=>{u=String(u);if(hang){const h=hang(u,o);if(h)return h}const 
   throw new Error('unmocked '+u)};
 const code=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
 w.localStorage.setItem('indyops.settings',JSON.stringify({lang:'hu'}));
-w.eval(code+`;window.__t={makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+w.eval(code+`;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC};`);
 const T=w.__t,d=w.document;let fails=0,checks=0;
 const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
@@ -133,5 +133,17 @@ const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
   const [fa,fb]=await Promise.all([pA,pB]);
   ok(fb===true&&fa===false,'only the newest preparation publishes (A '+fa+', B '+fb+')');
   ok(RH.haulCtx&&('60000007|60003760' in RH.haulCtx.jumps)&&!('60000006|60003760' in RH.haulCtx.jumps),'final context belongs to the newest assignment');
+
+  // 17. switch A → B → back to A while B is still preparing: B must not publish, A's context stays
+  {route=(a,b)=>({delay:a===30041?200:5,path:[a,b]});
+   const RA={trees:[tree(60000006)],jobs:[]};await T.prepHaul(RA);const ctxA=RA.haulCtx,sigA=RA.haulSig;
+   RA.trees=[tree(60000007)];const pB2=T.prepHaul(RA);RA.trees=[tree(60000006)];const fB=await pB2;
+   ok(fB===false&&RA.haulCtx===ctxA&&RA.haulSig===sigA,'stale preparation after switching back is not published');}
+
+  // 18. full normalized comparison of the round trip
+  {const SCH=T.SCH;const exp={};for(const k of Object.keys(SCH))if(k in T.S)exp[k]=JSON.parse(JSON.stringify(T.S[k]));
+   const canon=x=>Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().filter(k=>x[k]!==undefined).map(k=>[k,canon(x[k])])):x;const same=(a,b)=>JSON.stringify(canon(a))===JSON.stringify(canon(b));
+   ok(same(rt.d.settings,exp),'all supported settings survive the round trip unchanged');
+   ok(same(rt.d.projects,JSON.parse(JSON.stringify(T.PROJ))),'projects survive the round trip unchanged');}
   console.log(`regress: ${checks-fails}/${checks} checks passed`);
 })().catch(e=>console.error('FAIL',e));

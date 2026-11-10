@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aR1shMIrRyAgtZuqUbzSi3BQgmyEWlaor3h0qdQZmVc=' 'sha256-yXijC94hRM9CpcXhDT7K+WgSY1HIvPrmY46kENh2PGw=' 'sha256-EHQyNJQD4kyPNTpRhEirFwhgTZhe1+7t/NS1gnbdJlw=' 'sha256-yktekfaKHQZcGnP07gLCV9rqyOEeRPma9HYl2jYRieQ=' 'sha256-EC/fkYYbSVnbYd6m3DrzQmfLSHuBJ3UJLVIVEy7Utuw=' 'sha256-eXDbQbjeNGkTv74xLSQSROUyBEWqDGSII6h14mqn5v8=' 'sha256-N9/Pto0dKR1ebDWF02kxqMWcZiHeu2qt7Tf0FtIoASc=' 'sha256-g8/LcYTbdQDDwRkOTSCKS1HuyOkwXvDvqFV1rEczCy8=' 'sha256-Cpub085pjNoe3DonPDenCStwloDQWBfob/AXuIRiIHY=' 'sha256-+9kyLQsa1xk+fDck7loryq8R/zqe1BW/ENpN/AFVaqc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aR1shMIrRyAgtZuqUbzSi3BQgmyEWlaor3h0qdQZmVc=' 'sha256-yXijC94hRM9CpcXhDT7K+WgSY1HIvPrmY46kENh2PGw=' 'sha256-4qQWPRarJBgmtYAiqSwxdJ8RmtKPNTStzFjbFWaz6Iw=' 'sha256-yktekfaKHQZcGnP07gLCV9rqyOEeRPma9HYl2jYRieQ=' 'sha256-EC/fkYYbSVnbYd6m3DrzQmfLSHuBJ3UJLVIVEy7Utuw=' 'sha256-eXDbQbjeNGkTv74xLSQSROUyBEWqDGSII6h14mqn5v8=' 'sha256-6ELb745hauuWBXrp6AF5gwLQwLIZFBrErTAYK7TpKdc=' 'sha256-g8/LcYTbdQDDwRkOTSCKS1HuyOkwXvDvqFV1rEczCy8=' 'sha256-Cpub085pjNoe3DonPDenCStwloDQWBfob/AXuIRiIHY=' 'sha256-+9kyLQsa1xk+fDck7loryq8R/zqe1BW/ENpN/AFVaqc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -2004,7 +2004,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
 // dataVersion: emeld meg, ha egy új verzió új adatot olvas az ESI-ből, és ehhez a felhasználónak frissítenie kell (a tool szól neki)
-const APP={dataVersion:3,name:'IndyOps',version:'1.12.2',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={dataVersion:3,name:'IndyOps',version:'1.12.3',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2838,7 +2838,8 @@ async function prepHaul(R){
   for(const [f,t] of pairs){for(const l of [f,t])if(l!==JITA_STATION&&!LOCINFO[l])await resolveLoc(l)}
   const jumps={};for(const [f,t] of pairs)jumps[f+'|'+t]=await ensureRoute(sysOfLoc(f),sysOfLoc(t));
   const ctx={jumps,ships:await ownShips()};
-  if(gen!==R.haulGen)return false; // közben újabb előkészítés indult: a régi eredmény nem írhatja felül
+  // csak a legutóbb indított ÉS a mostani kiosztáshoz tartozó eredmény írhat (közben újabb indult, vagy visszaváltottak egy korábbi kiosztásra)
+  if(gen!==R.haulGen||sig!==haulSig(R))return false;
   R.haulCtx=ctx;R.haulSig=sig;return true;
 }
 function shipAdvice(R,key,vol,maxUnit){

@@ -212,7 +212,8 @@ async function prepHaul(R){
   for(const [f,t] of pairs){for(const l of [f,t])if(l!==JITA_STATION&&!LOCINFO[l])await resolveLoc(l)}
   const jumps={};for(const [f,t] of pairs)jumps[f+'|'+t]=await ensureRoute(sysOfLoc(f),sysOfLoc(t));
   const ctx={jumps,ships:await ownShips()};
-  if(gen!==R.haulGen)return false; // közben újabb előkészítés indult: a régi eredmény nem írhatja felül
+  // csak a legutóbb indított ÉS a mostani kiosztáshoz tartozó eredmény írhat (közben újabb indult, vagy visszaváltottak egy korábbi kiosztásra)
+  if(gen!==R.haulGen||sig!==haulSig(R))return false;
   R.haulCtx=ctx;R.haulSig=sig;return true;
 }
 function shipAdvice(R,key,vol,maxUnit){
