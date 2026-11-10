@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.8 – 2026-11-10
+
+- Selling: changing the second market in Settings now loads its station owner and prices for what is on screen and redraws the Selling, Plan, Reprocess and list tabs right away (before, the Selling tab showed the old market until a reload). Profit rows calculated with another second market show empty columns for it with a note, instead of stale numbers.
+- Selling: hovering over a broker fee in the seller table shows the formula with the character's Broker Relations, Connections and Diplomacy levels and the raw and adjusted standings, so it can be compared with the fee shown in game.
+- Docs: the Settings note no longer says that standings are ignored; Help explains the broker fee tooltip.
+
 ## 1.12.7 – 2026-11-10
 
 - Docs: ARCHITECTURE.md describes the modules and their load order, every global and who writes it, and the data flow (login and refresh, network layer, planning pipeline, rendering and translation, backup).

@@ -304,6 +304,7 @@ async function ensureHistory(types) {
   store('hist', HIST);
 }
 let PROFROWS = [],
+  PROFM2 = null, // second market the profit rows were calculated with
   profSort = { k: 'pph', d: -1 };
 async function runProfit() {
   const out = $('#prOut');
@@ -354,6 +355,7 @@ async function runProfit() {
   const fee2 = m2Fee();
   const sysCache = {};
   PROFROWS = [];
+  PROFM2 = S.market2 || null;
   for (const x of plans) {
     const sysId = sysCache[x.best.l] !== undefined ? sysCache[x.best.l] : (sysCache[x.best.l] = await sysFor(x.best));
     const made = x.R.trees[0].made;
@@ -408,6 +410,9 @@ function renderProfit() {
   const onlyPos = $('#prOnlyPos').checked,
     minVol = Number($('#prMinVol').value || 0);
   let rows = PROFROWS.filter(r => (!onlyPos || r.perRun > 0) && r.vol >= minVol);
+  // second-market values belong to the market they were calculated with
+  const m2stale = m2On() && PROFM2 !== (S.market2 || null);
+  if (m2stale) rows = rows.map(r => Object.assign({}, r, { price2: null, perRun2: null }));
   const k = profSort.k;
   rows.sort((a, b) => {
     const va = a[k],
@@ -420,6 +425,9 @@ function renderProfit() {
   const th = (key, label, num) =>
     `<th class="sortable${num ? ' num' : ''}" data-psort="${key}">${label}${profSort.k === key ? '<span> ' + (profSort.d > 0 ? '▲' : '▼') + '</span>' : ''}</th>`;
   out.innerHTML =
+    (m2stale
+      ? `<div class="notice"><p class="small">${T('A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.', esc(m2Short()))}</p></div>`
+      : '') +
     pg.html +
     `<div class="tablewrap"><table><thead><tr>${th('name', 'Termék')}<th>Legjobb saját BP</th>${th('price', 'Jita sell', 1)}${m2On() ? th('price2', esc(m2Short()) + ' sell', 1) : ''}${th('perRun', 'Profit / run', 1)}${m2On() ? th('perRun2', T('Profit / run') + ' · ' + esc(m2Short()), 1) : ''}${th('margin', 'Margó', 1)}${th('pph', 'Profit / gyártási óra', 1)}${th('vol', 'Napi forgalom', 1)}${th('pot', 'Maradék runok értéke', 1)}<th></th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r.name)}${r.noMarket ? ' <span class="pill warn">nincs Jita ár</span>' : ''}${r.warn ? ' <span class="pill bad">kevés run</span>' : ''}${r.unsure ? `<div class="src">${T('Nincs Jita ára: {0}. A profit emiatt túl magas lehet.', esc(r.noPrice.map(t => NAMES[t] || t).join(', ')))}</div>` : ''}</td><td class="small">${r.best.r === -1 ? 'BPO' : 'BPC ' + r.runsLeft + ' run'} · ME${r.best.me} · ${esc(charName(r.best.cid))}</td><td class="num">${isk(r.price)}</td>${m2On() ? `<td class="num">${m2Cell(r.price, r.price2)}</td>` : ''}<td class="num ${r.unsure ? '' : r.perRun >= 0 ? 'pos' : 'neg'}">${r.unsure ? '? ' : ''}${isk(r.perRun)}</td>${m2On() ? `<td class="num ${r.perRun2 == null || r.unsure ? '' : r.perRun2 >= 0 ? 'pos' : 'neg'}">${r.perRun2 == null ? '?' : (r.unsure ? '? ' : '') + isk(r.perRun2)}</td>` : ''}<td class="num">${r.margin == null ? '–' : fmt(r.margin * 100, 1) + '%'}</td><td class="num ${r.pph >= 0 ? 'pos' : 'neg'}">${isk(r.pph)}</td><td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}${r.vol && r.daysToSell > 1 ? ' <span class="pill warn" title="Egy run termékének eladása több napi forgalom">lassú</span>' : ''}</td><td class="num">${r.pot == null ? '∞ (BPO)' : isk(r.pot)}</td><td><button class="btn mini" data-addproj="${r.best.t}">+ projekt</button></td></tr>`).join('') || '<tr><td colspan="9" class="muted">A szűrőknek egy tétel sem felel meg.</td></tr>'}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Minden anyag piaci áron számít, a saját készlet is, mert azt el is adhatnád. Profit / gyártási óra: a run összes jobjának idejére vetítve (komponensekkel együtt), a BP-t tartó karakter skilljeivel. Napi forgalom: The Forge régió, az utolsó 30 nap átlaga. A „+ projekt” gomb a kiválasztott projekthez ad 1 runt (ha nincs kiválasztott, újat hoz létre).</p>` +

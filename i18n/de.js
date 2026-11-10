@@ -600,8 +600,8 @@ window.I18N.de = {
     '{0} reprocessbare Gegenstände, {1} Orte. Orte werden geladen…',
   'Jita árak lekérése: {0} típus…': 'Jita-Preise werden geladen: {0} Typen…',
   'Kész: {0} tétel, {1} mp.': 'Fertig: {0} Gegenstände, {1} s.',
-  'Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.':
-    'Leer gelassen werden Sales Tax und Broker Fee pro Charakter aus den Skills berechnet (Accounting, Broker Relations, ohne Standings), und der Charakter mit den niedrigsten Gebühren wird zum Verkaufen vorgeschlagen; auch der Profit wird damit berechnet. Die Basisausbeute einer NPC-Station ist 50 %. Reprocessing-Skills kommen aus ESI.',
+  'Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, és NPC állomáson az állomás tulajdonosa felé vett standing), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.':
+    'Leer gelassen werden Sales Tax und Broker Fee pro Charakter aus den Skills berechnet (Accounting, Broker Relations und an NPC-Stationen das Standing zum Stationsbesitzer), und der Charakter mit den niedrigsten Gebühren wird zum Verkaufen vorgeschlagen; auch der Profit wird damit berechnet. Die Basisausbeute einer NPC-Station ist 50 %. Reprocessing-Skills kommen aus ESI.',
   'Második piac a Jita mellé': 'Zweiter Markt neben Jita',
   'Kereskedelmi központok': 'Handelsknoten',
   'Állomások, ahol van cuccod': 'Stationen mit deinen Sachen',
@@ -738,5 +738,16 @@ window.I18N.de = {
   'hibás karakter-bejegyzés': 'fehlerhafter Charaktereintrag',
   'Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.':
     'Kein freier Slot; der Vorschlag rechnet mit einem späteren Start, die Wartezeit ist nicht enthalten.',
-  'nincs szabad slot': 'kein freier Slot'
+  'nincs szabad slot': 'kein freier Slot',
+  'Játékos-struktúra: a tulaj díja + 0,5% SCC.': 'Spielerstruktur: Gebühr des Besitzers + 0,5 % SCC.',
+  'A Beállításokban megadott érték.': 'Der in den Einstellungen eingetragene Wert.',
+  '3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)':
+    '3 % − 0,3 % × Broker Relations {0} = {1} % (ohne Standing)',
+  'nyers {0}': 'roh {0}',
+  '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.':
+    '3 % − 0,3 % × Broker Relations {0} − 0,03 % × Fraktions-Standing {1} − 0,02 % × Corp-Standing {2} = {3} %. Connections {4}, Diplomacy {5}.',
+  'Második piac: {0}…': 'Zweiter Markt: {0}…',
+  'Második piac: {0}': 'Zweiter Markt: {0}',
+  'A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.':
+    'Der zweite Markt hat sich seit der letzten Berechnung geändert: Die Spalten {0} werden bei der nächsten Berechnung gefüllt.'
 };

@@ -199,8 +199,33 @@ $('#sMarket2').addEventListener('change', e => {
   S.market2 = e.target.value ? Number(e.target.value) : '';
   saveS();
   renderSettings();
-  status(T('Második piac: {0}. Az árak a következő számolásnál töltődnek le.', S.market2 ? m2Short() : T('nincs')));
+  refreshMarket2();
 });
+// After the second market changed: load its owner (broker fee standing) and its prices for what is on screen,
+// then redraw every result that shows second-market columns.
+async function refreshMarket2() {
+  status(T('Második piac: {0}…', S.market2 ? m2Short() : T('nincs')));
+  const types = new Set(SLROWS.map(r => r.o.t));
+  if (LASTPLAN) LASTPLAN.trees.forEach(x => collectTypes(x.tree, types));
+  for (const r of INVROWS) if (r.prod) types.add(r.prod);
+  try {
+    if (m2On()) await ensureOwners([JITA_STATION, Number(S.market2)]);
+    if (types.size) await ensurePrices([...types]);
+  } catch (e) {
+    log('Második piac: ' + e.message);
+  }
+  try {
+    LASTRENDER && LASTRENDER();
+  } catch (e) {}
+  if (SLROWS.length) renderSales();
+  for (const k of Object.keys(PGR)) {
+    try {
+      PGR[k]();
+    } catch (e) {}
+  }
+  if (typeof REP !== 'undefined' && REP.rows) renderRepro();
+  status(T('Második piac: {0}', S.market2 ? m2Short() : T('nincs')));
+}
 $('#sWorkChars').addEventListener('change', e => {
   const ids = $$('#sWorkChars input[data-wc]')
     .filter(x => x.checked)

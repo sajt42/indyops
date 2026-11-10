@@ -594,8 +594,8 @@ window.I18N.en = {
     '{0} reprocessable items, {1} locations. Fetching locations…',
   'Jita árak lekérése: {0} típus…': 'Fetching Jita prices: {0} types…',
   'Kész: {0} tétel, {1} mp.': 'Done: {0} items, {1} s.',
-  'Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.':
-    'If left empty, sales tax and broker fee are calculated per character from skills (Accounting, Broker Relations, without standings), and the character with the lowest fees is suggested for selling; profits use that character too. NPC station base yield is 50%. Reprocessing skills come from ESI.',
+  'Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, és NPC állomáson az állomás tulajdonosa felé vett standing), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.':
+    'If left empty, sales tax and broker fee are calculated per character from skills (Accounting, Broker Relations and, at NPC stations, standing towards the station owner), and the character with the lowest fees is suggested for selling; profits use that character too. NPC station base yield is 50%. Reprocessing skills come from ESI.',
   'Második piac a Jita mellé': 'Second market next to Jita',
   'Kereskedelmi központok': 'Trade hubs',
   'Állomások, ahol van cuccod': 'Stations where you have stuff',
@@ -730,5 +730,16 @@ window.I18N.en = {
   'hibás karakter-bejegyzés': 'invalid character entry',
   'Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.':
     'No free slot; the suggestion assumes a later start and does not include the waiting time.',
-  'nincs szabad slot': 'no free slot'
+  'nincs szabad slot': 'no free slot',
+  'Játékos-struktúra: a tulaj díja + 0,5% SCC.': "Player structure: the owner's fee + 0.5% SCC.",
+  'A Beállításokban megadott érték.': 'The value set in Settings.',
+  '3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)':
+    '3% − 0.3% × Broker Relations {0} = {1}% (without standing)',
+  'nyers {0}': 'raw {0}',
+  '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.':
+    '3% − 0.3% × Broker Relations {0} − 0.03% × faction standing {1} − 0.02% × corp standing {2} = {3}%. Connections {4}, Diplomacy {5}.',
+  'Második piac: {0}…': 'Second market: {0}…',
+  'Második piac: {0}': 'Second market: {0}',
+  'A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.':
+    'The second market changed since the last calculation: the {0} columns fill in with the next calculation.'
 };

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-I2bQ2vwqSLKMeJF8C1nnU39aQoQiLV0R9RxB1yUzOqo=' 'sha256-dsUsKh+wSvjIKmyrSYlPQMjxdOEUgdncot9HCpsDj8k=' 'sha256-UOoA9DCpLrFP3t50p5fieKKtjrzCbIT/2kP0bRfxs+w=' 'sha256-n1eURjpfTIP1l/4fTyR+zg6syrCleDv/MwmK/Thiq9w=' 'sha256-P8caWBOsRj85x2f1Qe0qFJIvp76m13QLS03v6pef7go=' 'sha256-PkGZYp2u1zrJCuiJUp436M2b4f16LJtPYVjpeQvb7gA=' 'sha256-usHtTTyC6MACykjCVk4UjqRMfo6WZX1bK1ZPZP1mlJQ=' 'sha256-5pvHm3GA753xqQq1sVAbAoVBMD4mRy6Rp36g/FwLgYA=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-sPZRyfmfwe1SAia5JZXqQlO6DkhdkB4Z+aGRBRE+iTQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-p63bt1La6LKi71/i7cljOIJVOkbGqpkP2DFy4LLWJn0=' 'sha256-8KFlpnTOLS65r65U/BIJKwQouNWtDMSeE/wRAKbq5jk=' 'sha256-S+eLlexu5fIClg3EM5vWNhxyk+EuXmVw0qtKsSSN9Jw=' 'sha256-n1eURjpfTIP1l/4fTyR+zg6syrCleDv/MwmK/Thiq9w=' 'sha256-O43fR/8TjSCEucgh/nZRN7yTEZD6waIkPofvnNTzXHA=' 'sha256-PkGZYp2u1zrJCuiJUp436M2b4f16LJtPYVjpeQvb7gA=' 'sha256-usHtTTyC6MACykjCVk4UjqRMfo6WZX1bK1ZPZP1mlJQ=' 'sha256-TfZT/sSJKl3eRjm2Z2lm/Lgl5DXv4Kre3aLGPqiMF2g=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-mpFwwF3Bgc4ztUTeSs3HSQ1Wd9OJgZQbIkKRnVGcgTs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -451,7 +451,7 @@ th.sortable:hover{text-decoration:underline}
         <label>Reprocess alaphozam % <input type="number" step="0.1" id="sYieldBase"></label>
         <label>Implant bónusz % <input type="number" step="0.1" id="sImplant"></label>
       </div>
-      <p class="small muted" style="margin-top:8px">Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.</p>
+      <p class="small muted" style="margin-top:8px">Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, és NPC állomáson az állomás tulajdonosa felé vett standing), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.</p>
       <div class="row" style="margin-top:8px">
         <label style="flex:1 1 100%">Második piac a Jita mellé <select id="sMarket2"></select></label>
         <div id="sM2Broker" style="flex:1 1 100%"></div>
@@ -529,7 +529,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze. Ha van második piac, a profit runonként ott is látszik, az ottani díjakkal.</dd>
     <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
     <dt>Kutatás &amp; copy</dt><dd>BPO-nként a következő ME szint ideje és költsége, mennyit spórol runonként, mikor térül meg, plusz a copy ideje és a science slotjaid.</dd>
-    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van. Játékos-struktúránál a broker fee-t a tulaj állítja, ezt egyszer beírhatod, és onnantól az eladó-javaslat és az összeg is számol vele. A struktúrában lévő ordereidnél az alá-ígérést a struktúra piacáról nézi.</dd>
+    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). Az eladó-táblában a broker fee fölé víve az egeret látszik a képlet a karakter skilljeivel és standingjeivel (nyers és Connections/Diplomacy-val javított érték), így a játékban feladott order díjával össze tudod vetni. A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van. Játékos-struktúránál a broker fee-t a tulaj állítja, ezt egyszer beírhatod, és onnantól az eladó-javaslat és az összeg is számol vele. A struktúrában lévő ordereidnél az alá-ígérést a struktúra piacáról nézi.</dd>
     <dt>Vásárlás nélkül</dt><dd>Hány runt tudsz legyártani csak abból, ami megvan, és mi fogy el először.</dd>
     <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind). Minden listás oldalon (Blueprintek, Készlet, Mit érdemes?, Invention, Kutatás, Eladás, Vásárlás nélkül, Reprocess) a fejlécre kattintva rendezhetsz, újabb kattintásra fordított sorrendben.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
@@ -593,7 +593,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together. With a second market, profit per run is shown there too, with that market's fees.</dd>
     <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
     <dt>Research &amp; copy</dt><dd>Per BPO: time and cost of the next ME level, how much it saves per run, when it pays off, plus copy time and your science slots.</dd>
-    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do. In a player structure the owner sets the broker fee; enter it once and the seller suggestion and totals use it. For your orders in structures, undercuts are checked on the structure's own market.</dd>
+    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). Hover over a broker fee in the seller table to see the formula with the character's skills and standings (raw and adjusted by Connections/Diplomacy), so you can compare it with the fee the game shows for an order. In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do. In a player structure the owner sets the broker fee; enter it once and the seller suggestion and totals use it. For your orders in structures, undercuts are checked on the structure's own market.</dd>
     <dt>No-buy builds</dt><dd>How many runs you can build from what you already have, and what runs out first.</dd>
     <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all). On every list page (Blueprints, Stock, What pays?, Invention, Research, Selling, No-buy builds, Reprocess) click a header to sort, click again to reverse.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
@@ -657,7 +657,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen. Mit einem zweiten Markt wird der Gewinn pro Run auch dort angezeigt, mit dessen Gebühren.</dd>
     <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
     <dt>Forschung &amp; Kopie</dt><dd>Pro BPO: Zeit und Kosten der nächsten ME-Stufe, Ersparnis pro Run, wann es sich lohnt, dazu Kopierzeit und deine Science-Slots.</dd>
-    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen. In einer Spielerstruktur legt der Besitzer die Broker Fee fest; trage sie einmal ein, dann rechnen Verkäufervorschlag und Summen damit. Bei deinen Orders in Strukturen wird das Unterbieten am Markt der Struktur geprüft.</dd>
+    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). Fährst du in der Verkäufertabelle mit der Maus über eine Broker Fee, siehst du die Formel mit Skills und Standings des Charakters (roh und mit Connections/Diplomacy angepasst) und kannst sie mit der Gebühr vergleichen, die das Spiel für eine Order anzeigt. In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen. In einer Spielerstruktur legt der Besitzer die Broker Fee fest; trage sie einmal ein, dann rechnen Verkäufervorschlag und Summen damit. Bei deinen Orders in Strukturen wird das Unterbieten am Markt der Struktur geprüft.</dd>
     <dt>Ohne Einkauf</dt><dd>Wie viele Runs du nur aus deinem Bestand bauen kannst und was zuerst ausgeht.</dd>
     <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle). Auf jeder Listenseite (Blueprints, Bestand, Was lohnt sich?, Invention, Forschung, Verkauf, Ohne Einkauf, Reprocess) sortierst du per Klick auf die Kopfzeile, erneuter Klick dreht die Reihenfolge.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
@@ -1305,8 +1305,8 @@ window.I18N.en = {
     '{0} reprocessable items, {1} locations. Fetching locations…',
   'Jita árak lekérése: {0} típus…': 'Fetching Jita prices: {0} types…',
   'Kész: {0} tétel, {1} mp.': 'Done: {0} items, {1} s.',
-  'Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.':
-    'If left empty, sales tax and broker fee are calculated per character from skills (Accounting, Broker Relations, without standings), and the character with the lowest fees is suggested for selling; profits use that character too. NPC station base yield is 50%. Reprocessing skills come from ESI.',
+  'Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, és NPC állomáson az állomás tulajdonosa felé vett standing), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.':
+    'If left empty, sales tax and broker fee are calculated per character from skills (Accounting, Broker Relations and, at NPC stations, standing towards the station owner), and the character with the lowest fees is suggested for selling; profits use that character too. NPC station base yield is 50%. Reprocessing skills come from ESI.',
   'Második piac a Jita mellé': 'Second market next to Jita',
   'Kereskedelmi központok': 'Trade hubs',
   'Állomások, ahol van cuccod': 'Stations where you have stuff',
@@ -1441,7 +1441,18 @@ window.I18N.en = {
   'hibás karakter-bejegyzés': 'invalid character entry',
   'Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.':
     'No free slot; the suggestion assumes a later start and does not include the waiting time.',
-  'nincs szabad slot': 'no free slot'
+  'nincs szabad slot': 'no free slot',
+  'Játékos-struktúra: a tulaj díja + 0,5% SCC.': "Player structure: the owner's fee + 0.5% SCC.",
+  'A Beállításokban megadott érték.': 'The value set in Settings.',
+  '3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)':
+    '3% − 0.3% × Broker Relations {0} = {1}% (without standing)',
+  'nyers {0}': 'raw {0}',
+  '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.':
+    '3% − 0.3% × Broker Relations {0} − 0.03% × faction standing {1} − 0.02% × corp standing {2} = {3}%. Connections {4}, Diplomacy {5}.',
+  'Második piac: {0}…': 'Second market: {0}…',
+  'Második piac: {0}': 'Second market: {0}',
+  'A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.':
+    'The second market changed since the last calculation: the {0} columns fill in with the next calculation.'
 };
 </script>
 <script>
@@ -2048,8 +2059,8 @@ window.I18N.de = {
     '{0} reprocessbare Gegenstände, {1} Orte. Orte werden geladen…',
   'Jita árak lekérése: {0} típus…': 'Jita-Preise werden geladen: {0} Typen…',
   'Kész: {0} tétel, {1} mp.': 'Fertig: {0} Gegenstände, {1} s.',
-  'Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.':
-    'Leer gelassen werden Sales Tax und Broker Fee pro Charakter aus den Skills berechnet (Accounting, Broker Relations, ohne Standings), und der Charakter mit den niedrigsten Gebühren wird zum Verkaufen vorgeschlagen; auch der Profit wird damit berechnet. Die Basisausbeute einer NPC-Station ist 50 %. Reprocessing-Skills kommen aus ESI.',
+  'Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, és NPC állomáson az állomás tulajdonosa felé vett standing), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.':
+    'Leer gelassen werden Sales Tax und Broker Fee pro Charakter aus den Skills berechnet (Accounting, Broker Relations und an NPC-Stationen das Standing zum Stationsbesitzer), und der Charakter mit den niedrigsten Gebühren wird zum Verkaufen vorgeschlagen; auch der Profit wird damit berechnet. Die Basisausbeute einer NPC-Station ist 50 %. Reprocessing-Skills kommen aus ESI.',
   'Második piac a Jita mellé': 'Zweiter Markt neben Jita',
   'Kereskedelmi központok': 'Handelsknoten',
   'Állomások, ahol van cuccod': 'Stationen mit deinen Sachen',
@@ -2186,7 +2197,18 @@ window.I18N.de = {
   'hibás karakter-bejegyzés': 'fehlerhafter Charaktereintrag',
   'Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.':
     'Kein freier Slot; der Vorschlag rechnet mit einem späteren Start, die Wartezeit ist nicht enthalten.',
-  'nincs szabad slot': 'kein freier Slot'
+  'nincs szabad slot': 'kein freier Slot',
+  'Játékos-struktúra: a tulaj díja + 0,5% SCC.': 'Spielerstruktur: Gebühr des Besitzers + 0,5 % SCC.',
+  'A Beállításokban megadott érték.': 'Der in den Einstellungen eingetragene Wert.',
+  '3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)':
+    '3 % − 0,3 % × Broker Relations {0} = {1} % (ohne Standing)',
+  'nyers {0}': 'roh {0}',
+  '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.':
+    '3 % − 0,3 % × Broker Relations {0} − 0,03 % × Fraktions-Standing {1} − 0,02 % × Corp-Standing {2} = {3} %. Connections {4}, Diplomacy {5}.',
+  'Második piac: {0}…': 'Zweiter Markt: {0}…',
+  'Második piac: {0}': 'Zweiter Markt: {0}',
+  'A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.':
+    'Der zweite Markt hat sich seit der letzten Berechnung geändert: Die Spalten {0} werden bei der nächsten Berechnung gefüllt.'
 };
 </script>
 <script>
@@ -2254,7 +2276,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.12.7',
+  version: '1.12.8',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -3343,6 +3365,28 @@ function brokerFeeOf(cid, l) {
   if (o && hasStd(cid)) f -= 0.0003 * effStd(cid, o.fac) + 0.0002 * effStd(cid, o.corp);
   return Math.max(0.01, f);
 }
+// The broker fee formula with this character's numbers, for the seller table tooltip (so it can be checked in game).
+function brokerExplain(cid, l) {
+  if (l != null && locKind(l) === 'struct') return T('Játékos-struktúra: a tulaj díja + 0,5% SCC.');
+  if (S.broker !== '' && S.broker != null) return T('A Beállításokban megadott érték.');
+  const br = lvlOf(cid, SK.broker);
+  const o = l != null && locKind(l) === 'npc' ? stationOwner(l) : null;
+  const f = brokerFeeOf(cid, l);
+  if (!o || !hasStd(cid)) return T('3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)', br, fmt(f * 100, 2));
+  const std = from => {
+    const r = (DATA[cid].std || {})[from] || 0;
+    return fmt(effStd(cid, from), 2) + ' (' + T('nyers {0}', fmt(r, 2)) + ')';
+  };
+  return T(
+    '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.',
+    br,
+    std(o.fac),
+    std(o.corp),
+    fmt(f * 100, 2),
+    lvlOf(cid, SK.connections),
+    lvlOf(cid, SK.diplomacy)
+  );
+}
 function sellers(l = JITA_STATION) {
   return workChars()
     .map(id => ({
@@ -3381,7 +3425,7 @@ function sellerHtml() {
   const isStr = m2 && locKind(m2l) === 'struct';
   const noStd = workChars().some(id => !hasStd(id));
   const tot2 = x => (x.b2 == null ? null : x.tax + x.b2);
-  return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => `<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num">${fmt(x.broker * 100, 2)}%</td>${m2 ? `<td class="num">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? `<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? '<span class="pill ok">javasolt</span>' : ''}</td></tr>`).join('')}</tbody></table></div>
+  return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => `<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num" title="${esc(brokerExplain(x.cid, JITA_STATION))}">${fmt(x.broker * 100, 2)}%</td>${m2 ? `<td class="num" title="${esc(brokerExplain(x.cid, m2l))}">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? `<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? '<span class="pill ok">javasolt</span>' : ''}</td></tr>`).join('')}</tbody></table></div>
   ${isStr ? `<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %', esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l) ?? ''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>` : ''}
   <p class="small muted" style="margin-top:4px">${noStd ? T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.') : T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p></div>`;
 }
@@ -5667,6 +5711,7 @@ async function ensureHistory(types) {
   store('hist', HIST);
 }
 let PROFROWS = [],
+  PROFM2 = null, // second market the profit rows were calculated with
   profSort = { k: 'pph', d: -1 };
 async function runProfit() {
   const out = $('#prOut');
@@ -5717,6 +5762,7 @@ async function runProfit() {
   const fee2 = m2Fee();
   const sysCache = {};
   PROFROWS = [];
+  PROFM2 = S.market2 || null;
   for (const x of plans) {
     const sysId = sysCache[x.best.l] !== undefined ? sysCache[x.best.l] : (sysCache[x.best.l] = await sysFor(x.best));
     const made = x.R.trees[0].made;
@@ -5771,6 +5817,9 @@ function renderProfit() {
   const onlyPos = $('#prOnlyPos').checked,
     minVol = Number($('#prMinVol').value || 0);
   let rows = PROFROWS.filter(r => (!onlyPos || r.perRun > 0) && r.vol >= minVol);
+  // second-market values belong to the market they were calculated with
+  const m2stale = m2On() && PROFM2 !== (S.market2 || null);
+  if (m2stale) rows = rows.map(r => Object.assign({}, r, { price2: null, perRun2: null }));
   const k = profSort.k;
   rows.sort((a, b) => {
     const va = a[k],
@@ -5783,6 +5832,9 @@ function renderProfit() {
   const th = (key, label, num) =>
     `<th class="sortable${num ? ' num' : ''}" data-psort="${key}">${label}${profSort.k === key ? '<span> ' + (profSort.d > 0 ? '▲' : '▼') + '</span>' : ''}</th>`;
   out.innerHTML =
+    (m2stale
+      ? `<div class="notice"><p class="small">${T('A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.', esc(m2Short()))}</p></div>`
+      : '') +
     pg.html +
     `<div class="tablewrap"><table><thead><tr>${th('name', 'Termék')}<th>Legjobb saját BP</th>${th('price', 'Jita sell', 1)}${m2On() ? th('price2', esc(m2Short()) + ' sell', 1) : ''}${th('perRun', 'Profit / run', 1)}${m2On() ? th('perRun2', T('Profit / run') + ' · ' + esc(m2Short()), 1) : ''}${th('margin', 'Margó', 1)}${th('pph', 'Profit / gyártási óra', 1)}${th('vol', 'Napi forgalom', 1)}${th('pot', 'Maradék runok értéke', 1)}<th></th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r.name)}${r.noMarket ? ' <span class="pill warn">nincs Jita ár</span>' : ''}${r.warn ? ' <span class="pill bad">kevés run</span>' : ''}${r.unsure ? `<div class="src">${T('Nincs Jita ára: {0}. A profit emiatt túl magas lehet.', esc(r.noPrice.map(t => NAMES[t] || t).join(', ')))}</div>` : ''}</td><td class="small">${r.best.r === -1 ? 'BPO' : 'BPC ' + r.runsLeft + ' run'} · ME${r.best.me} · ${esc(charName(r.best.cid))}</td><td class="num">${isk(r.price)}</td>${m2On() ? `<td class="num">${m2Cell(r.price, r.price2)}</td>` : ''}<td class="num ${r.unsure ? '' : r.perRun >= 0 ? 'pos' : 'neg'}">${r.unsure ? '? ' : ''}${isk(r.perRun)}</td>${m2On() ? `<td class="num ${r.perRun2 == null || r.unsure ? '' : r.perRun2 >= 0 ? 'pos' : 'neg'}">${r.perRun2 == null ? '?' : (r.unsure ? '? ' : '') + isk(r.perRun2)}</td>` : ''}<td class="num">${r.margin == null ? '–' : fmt(r.margin * 100, 1) + '%'}</td><td class="num ${r.pph >= 0 ? 'pos' : 'neg'}">${isk(r.pph)}</td><td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}${r.vol && r.daysToSell > 1 ? ' <span class="pill warn" title="Egy run termékének eladása több napi forgalom">lassú</span>' : ''}</td><td class="num">${r.pot == null ? '∞ (BPO)' : isk(r.pot)}</td><td><button class="btn mini" data-addproj="${r.best.t}">+ projekt</button></td></tr>`).join('') || '<tr><td colspan="9" class="muted">A szűrőknek egy tétel sem felel meg.</td></tr>'}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Minden anyag piaci áron számít, a saját készlet is, mert azt el is adhatnád. Profit / gyártási óra: a run összes jobjának idejére vetítve (komponensekkel együtt), a BP-t tartó karakter skilljeivel. Napi forgalom: The Forge régió, az utolsó 30 nap átlaga. A „+ projekt” gomb a kiválasztott projekthez ad 1 runt (ha nincs kiválasztott, újat hoz létre).</p>` +
@@ -7387,8 +7439,33 @@ $('#sMarket2').addEventListener('change', e => {
   S.market2 = e.target.value ? Number(e.target.value) : '';
   saveS();
   renderSettings();
-  status(T('Második piac: {0}. Az árak a következő számolásnál töltődnek le.', S.market2 ? m2Short() : T('nincs')));
+  refreshMarket2();
 });
+// After the second market changed: load its owner (broker fee standing) and its prices for what is on screen,
+// then redraw every result that shows second-market columns.
+async function refreshMarket2() {
+  status(T('Második piac: {0}…', S.market2 ? m2Short() : T('nincs')));
+  const types = new Set(SLROWS.map(r => r.o.t));
+  if (LASTPLAN) LASTPLAN.trees.forEach(x => collectTypes(x.tree, types));
+  for (const r of INVROWS) if (r.prod) types.add(r.prod);
+  try {
+    if (m2On()) await ensureOwners([JITA_STATION, Number(S.market2)]);
+    if (types.size) await ensurePrices([...types]);
+  } catch (e) {
+    log('Második piac: ' + e.message);
+  }
+  try {
+    LASTRENDER && LASTRENDER();
+  } catch (e) {}
+  if (SLROWS.length) renderSales();
+  for (const k of Object.keys(PGR)) {
+    try {
+      PGR[k]();
+    } catch (e) {}
+  }
+  if (typeof REP !== 'undefined' && REP.rows) renderRepro();
+  status(T('Második piac: {0}', S.market2 ? m2Short() : T('nincs')));
+}
 $('#sWorkChars').addEventListener('change', e => {
   const ids = $$('#sWorkChars input[data-wc]')
     .filter(x => x.checked)

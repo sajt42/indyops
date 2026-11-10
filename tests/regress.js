@@ -95,7 +95,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -553,6 +553,35 @@ const ok = (c, msg) => {
       console.log(e.stack);
     }
     ok(ok3, 'showResult draws a full plan');
+  }
+  // 21. broker fee at an NPC station with standings: formula and its tooltip
+  {
+    T.setChars([{ id: 7, name: 'Broker', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
+    T.setData({ 7: { assets: [], bps: [], skills: { 3446: 5, 3359: 3 }, jobs: [], std: { 500001: 2, 1000035: 5 }, at: Date.now() } });
+    T.LI[60009999] = { name: 'Zzyzx Test Station', system: 30001, owner: 1000035 };
+    T.CORPFAC[1000035] = 500001;
+    const savedBroker = T.S.broker;
+    T.S.broker = '';
+    const eff = r => r + (10 - r) * 0.04 * 3;
+    const want = 0.03 - 0.015 - 0.0003 * eff(2) - 0.0002 * eff(5);
+    const got = T.brokerFeeOf(7, 60009999);
+    ok(Math.abs(got - want) < 1e-12, 'broker fee uses Connections-adjusted standings (' + (got * 100).toFixed(4) + '%)');
+    const ex = T.brokerExplain(7, 60009999);
+    ok(ex.includes('Broker Relations 5') && ex.includes('nyers 2,00') && ex.includes('nyers 5,00') && ex.includes('Connections 3'), 'tooltip shows skills and raw standings: ' + ex);
+    ok(T.brokerFeeOf(7, 60009998) === 0.015 && /standing nélkül/.test(T.brokerExplain(7, 60009998)), 'unknown owner: no standing reduction, said in the tooltip');
+    T.S.broker = savedBroker;
+  }
+
+  // 22. changing the second market redraws the selling tab and blanks stale profit columns
+  {
+    const ss = T.S;
+    ss.market2 = 60009999;
+    T.setSales([{ o: { t: 34, cid: 7, buy: false, p: 4, rem: 1, tot: 1, l: 60003760, exp: Date.now() + 1e9, iss: new Date().toISOString(), dur: 90 }, best: null, state: 'egyedül', sugg: null }]);
+    await T.refreshMarket2();
+    const sl = d.querySelector('#slOut') || d.querySelector('#tab-sales');
+    ok(/Zzyzx/.test(sl.textContent), 'selling tab shows the new second market right after the change');
+    ok(T.PROFM2 !== ss.market2, 'profit rows remember the market they were calculated with');
+    ss.market2 = '';
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

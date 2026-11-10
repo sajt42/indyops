@@ -163,6 +163,28 @@ function brokerFeeOf(cid, l) {
   if (o && hasStd(cid)) f -= 0.0003 * effStd(cid, o.fac) + 0.0002 * effStd(cid, o.corp);
   return Math.max(0.01, f);
 }
+// The broker fee formula with this character's numbers, for the seller table tooltip (so it can be checked in game).
+function brokerExplain(cid, l) {
+  if (l != null && locKind(l) === 'struct') return T('Játékos-struktúra: a tulaj díja + 0,5% SCC.');
+  if (S.broker !== '' && S.broker != null) return T('A Beállításokban megadott érték.');
+  const br = lvlOf(cid, SK.broker);
+  const o = l != null && locKind(l) === 'npc' ? stationOwner(l) : null;
+  const f = brokerFeeOf(cid, l);
+  if (!o || !hasStd(cid)) return T('3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)', br, fmt(f * 100, 2));
+  const std = from => {
+    const r = (DATA[cid].std || {})[from] || 0;
+    return fmt(effStd(cid, from), 2) + ' (' + T('nyers {0}', fmt(r, 2)) + ')';
+  };
+  return T(
+    '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.',
+    br,
+    std(o.fac),
+    std(o.corp),
+    fmt(f * 100, 2),
+    lvlOf(cid, SK.connections),
+    lvlOf(cid, SK.diplomacy)
+  );
+}
 function sellers(l = JITA_STATION) {
   return workChars()
     .map(id => ({
@@ -201,7 +223,7 @@ function sellerHtml() {
   const isStr = m2 && locKind(m2l) === 'struct';
   const noStd = workChars().some(id => !hasStd(id));
   const tot2 = x => (x.b2 == null ? null : x.tax + x.b2);
-  return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => `<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num">${fmt(x.broker * 100, 2)}%</td>${m2 ? `<td class="num">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? `<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? '<span class="pill ok">javasolt</span>' : ''}</td></tr>`).join('')}</tbody></table></div>
+  return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => `<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num" title="${esc(brokerExplain(x.cid, JITA_STATION))}">${fmt(x.broker * 100, 2)}%</td>${m2 ? `<td class="num" title="${esc(brokerExplain(x.cid, m2l))}">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? `<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? '<span class="pill ok">javasolt</span>' : ''}</td></tr>`).join('')}</tbody></table></div>
   ${isStr ? `<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %', esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l) ?? ''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>` : ''}
   <p class="small muted" style="margin-top:4px">${noStd ? T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.') : T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p></div>`;
 }
