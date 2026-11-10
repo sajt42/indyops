@@ -787,5 +787,8 @@ window.I18N.en = {
   'Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.':
     'Materials are bought in Jita by default. In the Planner and Projects, "Where to buy cheaper?" in the shopping list goes through the sell orders of the regions picked here: where it is cheaper than Jita, how much of the needed quantity is available there, and how many jumps it is from the production location. Pick per item where you buy it; the plan and the haul list use it. If the second market is a player structure, its market is searched too. Manual prices are entered in the shopping list.',
   'Legfeljebb ennyi ugrás': 'At most this many jumps',
-  'csak highsec útvonal': 'highsec route only'
+  'csak highsec útvonal': 'highsec route only',
+  Vásárlás: 'Purchase',
+  'Köztes termék': 'Intermediate',
+  Eladásra: 'For sale'
 };

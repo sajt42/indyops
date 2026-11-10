@@ -76,7 +76,8 @@ function buyFromText(t, q) {
     )
     .join(' + ');
 }
-const shortLoc = l => String(locName(l)).split(' - ')[0];
+// station name without the corporation part ("Isinokka V - Moon 10"); the full name goes in the title
+const shortLoc = l => String(locName(l)).split(' - ').slice(0, 2).join(' - ');
 
 /* ---- market search ---- */
 const MKT_JUMPS = {}; // station -> jumps from the production location (last search)

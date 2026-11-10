@@ -595,9 +595,12 @@ function haulList(R) {
       );
     return left.get(t);
   };
-  const add = (from, to, t, q) => {
+  const kinds = new Map(); // route -> Set('buy' | 'stock' | 'built')
+  const add = (from, to, t, q, kind) => {
     if (!q || from == null || to == null || from === to) return;
     const k = from + '|' + to;
+    if (!kinds.has(k)) kinds.set(k, new Set());
+    kinds.get(k).add(kind);
     let m = moves.get(k);
     if (!m) {
       m = new Map();
@@ -611,7 +614,7 @@ function haulList(R) {
     for (const c of n.ch) {
       for (const x of c.stock) {
         if (x.l === 'surplus' || x.l === 'job') continue;
-        add(x.l, to, c.t, x.q);
+        add(x.l, to, c.t, x.q, 'stock');
         if (x.ore) oreRoutes.add(x.l + '|' + to);
       }
       // purchases: each node takes its share from the sources of the whole list, cheapest source first
@@ -622,12 +625,12 @@ function haulList(R) {
           const k = Math.min(x.q, need);
           x.q -= k;
           need -= k;
-          add(x.l, to, c.t, k);
+          add(x.l, to, c.t, k, 'buy');
         }
       }
       if (c.build) {
         const got = c.stock.reduce((s, x) => s + x.q, 0);
-        add(prodLocOf(c), to, c.t, Math.max(0, c.need - got));
+        add(prodLocOf(c), to, c.t, Math.max(0, c.need - got), 'built');
       }
       walk(c);
     }
@@ -643,7 +646,7 @@ function haulList(R) {
     const m = sale.get(from);
     m.set(x.tree.t, (m.get(x.tree.t) || 0) + x.made);
   });
-  return { moves, sale, oreRoutes };
+  return { moves, sale, oreRoutes, kinds };
 }
 const volOf = t => (REFC.t[t] && REFC.t[t].vol) || 0;
 /* ---- ships and routes for hauling ---- */
@@ -780,9 +783,9 @@ function shipAdvice(R, key, vol, maxUnit) {
   const flyable = ctx.ships.filter(x => x.canFly);
   const ships = flyable.filter(x => x.cap >= (maxUnit || 0));
   if (!flyable.length)
-    return html`<tr><td colspan="3" class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</td></tr>`;
+    return html`<div class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</div>`;
   if (!ships.length)
-    return html`<tr><td colspan="3" class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</td></tr>`;
+    return html`<div class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</div>`;
   const opts = ships.map(x => {
     const trips = Math.ceil(vol / x.cap);
     const per = JUMP_SEC[x.g] || 60;
@@ -799,30 +802,42 @@ function shipAdvice(R, key, vol, maxUnit) {
       return true;
     })
     .slice(0, 3);
-  return html`<tr><td colspan="3" class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : html`<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? html`<span class="neg">${safety}</span>` : safety}). `}${best.map((o, i) => html`${i ? html`<br>` : ''}${o.n} <span class="muted">(${charName(o.cid)}, ${locName(o.l)}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`)}</td></tr>`;
+  return html`<div class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : html`<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? html`<span class="neg">${safety}</span>` : safety}). `}${best.map((o, i) => html`${i ? html`<br>` : ''}${o.n} <span class="muted">(${charName(o.cid)}, ${locName(o.l)}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`)}</div>`;
 }
 function renderHaul(R) {
   const H = haulList(R);
   if (!H.moves.size && !H.sale.size)
     return html`<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>`;
   let tot = 0;
-  let h = html`<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="grid2">`;
+  let h = html`<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="haulgrid">`;
   for (const [k, m] of H.moves) {
     const [from, to] = k.split('|').map(Number);
     const rows = [...m].map(([t, q]) => ({ t, q, v: q * volOf(t) }));
     const sum = rows.reduce((s, r) => s + (r.v || 0), 0);
     tot += sum;
-    h = html`${h}<div class="tablewrap"><table><thead><tr><th colspan="3">${from === JITA_STATION ? T('Jita (vásárlás)') : locName(from)} → ${locName(to)} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows
+    const ks = H.kinds.get(k) || new Set();
+    const kind = [
+      ks.has('buy') && T('Vásárlás'),
+      ks.has('stock') && T('Készletből'),
+      ks.has('built') && T('Köztes termék')
+    ]
+      .filter(Boolean)
+      .join(' + ');
+    h = html`${h}<div class="haul"><div class="haulhead"><span class="pill">${kind}</span> <b title="${locName(from)}">${from === JITA_STATION ? 'Jita' : shortLoc(from)}</b> → <b title="${locName(to)}">${to === JITA_STATION ? 'Jita' : shortLoc(to)}</b> · <span class="mono">${fmt(sum)} m³</span></div><table class="haultab"><tbody>${rows
       .sort((a, b) => (b.v || 0) - (a.v || 0))
       .map(
         r =>
           html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`
-      )}${H.oreRoutes.has(k) ? html`<tr><td colspan="3" class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</td></tr>` : ''}${shipAdvice(R, k, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</tbody></table></div>`;
+      )}</tbody></table>${
+      H.oreRoutes.has(k)
+        ? html`<div class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</div>`
+        : ''
+    }<div class="haulships">${shipAdvice(R, k, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</div></div>`;
   }
   for (const [from, m] of H.sale) {
     const rows = [...m].map(([t, q]) => ({ t, q, v: q * volOf(t) }));
     const sum = rows.reduce((s, r) => s + r.v, 0);
-    h = html`${h}<div class="tablewrap"><table><thead><tr><th colspan="3">${T('Eladásra: {0} → Jita', locName(from))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.map(r => html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`)}${shipAdvice(R, from + '|' + JITA_STATION, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</tbody></table></div>`;
+    h = html`${h}<div class="haul"><div class="haulhead"><span class="pill">${T('Eladásra')}</span> <b title="${locName(from)}">${shortLoc(from)}</b> → <b>Jita</b> · <span class="mono">${fmt(sum)} m³</span></div><table class="haultab"><tbody>${rows.map(r => html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`)}</tbody></table><div class="haulships">${shipAdvice(R, from + '|' + JITA_STATION, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</div></div>`;
   }
   h = html`${h}</div>`;
   if (tot)

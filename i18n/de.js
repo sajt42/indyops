@@ -794,5 +794,8 @@ window.I18N.de = {
   'Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.':
     'Materialien werden standardmäßig in Jita gekauft. Im Planer und in den Projekten durchsucht „Wo billiger kaufen?“ in der Einkaufsliste die Verkaufsorders der hier gewählten Regionen: wo es billiger als in Jita ist, wie viel der benötigten Menge dort zu haben ist und wie viele Sprünge es vom Fertigungsort entfernt ist. Wähle pro Artikel, wo du kaufst; Plan und Transportliste rechnen damit. Ist der zweite Markt eine Spielerstruktur, wird auch ihr Markt durchsucht. Manuelle Preise trägst du in der Einkaufsliste ein.',
   'Legfeljebb ennyi ugrás': 'Höchstens so viele Sprünge',
-  'csak highsec útvonal': 'nur Highsec-Route'
+  'csak highsec útvonal': 'nur Highsec-Route',
+  Vásárlás: 'Einkauf',
+  'Köztes termék': 'Zwischenprodukt',
+  Eladásra: 'Zum Verkauf'
 };

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.14.1 – 2026-11-10
+
+- Hauling: one card per route that wraps instead of scrolling sideways; each card says what moves (purchase, from stock, intermediate product, for sale), shows short station names (full name on hover), the items, and the ship suggestions below.
+
 ## 1.14.0 – 2026-11-10
 
 - Where to buy: in the shopping list (Planner and Projects) every material can have a manual price (bought outside the market; such items are not hauled), and 'Where to buy cheaper?' searches the sell orders of the regions picked in Settings. For each material it shows the stations cheaper than Jita with jumps from the production location, highsec check, how much is available and the average price over the order book for the needed quantity. 'Buy here' picks a station; what it lacks comes from Jita. Settings: regions, maximum jumps (10), highsec only (on), and the lists of manual prices and picked sources.

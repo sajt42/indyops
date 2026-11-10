@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-a9dsQ/0mY8dH3XOoqD8tTg9TlEkL7KckhYpmVN9ZraU=' 'sha256-A6YZ4/BbBxbym/eQhFxmNJdcKMG48K3h0+ucBs9d9R0=' 'sha256-JzD/UdwYtFKFeFo+EoXDPXA6FzlFWb0TNqBCVz0auqM=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-imiihm2+6fsd3/p8vpS3TCZme7QYjK9d3dvWiCM7Kg0=' 'sha256-8knC0djLgBBasc8ekad9bIvFXGubU9qUMDkRhptGCos=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-pVDRA+jRBx8QJsxnozZ+ZmZx8IP4wgJx928+sLa2sFY=' 'sha256-kuiR8Z8hMSyabeTWTTmpj56GO1uIk4lme0mzRe7bo3s=' 'sha256-QGEXrk8kRheHLx4MxDe06q5r0ZsOac1rQHZvnGQrYZU=' 'sha256-PCJvs8iYTNBkiIL8dGsEIHKbz0wjWGZDlSZdgvTzmfA=' 'sha256-6XNvpSbZosPp1O6vh1oTalX6qfpaZHAKoiZlTL8h508=' 'sha256-Q7FQ8XfiG79/F57yuIV8fLYcQ6TnPAP0S0jPn6UxuEU=' 'sha256-yHES6LSH9jxy18zYee4i2Ywj0gMZqmjCMBKvzjafIbo=' 'sha256-+ZNA0mOq8w6HIluNWMeD+G0oFewefBGvWefDzcPQc2o=' 'sha256-rJ1kS3T2LrCYuP7LuXo1gr050/UesJZh76W3ztJptF0=' 'sha256-g7SsYz7NYtT2jZxTg0jLJsldXHcOo3R/OujYt3nhB1M='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-MDLGQh3+NUPDBh4w6J7yNMLxgE913MKCQg1yySiPEiQ=' 'sha256-ufYMFWPGLjlGILvwrmQaqEJA7WWPhG+hziAjA7Gp8kM=' 'sha256-p8ggaUFuwve+tsBemp5m6jzx90FRahhofLUz8eTocIs=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-imiihm2+6fsd3/p8vpS3TCZme7QYjK9d3dvWiCM7Kg0=' 'sha256-KxuCttliMjXmztSTi9mWgobX8I3PDC3kkj1KNgc3Iuc=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-q7SUjJ4mGEMGpW+Pu6HaHXwl+moanBb3inuM9Ij4Xm8=' 'sha256-kuiR8Z8hMSyabeTWTTmpj56GO1uIk4lme0mzRe7bo3s=' 'sha256-QGEXrk8kRheHLx4MxDe06q5r0ZsOac1rQHZvnGQrYZU=' 'sha256-PCJvs8iYTNBkiIL8dGsEIHKbz0wjWGZDlSZdgvTzmfA=' 'sha256-6XNvpSbZosPp1O6vh1oTalX6qfpaZHAKoiZlTL8h508=' 'sha256-Q7FQ8XfiG79/F57yuIV8fLYcQ6TnPAP0S0jPn6UxuEU=' 'sha256-yHES6LSH9jxy18zYee4i2Ywj0gMZqmjCMBKvzjafIbo=' 'sha256-+ZNA0mOq8w6HIluNWMeD+G0oFewefBGvWefDzcPQc2o=' 'sha256-rJ1kS3T2LrCYuP7LuXo1gr050/UesJZh76W3ztJptF0=' 'sha256-g7SsYz7NYtT2jZxTg0jLJsldXHcOo3R/OujYt3nhB1M='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -145,6 +145,13 @@ th.sortable:hover{text-decoration:underline}
 /* market search settings and shopping list */
 .regionlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:2px 12px;margin-top:6px;max-height:280px;overflow:auto}
 input.manp{width:90px}
+/* hauling: one card per route, text wraps instead of scrolling sideways */
+.haulgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px}
+.haul{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:10px 12px;min-width:0}
+.haulhead{margin-bottom:6px;overflow-wrap:anywhere}
+.haultab{width:100%}
+.haultab td{padding:3px 6px}
+.haulships{margin-top:8px;border-top:1px solid var(--line);padding-top:6px;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -1521,7 +1528,10 @@ window.I18N.en = {
   'Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.':
     'Materials are bought in Jita by default. In the Planner and Projects, "Where to buy cheaper?" in the shopping list goes through the sell orders of the regions picked here: where it is cheaper than Jita, how much of the needed quantity is available there, and how many jumps it is from the production location. Pick per item where you buy it; the plan and the haul list use it. If the second market is a player structure, its market is searched too. Manual prices are entered in the shopping list.',
   'Legfeljebb ennyi ugrás': 'At most this many jumps',
-  'csak highsec útvonal': 'highsec route only'
+  'csak highsec útvonal': 'highsec route only',
+  Vásárlás: 'Purchase',
+  'Köztes termék': 'Intermediate',
+  Eladásra: 'For sale'
 };
 </script>
 <script>
@@ -2322,7 +2332,10 @@ window.I18N.de = {
   'Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.':
     'Materialien werden standardmäßig in Jita gekauft. Im Planer und in den Projekten durchsucht „Wo billiger kaufen?“ in der Einkaufsliste die Verkaufsorders der hier gewählten Regionen: wo es billiger als in Jita ist, wie viel der benötigten Menge dort zu haben ist und wie viele Sprünge es vom Fertigungsort entfernt ist. Wähle pro Artikel, wo du kaufst; Plan und Transportliste rechnen damit. Ist der zweite Markt eine Spielerstruktur, wird auch ihr Markt durchsucht. Manuelle Preise trägst du in der Einkaufsliste ein.',
   'Legfeljebb ennyi ugrás': 'Höchstens so viele Sprünge',
-  'csak highsec útvonal': 'nur Highsec-Route'
+  'csak highsec útvonal': 'nur Highsec-Route',
+  Vásárlás: 'Einkauf',
+  'Köztes termék': 'Zwischenprodukt',
+  Eladásra: 'Zum Verkauf'
 };
 </script>
 <script>
@@ -2390,7 +2403,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.14.0',
+  version: '1.14.1',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -4213,7 +4226,8 @@ function buyFromText(t, q) {
     )
     .join(' + ');
 }
-const shortLoc = l => String(locName(l)).split(' - ')[0];
+// station name without the corporation part ("Isinokka V - Moon 10"); the full name goes in the title
+const shortLoc = l => String(locName(l)).split(' - ').slice(0, 2).join(' - ');
 
 /* ---- market search ---- */
 const MKT_JUMPS = {}; // station -> jumps from the production location (last search)
@@ -5649,9 +5663,12 @@ function haulList(R) {
       );
     return left.get(t);
   };
-  const add = (from, to, t, q) => {
+  const kinds = new Map(); // route -> Set('buy' | 'stock' | 'built')
+  const add = (from, to, t, q, kind) => {
     if (!q || from == null || to == null || from === to) return;
     const k = from + '|' + to;
+    if (!kinds.has(k)) kinds.set(k, new Set());
+    kinds.get(k).add(kind);
     let m = moves.get(k);
     if (!m) {
       m = new Map();
@@ -5665,7 +5682,7 @@ function haulList(R) {
     for (const c of n.ch) {
       for (const x of c.stock) {
         if (x.l === 'surplus' || x.l === 'job') continue;
-        add(x.l, to, c.t, x.q);
+        add(x.l, to, c.t, x.q, 'stock');
         if (x.ore) oreRoutes.add(x.l + '|' + to);
       }
       // purchases: each node takes its share from the sources of the whole list, cheapest source first
@@ -5676,12 +5693,12 @@ function haulList(R) {
           const k = Math.min(x.q, need);
           x.q -= k;
           need -= k;
-          add(x.l, to, c.t, k);
+          add(x.l, to, c.t, k, 'buy');
         }
       }
       if (c.build) {
         const got = c.stock.reduce((s, x) => s + x.q, 0);
-        add(prodLocOf(c), to, c.t, Math.max(0, c.need - got));
+        add(prodLocOf(c), to, c.t, Math.max(0, c.need - got), 'built');
       }
       walk(c);
     }
@@ -5697,7 +5714,7 @@ function haulList(R) {
     const m = sale.get(from);
     m.set(x.tree.t, (m.get(x.tree.t) || 0) + x.made);
   });
-  return { moves, sale, oreRoutes };
+  return { moves, sale, oreRoutes, kinds };
 }
 const volOf = t => (REFC.t[t] && REFC.t[t].vol) || 0;
 /* ---- ships and routes for hauling ---- */
@@ -5834,9 +5851,9 @@ function shipAdvice(R, key, vol, maxUnit) {
   const flyable = ctx.ships.filter(x => x.canFly);
   const ships = flyable.filter(x => x.cap >= (maxUnit || 0));
   if (!flyable.length)
-    return html`<tr><td colspan="3" class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</td></tr>`;
+    return html`<div class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</div>`;
   if (!ships.length)
-    return html`<tr><td colspan="3" class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</td></tr>`;
+    return html`<div class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</div>`;
   const opts = ships.map(x => {
     const trips = Math.ceil(vol / x.cap);
     const per = JUMP_SEC[x.g] || 60;
@@ -5853,30 +5870,42 @@ function shipAdvice(R, key, vol, maxUnit) {
       return true;
     })
     .slice(0, 3);
-  return html`<tr><td colspan="3" class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : html`<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? html`<span class="neg">${safety}</span>` : safety}). `}${best.map((o, i) => html`${i ? html`<br>` : ''}${o.n} <span class="muted">(${charName(o.cid)}, ${locName(o.l)}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`)}</td></tr>`;
+  return html`<div class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : html`<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? html`<span class="neg">${safety}</span>` : safety}). `}${best.map((o, i) => html`${i ? html`<br>` : ''}${o.n} <span class="muted">(${charName(o.cid)}, ${locName(o.l)}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`)}</div>`;
 }
 function renderHaul(R) {
   const H = haulList(R);
   if (!H.moves.size && !H.sale.size)
     return html`<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>`;
   let tot = 0;
-  let h = html`<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="grid2">`;
+  let h = html`<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="haulgrid">`;
   for (const [k, m] of H.moves) {
     const [from, to] = k.split('|').map(Number);
     const rows = [...m].map(([t, q]) => ({ t, q, v: q * volOf(t) }));
     const sum = rows.reduce((s, r) => s + (r.v || 0), 0);
     tot += sum;
-    h = html`${h}<div class="tablewrap"><table><thead><tr><th colspan="3">${from === JITA_STATION ? T('Jita (vásárlás)') : locName(from)} → ${locName(to)} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows
+    const ks = H.kinds.get(k) || new Set();
+    const kind = [
+      ks.has('buy') && T('Vásárlás'),
+      ks.has('stock') && T('Készletből'),
+      ks.has('built') && T('Köztes termék')
+    ]
+      .filter(Boolean)
+      .join(' + ');
+    h = html`${h}<div class="haul"><div class="haulhead"><span class="pill">${kind}</span> <b title="${locName(from)}">${from === JITA_STATION ? 'Jita' : shortLoc(from)}</b> → <b title="${locName(to)}">${to === JITA_STATION ? 'Jita' : shortLoc(to)}</b> · <span class="mono">${fmt(sum)} m³</span></div><table class="haultab"><tbody>${rows
       .sort((a, b) => (b.v || 0) - (a.v || 0))
       .map(
         r =>
           html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`
-      )}${H.oreRoutes.has(k) ? html`<tr><td colspan="3" class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</td></tr>` : ''}${shipAdvice(R, k, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</tbody></table></div>`;
+      )}</tbody></table>${
+      H.oreRoutes.has(k)
+        ? html`<div class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</div>`
+        : ''
+    }<div class="haulships">${shipAdvice(R, k, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</div></div>`;
   }
   for (const [from, m] of H.sale) {
     const rows = [...m].map(([t, q]) => ({ t, q, v: q * volOf(t) }));
     const sum = rows.reduce((s, r) => s + r.v, 0);
-    h = html`${h}<div class="tablewrap"><table><thead><tr><th colspan="3">${T('Eladásra: {0} → Jita', locName(from))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.map(r => html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`)}${shipAdvice(R, from + '|' + JITA_STATION, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</tbody></table></div>`;
+    h = html`${h}<div class="haul"><div class="haulhead"><span class="pill">${T('Eladásra')}</span> <b title="${locName(from)}">${shortLoc(from)}</b> → <b>Jita</b> · <span class="mono">${fmt(sum)} m³</span></div><table class="haultab"><tbody>${rows.map(r => html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`)}</tbody></table><div class="haulships">${shipAdvice(R, from + '|' + JITA_STATION, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</div></div>`;
   }
   h = html`${h}</div>`;
   if (tot)

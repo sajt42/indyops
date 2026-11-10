@@ -121,3 +121,10 @@ th.sortable:hover{text-decoration:underline}
 /* market search settings and shopping list */
 .regionlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:2px 12px;margin-top:6px;max-height:280px;overflow:auto}
 input.manp{width:90px}
+/* hauling: one card per route, text wraps instead of scrolling sideways */
+.haulgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px}
+.haul{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:10px 12px;min-width:0}
+.haulhead{margin-bottom:6px;overflow-wrap:anywhere}
+.haultab{width:100%}
+.haultab td{padding:3px 6px}
+.haulships{margin-top:8px;border-top:1px solid var(--line);padding-top:6px;overflow-wrap:anywhere}
