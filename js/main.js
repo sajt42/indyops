@@ -199,12 +199,14 @@ $('#sParMode').addEventListener('change', e => {
   saveS();
   status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
 });
-$('#sBuyM2').addEventListener('change', e => {
-  S.buyM2 = e.target.checked;
+$('#sMktJumps').addEventListener('change', e => {
+  const v = Math.round(Number(e.target.value));
+  S.mktMaxJumps = v > 0 ? v : 10;
   saveS();
-  try {
-    LASTRENDER && LASTRENDER();
-  } catch (err) {}
+});
+$('#sMktHs').addEventListener('change', e => {
+  S.mktHsOnly = e.target.checked;
+  saveS();
 });
 $('#sMarket2').addEventListener('change', e => {
   S.market2 = e.target.value ? Number(e.target.value) : '';
@@ -321,7 +323,11 @@ const SET_SCHEMA = {
   locs: 'numArrOrNull',
   workChars: 'numArrOrNull',
   wallet: 'bool',
-  buyM2: 'bool',
+  mktRegions: 'numArrOrNull',
+  mktMaxJumps: 'num',
+  mktHsOnly: 'bool',
+  manPrice: 'mapNum',
+  buySrc: 'mapNum',
   parallel: 'bool',
   parMode: 'str',
   srcShips: 'bool',

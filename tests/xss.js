@@ -59,6 +59,12 @@ w.fetch = async (u, o) => {
     return J(Object.assign({}, t, { name: { en: bad(n) } }));
   }
   if (u.includes('everef.net/npc_corporations/')) return J({ faction_id: 500001 });
+  if ((m = u.match(/orders\/\?order_type=sell&type_id=(\d+)/)))
+    return J(
+      prices[m[1]]
+        ? [{ location_id: L, system_id: 30001, price: prices[m[1]] * 0.8, volume_remain: 1e9, is_buy_order: false }]
+        : []
+    );
   if ((m = u.match(/orders\/\?type_id=(\d+)/))) {
     const p = prices[m[1]];
     return J(
@@ -267,6 +273,14 @@ const check = (label, ...where) => {
   d.querySelector('#planRuns').value = '2';
   await T.runPlan();
   check('planner result (tree, jobs, hauling)', '#planOut');
+  d.querySelector('#planOut [data-mktsearch]').click();
+  for (let i = 0; i < 100 && !d.querySelector('#planOut .mktout table'); i++) await new Promise(r => setTimeout(r, 50));
+  check('market search in the planner', '#planOut .mktout');
+  d.querySelector('#planOut [data-mktpick]').click();
+  await new Promise(r => setTimeout(r, 300));
+  check('planner after picking a source', '#planOut');
+  T.renderAll();
+  check('settings: regions, manual prices, picked sources', '#sBuyLists');
 
   T.setProj([
     {

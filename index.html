@@ -21,7 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.13.3">
+<link rel="stylesheet" href="css/style.css?v=1.14.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -339,9 +339,18 @@
       <div class="row" style="margin-top:8px">
         <label style="flex:1 1 100%">Második piac a Jita mellé <select id="sMarket2"></select></label>
         <div id="sM2Broker" style="flex:1 1 100%"></div>
-        <label class="inline"><input type="checkbox" id="sBuyM2"> Vásárlás a második piacon, ha ott olcsóbb</label>
       </div>
-      <p class="small muted" style="margin-top:6px">A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.</p>
+      <p class="small muted" style="margin-top:6px">Eladásra és értékbecslésre: a Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Invention, Eladás, Reprocess), és az eladó-tábla az itteni díjakat is mutatja. Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia. Vásárláshoz a lenti „Hol vegyem?” beállításokat használd.</p>
+    </div>
+    <div class="card">
+      <h3>Hol vegyem? (anyagbeszerzés)</h3>
+      <p class="small muted">Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.</p>
+      <div class="row" style="margin-top:8px">
+        <label>Legfeljebb ennyi ugrás <input type="number" min="1" step="1" id="sMktJumps" style="width:70px"></label>
+        <label class="inline"><input type="checkbox" id="sMktHs"> csak highsec útvonal</label>
+      </div>
+      <div id="sMktRegions" style="margin-top:8px"></div>
+      <div id="sBuyLists" style="margin-top:8px"></div>
     </div>
     <div class="card">
       <h2>Kik dolgozzanak?</h2>
@@ -408,7 +417,8 @@
 
   <h3>A fülek</h3>
   <dl class="helpdl">
-    <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között. Ha a második piacon olcsóbb egy anyag, a bevásárlólista ott veszi meg (kikapcsolható a Beállításokban), és a szállítás is onnan számol.</dd>
+    <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között. Az anyagokat alapból a Jitáról veszi. A bevásárlólistában tételenként kézi árat adhatsz meg (például ha piacon kívül veszed), vagy a „Hol vegyem olcsóbban?” gombbal kereshetsz olcsóbb helyet; amit kiválasztasz, azzal számol a terv és a szállítás is.</dd>
+    <dt>Hol vegyem?</dt><dd>A bevásárlólista „Hol vegyem olcsóbban?” gombja a Beállításokban kijelölt régiók eladási ordereit nézi végig. Tételenként megmutatja azokat a helyeket, ahol a Jitánál olcsóbb: hány ugrásra vannak a gyártási helytől (és highsec-e az út), mennyi kapható ott a szükséges mennyiségből, és ez átlagosan mennyibe kerül (az order book a legolcsóbbtól felfelé). Az „Innen veszem” gombbal választod ki; ami ott nem kapható, az a Jitáról jön. Ha a második piac játékos-struktúra, annak a piacát is nézi; struktúrában dokkolási jog kell. A kézi ár mindent felülír, és nem kerül a szállítási listába.</dd>
     <dt>Párhuzamos gyártás</dt><dd>Beállítások → Gyártás. Ha egy tételhez több blueprinted van (több BPC, több BPO vagy egy BPO-stack), a runok több, egyszerre futó jobra oszolhatnak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás alapidejű. „Kevesebb anyag” módban csak akkor bont, ha nem kell hozzá több anyag (az ME jobonként felfelé kerekít), „gyorsabb” módban annyira, amennyire lehet; a terv kiírja, mely tételek bomlottak szét és mennyi a többletanyag. A stackelt BPO-kat a játékban szét kell szedni.</dd>
     <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak. Projektenként (vagy tételenként) kiválaszthatod, honnan vehet nyersanyagot: állomások, struktúrák vagy konkrét konténerek. Egy konténert le is foglalhatsz egy projektnek („csak ez a projekt”), ahhoz más projekt nem nyúl. A listában a konténerek (📦) és a hajók rakterei (🚀) a saját neved mellett a típusukkal látszanak; a hajók elrejthetők.</dd>
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze. Ha van második piac, a profit runonként ott is látszik, az ottani díjakkal.</dd>
@@ -419,7 +429,7 @@
     <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind). Minden listás oldalon (Blueprintek, Készlet, Mit érdemes?, Invention, Kutatás, Eladás, Vásárlás nélkül, Reprocess) a fejlécre kattintva rendezhetsz, újabb kattintásra fordított sorrendben.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Reprocess</dt><dd>Végignézi a készletet, és kilistázza, mi reprocesszálható belőle (érc, ice, modulok, loot): mennyi anyag jön ki, melyik karakterrel a legjobb a hozam, és egyben eladva vagy szétszedve ér-e többet. Helyszínenként számol: NPC állomásnál az állomás saját hozamával, alapadójával és azzal, hogy van-e ott reprocessing (az ESI-ből), az adót karakterenként a standinggel csökkentve; Upwell struktúránál (Athanor, Tatara) a riggel, a rendszer biztonságával és az adóval, amit neked kell megadni. Az implantot az aktív klónból olvassa. Az értékeket Jita és a második piac szerint is mutatja. Kijelölhetsz egyenként vagy mindet, és összesíti, mennyit fed le a legutóbbi terv hiányából.</dd>
-    <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac (és hogy ott vásároljon-e, ha olcsóbb), kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
+    <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac (eladáshoz és értékbecsléshez), hol vegyem (régiók, legnagyobb távolság, csak highsec), a kézi árak és a kiválasztott beszerzési helyek listája, kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
   </dl>
 
   <h3>Hogyan számol?</h3>
@@ -473,7 +483,8 @@
 
   <h3>The tabs</h3>
   <dl class="helpdl">
-    <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it. If a material is cheaper at the second market, the shopping list buys it there (can be switched off in Settings), and hauling starts from there.</dd>
+    <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it. Materials are bought in Jita by default. In the shopping list you can enter a manual price per item (for example when you buy outside the market), or look for a cheaper place with "Where to buy cheaper?"; the plan and the hauling use what you pick.</dd>
+    <dt>Where to buy</dt><dd>"Where to buy cheaper?" in the shopping list goes through the sell orders of the regions picked in Settings. For each item it shows the places that are cheaper than Jita: how many jumps they are from the production location (and whether the route is highsec), how much of the needed quantity is available there, and its average price (the order book from the cheapest up). Pick one with "Buy here"; what it lacks comes from Jita. If the second market is a player structure, its market is searched too; structures need docking rights. A manual price overrides everything and is left out of the haul list.</dd>
     <dt>Parallel manufacturing</dt><dd>Settings → Manufacturing. If you have more than one blueprint for an item (several BPCs, several BPOs or a stack of BPOs), the runs can be split into jobs that run at the same time. There are at most as many jobs as blueprints and free slots, and each job has at least one hour of base time. In "less material" mode it splits only when no extra material is needed (ME rounds up per job); in "more speed" mode as far as possible. The plan lists the items that were split and the extra material. Stacked BPOs have to be split in game.</dd>
     <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock. Per project (or per item) you can choose where materials may come from: stations, structures or specific containers. You can also reserve a container for one project (“this project only”) so no other project touches it. Containers (📦) and ship cargo holds (🚀) are listed with their type next to your name for them; ships can be hidden.</dd>
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together. With a second market, profit per run is shown there too, with that market's fees.</dd>
@@ -484,7 +495,7 @@
     <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all). On every list page (Blueprints, Stock, What pays?, Invention, Research, Selling, No-buy builds, Reprocess) click a header to sort, click again to reverse.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
     <dt>Reprocess</dt><dd>Goes through your stock and lists what can be reprocessed (ore, ice, modules, loot): how much comes out, which character gets the best yield, and whether it's worth more sold as is or broken down. Each location counts separately: for NPC stations, the station's own yield, base tax and whether it offers reprocessing (from ESI), with the tax lowered per character by standing; for Upwell structures (Athanor, Tatara), rig, system security and tax, which you set yourself. The implant is read from your active clone. Values are shown for Jita and the second market. Select items one by one or all at once, and it sums up how much of your latest plan's shortfall they cover.</dd>
-    <dt>Settings</dt><dd>Structure bonuses, taxes, second market (and whether to buy there when cheaper), who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
+    <dt>Settings</dt><dd>Structure bonuses, taxes, second market (for selling and valuation), where to buy (regions, maximum distance, highsec only), the list of manual prices and picked sources, who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
   </dl>
 
   <h3>How does it calculate?</h3>
@@ -538,7 +549,8 @@
 
   <h3>Die Reiter</h3>
   <dl class="helpdl">
-    <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen. Ist ein Material am zweiten Markt billiger, kauft die Einkaufsliste dort (in den Einstellungen abschaltbar), und der Transport startet von dort.</dd>
+    <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen. Materialien werden standardmäßig in Jita gekauft. In der Einkaufsliste kannst du pro Artikel einen manuellen Preis eintragen (zum Beispiel wenn du außerhalb des Markts kaufst) oder mit „Wo billiger kaufen?“ einen günstigeren Ort suchen; Plan und Transport rechnen mit deiner Wahl.</dd>
+    <dt>Wo kaufen?</dt><dd>„Wo billiger kaufen?“ in der Einkaufsliste geht die Verkaufsorders der in den Einstellungen gewählten Regionen durch. Für jeden Artikel zeigt es die Orte, die billiger als Jita sind: wie viele Sprünge vom Fertigungsort (und ob die Route Highsec ist), wie viel der benötigten Menge dort zu haben ist und zu welchem Durchschnittspreis (das Orderbuch vom billigsten an). Mit „Hier kaufen“ wählst du einen aus; was dort fehlt, kommt aus Jita. Ist der zweite Markt eine Spielerstruktur, wird auch ihr Markt durchsucht; Strukturen brauchen Andockrechte. Ein manueller Preis geht immer vor und kommt nicht in die Transportliste.</dd>
     <dt>Parallele Fertigung</dt><dd>Einstellungen → Fertigung. Hast du für einen Artikel mehrere Blueprints (mehrere BPCs, mehrere BPOs oder einen BPO-Stapel), können die Runs auf gleichzeitig laufende Jobs verteilt werden. Es gibt höchstens so viele Jobs wie Blueprints und freie Slots, und jeder Job hat mindestens eine Stunde Grundzeit. Im Modus „weniger Material“ wird nur geteilt, wenn kein Mehrmaterial nötig ist (ME rundet pro Job auf), im Modus „schneller“ so weit wie möglich. Der Plan zeigt, welche Artikel geteilt wurden und wie viel Mehrmaterial das kostet. Gestapelte BPOs müssen im Spiel getrennt werden.</dd>
     <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand. Pro Projekt (oder pro Position) kannst du wählen, woher Material kommen darf: Stationen, Strukturen oder bestimmte Container. Einen Container kannst du auch für ein Projekt reservieren („nur dieses Projekt“), dann greift kein anderes Projekt darauf zu. Container (📦) und Schiffsfrachträume (🚀) stehen mit ihrem Typ neben deinem Namen dafür; Schiffe lassen sich ausblenden.</dd>
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen. Mit einem zweiten Markt wird der Gewinn pro Run auch dort angezeigt, mit dessen Gebühren.</dd>
@@ -549,7 +561,7 @@
     <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle). Auf jeder Listenseite (Blueprints, Bestand, Was lohnt sich?, Invention, Forschung, Verkauf, Ohne Einkauf, Reprocess) sortierst du per Klick auf die Kopfzeile, erneuter Klick dreht die Reihenfolge.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
     <dt>Reprocess</dt><dd>Geht deinen Bestand durch und listet auf, was sich reprocessen lässt (Erz, Eis, Module, Loot): wie viel herauskommt, welcher Charakter die beste Ausbeute hat und ob es am Stück oder zerlegt mehr wert ist. Jeder Ort zählt einzeln: bei NPC-Stationen mit eigener Ausbeute, Grundsteuer und ob es dort Reprocessing gibt (aus ESI), die Steuer pro Charakter um das Standing gesenkt; bei Upwell-Strukturen (Athanor, Tatara) mit Rig, Systemsicherheit und Steuer, die du selbst einstellst. Das Implantat wird aus dem aktiven Klon gelesen. Werte werden für Jita und den zweiten Markt angezeigt. Wähle einzeln oder alles aus, dann wird zusammengefasst, wie viel vom Bedarf deines letzten Plans gedeckt ist.</dd>
-    <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt (und ob dort gekauft wird, wenn billiger), wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
+    <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt (für Verkauf und Bewertung), wo kaufen (Regionen, maximale Entfernung, nur Highsec), die Liste der manuellen Preise und gewählten Bezugsorte, wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
   </dl>
 
   <h3>Wie wird gerechnet?</h3>
@@ -594,21 +606,22 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.13.3"></script>
-<script src="i18n/de.js?v=1.13.3"></script>
-<script src="js/core.js?v=1.13.3"></script>
-<script src="js/esi.js?v=1.13.3"></script>
-<script src="js/data.js?v=1.13.3"></script>
-<script src="js/engine.js?v=1.13.3"></script>
-<script src="js/views.js?v=1.13.3"></script>
-<script src="js/tab-projects.js?v=1.13.3"></script>
-<script src="js/tab-profit.js?v=1.13.3"></script>
-<script src="js/tab-invention.js?v=1.13.3"></script>
-<script src="js/tab-research.js?v=1.13.3"></script>
-<script src="js/tab-sales.js?v=1.13.3"></script>
-<script src="js/tab-canbuild.js?v=1.13.3"></script>
-<script src="js/tab-mining.js?v=1.13.3"></script>
-<script src="js/repro.js?v=1.13.3"></script>
-<script src="js/main.js?v=1.13.3"></script>
+<script src="i18n/en.js?v=1.14.0"></script>
+<script src="i18n/de.js?v=1.14.0"></script>
+<script src="js/core.js?v=1.14.0"></script>
+<script src="js/esi.js?v=1.14.0"></script>
+<script src="js/data.js?v=1.14.0"></script>
+<script src="js/market.js?v=1.14.0"></script>
+<script src="js/engine.js?v=1.14.0"></script>
+<script src="js/views.js?v=1.14.0"></script>
+<script src="js/tab-projects.js?v=1.14.0"></script>
+<script src="js/tab-profit.js?v=1.14.0"></script>
+<script src="js/tab-invention.js?v=1.14.0"></script>
+<script src="js/tab-research.js?v=1.14.0"></script>
+<script src="js/tab-sales.js?v=1.14.0"></script>
+<script src="js/tab-canbuild.js?v=1.14.0"></script>
+<script src="js/tab-mining.js?v=1.14.0"></script>
+<script src="js/repro.js?v=1.14.0"></script>
+<script src="js/main.js?v=1.14.0"></script>
 </body>
 </html>

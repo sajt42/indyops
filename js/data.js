@@ -325,15 +325,10 @@ const sell2 = t =>
 const buy2 = t =>
   m2On() && PRICES.p2 && PRICES.p2[t] && PRICES.p2[t].loc === Number(S.market2) ? PRICES.p2[t].b : null;
 const unitPrice2 = t => sell2(t) ?? buy2(t) ?? 0;
-// buying: at the second market when it is cheaper there (Settings: buyM2, on by default)
-const buyM2On = () => m2On() && S.buyM2 !== false;
+// default place to buy materials: Jita. Other sources (manual price, a station from the market search) are picked per
+// material, see market.js (buyParts, buyPrice).
 function buyAt(t) {
-  const j = unitPrice(t),
-    m = sell2(t);
-  return buyM2On() && m && (!j || m < j) ? Number(S.market2) : JITA_STATION;
-}
-function buyPrice(t) {
-  return buyAt(t) === JITA_STATION ? unitPrice(t) : sell2(t);
+  return JITA_STATION;
 }
 
 /* ============ prices ============ */

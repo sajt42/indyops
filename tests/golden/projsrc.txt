@@ -4,5 +4,5 @@ station2 used: 300 buy: 4679700
 reserved: other project took from box: 0 | owner project took from box: 1000
 saved project src: {"mode":"sel","excl":[9001],"conts":[9001],"locs":[60000005]} item src: {"mode":"sel"}
 editor text: hajók isKiválasztva: 0 helyszín, 0 konténer. Még nincs kiválasztva forrás: így minden anyagot venni kell. Test Station I 2 féle tárgy · 1 konténer 📦 Raven doboz (Large Secure Container) Pilot A · 1 féle tárgy Test Station II 1 féle tárgynincs konténer A helys
-BUY trit: 60008494 4.5 | pye: 60003760 10
+BUY trit: 60003760 5 | pye: 60003760 10
 BUY off: 60003760 5

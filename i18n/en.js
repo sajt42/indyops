@@ -115,8 +115,6 @@ window.I18N.en = {
   Összesen: 'Total',
   'nincs ár': 'no price',
   'Semmit nem kell venni, minden megvan.': 'Nothing to buy, you have everything.',
-  'Néhány tételnek nincs Jita ára, ezért #-val számít a költségekben.':
-    'Some items have no Jita price, so they count as # in the costs.',
   'Lista másolása (multibuy formátum)': 'Copy list (multibuy format)',
   'lista vágólapon': 'list copied',
   'másolás nem sikerült': 'copy failed',
@@ -614,8 +612,6 @@ window.I18N.en = {
     'New features need a new permission for this character. Press “Log in again”.',
   'Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.':
     'Ore and ice processing skills (e.g. Simple Ore Processing) are applied per item. The implant is read from ESI (active clone); if you switch clones to reprocess, set it here by hand. For modules and loot only Scrapmetal Processing counts.',
-  'A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.':
-    "Next to Jita prices, this station's best sell price is shown too (Planner, What pays?, Selling, Reprocess). Pick a trade hub, or a station or structure where you have stuff. For a structure, one of your characters needs docking rights and it must run a market module.",
   'Ki adjon el?': 'Who should sell?',
   javasolt: 'suggested',
   'Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.':
@@ -699,8 +695,6 @@ window.I18N.en = {
   '+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.':
     "+ 0.5% SCC surcharge. You see it in game when placing a sell order. Skills and standings don't count here.",
   '(díjak nélkül)': '(before fees)',
-  'Vásárlás a második piacon, ha ott olcsóbb': "Buy at the second market when it's cheaper",
-  'Hol veszed': 'Where to buy',
   elfogyott: 'used up',
   '{0} blueprint': '{0} blueprints',
   'Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.':
@@ -759,5 +753,39 @@ window.I18N.en = {
   'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Extra material compared with one job after the other: {0} ISK.',
   'Nem kell hozzá több anyag.': 'It needs no extra material.',
   'Párhuzamos gyártás: a következő számolásnál lép életbe.':
-    'Parallel manufacturing: takes effect with the next calculation.'
+    'Parallel manufacturing: takes effect with the next calculation.',
+  'kézi ár': 'manual price',
+  'highsec úton': 'by highsec route',
+  innen: 'from here',
+  vissza: 'undo',
+  Ugrás: 'Jumps',
+  Kapható: 'Available',
+  Megtakarítás: 'Saving',
+  Egységár: 'Unit price',
+  'Kézi ár': 'Manual price',
+  'Keresés…': 'Searching…',
+  'Kézi árak': 'Manual prices',
+  'Kiválasztott beszerzési helyek': 'Picked sources',
+  'Innen veszem': 'Buy here',
+  'struktúra: dokkolási jog kell': 'structure: docking rights needed',
+  'a többi Jitáról': 'the rest from Jita',
+  'Nincs a Jitánál olcsóbb ajánlat a megadott régiókban és távolságon belül.':
+    'No offer cheaper than Jita in the picked regions within the distance limit.',
+  'Keresés: {0}; legfeljebb {1} ugrás {2} innen: {3}. A közeli ár az order book átlaga a szükséges mennyiségre; ami ott nem kapható, az a Jitáról jön.':
+    'Searched: {0}; at most {1} jumps {2} from {3}. The nearby price is the order book average for the quantity needed; what is not available there comes from Jita.',
+  'Régiók a kereséshez ({0} kijelölve): {1}': 'Regions to search ({0} picked): {1}',
+  'a kiválasztott helyen most nincs eladó': 'no seller at the picked place right now',
+  'Kézi ár, ISK / db': 'Manual price, ISK per unit',
+  'Néhány tételnek nincs ára, ezért a profit nem számolható. Adj meg kézi árat, vagy keress forrást.':
+    'Some items have no price, so the profit cannot be calculated. Enter a manual price or look for a source.',
+  'Hol vegyem olcsóbban?': 'Where to buy cheaper?',
+  'A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi.':
+    'A manual price (ISK per unit) overrides the market price everywhere, for example when you buy outside the market; such items are left out of the haul list. "Where to buy cheaper?" looks at the sell orders of the regions picked in Settings.',
+  'Eladásra és értékbecslésre: a Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Invention, Eladás, Reprocess), és az eladó-tábla az itteni díjakat is mutatja. Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia. Vásárláshoz a lenti „Hol vegyem?” beállításokat használd.':
+    'For selling and valuation: next to Jita prices, the best sell price of this station shows too (Planner, What pays?, Invention, Selling, Reprocess), and the seller table shows its fees. Pick a trade hub, or a station or structure where you have items. For a structure, one of your characters needs docking rights there, and a market module must be online. For buying, use the "Where to buy?" settings below.',
+  'Hol vegyem? (anyagbeszerzés)': 'Where to buy? (materials)',
+  'Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.':
+    'Materials are bought in Jita by default. In the Planner and Projects, "Where to buy cheaper?" in the shopping list goes through the sell orders of the regions picked here: where it is cheaper than Jita, how much of the needed quantity is available there, and how many jumps it is from the production location. Pick per item where you buy it; the plan and the haul list use it. If the second market is a player structure, its market is searched too. Manual prices are entered in the shopping list.',
+  'Legfeljebb ennyi ugrás': 'At most this many jumps',
+  'csak highsec útvonal': 'highsec route only'
 };

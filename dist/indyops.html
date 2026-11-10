@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-PUjPiTeUqA3posMelXWnE1tIx2LT7/ptgrabJBYWtXM=' 'sha256-h9ooF1fuhR8l22nO+kD+W6zv4h3FKNoFvbpwoMB/2XA=' 'sha256-VVK7xugfdeHb+F/fYcDrp6DqL216+GACsNFuDumlscA=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-LfZq9HcQ82mvT+ar6f7l2cdxaBcStHngBWf6CSetth0=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-L7birnopDBDbcoDYf0euwlw31SbW3d+Ku+0eVdST+0g=' 'sha256-kuiR8Z8hMSyabeTWTTmpj56GO1uIk4lme0mzRe7bo3s=' 'sha256-QGEXrk8kRheHLx4MxDe06q5r0ZsOac1rQHZvnGQrYZU=' 'sha256-PCJvs8iYTNBkiIL8dGsEIHKbz0wjWGZDlSZdgvTzmfA=' 'sha256-6XNvpSbZosPp1O6vh1oTalX6qfpaZHAKoiZlTL8h508=' 'sha256-Q7FQ8XfiG79/F57yuIV8fLYcQ6TnPAP0S0jPn6UxuEU=' 'sha256-yHES6LSH9jxy18zYee4i2Ywj0gMZqmjCMBKvzjafIbo=' 'sha256-+ZNA0mOq8w6HIluNWMeD+G0oFewefBGvWefDzcPQc2o=' 'sha256-rJ1kS3T2LrCYuP7LuXo1gr050/UesJZh76W3ztJptF0=' 'sha256-sRyZ1UJfYwuT6bE99v4U+jYj7L2ZO0Fkq0zzlPIWkrE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-a9dsQ/0mY8dH3XOoqD8tTg9TlEkL7KckhYpmVN9ZraU=' 'sha256-A6YZ4/BbBxbym/eQhFxmNJdcKMG48K3h0+ucBs9d9R0=' 'sha256-JzD/UdwYtFKFeFo+EoXDPXA6FzlFWb0TNqBCVz0auqM=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-imiihm2+6fsd3/p8vpS3TCZme7QYjK9d3dvWiCM7Kg0=' 'sha256-8knC0djLgBBasc8ekad9bIvFXGubU9qUMDkRhptGCos=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-pVDRA+jRBx8QJsxnozZ+ZmZx8IP4wgJx928+sLa2sFY=' 'sha256-kuiR8Z8hMSyabeTWTTmpj56GO1uIk4lme0mzRe7bo3s=' 'sha256-QGEXrk8kRheHLx4MxDe06q5r0ZsOac1rQHZvnGQrYZU=' 'sha256-PCJvs8iYTNBkiIL8dGsEIHKbz0wjWGZDlSZdgvTzmfA=' 'sha256-6XNvpSbZosPp1O6vh1oTalX6qfpaZHAKoiZlTL8h508=' 'sha256-Q7FQ8XfiG79/F57yuIV8fLYcQ6TnPAP0S0jPn6UxuEU=' 'sha256-yHES6LSH9jxy18zYee4i2Ywj0gMZqmjCMBKvzjafIbo=' 'sha256-+ZNA0mOq8w6HIluNWMeD+G0oFewefBGvWefDzcPQc2o=' 'sha256-rJ1kS3T2LrCYuP7LuXo1gr050/UesJZh76W3ztJptF0=' 'sha256-g7SsYz7NYtT2jZxTg0jLJsldXHcOo3R/OujYt3nhB1M='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -142,6 +142,9 @@ select{max-width:100%;text-overflow:ellipsis}
 .pager select{width:auto;padding:2px 6px}
 th.sortable{cursor:pointer;user-select:none}
 th.sortable:hover{text-decoration:underline}
+/* market search settings and shopping list */
+.regionlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:2px 12px;margin-top:6px;max-height:280px;overflow:auto}
+input.manp{width:90px}
 </style>
 </head>
 <body>
@@ -460,9 +463,18 @@ th.sortable:hover{text-decoration:underline}
       <div class="row" style="margin-top:8px">
         <label style="flex:1 1 100%">Második piac a Jita mellé <select id="sMarket2"></select></label>
         <div id="sM2Broker" style="flex:1 1 100%"></div>
-        <label class="inline"><input type="checkbox" id="sBuyM2"> Vásárlás a második piacon, ha ott olcsóbb</label>
       </div>
-      <p class="small muted" style="margin-top:6px">A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.</p>
+      <p class="small muted" style="margin-top:6px">Eladásra és értékbecslésre: a Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Invention, Eladás, Reprocess), és az eladó-tábla az itteni díjakat is mutatja. Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia. Vásárláshoz a lenti „Hol vegyem?” beállításokat használd.</p>
+    </div>
+    <div class="card">
+      <h3>Hol vegyem? (anyagbeszerzés)</h3>
+      <p class="small muted">Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.</p>
+      <div class="row" style="margin-top:8px">
+        <label>Legfeljebb ennyi ugrás <input type="number" min="1" step="1" id="sMktJumps" style="width:70px"></label>
+        <label class="inline"><input type="checkbox" id="sMktHs"> csak highsec útvonal</label>
+      </div>
+      <div id="sMktRegions" style="margin-top:8px"></div>
+      <div id="sBuyLists" style="margin-top:8px"></div>
     </div>
     <div class="card">
       <h2>Kik dolgozzanak?</h2>
@@ -529,7 +541,8 @@ th.sortable:hover{text-decoration:underline}
 
   <h3>A fülek</h3>
   <dl class="helpdl">
-    <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között. Ha a második piacon olcsóbb egy anyag, a bevásárlólista ott veszi meg (kikapcsolható a Beállításokban), és a szállítás is onnan számol.</dd>
+    <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között. Az anyagokat alapból a Jitáról veszi. A bevásárlólistában tételenként kézi árat adhatsz meg (például ha piacon kívül veszed), vagy a „Hol vegyem olcsóbban?” gombbal kereshetsz olcsóbb helyet; amit kiválasztasz, azzal számol a terv és a szállítás is.</dd>
+    <dt>Hol vegyem?</dt><dd>A bevásárlólista „Hol vegyem olcsóbban?” gombja a Beállításokban kijelölt régiók eladási ordereit nézi végig. Tételenként megmutatja azokat a helyeket, ahol a Jitánál olcsóbb: hány ugrásra vannak a gyártási helytől (és highsec-e az út), mennyi kapható ott a szükséges mennyiségből, és ez átlagosan mennyibe kerül (az order book a legolcsóbbtól felfelé). Az „Innen veszem” gombbal választod ki; ami ott nem kapható, az a Jitáról jön. Ha a második piac játékos-struktúra, annak a piacát is nézi; struktúrában dokkolási jog kell. A kézi ár mindent felülír, és nem kerül a szállítási listába.</dd>
     <dt>Párhuzamos gyártás</dt><dd>Beállítások → Gyártás. Ha egy tételhez több blueprinted van (több BPC, több BPO vagy egy BPO-stack), a runok több, egyszerre futó jobra oszolhatnak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás alapidejű. „Kevesebb anyag” módban csak akkor bont, ha nem kell hozzá több anyag (az ME jobonként felfelé kerekít), „gyorsabb” módban annyira, amennyire lehet; a terv kiírja, mely tételek bomlottak szét és mennyi a többletanyag. A stackelt BPO-kat a játékban szét kell szedni.</dd>
     <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak. Projektenként (vagy tételenként) kiválaszthatod, honnan vehet nyersanyagot: állomások, struktúrák vagy konkrét konténerek. Egy konténert le is foglalhatsz egy projektnek („csak ez a projekt”), ahhoz más projekt nem nyúl. A listában a konténerek (📦) és a hajók rakterei (🚀) a saját neved mellett a típusukkal látszanak; a hajók elrejthetők.</dd>
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze. Ha van második piac, a profit runonként ott is látszik, az ottani díjakkal.</dd>
@@ -540,7 +553,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind). Minden listás oldalon (Blueprintek, Készlet, Mit érdemes?, Invention, Kutatás, Eladás, Vásárlás nélkül, Reprocess) a fejlécre kattintva rendezhetsz, újabb kattintásra fordított sorrendben.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Reprocess</dt><dd>Végignézi a készletet, és kilistázza, mi reprocesszálható belőle (érc, ice, modulok, loot): mennyi anyag jön ki, melyik karakterrel a legjobb a hozam, és egyben eladva vagy szétszedve ér-e többet. Helyszínenként számol: NPC állomásnál az állomás saját hozamával, alapadójával és azzal, hogy van-e ott reprocessing (az ESI-ből), az adót karakterenként a standinggel csökkentve; Upwell struktúránál (Athanor, Tatara) a riggel, a rendszer biztonságával és az adóval, amit neked kell megadni. Az implantot az aktív klónból olvassa. Az értékeket Jita és a második piac szerint is mutatja. Kijelölhetsz egyenként vagy mindet, és összesíti, mennyit fed le a legutóbbi terv hiányából.</dd>
-    <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac (és hogy ott vásároljon-e, ha olcsóbb), kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
+    <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac (eladáshoz és értékbecsléshez), hol vegyem (régiók, legnagyobb távolság, csak highsec), a kézi árak és a kiválasztott beszerzési helyek listája, kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
   </dl>
 
   <h3>Hogyan számol?</h3>
@@ -594,7 +607,8 @@ th.sortable:hover{text-decoration:underline}
 
   <h3>The tabs</h3>
   <dl class="helpdl">
-    <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it. If a material is cheaper at the second market, the shopping list buys it there (can be switched off in Settings), and hauling starts from there.</dd>
+    <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it. Materials are bought in Jita by default. In the shopping list you can enter a manual price per item (for example when you buy outside the market), or look for a cheaper place with "Where to buy cheaper?"; the plan and the hauling use what you pick.</dd>
+    <dt>Where to buy</dt><dd>"Where to buy cheaper?" in the shopping list goes through the sell orders of the regions picked in Settings. For each item it shows the places that are cheaper than Jita: how many jumps they are from the production location (and whether the route is highsec), how much of the needed quantity is available there, and its average price (the order book from the cheapest up). Pick one with "Buy here"; what it lacks comes from Jita. If the second market is a player structure, its market is searched too; structures need docking rights. A manual price overrides everything and is left out of the haul list.</dd>
     <dt>Parallel manufacturing</dt><dd>Settings → Manufacturing. If you have more than one blueprint for an item (several BPCs, several BPOs or a stack of BPOs), the runs can be split into jobs that run at the same time. There are at most as many jobs as blueprints and free slots, and each job has at least one hour of base time. In "less material" mode it splits only when no extra material is needed (ME rounds up per job); in "more speed" mode as far as possible. The plan lists the items that were split and the extra material. Stacked BPOs have to be split in game.</dd>
     <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock. Per project (or per item) you can choose where materials may come from: stations, structures or specific containers. You can also reserve a container for one project (“this project only”) so no other project touches it. Containers (📦) and ship cargo holds (🚀) are listed with their type next to your name for them; ships can be hidden.</dd>
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together. With a second market, profit per run is shown there too, with that market's fees.</dd>
@@ -605,7 +619,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all). On every list page (Blueprints, Stock, What pays?, Invention, Research, Selling, No-buy builds, Reprocess) click a header to sort, click again to reverse.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
     <dt>Reprocess</dt><dd>Goes through your stock and lists what can be reprocessed (ore, ice, modules, loot): how much comes out, which character gets the best yield, and whether it's worth more sold as is or broken down. Each location counts separately: for NPC stations, the station's own yield, base tax and whether it offers reprocessing (from ESI), with the tax lowered per character by standing; for Upwell structures (Athanor, Tatara), rig, system security and tax, which you set yourself. The implant is read from your active clone. Values are shown for Jita and the second market. Select items one by one or all at once, and it sums up how much of your latest plan's shortfall they cover.</dd>
-    <dt>Settings</dt><dd>Structure bonuses, taxes, second market (and whether to buy there when cheaper), who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
+    <dt>Settings</dt><dd>Structure bonuses, taxes, second market (for selling and valuation), where to buy (regions, maximum distance, highsec only), the list of manual prices and picked sources, who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
   </dl>
 
   <h3>How does it calculate?</h3>
@@ -659,7 +673,8 @@ th.sortable:hover{text-decoration:underline}
 
   <h3>Die Reiter</h3>
   <dl class="helpdl">
-    <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen. Ist ein Material am zweiten Markt billiger, kauft die Einkaufsliste dort (in den Einstellungen abschaltbar), und der Transport startet von dort.</dd>
+    <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen. Materialien werden standardmäßig in Jita gekauft. In der Einkaufsliste kannst du pro Artikel einen manuellen Preis eintragen (zum Beispiel wenn du außerhalb des Markts kaufst) oder mit „Wo billiger kaufen?“ einen günstigeren Ort suchen; Plan und Transport rechnen mit deiner Wahl.</dd>
+    <dt>Wo kaufen?</dt><dd>„Wo billiger kaufen?“ in der Einkaufsliste geht die Verkaufsorders der in den Einstellungen gewählten Regionen durch. Für jeden Artikel zeigt es die Orte, die billiger als Jita sind: wie viele Sprünge vom Fertigungsort (und ob die Route Highsec ist), wie viel der benötigten Menge dort zu haben ist und zu welchem Durchschnittspreis (das Orderbuch vom billigsten an). Mit „Hier kaufen“ wählst du einen aus; was dort fehlt, kommt aus Jita. Ist der zweite Markt eine Spielerstruktur, wird auch ihr Markt durchsucht; Strukturen brauchen Andockrechte. Ein manueller Preis geht immer vor und kommt nicht in die Transportliste.</dd>
     <dt>Parallele Fertigung</dt><dd>Einstellungen → Fertigung. Hast du für einen Artikel mehrere Blueprints (mehrere BPCs, mehrere BPOs oder einen BPO-Stapel), können die Runs auf gleichzeitig laufende Jobs verteilt werden. Es gibt höchstens so viele Jobs wie Blueprints und freie Slots, und jeder Job hat mindestens eine Stunde Grundzeit. Im Modus „weniger Material“ wird nur geteilt, wenn kein Mehrmaterial nötig ist (ME rundet pro Job auf), im Modus „schneller“ so weit wie möglich. Der Plan zeigt, welche Artikel geteilt wurden und wie viel Mehrmaterial das kostet. Gestapelte BPOs müssen im Spiel getrennt werden.</dd>
     <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand. Pro Projekt (oder pro Position) kannst du wählen, woher Material kommen darf: Stationen, Strukturen oder bestimmte Container. Einen Container kannst du auch für ein Projekt reservieren („nur dieses Projekt“), dann greift kein anderes Projekt darauf zu. Container (📦) und Schiffsfrachträume (🚀) stehen mit ihrem Typ neben deinem Namen dafür; Schiffe lassen sich ausblenden.</dd>
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen. Mit einem zweiten Markt wird der Gewinn pro Run auch dort angezeigt, mit dessen Gebühren.</dd>
@@ -670,7 +685,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle). Auf jeder Listenseite (Blueprints, Bestand, Was lohnt sich?, Invention, Forschung, Verkauf, Ohne Einkauf, Reprocess) sortierst du per Klick auf die Kopfzeile, erneuter Klick dreht die Reihenfolge.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
     <dt>Reprocess</dt><dd>Geht deinen Bestand durch und listet auf, was sich reprocessen lässt (Erz, Eis, Module, Loot): wie viel herauskommt, welcher Charakter die beste Ausbeute hat und ob es am Stück oder zerlegt mehr wert ist. Jeder Ort zählt einzeln: bei NPC-Stationen mit eigener Ausbeute, Grundsteuer und ob es dort Reprocessing gibt (aus ESI), die Steuer pro Charakter um das Standing gesenkt; bei Upwell-Strukturen (Athanor, Tatara) mit Rig, Systemsicherheit und Steuer, die du selbst einstellst. Das Implantat wird aus dem aktiven Klon gelesen. Werte werden für Jita und den zweiten Markt angezeigt. Wähle einzeln oder alles aus, dann wird zusammengefasst, wie viel vom Bedarf deines letzten Plans gedeckt ist.</dd>
-    <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt (und ob dort gekauft wird, wenn billiger), wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
+    <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt (für Verkauf und Bewertung), wo kaufen (Regionen, maximale Entfernung, nur Highsec), die Liste der manuellen Preise und gewählten Bezugsorte, wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
   </dl>
 
   <h3>Wie wird gerechnet?</h3>
@@ -834,8 +849,6 @@ window.I18N.en = {
   Összesen: 'Total',
   'nincs ár': 'no price',
   'Semmit nem kell venni, minden megvan.': 'Nothing to buy, you have everything.',
-  'Néhány tételnek nincs Jita ára, ezért #-val számít a költségekben.':
-    'Some items have no Jita price, so they count as # in the costs.',
   'Lista másolása (multibuy formátum)': 'Copy list (multibuy format)',
   'lista vágólapon': 'list copied',
   'másolás nem sikerült': 'copy failed',
@@ -1333,8 +1346,6 @@ window.I18N.en = {
     'New features need a new permission for this character. Press “Log in again”.',
   'Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.':
     'Ore and ice processing skills (e.g. Simple Ore Processing) are applied per item. The implant is read from ESI (active clone); if you switch clones to reprocess, set it here by hand. For modules and loot only Scrapmetal Processing counts.',
-  'A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.':
-    "Next to Jita prices, this station's best sell price is shown too (Planner, What pays?, Selling, Reprocess). Pick a trade hub, or a station or structure where you have stuff. For a structure, one of your characters needs docking rights and it must run a market module.",
   'Ki adjon el?': 'Who should sell?',
   javasolt: 'suggested',
   'Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.':
@@ -1418,8 +1429,6 @@ window.I18N.en = {
   '+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.':
     "+ 0.5% SCC surcharge. You see it in game when placing a sell order. Skills and standings don't count here.",
   '(díjak nélkül)': '(before fees)',
-  'Vásárlás a második piacon, ha ott olcsóbb': "Buy at the second market when it's cheaper",
-  'Hol veszed': 'Where to buy',
   elfogyott: 'used up',
   '{0} blueprint': '{0} blueprints',
   'Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.':
@@ -1478,7 +1487,41 @@ window.I18N.en = {
   'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Extra material compared with one job after the other: {0} ISK.',
   'Nem kell hozzá több anyag.': 'It needs no extra material.',
   'Párhuzamos gyártás: a következő számolásnál lép életbe.':
-    'Parallel manufacturing: takes effect with the next calculation.'
+    'Parallel manufacturing: takes effect with the next calculation.',
+  'kézi ár': 'manual price',
+  'highsec úton': 'by highsec route',
+  innen: 'from here',
+  vissza: 'undo',
+  Ugrás: 'Jumps',
+  Kapható: 'Available',
+  Megtakarítás: 'Saving',
+  Egységár: 'Unit price',
+  'Kézi ár': 'Manual price',
+  'Keresés…': 'Searching…',
+  'Kézi árak': 'Manual prices',
+  'Kiválasztott beszerzési helyek': 'Picked sources',
+  'Innen veszem': 'Buy here',
+  'struktúra: dokkolási jog kell': 'structure: docking rights needed',
+  'a többi Jitáról': 'the rest from Jita',
+  'Nincs a Jitánál olcsóbb ajánlat a megadott régiókban és távolságon belül.':
+    'No offer cheaper than Jita in the picked regions within the distance limit.',
+  'Keresés: {0}; legfeljebb {1} ugrás {2} innen: {3}. A közeli ár az order book átlaga a szükséges mennyiségre; ami ott nem kapható, az a Jitáról jön.':
+    'Searched: {0}; at most {1} jumps {2} from {3}. The nearby price is the order book average for the quantity needed; what is not available there comes from Jita.',
+  'Régiók a kereséshez ({0} kijelölve): {1}': 'Regions to search ({0} picked): {1}',
+  'a kiválasztott helyen most nincs eladó': 'no seller at the picked place right now',
+  'Kézi ár, ISK / db': 'Manual price, ISK per unit',
+  'Néhány tételnek nincs ára, ezért a profit nem számolható. Adj meg kézi árat, vagy keress forrást.':
+    'Some items have no price, so the profit cannot be calculated. Enter a manual price or look for a source.',
+  'Hol vegyem olcsóbban?': 'Where to buy cheaper?',
+  'A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi.':
+    'A manual price (ISK per unit) overrides the market price everywhere, for example when you buy outside the market; such items are left out of the haul list. "Where to buy cheaper?" looks at the sell orders of the regions picked in Settings.',
+  'Eladásra és értékbecslésre: a Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Invention, Eladás, Reprocess), és az eladó-tábla az itteni díjakat is mutatja. Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia. Vásárláshoz a lenti „Hol vegyem?” beállításokat használd.':
+    'For selling and valuation: next to Jita prices, the best sell price of this station shows too (Planner, What pays?, Invention, Selling, Reprocess), and the seller table shows its fees. Pick a trade hub, or a station or structure where you have items. For a structure, one of your characters needs docking rights there, and a market module must be online. For buying, use the "Where to buy?" settings below.',
+  'Hol vegyem? (anyagbeszerzés)': 'Where to buy? (materials)',
+  'Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.':
+    'Materials are bought in Jita by default. In the Planner and Projects, "Where to buy cheaper?" in the shopping list goes through the sell orders of the regions picked here: where it is cheaper than Jita, how much of the needed quantity is available there, and how many jumps it is from the production location. Pick per item where you buy it; the plan and the haul list use it. If the second market is a player structure, its market is searched too. Manual prices are entered in the shopping list.',
+  'Legfeljebb ennyi ugrás': 'At most this many jumps',
+  'csak highsec útvonal': 'highsec route only'
 };
 </script>
 <script>
@@ -1600,8 +1643,6 @@ window.I18N.de = {
   Összesen: 'Gesamt',
   'nincs ár': 'kein Preis',
   'Semmit nem kell venni, minden megvan.': 'Nichts zu kaufen, alles vorhanden.',
-  'Néhány tételnek nincs Jita ára, ezért #-val számít a költségekben.':
-    'Einige Positionen haben keinen Jita-Preis und zählen daher mit # in den Kosten.',
   'Lista másolása (multibuy formátum)': 'Liste kopieren (Multibuy-Format)',
   'lista vágólapon': 'Liste kopiert',
   'másolás nem sikerült': 'Kopieren fehlgeschlagen',
@@ -2106,8 +2147,6 @@ window.I18N.de = {
     'Neue Funktionen brauchen eine neue Berechtigung für diesen Charakter. Drücke „Erneut anmelden“.',
   'Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.':
     'Erz- und Eisverarbeitungs-Skills (z. B. Simple Ore Processing) werden pro Gegenstand berücksichtigt. Das Implantat wird aus ESI gelesen (aktiver Klon); wenn du zum Reprocessen den Klon wechselst, stelle es hier von Hand ein. Für Module und Loot zählt nur Scrapmetal Processing.',
-  'A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.':
-    'Neben den Jita-Preisen wird auch der beste Verkaufspreis dieses Ortes angezeigt (Planer, Was lohnt sich?, Verkauf, Reprocess). Wähle einen Handelsknoten oder eine Station oder Struktur mit deinen Sachen. Bei einer Struktur braucht einer deiner Charaktere Andockrechte, und dort muss ein Marktmodul laufen.',
   'Ki adjon el?': 'Wer soll verkaufen?',
   javasolt: 'empfohlen',
   'Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.':
@@ -2192,8 +2231,6 @@ window.I18N.de = {
   '+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.':
     '+ 0,5 % SCC-Zuschlag. Im Spiel siehst du sie beim Erstellen einer Verkaufsorder. Skills und Standing zählen hier nicht.',
   '(díjak nélkül)': '(vor Gebühren)',
-  'Vásárlás a második piacon, ha ott olcsóbb': 'Am zweiten Markt kaufen, wenn es dort billiger ist',
-  'Hol veszed': 'Wo kaufen',
   elfogyott: 'aufgebraucht',
   '{0} blueprint': '{0} Blueprints',
   'Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.':
@@ -2251,7 +2288,41 @@ window.I18N.de = {
   'Párhuzamos gyártás ({0}): {1}.': 'Parallele Fertigung ({0}): {1}.',
   'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Mehrmaterial gegenüber einem Job nach dem anderen: {0} ISK.',
   'Nem kell hozzá több anyag.': 'Es braucht kein zusätzliches Material.',
-  'Párhuzamos gyártás: a következő számolásnál lép életbe.': 'Parallele Fertigung: gilt ab der nächsten Berechnung.'
+  'Párhuzamos gyártás: a következő számolásnál lép életbe.': 'Parallele Fertigung: gilt ab der nächsten Berechnung.',
+  'kézi ár': 'manueller Preis',
+  'highsec úton': 'über Highsec',
+  innen: 'von hier',
+  vissza: 'zurück',
+  Ugrás: 'Sprünge',
+  Kapható: 'Verfügbar',
+  Megtakarítás: 'Ersparnis',
+  Egységár: 'Stückpreis',
+  'Kézi ár': 'Manueller Preis',
+  'Keresés…': 'Suche…',
+  'Kézi árak': 'Manuelle Preise',
+  'Kiválasztott beszerzési helyek': 'Gewählte Bezugsorte',
+  'Innen veszem': 'Hier kaufen',
+  'struktúra: dokkolási jog kell': 'Struktur: Andockrecht nötig',
+  'a többi Jitáról': 'der Rest aus Jita',
+  'Nincs a Jitánál olcsóbb ajánlat a megadott régiókban és távolságon belül.':
+    'Kein Angebot billiger als Jita in den gewählten Regionen innerhalb der Entfernung.',
+  'Keresés: {0}; legfeljebb {1} ugrás {2} innen: {3}. A közeli ár az order book átlaga a szükséges mennyiségre; ami ott nem kapható, az a Jitáról jön.':
+    'Durchsucht: {0}; höchstens {1} Sprünge {2} von {3}. Der Preis vor Ort ist der Orderbuch-Durchschnitt für die benötigte Menge; was dort fehlt, kommt aus Jita.',
+  'Régiók a kereséshez ({0} kijelölve): {1}': 'Regionen für die Suche ({0} gewählt): {1}',
+  'a kiválasztott helyen most nincs eladó': 'am gewählten Ort gerade kein Verkäufer',
+  'Kézi ár, ISK / db': 'Manueller Preis, ISK pro Stück',
+  'Néhány tételnek nincs ára, ezért a profit nem számolható. Adj meg kézi árat, vagy keress forrást.':
+    'Einige Artikel haben keinen Preis, daher lässt sich der Gewinn nicht berechnen. Trag einen manuellen Preis ein oder such eine Quelle.',
+  'Hol vegyem olcsóbban?': 'Wo billiger kaufen?',
+  'A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi.':
+    'Ein manueller Preis (ISK pro Stück) ersetzt überall den Marktpreis, zum Beispiel wenn du außerhalb des Markts kaufst; solche Artikel kommen nicht in die Transportliste. „Wo billiger kaufen?“ durchsucht die Verkaufsorders der in den Einstellungen gewählten Regionen.',
+  'Eladásra és értékbecslésre: a Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Invention, Eladás, Reprocess), és az eladó-tábla az itteni díjakat is mutatja. Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia. Vásárláshoz a lenti „Hol vegyem?” beállításokat használd.':
+    'Für Verkauf und Bewertung: Neben den Jita-Preisen erscheint auch der beste Verkaufspreis dieser Station (Planer, Was lohnt sich?, Invention, Verkauf, Reprocess), und die Verkäufertabelle zeigt die Gebühren dort. Wähle einen Handelsknoten oder eine Station oder Struktur, in der du Sachen hast. Bei einer Struktur braucht einer deiner Charaktere dort Andockrechte, und ein Marktmodul muss laufen. Zum Kaufen nutze die Einstellungen „Wo kaufen?“ weiter unten.',
+  'Hol vegyem? (anyagbeszerzés)': 'Wo kaufen? (Material)',
+  'Az anyagokat alapból a Jitáról veszi. A Tervezőben és a Projektekben a bevásárlólista „Hol vegyem olcsóbban?” gombja az itt kijelölt régiók eladási ordereit nézi végig: hol olcsóbb a Jitánál, mennyi kapható ott a szükséges mennyiségből, és hány ugrásra van a gyártási helytől. Tételenként kiválaszthatod, honnan veszed; a terv és a szállítási lista azzal számol. Ha a második piac játékos-struktúra, annak a piacát is nézi. Kézi árat a bevásárlólistában adhatsz meg.':
+    'Materialien werden standardmäßig in Jita gekauft. Im Planer und in den Projekten durchsucht „Wo billiger kaufen?“ in der Einkaufsliste die Verkaufsorders der hier gewählten Regionen: wo es billiger als in Jita ist, wie viel der benötigten Menge dort zu haben ist und wie viele Sprünge es vom Fertigungsort entfernt ist. Wähle pro Artikel, wo du kaufst; Plan und Transportliste rechnen damit. Ist der zweite Markt eine Spielerstruktur, wird auch ihr Markt durchsucht. Manuelle Preise trägst du in der Einkaufsliste ein.',
+  'Legfeljebb ennyi ugrás': 'Höchstens so viele Sprünge',
+  'csak highsec útvonal': 'nur Highsec-Route'
 };
 </script>
 <script>
@@ -2319,7 +2390,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.13.3',
+  version: '1.14.0',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -3647,15 +3718,10 @@ const sell2 = t =>
 const buy2 = t =>
   m2On() && PRICES.p2 && PRICES.p2[t] && PRICES.p2[t].loc === Number(S.market2) ? PRICES.p2[t].b : null;
 const unitPrice2 = t => sell2(t) ?? buy2(t) ?? 0;
-// buying: at the second market when it is cheaper there (Settings: buyM2, on by default)
-const buyM2On = () => m2On() && S.buyM2 !== false;
+// default place to buy materials: Jita. Other sources (manual price, a station from the market search) are picked per
+// material, see market.js (buyParts, buyPrice).
 function buyAt(t) {
-  const j = unitPrice(t),
-    m = sell2(t);
-  return buyM2On() && m && (!j || m < j) ? Number(S.market2) : JITA_STATION;
-}
-function buyPrice(t) {
-  return buyAt(t) === JITA_STATION ? unitPrice(t) : sell2(t);
+  return JITA_STATION;
 }
 
 /* ============ prices ============ */
@@ -4065,6 +4131,336 @@ function stockFilter(item, resv) {
   const locs = new Set((sp.locs || []).map(Number));
   const conts = contTree(sp.conts || []);
   return x => x.l === 'job' || x.l === 'surplus' || (own(x) && (locs.has(x.l) || (x.c != null && conts.has(x.c))));
+}
+</script>
+<script>
+/* js/market.js */
+/* IndyOps – Where to buy: manual prices, and a search of the sell orders in the regions picked in Settings. */
+'use strict';
+
+/* ---- price sources of a material ----
+ * 1. manual price (S.manPrice[type] = ISK per unit): bought outside the market, not in the haul list
+ * 2. a station picked from the market search (S.buySrc[type] = station id): as much as its sell orders give,
+ *    cheapest first; the rest comes from the default source
+ * 3. default: Jita (buyAt)
+ */
+const MKT = {}; // type -> { at, orders: [{l, sys, p, v}] } sell orders in the picked regions (memory only)
+const MKT_TTL = 10 * 60000;
+const mktRegions = () => (Array.isArray(S.mktRegions) ? S.mktRegions.map(Number).filter(Boolean) : [JITA_REGION]);
+const manPrice = t => {
+  const v = S.manPrice && S.manPrice[t];
+  return v > 0 ? v : null;
+};
+const ordersAt = (t, l) => (MKT[t] ? MKT[t].orders.filter(o => o.l === l).sort((a, b) => a.p - b.p) : []);
+// buys q from the orders, cheapest first: {q: bought, cost}
+function fillFrom(orders, q) {
+  let got = 0,
+    cost = 0;
+  for (const o of orders) {
+    if (got >= q) break;
+    const k = Math.min(o.v, q - got);
+    got += k;
+    cost += k * o.p;
+  }
+  return { q: got, cost };
+}
+// where q units of t come from: [{l, q, p, src}] (l null: manual, not hauled)
+function buyParts(t, q) {
+  const mp = manPrice(t);
+  if (mp) return [{ l: null, q, p: mp, src: 'manual' }];
+  const parts = [];
+  let rest = q;
+  const src = S.buySrc && S.buySrc[t];
+  if (src) {
+    const f = fillFrom(ordersAt(t, src), q);
+    if (f.q > 0) {
+      parts.push({ l: src, q: f.q, p: f.cost / f.q, src: 'market' });
+      rest -= f.q;
+    }
+  }
+  if (rest > 0) {
+    parts.push({ l: buyAt(t), q: rest, p: unitPrice(t), src: 'default' });
+  }
+  return parts;
+}
+// unit price of buying t: the average over q units when q is given, otherwise the price of the first source
+function buyPrice(t, q) {
+  if (!q) {
+    const mp = manPrice(t);
+    if (mp) return mp;
+    const src = S.buySrc && S.buySrc[t];
+    const o = src ? ordersAt(t, src)[0] : null;
+    if (o) return o.p;
+    return unitPrice(t);
+  }
+  const parts = buyParts(t, q);
+  if (parts.some(x => !x.p)) return null;
+  return parts.reduce((s, x) => s + x.q * x.p, 0) / q;
+}
+// average purchase price per material over the whole shopping list (null: no price)
+function buyAvgMap(R) {
+  return new Map([...R.buyList].map(([t, q]) => [t, buyPrice(t, q)]));
+}
+// short text of where t comes from
+function buyFromText(t, q) {
+  return buyParts(t, q)
+    .map(x =>
+      x.src === 'manual'
+        ? T('kézi ár')
+        : x.src === 'market'
+          ? shortLoc(x.l) + (MKT_JUMPS[x.l] != null ? ' (' + T('{0} ugrás', MKT_JUMPS[x.l]) + ')' : '')
+          : 'Jita'
+    )
+    .join(' + ');
+}
+const shortLoc = l => String(locName(l)).split(' - ')[0];
+
+/* ---- market search ---- */
+const MKT_JUMPS = {}; // station -> jumps from the production location (last search)
+async function regionOrders(region, t) {
+  return (await esi('/markets/' + region + '/orders/?order_type=sell&type_id=' + t, { paged: true }))
+    .filter(o => !o.is_buy_order)
+    .map(o => ({ l: o.location_id, sys: o.system_id, p: o.price, v: o.volume_remain }));
+}
+async function loadMarket(types, force) {
+  const regs = mktRegions();
+  const now = Date.now();
+  await Promise.all(
+    types.map(async t => {
+      if (!force && MKT[t] && now - MKT[t].at < MKT_TTL) return;
+      const orders = [];
+      for (const r of regs) {
+        try {
+          orders.push(...(await regionOrders(r, t)));
+        } catch (e) {
+          log('Piackereső (' + (NAMES[r] || r) + '): ' + e.message);
+        }
+      }
+      // a player structure as second market: its own market (not in the regional orders)
+      const m2 = m2On() ? Number(S.market2) : null;
+      if (m2 && m2 > 1e12) {
+        const b = await structBook(m2);
+        const sys = LOCINFO[m2] && LOCINFO[m2].system;
+        for (const o of (b && b.raw.get(t)) || [])
+          if (!o.is_buy_order) orders.push({ l: m2, sys, p: o.price, v: o.volume_remain });
+      }
+      MKT[t] = { at: now, orders };
+    })
+  );
+}
+// the plan's production location (where the materials go)
+function planHome(R) {
+  const l = R.trees[0] ? prodLocOf(R.trees[0].tree) : null;
+  return l != null ? { l, sys: LOCINFO[l] && LOCINFO[l].system } : null;
+}
+// candidate stations per material, cheaper than Jita and within the jump limit: {t, q, jita, cands:[{l, sys, q, p, save, n, hs}]}
+async function mktSearch(R) {
+  const bl = [...R.buyList].filter(([t]) => !manPrice(t));
+  await loadMarket(
+    bl.map(([t]) => t),
+    true
+  );
+  const home = planHome(R);
+  const maxJ = Number(S.mktMaxJumps) > 0 ? Number(S.mktMaxJumps) : 10;
+  const hsOnly = S.mktHsOnly !== false;
+  const out = [];
+  const routes = new Map();
+  const route = async sys => {
+    if (!home || !home.sys || !sys) return null;
+    if (!routes.has(sys)) routes.set(sys, ensureRoute(home.sys, sys));
+    return routes.get(sys);
+  };
+  for (const [t, q] of bl) {
+    const jita = unitPrice(t);
+    const byLoc = new Map();
+    for (const o of (MKT[t] && MKT[t].orders) || []) {
+      if (o.l === JITA_STATION) continue;
+      if (!byLoc.has(o.l)) byLoc.set(o.l, []);
+      byLoc.get(o.l).push(o);
+    }
+    let cands = [...byLoc].map(([l, os]) => {
+      os.sort((a, b) => a.p - b.p);
+      const f = fillFrom(os, q);
+      return { l, sys: os[0].sys, q: f.q, p: f.cost / f.q, best: os[0].p };
+    });
+    cands = cands
+      .filter(c => !jita || c.p < jita)
+      .sort((a, b) => a.p - b.p)
+      .slice(0, 8);
+    for (const c of cands) {
+      const r = await route(c.sys);
+      c.n = r ? r.n : null;
+      c.hs = r ? r.hs : null;
+      c.save = jita ? (jita - c.p) * c.q : null;
+    }
+    cands = cands
+      .filter(c => c.n == null || c.n <= maxJ)
+      .filter(c => !hsOnly || c.hs === true)
+      .slice(0, 3);
+    for (const c of cands) MKT_JUMPS[c.l] = c.n;
+    out.push({ t, q, jita, cands });
+  }
+  const locs = new Set(out.flatMap(x => x.cands.map(c => c.l)));
+  const char = CHARS[0];
+  for (const l of locs) await resolveLoc(l, char);
+  await resolveNames(out.flatMap(x => x.cands.map(c => c.sys)));
+  return { home, rows: out, maxJ, hsOnly };
+}
+function mktHtml(res) {
+  const regs = mktRegions()
+    .map(r => NAMES[r] || r)
+    .join(', ');
+  const rows = res.rows.filter(x => x.cands.length || (S.buySrc && S.buySrc[x.t]));
+  return html`<div class="notice" style="margin-top:10px"><p class="small">${T(
+    'Keresés: {0}; legfeljebb {1} ugrás {2} innen: {3}. A közeli ár az order book átlaga a szükséges mennyiségre; ami ott nem kapható, az a Jitáról jön.',
+    regs,
+    res.maxJ,
+    res.hsOnly ? T('highsec úton') : '',
+    res.home ? locName(res.home.l) : '?'
+  )}</p></div>${
+    rows.length
+      ? html`<div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Kell</th><th class="num">Jita</th><th>Hol</th><th class="num">Ugrás</th><th class="num">Kapható</th><th class="num">Átlagár</th><th class="num">Megtakarítás</th><th></th></tr></thead><tbody>${rows.map(
+          x =>
+            html`${x.cands.map(
+              (c, i) =>
+                html`<tr><td>${i ? '' : NAMES[x.t] || x.t}</td><td class="num">${i ? '' : fmt(x.q)}</td><td class="num">${i ? '' : isk(x.jita)}</td><td class="small">${locName(c.l)}${c.l > 1e12 ? html` <span class="pill warn">${T('struktúra: dokkolási jog kell')}</span>` : ''}</td><td class="num">${c.n != null ? fmt(c.n) : '?'}${c.hs === true ? '' : c.hs === false ? html` <span class="pill warn">ls/ns</span>` : ''}</td><td class="num">${fmt(c.q)}${c.q < x.q ? html`<div class="src">${T('a többi Jitáról')}</div>` : ''}</td><td class="num">${isk(c.p)}</td><td class="num pos">${c.save != null ? isk(c.save) : '–'}</td><td>${
+                  S.buySrc && S.buySrc[x.t] === c.l
+                    ? html`<span class="pill ok">${T('innen')}</span> <button class="btn mini" data-mktpick="${x.t}|">${T('vissza')}</button>`
+                    : html`<button class="btn mini" data-mktpick="${x.t}|${c.l}">${T('Innen veszem')}</button>`
+                }</td></tr>`
+            )}`
+        )}</tbody></table></div>`
+      : html`<p class="small muted">${T('Nincs a Jitánál olcsóbb ajánlat a megadott régiókban és távolságon belül.')}</p>`
+  }`;
+}
+
+// shopping list controls: manual price fields, the market search button and the "buy here" buttons
+function bindBuySources(el, R) {
+  el.querySelectorAll('[data-manp]').forEach(i =>
+    i.addEventListener('change', () => {
+      const t = Number(i.dataset.manp),
+        v = Number(i.value);
+      if (!S.manPrice) S.manPrice = {};
+      if (i.value !== '' && v > 0) S.manPrice[t] = v;
+      else delete S.manPrice[t];
+      saveS();
+      LASTRENDER && LASTRENDER();
+    })
+  );
+  const btn = el.querySelector('[data-mktsearch]');
+  const out = el.querySelector('.mktout');
+  const show = res => {
+    setHtml(out, mktHtml(res));
+    out.querySelectorAll('[data-mktpick]').forEach(b =>
+      b.addEventListener('click', () => {
+        const [t, l] = b.dataset.mktpick.split('|');
+        if (!S.buySrc) S.buySrc = {};
+        if (l) S.buySrc[t] = Number(l);
+        else delete S.buySrc[t];
+        saveS();
+        R.mkt = res;
+        LASTRENDER && LASTRENDER();
+      })
+    );
+  };
+  if (R.mkt && out) show(R.mkt);
+  btn &&
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      setHtml(out, html`<p class="small muted">${T('Keresés…')}</p>`);
+      try {
+        R.mkt = await mktSearch(R);
+        show(R.mkt);
+      } catch (e) {
+        setHtml(out, html`<div class="notice err"><p>${e.message}</p></div>`);
+      }
+      btn.disabled = false;
+    });
+}
+
+/* ---- Settings: regions to search, manual prices and picked sources ---- */
+let REGIONS = load('regions', null); // k-space region ids
+async function ensureRegions() {
+  if (!REGIONS) {
+    const ids = await esi('/universe/regions/');
+    REGIONS = ids.filter(id => id < 11000000);
+    store('regions', REGIONS);
+  }
+  await resolveNames(REGIONS);
+  return REGIONS;
+}
+function renderMktSettings() {
+  const box = $('#sMktRegions');
+  if (!box) return;
+  const sel = new Set(mktRegions());
+  const draw = () => {
+    const ids = (REGIONS || [...sel])
+      .slice()
+      .sort((a, b) => String(NAMES[a] || a).localeCompare(String(NAMES[b] || b)));
+    setHtml(
+      box,
+      html`<details${sel.size > 1 ? '' : html` open`}><summary>${T('Régiók a kereséshez ({0} kijelölve): {1}', sel.size, [...sel].map(r => NAMES[r] || r).join(', '))}</summary><div class="regionlist">${ids.map(
+        r =>
+          html`<label class="inline"><input type="checkbox" data-mreg="${r}"${sel.has(r) ? html` checked` : ''}> ${NAMES[r] || r}</label>`
+      )}</div></details>`
+    );
+    box.querySelectorAll('[data-mreg]').forEach(c =>
+      c.addEventListener('change', () => {
+        const r = Number(c.dataset.mreg);
+        if (c.checked) sel.add(r);
+        else sel.delete(r);
+        S.mktRegions = [...sel];
+        saveS();
+        draw();
+      })
+    );
+  };
+  draw();
+  if (!REGIONS || REGIONS.some(r => !NAMES[r]))
+    ensureRegions()
+      .then(draw)
+      .catch(e => log('Régiók: ' + e.message));
+  renderBuyLists();
+}
+function renderBuyLists() {
+  const box = $('#sBuyLists');
+  if (!box) return;
+  const man = Object.entries(S.manPrice || {});
+  const src = Object.entries(S.buySrc || {});
+  setHtml(
+    box,
+    html`${
+      man.length
+        ? html`<p class="small"><b>${T('Kézi árak')}</b>: ${hjoin(
+            man.map(([t, p]) => html`${NAMES[t] || t} ${isk(p)} <button class="btn mini" data-unman="${t}">×</button>`),
+            ' · '
+          )}</p>`
+        : ''
+    }${
+      src.length
+        ? html`<p class="small"><b>${T('Kiválasztott beszerzési helyek')}</b>: ${hjoin(
+            src.map(
+              ([t, l]) => html`${NAMES[t] || t}: ${locName(l)} <button class="btn mini" data-unsrc="${t}">×</button>`
+            ),
+            ' · '
+          )}</p>`
+        : ''
+    }`
+  );
+  box.querySelectorAll('[data-unman]').forEach(b =>
+    b.addEventListener('click', () => {
+      delete S.manPrice[b.dataset.unman];
+      saveS();
+      renderBuyLists();
+    })
+  );
+  box.querySelectorAll('[data-unsrc]').forEach(b =>
+    b.addEventListener('click', () => {
+      delete S.buySrc[b.dataset.unsrc];
+      saveS();
+      renderBuyLists();
+    })
+  );
 }
 </script>
 <script>
@@ -5010,11 +5406,12 @@ function renderSettings() {
       })()}`
     );
     sel.value = S.market2 || '';
-    $('#sBuyM2').checked = S.buyM2 !== false;
+    $('#sMktJumps').value = Number(S.mktMaxJumps) > 0 ? S.mktMaxJumps : 10;
+    $('#sMktHs').checked = S.mktHsOnly !== false;
+    renderMktSettings();
     $('#sParallel').checked = !!S.parallel;
     $('#sParMode').value = S.parMode === 'speed' ? 'speed' : 'material';
     $('#sParMode').disabled = !S.parallel;
-    $('#sBuyM2').disabled = !S.market2;
     const mb = $('#sM2Broker');
     if (mb) {
       const l = Number(S.market2);
@@ -5105,6 +5502,16 @@ async function finishResult(R, firstBP) {
   assignChars(R.jobs);
   await assignJobSys(R.jobs);
   await resolveNames([...new Set(R.jobs.map(j => jobSysOf(j, R.sys)).filter(Boolean))]);
+  // purchase sources picked from the market search need their current orders
+  const picked = [...R.buyList.keys()].filter(t => S.buySrc && S.buySrc[t]);
+  if (picked.length) {
+    try {
+      await loadMarket(picked);
+      for (const t of picked) await resolveLoc(S.buySrc[t], CHARS[0]);
+    } catch (e) {
+      log('Piackereső: ' + e.message);
+    }
+  }
   try {
     await prepHaul(R);
   } catch (e) {
@@ -5211,11 +5618,12 @@ function assignChars(jobs) {
     j.wait = cnt[best][k] > Math.max(0, realFree);
   }
 }
-function nodeCost(n, free) {
+// avg: optional Map type -> average purchase price over the whole shopping list (see buyAvgMap)
+function nodeCost(n, free, avg) {
   // material cost of a tree: purchases + own stock
-  let c = n.buy * buyPrice(n.t);
+  let c = n.buy * ((avg && avg.get(n.t)) ?? buyPrice(n.t));
   if (!free) c += n.stock.filter(x => x.l !== 'surplus' && x.l !== 'job').reduce((s, x) => s + x.q, 0) * unitPrice(n.t);
-  n.ch.forEach(ch => (c += nodeCost(ch, free)));
+  n.ch.forEach(ch => (c += nodeCost(ch, free, avg)));
   return c;
 }
 // production location: the one set in Settings, otherwise the (assigned) BP's location
@@ -5232,6 +5640,15 @@ function haulList(R) {
   // what has to go where
   const moves = new Map(),
     oreRoutes = new Set();
+  const left = new Map();
+  const buyLeft = t => {
+    if (!left.has(t))
+      left.set(
+        t,
+        buyParts(t, R.buyList.get(t) || 0).map(x => Object.assign({}, x))
+      );
+    return left.get(t);
+  };
   const add = (from, to, t, q) => {
     if (!q || from == null || to == null || from === to) return;
     const k = from + '|' + to;
@@ -5251,7 +5668,17 @@ function haulList(R) {
         add(x.l, to, c.t, x.q);
         if (x.ore) oreRoutes.add(x.l + '|' + to);
       }
-      if (c.buy) add(buyAt(c.t), to, c.t, c.buy);
+      // purchases: each node takes its share from the sources of the whole list, cheapest source first
+      if (c.buy) {
+        let need = c.buy;
+        for (const x of buyLeft(c.t)) {
+          if (need <= 0) break;
+          const k = Math.min(x.q, need);
+          x.q -= k;
+          need -= k;
+          add(x.l, to, c.t, k);
+        }
+      }
       if (c.build) {
         const got = c.stock.reduce((s, x) => s + x.q, 0);
         add(prodLocOf(c), to, c.t, Math.max(0, c.need - got));
@@ -5506,11 +5933,12 @@ function planTotals(R, free, fees) {
   };
   const unkAll = new Set();
   R.trees.forEach(x => unkOf(x.tree).forEach(t => unkAll.add(t)));
+  const avg = buyAvgMap(R);
   const rows = R.trees.map(x => {
     const p = x.tree.t;
     const gross = x.made * (sell(p) || 0);
     const jc = R.jobs.filter(j => j.item === x.item).reduce((s, j) => s + jobCost(j, R.sys), 0);
-    const mat = nodeCost(x.tree, free);
+    const mat = nodeCost(x.tree, free, avg);
     const tm = R.jobs.filter(j => j.item === x.item && j.top).reduce((m, j) => Math.max(m, jobTime(j)), 0);
     return {
       x,
@@ -5523,7 +5951,7 @@ function planTotals(R, free, fees) {
       unk: unkOf(x.tree).size > 0
     };
   });
-  const buyCost = [...R.buyList].reduce((s, [t, q]) => s + q * buyPrice(t), 0);
+  const buyCost = [...R.buyList].reduce((s, [t, q]) => s + q * (avg.get(t) || 0), 0);
   const stockCost = free ? 0 : [...R.usedList].reduce((s, [t, q]) => s + q * unitPrice(t), 0);
   const jcT = R.jobs.reduce((s, j) => s + jobCost(j, R.sys), 0);
   const net = rows.reduce((s, r) => s + r.net, 0);
@@ -5582,19 +6010,27 @@ function resultProducts(R, rows, multi) {
   return h;
 }
 // shopping list (bl: what to buy, most expensive first); its closing </div> comes after the jobs table (grid2)
+// shopping list: where each material comes from (Jita, a station picked in the market search, or a manual price),
+// the average unit price over the needed quantity, and a field for a manual price
 function resultShopping(bl) {
-  const bm2 = buyM2On();
-  return html`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th>${m2On() ? html`<th class="num">${m2Short()} sell</th>` : ''}${bm2 ? html`<th>Hol veszed</th>` : ''}<th class="num">Összesen</th></tr></thead><tbody>${
-    hjoin(
-      bl.map(
-        ([t, q]) =>
-          html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : html`<span class="pill warn">nincs ár</span>`}</td>${m2On() ? html`<td class="num">${m2Cell(unitPrice(t), sell2(t), true)}</td>` : ''}${bm2 ? html`<td class="small" data-noi18n>${buyAt(t) === JITA_STATION ? 'Jita' : m2Short()}</td>` : ''}<td class="num">${buyPrice(t) ? isk(q * buyPrice(t)) : '–'}</td></tr>`
-      ),
-      ''
-    ) || html`<tr><td colspan="6" class="pos">Semmit nem kell venni, minden megvan.</td></tr>`
+  const row = ([t, q]) => {
+    const p = buyPrice(t, q);
+    const mp = manPrice(t);
+    const parts = buyParts(t, q);
+    const picked = S.buySrc && S.buySrc[t];
+    return html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : html`<span class="pill warn">nincs ár</span>`}</td><td class="small" data-noi18n>${buyFromText(t, q)}${
+      picked && !mp && !parts.some(x => x.src === 'market')
+        ? html`<div class="src">${T('a kiválasztott helyen most nincs eladó')}</div>`
+        : ''
+    }</td><td class="num">${p ? isk(p) : '–'}</td><td class="num">${p ? isk(q * p) : '–'}</td><td><input type="number" min="0" step="0.01" class="manp" data-manp="${t}" value="${mp ?? ''}" placeholder="${T('kézi ár')}" aria-label="${T('Kézi ár, ISK / db')}"></td></tr>`;
+  };
+  return html`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th><th>Honnan</th><th class="num">Egységár</th><th class="num">Összesen</th><th>Kézi ár</th></tr></thead><tbody>${
+    hjoin(bl.map(row), '') || html`<tr><td colspan="7" class="pos">Semmit nem kell venni, minden megvan.</td></tr>`
   }</tbody></table></div>
-  ${bl.some(([t]) => !unitPrice(t)) ? html`<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs Jita ára, ezért 0-val számít a költségekben.</p>` : ''}
-  <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button></p></div>`;
+  ${bl.some(([t, q]) => !buyPrice(t, q)) ? html`<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs ára, ezért a profit nem számolható. Adj meg kézi árat, vagy keress forrást.</p>` : ''}
+  <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button> ${
+    bl.length ? html`<button class="btn" data-mktsearch>Hol vegyem olcsóbban?</button>` : ''
+  }</p><p class="small muted">A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi.</p><div class="mktout"></div></div>`;
 }
 function resultJobs(R, multi) {
   return html`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs
@@ -5663,7 +6099,7 @@ function renderResult(el, R, rerun) {
   const free = $('#optStockFree').checked;
   const P = planTotals(R, free, sellFees());
   const multi = R.trees.length > 1;
-  const bl = [...R.buyList].sort((a, b) => b[1] * buyPrice(b[0]) - a[1] * buyPrice(a[0]));
+  const bl = [...R.buyList].sort((a, b) => b[1] * (buyPrice(b[0], b[1]) || 0) - a[1] * (buyPrice(a[0], a[1]) || 0));
   let h = resultKpis(R, P, free, multi);
   h = html`${h}${resultSystems(R)}`;
   R.warn.forEach(w => (h = html`${h}<div class="notice">${warnText(w)}</div>`));
@@ -5675,6 +6111,7 @@ function renderResult(el, R, rerun) {
   h = html`${h}${renderHaul(R)}`;
   h = html`${h}${resultTrees(R, multi)}`;
   setHtml(el, h);
+  bindBuySources(el, R);
   const cb = el.querySelector('[data-copybuy]');
   cb &&
     cb.addEventListener('click', () => {
@@ -7868,12 +8305,14 @@ $('#sParMode').addEventListener('change', e => {
   saveS();
   status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
 });
-$('#sBuyM2').addEventListener('change', e => {
-  S.buyM2 = e.target.checked;
+$('#sMktJumps').addEventListener('change', e => {
+  const v = Math.round(Number(e.target.value));
+  S.mktMaxJumps = v > 0 ? v : 10;
   saveS();
-  try {
-    LASTRENDER && LASTRENDER();
-  } catch (err) {}
+});
+$('#sMktHs').addEventListener('change', e => {
+  S.mktHsOnly = e.target.checked;
+  saveS();
 });
 $('#sMarket2').addEventListener('change', e => {
   S.market2 = e.target.value ? Number(e.target.value) : '';
@@ -7990,7 +8429,11 @@ const SET_SCHEMA = {
   locs: 'numArrOrNull',
   workChars: 'numArrOrNull',
   wallet: 'bool',
-  buyM2: 'bool',
+  mktRegions: 'numArrOrNull',
+  mktMaxJumps: 'num',
+  mktHsOnly: 'bool',
+  manPrice: 'mapNum',
+  buySrc: 'mapNum',
   parallel: 'bool',
   parMode: 'str',
   srcShips: 'bool',

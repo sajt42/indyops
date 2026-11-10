@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.14.0 – 2026-11-10
+
+- Where to buy: in the shopping list (Planner and Projects) every material can have a manual price (bought outside the market; such items are not hauled), and 'Where to buy cheaper?' searches the sell orders of the regions picked in Settings. For each material it shows the stations cheaper than Jita with jumps from the production location, highsec check, how much is available and the average price over the order book for the needed quantity. 'Buy here' picks a station; what it lacks comes from Jita. Settings: regions, maximum jumps (10), highsec only (on), and the lists of manual prices and picked sources.
+- The second market is now for selling and valuation only: the 'buy at the second market when cheaper' switch is gone. A player structure set as second market is included in the search.
+- Fix: the note about items without a price said they count as 0; they make the profit not computable.
+
 ## 1.13.3 – 2026-11-10
 
 - Selling: the broker fee is at least 100 ISK per order, as in the game; Planner, Projects, What pays? and Invention count it (it matters only for orders below about 8,000 ISK).

@@ -352,11 +352,12 @@ function renderSettings() {
       })()}`
     );
     sel.value = S.market2 || '';
-    $('#sBuyM2').checked = S.buyM2 !== false;
+    $('#sMktJumps').value = Number(S.mktMaxJumps) > 0 ? S.mktMaxJumps : 10;
+    $('#sMktHs').checked = S.mktHsOnly !== false;
+    renderMktSettings();
     $('#sParallel').checked = !!S.parallel;
     $('#sParMode').value = S.parMode === 'speed' ? 'speed' : 'material';
     $('#sParMode').disabled = !S.parallel;
-    $('#sBuyM2').disabled = !S.market2;
     const mb = $('#sM2Broker');
     if (mb) {
       const l = Number(S.market2);
@@ -447,6 +448,16 @@ async function finishResult(R, firstBP) {
   assignChars(R.jobs);
   await assignJobSys(R.jobs);
   await resolveNames([...new Set(R.jobs.map(j => jobSysOf(j, R.sys)).filter(Boolean))]);
+  // purchase sources picked from the market search need their current orders
+  const picked = [...R.buyList.keys()].filter(t => S.buySrc && S.buySrc[t]);
+  if (picked.length) {
+    try {
+      await loadMarket(picked);
+      for (const t of picked) await resolveLoc(S.buySrc[t], CHARS[0]);
+    } catch (e) {
+      log('Piackereső: ' + e.message);
+    }
+  }
   try {
     await prepHaul(R);
   } catch (e) {
@@ -553,11 +564,12 @@ function assignChars(jobs) {
     j.wait = cnt[best][k] > Math.max(0, realFree);
   }
 }
-function nodeCost(n, free) {
+// avg: optional Map type -> average purchase price over the whole shopping list (see buyAvgMap)
+function nodeCost(n, free, avg) {
   // material cost of a tree: purchases + own stock
-  let c = n.buy * buyPrice(n.t);
+  let c = n.buy * ((avg && avg.get(n.t)) ?? buyPrice(n.t));
   if (!free) c += n.stock.filter(x => x.l !== 'surplus' && x.l !== 'job').reduce((s, x) => s + x.q, 0) * unitPrice(n.t);
-  n.ch.forEach(ch => (c += nodeCost(ch, free)));
+  n.ch.forEach(ch => (c += nodeCost(ch, free, avg)));
   return c;
 }
 // production location: the one set in Settings, otherwise the (assigned) BP's location
@@ -574,6 +586,15 @@ function haulList(R) {
   // what has to go where
   const moves = new Map(),
     oreRoutes = new Set();
+  const left = new Map();
+  const buyLeft = t => {
+    if (!left.has(t))
+      left.set(
+        t,
+        buyParts(t, R.buyList.get(t) || 0).map(x => Object.assign({}, x))
+      );
+    return left.get(t);
+  };
   const add = (from, to, t, q) => {
     if (!q || from == null || to == null || from === to) return;
     const k = from + '|' + to;
@@ -593,7 +614,17 @@ function haulList(R) {
         add(x.l, to, c.t, x.q);
         if (x.ore) oreRoutes.add(x.l + '|' + to);
       }
-      if (c.buy) add(buyAt(c.t), to, c.t, c.buy);
+      // purchases: each node takes its share from the sources of the whole list, cheapest source first
+      if (c.buy) {
+        let need = c.buy;
+        for (const x of buyLeft(c.t)) {
+          if (need <= 0) break;
+          const k = Math.min(x.q, need);
+          x.q -= k;
+          need -= k;
+          add(x.l, to, c.t, k);
+        }
+      }
       if (c.build) {
         const got = c.stock.reduce((s, x) => s + x.q, 0);
         add(prodLocOf(c), to, c.t, Math.max(0, c.need - got));
@@ -848,11 +879,12 @@ function planTotals(R, free, fees) {
   };
   const unkAll = new Set();
   R.trees.forEach(x => unkOf(x.tree).forEach(t => unkAll.add(t)));
+  const avg = buyAvgMap(R);
   const rows = R.trees.map(x => {
     const p = x.tree.t;
     const gross = x.made * (sell(p) || 0);
     const jc = R.jobs.filter(j => j.item === x.item).reduce((s, j) => s + jobCost(j, R.sys), 0);
-    const mat = nodeCost(x.tree, free);
+    const mat = nodeCost(x.tree, free, avg);
     const tm = R.jobs.filter(j => j.item === x.item && j.top).reduce((m, j) => Math.max(m, jobTime(j)), 0);
     return {
       x,
@@ -865,7 +897,7 @@ function planTotals(R, free, fees) {
       unk: unkOf(x.tree).size > 0
     };
   });
-  const buyCost = [...R.buyList].reduce((s, [t, q]) => s + q * buyPrice(t), 0);
+  const buyCost = [...R.buyList].reduce((s, [t, q]) => s + q * (avg.get(t) || 0), 0);
   const stockCost = free ? 0 : [...R.usedList].reduce((s, [t, q]) => s + q * unitPrice(t), 0);
   const jcT = R.jobs.reduce((s, j) => s + jobCost(j, R.sys), 0);
   const net = rows.reduce((s, r) => s + r.net, 0);
@@ -924,19 +956,27 @@ function resultProducts(R, rows, multi) {
   return h;
 }
 // shopping list (bl: what to buy, most expensive first); its closing </div> comes after the jobs table (grid2)
+// shopping list: where each material comes from (Jita, a station picked in the market search, or a manual price),
+// the average unit price over the needed quantity, and a field for a manual price
 function resultShopping(bl) {
-  const bm2 = buyM2On();
-  return html`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th>${m2On() ? html`<th class="num">${m2Short()} sell</th>` : ''}${bm2 ? html`<th>Hol veszed</th>` : ''}<th class="num">Összesen</th></tr></thead><tbody>${
-    hjoin(
-      bl.map(
-        ([t, q]) =>
-          html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : html`<span class="pill warn">nincs ár</span>`}</td>${m2On() ? html`<td class="num">${m2Cell(unitPrice(t), sell2(t), true)}</td>` : ''}${bm2 ? html`<td class="small" data-noi18n>${buyAt(t) === JITA_STATION ? 'Jita' : m2Short()}</td>` : ''}<td class="num">${buyPrice(t) ? isk(q * buyPrice(t)) : '–'}</td></tr>`
-      ),
-      ''
-    ) || html`<tr><td colspan="6" class="pos">Semmit nem kell venni, minden megvan.</td></tr>`
+  const row = ([t, q]) => {
+    const p = buyPrice(t, q);
+    const mp = manPrice(t);
+    const parts = buyParts(t, q);
+    const picked = S.buySrc && S.buySrc[t];
+    return html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : html`<span class="pill warn">nincs ár</span>`}</td><td class="small" data-noi18n>${buyFromText(t, q)}${
+      picked && !mp && !parts.some(x => x.src === 'market')
+        ? html`<div class="src">${T('a kiválasztott helyen most nincs eladó')}</div>`
+        : ''
+    }</td><td class="num">${p ? isk(p) : '–'}</td><td class="num">${p ? isk(q * p) : '–'}</td><td><input type="number" min="0" step="0.01" class="manp" data-manp="${t}" value="${mp ?? ''}" placeholder="${T('kézi ár')}" aria-label="${T('Kézi ár, ISK / db')}"></td></tr>`;
+  };
+  return html`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th><th>Honnan</th><th class="num">Egységár</th><th class="num">Összesen</th><th>Kézi ár</th></tr></thead><tbody>${
+    hjoin(bl.map(row), '') || html`<tr><td colspan="7" class="pos">Semmit nem kell venni, minden megvan.</td></tr>`
   }</tbody></table></div>
-  ${bl.some(([t]) => !unitPrice(t)) ? html`<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs Jita ára, ezért 0-val számít a költségekben.</p>` : ''}
-  <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button></p></div>`;
+  ${bl.some(([t, q]) => !buyPrice(t, q)) ? html`<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs ára, ezért a profit nem számolható. Adj meg kézi árat, vagy keress forrást.</p>` : ''}
+  <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button> ${
+    bl.length ? html`<button class="btn" data-mktsearch>Hol vegyem olcsóbban?</button>` : ''
+  }</p><p class="small muted">A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi.</p><div class="mktout"></div></div>`;
 }
 function resultJobs(R, multi) {
   return html`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs
@@ -1005,7 +1045,7 @@ function renderResult(el, R, rerun) {
   const free = $('#optStockFree').checked;
   const P = planTotals(R, free, sellFees());
   const multi = R.trees.length > 1;
-  const bl = [...R.buyList].sort((a, b) => b[1] * buyPrice(b[0]) - a[1] * buyPrice(a[0]));
+  const bl = [...R.buyList].sort((a, b) => b[1] * (buyPrice(b[0], b[1]) || 0) - a[1] * (buyPrice(a[0], a[1]) || 0));
   let h = resultKpis(R, P, free, multi);
   h = html`${h}${resultSystems(R)}`;
   R.warn.forEach(w => (h = html`${h}<div class="notice">${warnText(w)}</div>`));
@@ -1017,6 +1057,7 @@ function renderResult(el, R, rerun) {
   h = html`${h}${renderHaul(R)}`;
   h = html`${h}${resultTrees(R, multi)}`;
   setHtml(el, h);
+  bindBuySources(el, R);
   const cb = el.querySelector('[data-copybuy]');
   cb &&
     cb.addEventListener('click', () => {

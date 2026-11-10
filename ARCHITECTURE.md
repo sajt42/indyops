@@ -17,6 +17,7 @@ The scripts are classic (non-module) scripts. They load in this order from `inde
 | `js/core.js` | constants (`APP`, scopes, ids), i18n engine, formatting, storage, settings (`S`, `SET_SCHEMA`), persisted caches | `T`, `trTree`, `store`, `load`, `saveS` |
 | `js/esi.js` | SSO login, token refresh, ESI/EVE Ref network layer, names and locations, character refresh | `startLogin`, `accessToken`, `esi`, `refGet`, `resolveNames`, `resolveLoc`, `refreshChar` |
 | `js/data.js` | aggregated views over all characters: stock, blueprints, skills, fees, standings, prices, second market, ores, unknown locations, containers and project material sources | `allBPs`, `stockMap`, `ensurePrices`, `brokerFee`, `salesTax`, `stockFilter` |
+| `js/market.js` | where to buy: manual prices, picked stations, regional sell-order search with jumps and order book depth | `buyParts`, `buyPrice`, `loadMarket`, `mktSearch`, `bindBuySources` |
 | `js/engine.js` | planning engine: material trees, BPC runs, invention, job systems, job cost and time | `makeMulti`, `planNode`, `addInvention`, `assignJobSys`, `jobCost`, `jobTime` |
 | `js/views.js` | paging and sorting, rendering of the Characters / Blueprints / Stock / Settings tabs, plan pipeline, character assignment, hauling | `renderAll`, `pageOf`, `sortTh`, `finishResult`, `assignChars`, `showResult`, `renderResult`, `prepHaul` |
 | `js/tab-projects.js` | Projects tab, incl. material sources | `renderProjects`, `calcProjects` |
@@ -48,6 +49,7 @@ All state is global (`let` at the top level of a file). Persisted entries are st
 | `ADJ`, `IDX` | adjusted prices; system → activity cost index | `adj`, `idx2` | `data.js` |
 | `ORES`, `CORPFAC`, `SYSSEC`, `HIST`, `ROUTES`, `SHIPC` | ore types, NPC corp → faction (from EVE Ref), system security, market history, routes, ship capacities | own keys | the module that declares them |
 | `PROJ`, `SELP` | projects and the selected project | `projects`, `selp` | `tab-projects.js`, restore |
+| `MKT`, `MKT_JUMPS`, `REGIONS` | sell orders per material in the picked regions (10 minutes), jumps of the found stations, the k-space region list | `regions` (only `REGIONS`) | `market.js` |
 | `BPPROD` | blueprint type → `{prod, qty, act}` index of recipes | – | `indexBPProducts` (`engine.js`), reset in `main.js` |
 | `LASTPLAN`, `LASTRENDER` | the plan on screen and a function that redraws it | – | `runPlan` (`views.js`), `calcProjects` (`tab-projects.js`) |
 | `REP`, `REPLOG` | reprocess rows, selection, load log | – | `repro.js` |
@@ -94,6 +96,7 @@ showResult(el, R, rerun)             views.js    re-assigns characters, draws, r
 - `allocateRuns` fills the copies one after the other by default. With parallel manufacturing (`S.parallel`, `S.parMode`) it spreads the runs over several blueprint items (`parallelRuns`), limited by the items, the free slots and a one-hour minimum per job; in "material" mode only when no material is added. Splits are listed in `R.par`. `assignChars` never moves two jobs onto the same blueprint item.
 - Surplus from a job goes back to the pool for later nodes and items. With `shared = {pool, runsLeft}`, several projects use one pool and one set of BPC runs.
 - `renderResult` does not change the plan. Anything that changes the assignment (working characters, settings) calls `LASTRENDER`, which goes through `showResult`.
+- Purchases: `buyParts(t, q)` splits a material into sources: a manual price (`S.manPrice`, not hauled), a station picked from the market search (`S.buySrc`, as much as its orders give, cheapest first), and Jita for the rest. Costs use the average over the whole shopping list; the haul list takes each node's share from these sources. The second market is for selling and valuation only.
 - Haul preparation uses a generation counter and an assignment signature (`haulSig`). Only the newest preparation that still matches the current assignment may publish `R.haulCtx`.
 - Job slots are a model limit, not a scheduler. Jobs beyond the free slots are marked "no free slot" and their waiting time is not included.
 

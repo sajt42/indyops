@@ -130,6 +130,7 @@ const T = w.__t,
   T.PRICES.p2[34] = { s: 4.5, b: 4, at: now, loc: 60008494 };
   T.PRICES.p[35] = { s: 10, b: 9, at: now };
   T.PRICES.p2[35] = { s: 11, b: 9, at: now, loc: 60008494 };
+  // since 1.14.0 the second market is for selling only: buying stays at Jita even when the second market is cheaper
   console.log('BUY trit:', T.buyAt(34), T.buyPrice(34), '| pye:', T.buyAt(35), T.buyPrice(35));
   T.S.buyM2 = false;
   console.log('BUY off:', T.buyAt(34), T.buyPrice(34));

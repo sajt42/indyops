@@ -19,6 +19,7 @@ let prices = {
 let failPrice = new Set(),
   tokenCalls = 0,
   corpCalls = 0,
+  mktOrders = {},
   route = null,
   sec = {};
 const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.org/' });
@@ -88,6 +89,8 @@ w.fetch = async (u, o) => {
       { solar_system_id: 30001, cost_indices: [{ activity: 'manufacturing', cost_index: 0.02 }] },
       { solar_system_id: 30002, cost_indices: [{ activity: 'manufacturing', cost_index: 0.08 }] }
     ]);
+  if ((m = u.match(/\/markets\/(\d+)\/orders\/\?order_type=sell&type_id=(\d+)/)))
+    return J(mktOrders[m[1] + '|' + m[2]] || []);
   if ((m = u.match(/\/route\/(\d+)\/(\d+)\/(\?flag=secure)?/))) {
     const r = route(Number(m[1]), Number(m[2]), !!m[3]);
     if (r && r.delay) {
@@ -107,7 +110,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -756,6 +759,67 @@ const ok = (c, msg) => {
     ok(Math.abs(T.netOfFees(5000, f) - (5000 - 168.5 - 100)) < 1e-9, 'small order: broker fee 100 ISK minimum');
     ok(Math.abs(T.netOfFees(1e6, f) - (1e6 - 33700 - 12300)) < 1e-6, 'large order: broker fee by rate');
     ok(T.netOfFees(0, f) === 0 && T.netOfFees(NaN, f) === 0, 'no value, no fee');
+  }
+  // 26. where to buy: manual price, a picked station (order book depth, rest from Jita), market search
+  {
+    const ss = T.S;
+    mktOrders['10000002|34'] = [
+      { location_id: 60003760, system_id: 30000142, price: 3.7, volume_remain: 1e9, is_buy_order: false },
+      { location_id: 60009001, system_id: 30001, price: 3.0, volume_remain: 1000, is_buy_order: false },
+      { location_id: 60009001, system_id: 30001, price: 3.5, volume_remain: 5000, is_buy_order: false },
+      { location_id: 60009002, system_id: 30002, price: 2.0, volume_remain: 1e6, is_buy_order: false }
+    ];
+    ss.mktRegions = [10000002];
+    await T.loadMarket([34], true);
+    ss.buySrc = { 34: 60009001 };
+    let p = T.buyParts(34, 3000);
+    ok(
+      p.length === 1 && p[0].l === 60009001 && Math.abs(p[0].p - (1000 * 3 + 2000 * 3.5) / 3000) < 1e-9,
+      'picked station: average over the order book'
+    );
+    p = T.buyParts(34, 10000);
+    ok(
+      p.length === 2 && p[0].q === 6000 && p[1].l === 60003760 && p[1].q === 4000,
+      'what the station lacks comes from Jita (' + JSON.stringify(p.map(x => [x.l, x.q])) + ')'
+    );
+    ss.manPrice = { 34: 1.5 };
+    p = T.buyParts(34, 10000);
+    ok(p.length === 1 && p[0].l === null && T.buyPrice(34, 10000) === 1.5, 'manual price wins and is not hauled');
+    ss.manPrice = {};
+    ss.buySrc = {};
+    ok(T.buyParts(34, 10)[0].l === 60003760, 'default source is Jita');
+    // search: 60009002 is cheapest but its route leaves highsec, so with highsec only it is left out
+    T.LI[60009001] = { name: 'Near Station', system: 30001 };
+    T.LI[60009002] = { name: 'Far Station', system: 30002 };
+    T.LI[60009000] = { name: 'Home', system: 30003 };
+    route = (a, b) => (b === 30001 ? [a, 30004, b] : [a, 30005, b]);
+    T.SYSSEC[30003] = 0.9;
+    T.SYSSEC[30004] = 0.8;
+    T.SYSSEC[30005] = 0.1;
+    T.SYSSEC[30001] = 0.7;
+    T.SYSSEC[30002] = 0.6;
+    ss.prodLoc = 60009000;
+    ss.mktHsOnly = true;
+    ss.mktMaxJumps = 10;
+    const RR = { trees: [{ tree: { t: 638, build: { jobs: [] }, jobsRef: [] } }], buyList: new Map([[34, 3000]]) };
+    let res = await T.mktSearch(RR);
+    const c = res.rows[0].cands;
+    ok(
+      c.length === 1 && c[0].l === 60009001 && c[0].n === 2 && c[0].hs === true,
+      'highsec only: the station behind lowsec is left out (' + JSON.stringify(c.map(x => [x.l, x.n, x.hs])) + ')'
+    );
+    ss.mktHsOnly = false;
+    res = await T.mktSearch(RR);
+    ok(
+      res.rows[0].cands[0].l === 60009002 && res.rows[0].cands.every(x => x.l !== 60003760),
+      'without the limit the cheapest comes first; Jita itself is not a candidate'
+    );
+    ss.mktMaxJumps = 1;
+    res = await T.mktSearch(RR);
+    ok(res.rows[0].cands.length === 0, 'jump limit');
+    ss.prodLoc = '';
+    ss.mktHsOnly = true;
+    ss.mktMaxJumps = 10;
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));
