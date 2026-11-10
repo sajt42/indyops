@@ -380,6 +380,7 @@ async function runProfit() {
       name: NAMES[x.p] || '#' + x.p,
       price,
       price2: p2,
+      perRun,
       perRun2,
       perUnit,
       margin: net ? profit / net : null,

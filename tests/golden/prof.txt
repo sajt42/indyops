@@ -1,5 +1,6 @@
-PROFIT: Core Temperature RegulatorNincs Jita ára: 2401, 3645, 57456, 57457. A profit emiatt túl magas lehet.BPO · ME10 · Pilot B3,9 M? ––3,0 M40∞ (BPO)+ projekt
-        Life Support Backup UnitNincs Jita ára: 2319, 3775, 57457. A profit emiatt túl magas lehet.BPO · ME10 · Pilot A91,4 k? ––912,2 k40∞ (BPO)+ projekt
-        RavenNincs Jita ára: 2312, 2463, 57457, 2401, 3645, 57456, 2319, 3775. A profit emiatt túl magas lehet.BPC 8 run · ME10 · Pilot A152,3 M? ––681,2 k123125,5 M+ projekt
-        Auto-Integrity Preservation SealNincs Jita ára: 2312, 2463, 57457. A profit emiatt túl magas lehet.BPO · ME10 · Pilot A48,3 k? ––482,1 k40∞ (BPO)+ projekt
+PROFIT: Core Temperature RegulatorNincs Jita ára: 2401, 3645, 57456, 57457. A profit emiatt túl magas lehet.BPO · ME10 · Pilot B3,9 M? 3,7 M–3,0 M40∞ (BPO)+ projekt
+        Life Support Backup UnitNincs Jita ára: 2319, 3775, 57457. A profit emiatt túl magas lehet.BPO · ME10 · Pilot A91,4 k? 256,9 k–912,2 k40∞ (BPO)+ projekt
+        RavenNincs Jita ára: 2312, 2463, 57457, 2401, 3645, 57456, 2319, 3775. A profit emiatt túl magas lehet.BPC 8 run · ME10 · Pilot A152,3 M? 15,7 M–681,2 k123125,5 M+ projekt
+        Auto-Integrity Preservation SealNincs Jita ára: 2312, 2463, 57457. A profit emiatt túl magas lehet.BPO · ME10 · Pilot A48,3 k? 135,8 k–482,1 k40∞ (BPO)+ projekt
+profit/run: ok
 pList: Profit-válogatás · 1 tétel▲▼

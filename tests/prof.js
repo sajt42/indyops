@@ -165,6 +165,15 @@ const T = w.__t;
     'PROFIT:',
     [...out.querySelectorAll('tbody tr')].map(r => r.textContent.replace(/\s+/g, ' ').trim()).join('\n        ')
   );
+  // Profit / run (4th column without a second market) must hold a number on every row
+  {
+    const cells = [...out.querySelectorAll('tbody tr')].map(r => r.children[3].textContent.trim());
+    console.log(
+      cells.length && cells.every(c => /\d/.test(c))
+        ? 'profit/run: ok'
+        : 'FAIL: profit/run missing: ' + cells.join(' | ')
+    );
+  }
   out.querySelector('[data-addproj]').click();
   console.log('pList:', d.querySelector('#pList').textContent.replace(/\s+/g, ' ').trim());
 })().catch(e => console.error('FAIL', e));

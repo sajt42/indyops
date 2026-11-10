@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.12.9 – 2026-11-10
+
+- Fix: on the Profit tab the Jita profit per run was empty on every row since 1.10.0 (the value was not stored with the row). This also broke the 'only profitable' filter, sorting by profit per run and nothing else; the remaining-runs value was right.
+- Tests: the profit scenario checks that every row has a profit per run (the reference output had recorded the empty column).
+
 ## 1.12.8 – 2026-11-10
 
 - Selling: changing the second market in Settings now loads its station owner and prices for what is on screen and redraws the Selling, Plan, Reprocess and list tabs right away (before, the Selling tab showed the old market until a reload). Profit rows calculated with another second market show empty columns for it with a note, instead of stale numbers.
