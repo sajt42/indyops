@@ -1952,7 +1952,7 @@ const SK={connections:3359,diplomacy:3357,industry:3380,advInd:3388,accounting:1
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.10.1',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.10.2',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2182,7 +2182,10 @@ async function refreshChar(c){
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,start:j.start_date,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
     // az ESI a blueprint-listát akár egy óráig gyorsítótárazza: a azóta indított jobok runjait levonjuk a BPC-kből (a játék induláskor vonja le)
-    for(const b of B){if(!(b.r>0))continue;for(const j of J){if(j.bpi!==b.i||!(j.act===1||j.act===8)||!j.start||!bpLM)continue;if(Date.parse(j.start)>bpLM){b.r=Math.max(0,b.r-j.runs);b.adj=(b.adj||0)+j.runs}}}
+    // a már leadott (delivered) jobokat is figyelembe vesszük, ha az ESI-pillanatkép régebbi náluk
+    let JA=jobs.map(j=>({bpi:j.blueprint_id,act:j.activity_id,runs:j.runs,start:j.start_date,id:j.job_id}));
+    if(bpLM){try{const done=await esi('/characters/'+c.id+'/industry/jobs/?include_completed=true',{char:c});const seen=new Set(JA.map(x=>x.id));done.forEach(j=>{if(!seen.has(j.job_id))JA.push({bpi:j.blueprint_id,act:j.activity_id,runs:j.runs,start:j.start_date,id:j.job_id})})}catch(e){}}
+    for(const b of B){if(!(b.r>0))continue;for(const j of JA){if(j.bpi!==b.i||!(j.act===1||j.act===8)||!j.start||!bpLM)continue;if(Date.parse(j.start)>bpLM){b.r=Math.max(0,b.r-j.runs);b.adj=(b.adj||0)+j.runs}}}
     let O=[],TX=[],IMP=null,STD=null;
     if(hasScope(c,'esi-characters.read_standings.v1')){try{STD={};(await esi('/characters/'+c.id+'/standings/',{char:c})).forEach(x=>STD[x.from_id]=x.standing)}catch(e){log('Standingek: '+e.message)}}
     if(hasScope(c,'esi-clones.read_implants.v1')){try{IMP=await esi('/characters/'+c.id+'/implants/',{char:c});await resolveNames(IMP)}catch(e){log('Implantok: '+e.message)}}
@@ -2578,8 +2581,9 @@ function renderBPs(){
   $('#bpTable tbody').innerHTML=pg.rows.map(x=>{const j=inJob(x.b.i);const max=x.b.r===-1&&x.me>=10&&x.te>=20;
     return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}${x.b.adj?`<span title="${esc(T('Az ESI még a régebbi értéket mutatja; az azóta indított jobok runjait ({0}) már levontam.',x.b.adj))}">*</span>`:''}${x.b.r===0?' <span class="pill warn">'+esc(T('elfogyott'))+'</span>':''}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
   const ats=Object.values(DATA).map(d=>d.bpAt).filter(Boolean),exps=Object.values(DATA).map(d=>d.bpExp).filter(Boolean);
-  const tf=v=>new Date(v).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});
-  $('#bpCount').textContent=T('{0} blueprint',list.length)+(ats.length?' · '+T('ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.',tf(Math.min(...ats)),tf(Math.max(...exps))):'');
+  const tf=v=>{const d=new Date(v);const today=d.toDateString()===new Date().toDateString();return (today?'':d.toLocaleDateString(LOC(),{month:'2-digit',day:'2-digit'})+' ')+d.toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'})};
+  const per=CHARS.filter(c=>DATA[c.id]&&DATA[c.id].bpAt).map(c=>c.name+' '+tf(DATA[c.id].bpAt)).join(', ');
+  $('#bpCount').textContent=T('{0} blueprint',list.length)+(ats.length?' · '+T('ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.',per,tf(Math.max(...exps))):'');
 }
 function renderStock(){
   const f=$('#stFilter').value.toLowerCase(),lf=$('#stLoc').value,only=$('#stOnlyPlan').checked;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.2 – 2026-11-10
+
+- BPC runs: jobs already delivered are also checked against ESI's blueprint snapshot; the Blueprints tab shows the ESI snapshot time per character (with date if not today)
+
 ## 1.10.1 – 2026-11-10
 
 - Fix: BPC runs looked stale after starting a job, because ESI caches the blueprint list for up to an hour; runs of jobs started since ESI's snapshot are now subtracted (marked *), used-up copies are flagged, and the Blueprints tab shows when ESI will update

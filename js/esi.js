@@ -157,7 +157,10 @@ async function refreshChar(c){
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,start:j.start_date,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
     // az ESI a blueprint-listát akár egy óráig gyorsítótárazza: a azóta indított jobok runjait levonjuk a BPC-kből (a játék induláskor vonja le)
-    for(const b of B){if(!(b.r>0))continue;for(const j of J){if(j.bpi!==b.i||!(j.act===1||j.act===8)||!j.start||!bpLM)continue;if(Date.parse(j.start)>bpLM){b.r=Math.max(0,b.r-j.runs);b.adj=(b.adj||0)+j.runs}}}
+    // a már leadott (delivered) jobokat is figyelembe vesszük, ha az ESI-pillanatkép régebbi náluk
+    let JA=jobs.map(j=>({bpi:j.blueprint_id,act:j.activity_id,runs:j.runs,start:j.start_date,id:j.job_id}));
+    if(bpLM){try{const done=await esi('/characters/'+c.id+'/industry/jobs/?include_completed=true',{char:c});const seen=new Set(JA.map(x=>x.id));done.forEach(j=>{if(!seen.has(j.job_id))JA.push({bpi:j.blueprint_id,act:j.activity_id,runs:j.runs,start:j.start_date,id:j.job_id})})}catch(e){}}
+    for(const b of B){if(!(b.r>0))continue;for(const j of JA){if(j.bpi!==b.i||!(j.act===1||j.act===8)||!j.start||!bpLM)continue;if(Date.parse(j.start)>bpLM){b.r=Math.max(0,b.r-j.runs);b.adj=(b.adj||0)+j.runs}}}
     let O=[],TX=[],IMP=null,STD=null;
     if(hasScope(c,'esi-characters.read_standings.v1')){try{STD={};(await esi('/characters/'+c.id+'/standings/',{char:c})).forEach(x=>STD[x.from_id]=x.standing)}catch(e){log('Standingek: '+e.message)}}
     if(hasScope(c,'esi-clones.read_implants.v1')){try{IMP=await esi('/characters/'+c.id+'/implants/',{char:c});await resolveNames(IMP)}catch(e){log('Implantok: '+e.message)}}
