@@ -18,7 +18,7 @@ IndyOps is a free, browser-only **EVE Online industry calculator and manufacturi
 - **Invention & T2**: chance from your skills, all 8 decryptors compared, invention cost per BPC; invention jobs, datacores and T1 copies included in projects.
 - **Research & copy**: time and cost of the next ME level, saving per run, payback, full ME10/TE20 time, copy time, science slots.
 - **Selling**: your market orders, who undercut you and the suggested new price; optional 30-day sales from wallet transactions; which character should sell (sales tax, broker fee with standings).
-- **Second market**: a trade hub, station or player structure next to Jita; its prices show wherever Jita prices do. Structure broker fees can be entered by hand; undercuts on structure orders are checked on the structure market.
+- **Second market**: a trade hub, station or player structure next to Jita; its prices show wherever Jita prices do. Structure broker fees can be entered by hand; undercuts on structure orders are checked on the structure market. Materials are bought there when cheaper, and What pays? shows profit per run there too.
 - **Hauling**: what goes from where to where, packaged m³, jumps, and which of your ships (with your skills) can carry it in how many trips.
 - **Mining**: paste a survey scan; yields per character from your reprocessing skills, coverage of your plan's mineral shortfall.
 - **Reprocess**: everything reprocessable in your stock (ore, ice, modules, loot) with per-character skills, implants and standings and per-location yield (NPC station data from ESI, or Upwell structure with rigs, security, tax); select some or all, compare selling as is vs. reprocessing on both markets.

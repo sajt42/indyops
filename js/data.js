@@ -65,6 +65,10 @@ async function regionOf(l){l=Number(l);const h=HUBS.find(x=>x[0]===l);if(h)retur
 const sell2=t=>m2On()&&PRICES.p2&&PRICES.p2[t]&&PRICES.p2[t].loc===Number(S.market2)?PRICES.p2[t].s:null;
 const buy2=t=>m2On()&&PRICES.p2&&PRICES.p2[t]&&PRICES.p2[t].loc===Number(S.market2)?PRICES.p2[t].b:null;
 const unitPrice2=t=>sell2(t)??buy2(t)??0;
+// vásárlás: a második piacon, ha ott olcsóbb (Beállítások: buyM2, alapból be)
+const buyM2On=()=>m2On()&&S.buyM2!==false;
+function buyAt(t){const j=unitPrice(t),m=sell2(t);return buyM2On()&&m&&(!j||m<j)?Number(S.market2):JITA_STATION}
+function buyPrice(t){return buyAt(t)===JITA_STATION?unitPrice(t):sell2(t)}
 
 /* ============ árak ============ */
 async function ensurePrices(typeIds){

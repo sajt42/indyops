@@ -33,6 +33,7 @@ const bind=(sel,key,num)=>$(sel).addEventListener('change',e=>{S[key]=num&&e.tar
 bind('#sStructME','structME',1);bind('#sStructRes','structRes',1);bind('#sStructTE','structTE',1);bind('#sFacTax','facTax',1);bind('#sScc','scc',1);bind('#sSalesTax','salesTax',1);bind('#sBroker','broker',1);bind('#sYieldBase','yieldBase',1);bind('#sImplant','implant',1);bind('#sSystem','system',0);bind('#sClientId','clientId',0);
 $('#sProdLoc').addEventListener('change',e=>{S.prodLoc=e.target.value;saveS();LASTRENDER&&LASTRENDER()});
 $('#sWallet').addEventListener('change',e=>{S.wallet=e.target.checked;saveS();renderChars()});
+$('#sBuyM2').addEventListener('change',e=>{S.buyM2=e.target.checked;saveS();try{LASTRENDER&&LASTRENDER()}catch(err){}});
 $('#sMarket2').addEventListener('change',e=>{S.market2=e.target.value?Number(e.target.value):'';saveS();renderSettings();status(T('Második piac: {0}. Az árak a következő számolásnál töltődnek le.',S.market2?m2Short():T('nincs')))});
 $('#sWorkChars').addEventListener('change',e=>{const ids=$$('#sWorkChars input[data-wc]').filter(x=>x.checked).map(x=>Number(x.dataset.wc));const all=CHARS.filter(c=>DATA[c.id]).length;S.workChars=ids.length&&ids.length<all?ids:null;saveS();renderAll();try{LASTRENDER&&LASTRENDER()}catch(e){}});
 $('#clearPrices').onclick=()=>{PRICES={at:0,p:{}};store('prices',PRICES);status('árak törölve')};

@@ -68,7 +68,7 @@ function renderSettings(){
   $('#sSalesTax').placeholder=fmt(salesTax()*100,2);$('#sBroker').placeholder=fmt(brokerFee()*100,2);
   {const sel=$('#sProdLoc');sel.innerHTML='<option value="">automatikus: a BP helye</option>'+allLocs().sort((a,b)=>locName(a).localeCompare(locName(b))).map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');sel.value=S.prodLoc||''}
   {const sel=$('#sMarket2');const hubs=HUBS.filter(h=>h[0]!==JITA_STATION);const own=allLocs().filter(l=>locKind(l)==='npc'&&l!==JITA_STATION&&!hubs.some(h=>h[0]===l)).sort((a,b)=>locName(a).localeCompare(locName(b)));
-    sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'')+(()=>{const st=allLocs().filter(l=>locKind(l)==='struct').sort((a,b)=>locName(a).localeCompare(locName(b)));return st.length?'<optgroup label="'+esc(T('Struktúrák, ahol van cuccod'))+'">'+st.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':''})();sel.value=S.market2||'';const mb=$('#sM2Broker');if(mb){const l=Number(S.market2);mb.innerHTML=S.market2&&locKind(l)==='struct'?`<label class="small">${T('{0} broker fee (a tulaj állítja), %',esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${l}" value="${structBrokerOf(l)??''}" placeholder="?"></label> <span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span>`:''}}
+    sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'')+(()=>{const st=allLocs().filter(l=>locKind(l)==='struct').sort((a,b)=>locName(a).localeCompare(locName(b)));return st.length?'<optgroup label="'+esc(T('Struktúrák, ahol van cuccod'))+'">'+st.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':''})();sel.value=S.market2||'';$('#sBuyM2').checked=S.buyM2!==false;$('#sBuyM2').disabled=!S.market2;const mb=$('#sM2Broker');if(mb){const l=Number(S.market2);mb.innerHTML=S.market2&&locKind(l)==='struct'?`<label class="small">${T('{0} broker fee (a tulaj állítja), %',esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${l}" value="${structBrokerOf(l)??''}" placeholder="?"></label> <span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span>`:''}}
   {const w=workChars();const cs=CHARS.filter(c=>DATA[c.id]);$('#sWorkChars').innerHTML=cs.length?cs.map(c=>`<label class="inline"><input type="checkbox" data-wc="${c.id}" ${w.includes(c.id)?'checked':''}> ${esc(c.name)}</label>`).join(''):'<span class="muted small">'+esc(T('Még nincs karakter.'))+'</span>'}
 }
 function renderPlanOptions(){
@@ -129,7 +129,7 @@ function assignChars(jobs){ // ki csinálja: skill + idő + szabad slot alapján
   }
 }
 function nodeCost(n,free){ // egy fa anyagköltsége: vásárlás + saját készlet
-  let c=n.buy*unitPrice(n.t);if(!free)c+=n.stock.filter(x=>x.l!=='surplus'&&x.l!=='job').reduce((s,x)=>s+x.q,0)*unitPrice(n.t);
+  let c=n.buy*buyPrice(n.t);if(!free)c+=n.stock.filter(x=>x.l!=='surplus'&&x.l!=='job').reduce((s,x)=>s+x.q,0)*unitPrice(n.t);
   n.ch.forEach(ch=>c+=nodeCost(ch,free));return c;
 }
 function prodLocOf(n){if(S.prodLoc)return Number(S.prodLoc);return n.build&&n.build.jobs[0]?n.build.jobs[0].c.l:null}
@@ -139,7 +139,7 @@ function haulList(R){ // mit honnan hova kell vinni
   const walk=n=>{if(!n.build)return;const to=prodLocOf(n);
     for(const c of n.ch){
       for(const x of c.stock){if(x.l==='surplus'||x.l==='job')continue;add(x.l,to,c.t,x.q);if(x.ore)oreRoutes.add(x.l+'|'+to)}
-      if(c.buy)add(JITA_STATION,to,c.t,c.buy);
+      if(c.buy)add(buyAt(c.t),to,c.t,c.buy);
       if(c.build){const got=c.stock.reduce((s,x)=>s+x.q,0);add(prodLocOf(c),to,c.t,Math.max(0,c.need-got))}
       walk(c)}};
   R.trees.forEach(x=>walk(x.tree));
@@ -215,7 +215,7 @@ function renderResult(el,R,rerun){
   assignChars(R.jobs);
   const free=$('#optStockFree').checked;const fee=salesTax()+brokerFee();
   const rows=R.trees.map(x=>{const p=x.tree.t;const gross=x.made*(sell(p)||0);const jc=R.jobs.filter(j=>j.item===x.item).reduce((s,j)=>s+jobCost(j,R.sys),0);const mat=nodeCost(x.tree,free);const tm=R.jobs.filter(j=>j.item===x.item&&j.top).reduce((m,j)=>Math.max(m,jobTime(j)),0);return {x,p,net:gross*(1-fee),jc,mat,profit:gross*(1-fee)-jc-mat,tm}});
-  const buyCost=[...R.buyList].reduce((s,[t,q])=>s+q*unitPrice(t),0);
+  const buyCost=[...R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);
   const stockCost=free?0:[...R.usedList].reduce((s,[t,q])=>s+q*unitPrice(t),0);
   const jcT=R.jobs.reduce((s,j)=>s+jobCost(j,R.sys),0);
   const net=rows.reduce((s,r)=>s+r.net,0);const profit=net-buyCost-stockCost-jcT;
@@ -234,8 +234,8 @@ function renderResult(el,R,rerun){
   h+=`<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi?'<th>Projekt</th>':''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On()?`<th class="num">${esc(m2Short())} sell / db</th>`:''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r=>`<tr>${multi?`<td>${esc(r.x.item.label||'')}</td>`:''}<td>${esc(NAMES[r.p]||r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On()?`<td class="num">${m2Cell(sell(r.p),sell2(r.p))}</td>`:''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.profit>=0?'pos':'neg'}">${isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
   if(multi)h+=`<p class="small muted" style="margin-top:4px">A tételenkénti anyagköltségben a másik tétel jobjából maradt felesleg ingyen számít, ezért a sorok összege kicsit eltérhet a fenti összesítéstől.</p>`;
   // bevásárlólista
-  const bl=[...R.buyList].sort((a,b)=>b[1]*unitPrice(b[0])-a[1]*unitPrice(a[0]));
-  h+=`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th>${m2On()?`<th class="num">${esc(m2Short())} sell</th>`:''}<th class="num">Összesen</th></tr></thead><tbody>${bl.map(([t,q])=>`<tr><td>${esc(NAMES[t]||t)}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t)?isk(unitPrice(t)):'<span class="pill warn">nincs ár</span>'}</td>${m2On()?`<td class="num">${m2Cell(unitPrice(t),sell2(t),true)}</td>`:''}<td class="num">${unitPrice(t)?isk(q*unitPrice(t)):'–'}</td></tr>`).join('')||'<tr><td colspan="5" class="pos">Semmit nem kell venni, minden megvan.</td></tr>'}</tbody></table></div>
+  const bl=[...R.buyList].sort((a,b)=>b[1]*buyPrice(b[0])-a[1]*buyPrice(a[0]));const bm2=buyM2On();
+  h+=`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th>${m2On()?`<th class="num">${esc(m2Short())} sell</th>`:''}${bm2?'<th>Hol veszed</th>':''}<th class="num">Összesen</th></tr></thead><tbody>${bl.map(([t,q])=>`<tr><td>${esc(NAMES[t]||t)}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t)?isk(unitPrice(t)):'<span class="pill warn">nincs ár</span>'}</td>${m2On()?`<td class="num">${m2Cell(unitPrice(t),sell2(t),true)}</td>`:''}${bm2?`<td class="small" data-noi18n>${buyAt(t)===JITA_STATION?'Jita':esc(m2Short())}</td>`:''}<td class="num">${buyPrice(t)?isk(q*buyPrice(t)):'–'}</td></tr>`).join('')||'<tr><td colspan="6" class="pos">Semmit nem kell venni, minden megvan.</td></tr>'}</tbody></table></div>
   ${bl.some(([t])=>!unitPrice(t))?'<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs Jita ára, ezért 0-val számít a költségekben.</p>':''}
   <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button></p></div>`;
   // jobok

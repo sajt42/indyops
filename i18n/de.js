@@ -606,5 +606,7 @@ window.I18N.de={
  "{0} tételtípus": "{0} Gegenstandstypen",
  "{0} broker fee (a tulaj állítja), %": "{0} Broker Fee (vom Besitzer festgelegt), %",
  "+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.": "+ 0,5 % SCC-Zuschlag. Im Spiel siehst du sie beim Erstellen einer Verkaufsorder. Skills und Standing zählen hier nicht.",
- "(díjak nélkül)": "(vor Gebühren)"
+ "(díjak nélkül)": "(vor Gebühren)",
+ "Vásárlás a második piacon, ha ott olcsóbb": "Am zweiten Markt kaufen, wenn es dort billiger ist",
+ "Hol veszed": "Wo kaufen"
 };

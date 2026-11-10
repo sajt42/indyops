@@ -606,5 +606,7 @@ window.I18N.en={
  "{0} tételtípus": "{0} item types",
  "{0} broker fee (a tulaj állítja), %": "{0} broker fee (set by the owner), %",
  "+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.": "+ 0.5% SCC surcharge. You see it in game when placing a sell order. Skills and standings don't count here.",
- "(díjak nélkül)": "(before fees)"
+ "(díjak nélkül)": "(before fees)",
+ "Vásárlás a második piacon, ha ott olcsóbb": "Buy at the second market when it's cheaper",
+ "Hol veszed": "Where to buy"
 };

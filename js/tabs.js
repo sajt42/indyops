@@ -118,12 +118,12 @@ async function runProfit(){
   status('árak: '+types.size+' tétel (első alkalommal eltarthat egy percig)…');
   await resolveNames([...types]);await ensurePrices([...types]);
   status('piaci forgalom…');await ensureHistory(plans.map(x=>x.p));
-  const fee=salesTax()+brokerFee();const sysCache={};
+  const fee=salesTax()+brokerFee();const fee2=m2Fee();const sysCache={};
   PROFROWS=[];
   for(const x of plans){
     const sysId=sysCache[x.best.l]!==undefined?sysCache[x.best.l]:(sysCache[x.best.l]=await sysFor(x.best));
     const made=x.R.trees[0].made;const price=sell(x.p);
-    const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*unitPrice(t),0);
+    const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);
     const noPrice=[...x.R.buyList].filter(([t])=>!unitPrice(t)).map(([t])=>t);
     const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sysId),0);
     const hours=x.R.jobs.reduce((s,j)=>s+jobTime(j),0)/3600;
@@ -131,7 +131,8 @@ async function runProfit(){
     const perUnit=made?profit/made:0;const perRun=profit/x.runs;
     const runsLeft=x.copies.filter(c=>c.t===x.best.t).reduce((s,c)=>c.r===-1?Infinity:s+c.r,0);
     const h=HIST[x.p]||{vol:0};const perRunUnits=made/x.runs;
-    PROFROWS.push({p:x.p,best:x.best,name:NAMES[x.p]||('#'+x.p),price,price2:sell2(x.p),perRun,perUnit,margin:net?profit/net:null,pph:hours?profit/hours:0,vol:h.vol,
+    const p2=sell2(x.p);const perRun2=m2On()&&p2&&fee2!=null?(made*p2*(1-fee2)-mat-jc)/x.runs:null;
+    PROFROWS.push({p:x.p,best:x.best,name:NAMES[x.p]||('#'+x.p),price,price2:p2,perRun2,perUnit,margin:net?profit/net:null,pph:hours?profit/hours:0,vol:h.vol,
       daysToSell:h.vol?perRunUnits/h.vol:Infinity,pot:runsLeft===Infinity?null:runsLeft*perRun,runsLeft,noMarket:!price,warn:x.R.warn.length>0,noPrice});
     if(noPrice.length){const r=PROFROWS[PROFROWS.length-1];r.margin=null;r.unsure=true}
   }
@@ -144,7 +145,7 @@ function renderProfit(){
   const k=profSort.k;rows.sort((a,b)=>{const va=a[k],vb=b[k];if(typeof va==='string')return va.localeCompare(vb,'hu')*profSort.d;return ((va??-Infinity)-(vb??-Infinity))*profSort.d});
   const pg=pageOf('prof',rows,[onlyPos,minVol,profSort.k,profSort.d].join('|'),renderProfit);rows=pg.rows;
   const th=(key,label,num)=>`<th class="sortable${num?' num':''}" data-psort="${key}">${label}${profSort.k===key?'<span> '+(profSort.d>0?'▲':'▼')+'</span>':''}</th>`;
-  out.innerHTML=pg.html+`<div class="tablewrap"><table><thead><tr>${th('name','Termék')}<th>Legjobb saját BP</th>${th('price','Jita sell',1)}${m2On()?th('price2',esc(m2Short())+' sell',1):''}${th('perRun','Profit / run',1)}${th('margin','Margó',1)}${th('pph','Profit / gyártási óra',1)}${th('vol','Napi forgalom',1)}${th('pot','Maradék runok értéke',1)}<th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}${r.noMarket?' <span class="pill warn">nincs Jita ár</span>':''}${r.warn?' <span class="pill bad">kevés run</span>':''}${r.unsure?`<div class="src">${T('Nincs Jita ára: {0}. A profit emiatt túl magas lehet.',esc(r.noPrice.map(t=>NAMES[t]||t).join(', ')))}</div>`:''}</td><td class="small">${r.best.r===-1?'BPO':'BPC '+r.runsLeft+' run'} · ME${r.best.me} · ${esc(charName(r.best.cid))}</td><td class="num">${isk(r.price)}</td>${m2On()?`<td class="num">${m2Cell(r.price,r.price2)}</td>`:''}<td class="num ${r.unsure?'':(r.perRun>=0?'pos':'neg')}">${r.unsure?'? ':''}${isk(r.perRun)}</td><td class="num">${r.margin==null?'–':fmt(r.margin*100,1)+'%'}</td><td class="num ${r.pph>=0?'pos':'neg'}">${isk(r.pph)}</td><td class="num">${fmt(r.vol,r.vol<10?1:0)}${r.vol&&r.daysToSell>1?' <span class="pill warn" title="Egy run termékének eladása több napi forgalom">lassú</span>':''}</td><td class="num">${r.pot==null?'∞ (BPO)':isk(r.pot)}</td><td><button class="btn mini" data-addproj="${r.best.t}">+ projekt</button></td></tr>`).join('')||'<tr><td colspan="9" class="muted">A szűrőknek egy tétel sem felel meg.</td></tr>'}</tbody></table></div>${pg.html}
+  out.innerHTML=pg.html+`<div class="tablewrap"><table><thead><tr>${th('name','Termék')}<th>Legjobb saját BP</th>${th('price','Jita sell',1)}${m2On()?th('price2',esc(m2Short())+' sell',1):''}${th('perRun','Profit / run',1)}${m2On()?th('perRun2',T('Profit / run')+' · '+esc(m2Short()),1):''}${th('margin','Margó',1)}${th('pph','Profit / gyártási óra',1)}${th('vol','Napi forgalom',1)}${th('pot','Maradék runok értéke',1)}<th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}${r.noMarket?' <span class="pill warn">nincs Jita ár</span>':''}${r.warn?' <span class="pill bad">kevés run</span>':''}${r.unsure?`<div class="src">${T('Nincs Jita ára: {0}. A profit emiatt túl magas lehet.',esc(r.noPrice.map(t=>NAMES[t]||t).join(', ')))}</div>`:''}</td><td class="small">${r.best.r===-1?'BPO':'BPC '+r.runsLeft+' run'} · ME${r.best.me} · ${esc(charName(r.best.cid))}</td><td class="num">${isk(r.price)}</td>${m2On()?`<td class="num">${m2Cell(r.price,r.price2)}</td>`:''}<td class="num ${r.unsure?'':(r.perRun>=0?'pos':'neg')}">${r.unsure?'? ':''}${isk(r.perRun)}</td>${m2On()?`<td class="num ${r.perRun2==null||r.unsure?'':(r.perRun2>=0?'pos':'neg')}">${r.perRun2==null?'?':(r.unsure?'? ':'')+isk(r.perRun2)}</td>`:''}<td class="num">${r.margin==null?'–':fmt(r.margin*100,1)+'%'}</td><td class="num ${r.pph>=0?'pos':'neg'}">${isk(r.pph)}</td><td class="num">${fmt(r.vol,r.vol<10?1:0)}${r.vol&&r.daysToSell>1?' <span class="pill warn" title="Egy run termékének eladása több napi forgalom">lassú</span>':''}</td><td class="num">${r.pot==null?'∞ (BPO)':isk(r.pot)}</td><td><button class="btn mini" data-addproj="${r.best.t}">+ projekt</button></td></tr>`).join('')||'<tr><td colspan="9" class="muted">A szűrőknek egy tétel sem felel meg.</td></tr>'}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Minden anyag piaci áron számít, a saját készlet is, mert azt el is adhatnád. Profit / gyártási óra: a run összes jobjának idejére vetítve (komponensekkel együtt), a BP-t tartó karakter skilljeivel. Napi forgalom: The Forge régió, az utolsó 30 nap átlaga. A „+ projekt” gomb a kiválasztott projekthez ad 1 runt (ha nincs kiválasztott, újat hoz létre).</p>`+m2Hint();
   out.querySelectorAll('[data-psort]').forEach(th=>th.addEventListener('click',()=>{const k=th.dataset.psort;profSort=profSort.k===k?{k,d:-profSort.d}:{k,d:k==='name'?1:-1};renderProfit()}));
   out.querySelectorAll('[data-addproj]').forEach(b=>b.addEventListener('click',()=>{const t=Number(b.dataset.addproj);let p=PROJ.find(x=>x.id===SELP);if(!p){p={id:Date.now(),name:T('Profit-válogatás'),active:true,items:[]};PROJ.push(p);SELP=p.id}
@@ -183,7 +184,7 @@ async function runInvention(){
   for(const x of calc){
     const sys=sysCache[x.copy.l]!==undefined?sysCache[x.copy.l]:(sysCache[x.copy.l]=await sysFor(x.copy));
     const tr=x.R.trees[0];const price=sell(tr.tree.t);
-    const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*unitPrice(t),0);const noPrice=[...x.R.buyList].filter(([t])=>!unitPrice(t)).map(([t])=>t);
+    const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);const noPrice=[...x.R.buyList].filter(([t])=>!unitPrice(t)).map(([t])=>t);
     const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sys),0);const net=price?tr.made*price*(1-fee):0;const profit=net-mat-jc;
     const invCost=nodeCost(tr.tree.ch.find(n=>n.inv)||{t:0,buy:0,stock:[],ch:[]},false)+x.R.jobs.filter(j=>j.act==='i'||j.act==='c').reduce((s,j)=>s+jobCost(j,sys),0);
     const row={t1:x.t,copy:x.copy,dec:x.dec,info:x.it.info,prod:tr.tree.t,t2:x.it.copies[0].t,made:tr.made,price,profit,perRun:profit/x.it.info.runsPer,margin:net?profit/net:null,invCost,noPrice,vol:(HIST[tr.tree.t]||{}).vol||0};
@@ -302,7 +303,12 @@ async function runCanBuild(){
   }
   await resolveNames(res.flatMap(r=>[r.p]));
   res.sort((a,b)=>b.lo-a.lo||(NAMES[a.p]||'').localeCompare(NAMES[b.p]||''));
-  out.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Termék</th><th>Legjobb saját BP</th><th class="num">Legyártható run</th><th>Szűk keresztmetszet a következő runhoz</th></tr></thead><tbody>${res.map(r=>`<tr><td>${esc(NAMES[r.p]||r.p)}</td><td class="small">${r.bp.r===-1?'BPO':'BPC '+r.bp.r+' run'} · ME${r.bp.me} · ${esc(charName(r.bp.cid))}</td><td class="num ${r.lo?'pos':''}">${fmt(r.lo)}</td><td class="small muted">${esc(r.limiter)}</td></tr>`).join('')}</tbody></table></div>`;
+  CBROWS=res;renderCanBuild();
+  status('kész');
+}
+let CBROWS=[];
+function renderCanBuild(){const out=$('#cbOut');const pg=pageOf('cb',CBROWS,String(CBROWS.length),renderCanBuild);const res=pg.rows;
+  out.innerHTML=`${pg.html}<div class="tablewrap"><table><thead><tr><th>Termék</th><th>Legjobb saját BP</th><th class="num">Legyártható run</th><th>Szűk keresztmetszet a következő runhoz</th></tr></thead><tbody>${res.map(r=>`<tr><td>${esc(NAMES[r.p]||r.p)}</td><td class="small">${r.bp.r===-1?'BPO':'BPC '+r.bp.r+' run'} · ME${r.bp.me} · ${esc(charName(r.bp.cid))}</td><td class="num ${r.lo?'pos':''}">${fmt(r.lo)}</td><td class="small muted">${esc(r.limiter)}</td></tr>`).join('')}</tbody></table></div>${pg.html}`;
   status('kész');
 }
 function fillCats(prodTypes){

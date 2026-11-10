@@ -11,7 +11,7 @@ w.fetch=async(u)=>{u=String(u);const J=d=>({ok:true,status:200,headers:{get:()=>
   throw new Error('unmocked '+u)};
 const code=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
 w.localStorage.setItem('indyops.settings',JSON.stringify({lang:'hu'}));
-w.eval(code+`;window.__t={makeMulti,buildPool,indexBPProducts,setProj:a=>{PROJ=a;SELP=a[0].id},renderProjects,setData:d=>{DATA=d},setChars:c=>{CHARS=c},LI:LOCINFO,names:NAMES,get S(){return S},get PROJ(){return PROJ}};`);
+w.eval(code+`;window.__t={buyAt,buyPrice,PRICES,makeMulti,buildPool,indexBPProducts,setProj:a=>{PROJ=a;SELP=a[0].id},renderProjects,setData:d=>{DATA=d},setChars:c=>{CHARS=c},LI:LOCINFO,names:NAMES,get S(){return S},get PROJ(){return PROJ}};`);
 const T=w.__t,d=w.document,tick=()=>new Promise(r=>setTimeout(r,20));
 (async()=>{
   const L=60000004,L2=60000005;T.LI[L]={name:'Test Station I',system:30001};T.LI[L2]={name:'Test Station II',system:30001};
@@ -43,4 +43,7 @@ const T=w.__t,d=w.document,tick=()=>new Promise(r=>setTimeout(r,20));
   const isel=d.querySelector('[data-isrc="0"]');isel.value='sel';isel.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();
   console.log('saved project src:',JSON.stringify(T.PROJ[0].src),'item src:',JSON.stringify(T.PROJ[0].items[0].src));
   console.log('editor text:',d.querySelector('#pEdit .srcbox').textContent.replace(/\s+/g,' ').trim().slice(0,260));
+  // buy at second market when cheaper
+  T.S.market2=60008494;const now=Date.now();T.PRICES.p[34]={s:5,b:4,at:now,loc:60003760};T.PRICES.p2=T.PRICES.p2||{};T.PRICES.p2[34]={s:4.5,b:4,at:now,loc:60008494};T.PRICES.p[35]={s:10,b:9,at:now};T.PRICES.p2[35]={s:11,b:9,at:now,loc:60008494};
+  console.log('BUY trit:',T.buyAt(34),T.buyPrice(34),'| pye:',T.buyAt(35),T.buyPrice(35));T.S.buyM2=false;console.log('BUY off:',T.buyAt(34),T.buyPrice(34));T.S.market2='';
 })().catch(e=>console.error('FAIL',e));

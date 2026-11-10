@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.0 – 2026-11-10
+
+- Shopping list buys at the second market when it's cheaper (“Where to buy” column, hauling from there; switch in Settings); costs and profits use that price
+- What pays?: profit per run at the second market, with that market's fees
+- No-buy builds list is paged
+
 ## 1.9.1 – 2026-11-10
 
 - Pager layout: page size selector on one line
