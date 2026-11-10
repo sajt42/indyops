@@ -45,8 +45,10 @@ function renderBPs(){
   list.sort((a,b)=>{const k=bpSort.k;const va=a[k],vb=b[k];return (typeof va==='number'?va-vb:String(va).localeCompare(String(vb),'hu'))*bpSort.d});
   const pg=pageOf('bp',list,[f,kind,nm,bpSort.k,bpSort.d].join('|'),renderBPs);$('#bpPg1').innerHTML=pg.html;$('#bpPg2').innerHTML=pg.html;
   $('#bpTable tbody').innerHTML=pg.rows.map(x=>{const j=inJob(x.b.i);const max=x.b.r===-1&&x.me>=10&&x.te>=20;
-    return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
-  $('#bpCount').textContent=list.length+' blueprint';
+    return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}${x.b.adj?`<span title="${esc(T('Az ESI még a régebbi értéket mutatja; az azóta indított jobok runjait ({0}) már levontam.',x.b.adj))}">*</span>`:''}${x.b.r===0?' <span class="pill warn">'+esc(T('elfogyott'))+'</span>':''}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
+  const ats=Object.values(DATA).map(d=>d.bpAt).filter(Boolean),exps=Object.values(DATA).map(d=>d.bpExp).filter(Boolean);
+  const tf=v=>new Date(v).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});
+  $('#bpCount').textContent=T('{0} blueprint',list.length)+(ats.length?' · '+T('ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.',tf(Math.min(...ats)),tf(Math.max(...exps))):'');
 }
 function renderStock(){
   const f=$('#stFilter').value.toLowerCase(),lf=$('#stLoc').value,only=$('#stOnlyPlan').checked;

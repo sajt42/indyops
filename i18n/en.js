@@ -608,5 +608,9 @@ window.I18N.en={
  "+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.": "+ 0.5% SCC surcharge. You see it in game when placing a sell order. Skills and standings don't count here.",
  "(díjak nélkül)": "(before fees)",
  "Vásárlás a második piacon, ha ott olcsóbb": "Buy at the second market when it's cheaper",
- "Hol veszed": "Where to buy"
+ "Hol veszed": "Where to buy",
+ "Az ESI még a régebbi értéket mutatja; az azóta indított jobok runjait ({0}) már levontam.": "ESI still shows the older value; runs of jobs started since then ({0}) are already subtracted.",
+ "elfogyott": "used up",
+ "{0} blueprint": "{0} blueprints",
+ "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.": "ESI snapshot: {0}, next update after {1} (ESI caches this list for up to an hour). Runs marked * already have jobs started since then subtracted."
 };

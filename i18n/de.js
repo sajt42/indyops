@@ -608,5 +608,9 @@ window.I18N.de={
  "+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.": "+ 0,5 % SCC-Zuschlag. Im Spiel siehst du sie beim Erstellen einer Verkaufsorder. Skills und Standing zählen hier nicht.",
  "(díjak nélkül)": "(vor Gebühren)",
  "Vásárlás a második piacon, ha ott olcsóbb": "Am zweiten Markt kaufen, wenn es dort billiger ist",
- "Hol veszed": "Wo kaufen"
+ "Hol veszed": "Wo kaufen",
+ "Az ESI még a régebbi értéket mutatja; az azóta indított jobok runjait ({0}) már levontam.": "ESI zeigt noch den älteren Wert; die Runs seither gestarteter Jobs ({0}) sind bereits abgezogen.",
+ "elfogyott": "aufgebraucht",
+ "{0} blueprint": "{0} Blueprints",
+ "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.": "ESI-Stand: {0}, nächste Aktualisierung nach {1} (ESI speichert diese Liste bis zu einer Stunde). Bei Runs mit * sind seither gestartete Jobs bereits abgezogen."
 };

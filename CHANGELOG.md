@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.1 – 2026-11-10
+
+- Fix: BPC runs looked stale after starting a job, because ESI caches the blueprint list for up to an hour; runs of jobs started since ESI's snapshot are now subtracted (marked *), used-up copies are flagged, and the Blueprints tab shows when ESI will update
+
 ## 1.10.0 – 2026-11-10
 
 - Shopping list buys at the second market when it's cheaper (“Where to buy” column, hauling from there; switch in Settings); costs and profits use that price

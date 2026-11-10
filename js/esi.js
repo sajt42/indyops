@@ -64,7 +64,7 @@ function limit(fn){return new Promise((res,rej)=>{const run=async()=>{inflight++
 let refIn=0;const refQ=[];
 function refLimit(fn){return new Promise((res,rej)=>{const run=async()=>{refIn++;try{res(await fn())}catch(e){rej(e)}finally{refIn--;const n=refQ.shift();if(n)n()}};refIn<16?run():refQ.push(run)})}
 async function fetchT(u,ms=30000){const ac=new AbortController();const t=setTimeout(()=>ac.abort(),ms);try{return await fetch(u,{signal:ac.signal})}catch(e){if(e.name==='AbortError')throw new Error('időtúllépés: '+u);throw e}finally{clearTimeout(t)}}
-async function esi(path,{char,method='GET',body,paged=false}={}){
+async function esi(path,{char,method='GET',body,paged=false,meta=false}={}){
   const go=async(page)=>limit(async()=>{
     const u=new URL(ESI+path);u.searchParams.set('datasource','tranquility');if(page)u.searchParams.set('page',page);
     const h={'Accept':'application/json'};if(body)h['Content-Type']='application/json';
@@ -72,15 +72,15 @@ async function esi(path,{char,method='GET',body,paged=false}={}){
     for(let attempt=0;attempt<3;attempt++){
       const r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined});
       const rem=r.headers.get('x-esi-error-limit-remain'); if(rem!=null&&Number(rem)<20){log('ESI hibakeret alacsony ('+rem+'), várakozás…');await new Promise(z=>setTimeout(z,5000))}
-      if(r.ok) return {data:await r.json(),pages:Number(r.headers.get('x-pages')||1)};
+      if(r.ok) return {data:await r.json(),pages:Number(r.headers.get('x-pages')||1),lm:Date.parse(r.headers.get('last-modified')||'')||null,exp:Date.parse(r.headers.get('expires')||'')||null};
       if(r.status>=500&&attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}
       const t=await r.text();const e=new Error('ESI '+r.status+' '+path+': '+t.slice(0,140));e.status=r.status;throw e;
     }
   });
-  if(!paged) return (await go(0)).data;
+  if(!paged){const r=await go(0);return meta?{data:r.data,lm:r.lm,exp:r.exp}:r.data}
   const first=await go(1);let all=first.data;
   if(first.pages>1){const rest=await Promise.all(Array.from({length:first.pages-1},(_,i)=>go(i+2)));rest.forEach(x=>all=all.concat(x.data))}
-  return all;
+  return meta?{data:all,lm:first.lm,exp:first.exp}:all;
 }
 async function refGet(kind,id){ // kind 't' types, 'b' blueprints
   const c=REFC[kind][id]; if(c!==undefined) return c;
@@ -135,12 +135,13 @@ async function resolveLoc(locId,char){
 async function refreshChar(c){
   status(T('frissítés: {0}…',c.name));log('Adatok letöltése: '+c.name);
   try{
-    const [assets,bps,skills,jobs]=await Promise.all([
+    const [assets,bpm,skills,jobs]=await Promise.all([
       esi('/characters/'+c.id+'/assets/',{char:c,paged:true}),
-      esi('/characters/'+c.id+'/blueprints/',{char:c,paged:true}),
+      esi('/characters/'+c.id+'/blueprints/',{char:c,paged:true,meta:true}),
       esi('/characters/'+c.id+'/skills/',{char:c}),
       esi('/characters/'+c.id+'/industry/jobs/',{char:c})
     ]);
+    const bps=bpm.data;const bpLM=bpm.lm,bpExp=bpm.exp;
     // gyökér hely: konténerláncon felfelé
     const byItem=new Map(assets.map(a=>[a.item_id,a]));
     const root=id=>{let cur=id,guard=0;while(byItem.has(cur)&&guard++<10)cur=byItem.get(cur).location_id;return cur};
@@ -154,13 +155,15 @@ async function refreshChar(c){
     const CONT={};for(const id of contIds){const a=byItem.get(id);CONT[id]={n:contNames[id]||null,t:a.type_id,l:root(a.location_id),pc:inC(a.location_id),f:a.location_flag}}
     const LM={};for(const a of assets){if(byItem.has(a.location_id))continue;const m=LM[a.location_id]=LM[a.location_id]||{t:a.location_type,f:{}};m.f[a.location_flag]=(m.f[a.location_flag]||0)+1}
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
-    const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
+    const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,start:j.start_date,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
+    // az ESI a blueprint-listát akár egy óráig gyorsítótárazza: a azóta indított jobok runjait levonjuk a BPC-kből (a játék induláskor vonja le)
+    for(const b of B){if(!(b.r>0))continue;for(const j of J){if(j.bpi!==b.i||!(j.act===1||j.act===8)||!j.start||!bpLM)continue;if(Date.parse(j.start)>bpLM){b.r=Math.max(0,b.r-j.runs);b.adj=(b.adj||0)+j.runs}}}
     let O=[],TX=[],IMP=null,STD=null;
     if(hasScope(c,'esi-characters.read_standings.v1')){try{STD={};(await esi('/characters/'+c.id+'/standings/',{char:c})).forEach(x=>STD[x.from_id]=x.standing)}catch(e){log('Standingek: '+e.message)}}
     if(hasScope(c,'esi-clones.read_implants.v1')){try{IMP=await esi('/characters/'+c.id+'/implants/',{char:c});await resolveNames(IMP)}catch(e){log('Implantok: '+e.message)}}
     if(hasScope(c,'esi-markets.read_character_orders.v1')){try{O=(await esi('/characters/'+c.id+'/orders/',{char:c})).map(o=>({id:o.order_id,t:o.type_id,l:o.location_id,reg:o.region_id,p:o.price,rem:o.volume_remain,tot:o.volume_total,buy:!!o.is_buy_order,iss:o.issued,dur:o.duration}))}catch(e){log('Orderek: '+e.message)}}
     if(S.wallet&&hasScope(c,WALLET_SCOPE)){try{const lim=Date.now()-30*86400000;TX=(await esi('/characters/'+c.id+'/wallet/transactions/',{char:c})).filter(x=>new Date(x.date).getTime()>=lim).map(x=>({d:x.date,t:x.type_id,q:x.quantity,p:x.unit_price,buy:x.is_buy,l:x.location_id}))}catch(e){log('Wallet: '+e.message)}}
-    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,std:STD,lm:LM,cont:CONT,at:Date.now()};
+    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,std:STD,lm:LM,cont:CONT,bpAt:bpLM,bpExp:bpExp,at:Date.now()};
     await resolveNames(O.map(o=>o.t).concat(TX.map(x=>x.t),O.map(o=>o.reg)));for(const l of new Set(O.map(o=>o.l)))await resolveLoc(l,c);
     await resolveNames(A.map(a=>a.t).concat(B.map(b=>b.t),J.map(j=>j.bp)));
     const locs=[...new Set(A.map(a=>a.l).concat(B.map(b=>b.l),J.map(j=>j.loc)))];
