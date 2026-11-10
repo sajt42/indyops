@@ -17,11 +17,14 @@ IndyOps is a free, browser-only **EVE Online industry calculator and manufacturi
 - **What pays?**: profit per run, margin, profit per build hour and daily market volume for every BP you own.
 - **Invention & T2**: chance from your skills, all 8 decryptors compared, invention cost per BPC; invention jobs, datacores and T1 copies included in projects.
 - **Research & copy**: time and cost of the next ME level, saving per run, payback, full ME10/TE20 time, copy time, science slots.
-- **Selling**: your market orders, who undercut you and the suggested new price; optional 30-day sales from wallet transactions.
+- **Selling**: your market orders, who undercut you and the suggested new price; optional 30-day sales from wallet transactions; which character should sell (sales tax, broker fee with standings).
+- **Second market**: a trade hub, station or player structure next to Jita; its prices show wherever Jita prices do.
 - **Hauling**: what goes from where to where, packaged m³, jumps, and which of your ships (with your skills) can carry it in how many trips.
 - **Mining**: paste a survey scan; yields per character from your reprocessing skills, coverage of your plan's mineral shortfall.
-- **Reprocess**: everything reprocessable in your stock (ore, ice, modules, loot) with per-character skills and implants and per-location yield (NPC station or Upwell structure, rigs, security, tax); select some or all, compare selling as is vs. reprocessing.
+- **Reprocess**: everything reprocessable in your stock (ore, ice, modules, loot) with per-character skills, implants and standings and per-location yield (NPC station data from ESI, or Upwell structure with rigs, security, tax); select some or all, compare selling as is vs. reprocessing on both markets.
 - **Build or buy**: per component, the unit price built yourself vs. Jita.
+- **Who does the work**: pick which characters get suggested as builders, sellers and reprocessors; everyone's stock still counts.
+- **Unknown locations**: names looked up in EVE Ref's public structure list, or named by hand.
 - **Languages**: English, Deutsch, Magyar.
 
 ## Privacy

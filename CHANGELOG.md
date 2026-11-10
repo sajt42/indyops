@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.1 – 2026-11-10
+
+- Help and README updated for the latest features (seller, second market, reprocessing with station data, standings and implants, who does the work, unknown locations)
+
 ## 1.7.0 – 2026-11-10
 
 - Standings (new permission): broker fee at NPC stations uses standing towards the owner corporation and faction (Connections/Diplomacy included); the seller table shows the broker fee at Jita and at the second market
