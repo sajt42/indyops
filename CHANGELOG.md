@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.4 – 2026-11-10
+
+- README: Hungarian section removed (the app itself still speaks Hungarian)
+
 ## 1.5.3 – 2026-11-10
 
 - Link previews (Discord, forums, social): title, description and a preview image

@@ -6,8 +6,6 @@ IndyOps is a free, browser-only **EVE Online industry calculator and manufacturi
 
 **Open it:** https://sajt42.github.io/indyops/ · new here? Open the **Help** tab in the app.
 
-[Magyar leírás lent](#magyarul)
-
 ---
 
 ## Features
@@ -91,26 +89,3 @@ IndyOps is a fan-made tool and is not affiliated with or endorsed by CCP hf.
 Blueprint recipe data: [EVE Ref](https://everef.net). Game data: [ESI](https://esi.evetech.net).
 
 Code: [MIT License](LICENSE) © 2026 SajT – *Temporary solution since a while.*
-
----
-
-## Magyarul
-
-**Kevesebb táblázat, több ISK.**
-
-Az IndyOps az ESI-n keresztül olvassa a karaktereid asseteit, blueprintjeit, skilljeit és jobjait, és gyártási tervet készít belőlük: mit érdemes gyártani, mi van már meg, mit kell venni, melyik karakter gyártsa, és mit hova kell vinni.
-
-**Megnyitás:** https://sajt42.github.io/indyops/ · új vagy? Az oldalon a **Súgó** fül mindent elmagyaráz.
-
-- **Több karakter, több helyszín**, a teljes anyagfa saját BP-kkel, példányonkénti ME/TE-vel.
-- **Projektek** közös készletből, sorrendben; a futó jobok termékei beszámítanak.
-- **Ki gyártsa**: skillek, idő és szabad slotok alapján, BP-átadási javaslattal.
-- **Mit érdemes?**: profit/run, margó, profit/óra, napi forgalom.
-- **Invention**, **kutatás & copy**, **eladás** (alá-ígérés figyelés), **szállítás** saját hajókkal, **bányászat** survey scanből, **reprocess** a készletből (érc, ice, modul, loot) skillekkel és helyszínenkénti hozammal.
-- **Nyelvek**: angol, német, magyar.
-
-**Adatkezelés:** nincs szerver és nincs követés. Minden a te böngésződben marad, az eszköz csak a CCP-hez (bejelentkezés, ESI) és az EVE Refhez kapcsolódik. Csak olvasási jogot kér, a wallet egyenlegét sosem olvassa.
-
-**Helyi használat:** töltsd le a `dist/indyops.html` fájlt. Ehhez saját alkalmazás kell a developers.eveonline.com-on (callback: `https://localhost/callback`, a fenti engedélyekkel), és a **Client ID**-ját kell megadni (a Secretet soha).
-
-**Hibajelentés:** az alkalmazásban a „Hiba jelentése” gombbal, vagy GitHub issue-ként. Kérdés: [Discussions](https://github.com/sajt42/indyops/discussions).
