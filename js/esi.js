@@ -115,11 +115,13 @@ async function resolveNames(ids){
   }
   scheduleSave('names');
 }
+// NPC állomás reprocess-adatai: hatékonyság (pl. 0.5), alapadó (pl. 0.05), van-e reprocessing szolgáltatás
+function stationRepro(s){return {reff:s.reprocessing_efficiency??null,rtake:s.reprocessing_stations_take??null,rsvc:Array.isArray(s.services)?s.services.includes('reprocessing-plant'):null}}
 async function resolveLoc(locId,char){
   const old=LOCINFO[locId];if(old&&!(unkInfo(old)&&Date.now()-(old.tried||0)>6*3600000)) return old;
   let info={name:'Ismeretlen hely #'+locId,system:null,unk:1,tried:Date.now()};
   try{
-    if(locId>=60000000&&locId<64000000){const s=await esi('/universe/stations/'+locId+'/');info={name:s.name,system:s.system_id}}
+    if(locId>=60000000&&locId<64000000){const s=await esi('/universe/stations/'+locId+'/');info=Object.assign({name:s.name,system:s.system_id},stationRepro(s))}
     else if(locId>=30000000&&locId<33000000){await resolveNames([locId]);info={name:(NAMES[locId]||locId)+' (űrben)',system:locId}}
     else if(locId>1e12){
       for(const c of (char?[char]:[]).concat(CHARS)){try{const s=await esi('/universe/structures/'+locId+'/',{char:c});info={name:s.name,system:s.solar_system_id,stype:s.type_id||0};break}catch(e){}}

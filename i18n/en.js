@@ -501,7 +501,6 @@ window.I18N.en={
  "Alap %": "Base %",
  "Érc hozam": "Ore yield",
  "Loot hozam": "Loot yield",
- "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomáson az adó 0 standingnél 5%, 6,67 standingnél 0%; a struktúra adóját a tulajdonos állítja. Az adót a kinyert anyagból vonja le.": "Ore yield: without ore processing skills; the per-item skill is included in the list. Upwell structures: base 50%, plus rig (T1 +1, T2 +3), system security (lowsec +6%, null and WH +12%, only with a rig) and structure bonus (Athanor +2%, Tatara +5.5%). NPC station tax is 5% at 0 standing and 0% at 6.67; a structure's tax is set by its owner. Tax is deducted from the output.",
  "Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.": "Select items in the list (or all of them in the header) and this sums up what they give.",
  "A „{0}” terv hiányából": "Against the “{0}” plan's shortfall",
  "Reprocessből": "From reprocessing",
@@ -573,5 +572,7 @@ window.I18N.en={
  "market ordered van itt, régió: {0}": "you have a market order here, region: {0}",
  "{0} industry job fut itt": "{0} industry jobs running here",
  "{0} tranzakció történt itt": "{0} transactions here",
- "egyéb hely (pl. asset safety vagy deliveries)": "other location (e.g. asset safety or deliveries)"
+ "egyéb hely (pl. asset safety vagy deliveries)": "other location (e.g. asset safety or deliveries)",
+ "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adó jó standinggel kevesebb (6,67-nél 0%), ezt kézzel átírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Ore yield: without ore processing skills; the per-item skill is included in the list. Upwell structures: base 50%, plus rig (T1 +1, T2 +3), system security (lowsec +6%, null and WH +12%, only with a rig) and structure bonus (Athanor +2%, Tatara +5.5%). For NPC stations, base yield, base tax and whether reprocessing is available come from ESI; with good standings the tax is lower (0% at 6.67), you can overwrite it. ESI doesn't provide a structure's rigs or tax, so set those yourself. Tax is deducted from the output.",
+ "NPC állomás – nincs reprocessing": "NPC station – no reprocessing"
 };

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.0 – 2026-11-10
+
+- Reprocess: NPC stations' own reprocessing efficiency, base tax and reprocessing service read from ESI; stations without reprocessing are marked and never suggested
+
 ## 1.5.4 – 2026-11-10
 
 - README: Hungarian section removed (the app itself still speaks Hungarian)

@@ -16,16 +16,18 @@ function locKind(l){l=Number(l);return l>=60000000&&l<64000000?'npc':l>1e12?'str
 function secMod(sys){if(!sys)return 0;if(sys>=31000000&&sys<32000000)return 0.12;const s=SYSSEC[sys];if(s==null)return 0;return s>=0.45?0:s>0?0.06:0.12}
 function locStats(l){
   const k=locKind(l),info=LOCINFO[l]||{},c=repCfg().loc[l]||{},st=info.stype||0;
-  return {k,sys:info.system,sec:SYSSEC[info.system],st,
+  const nosvc=k==='npc'&&info.rsvc===false;
+  return {k:nosvc?'nosvc':k,sys:info.system,sec:SYSSEC[info.system],st,
     rig:k==='struct'?Number(c.rig||0):0,
-    base:k==='npc'&&c.base!=null&&c.base!==''?Number(c.base):50,
+    base:k==='npc'&&c.base!=null&&c.base!==''?Number(c.base):(k==='npc'&&info.reff!=null?info.reff*100:50),
+    baseAuto:k==='npc'&&info.reff!=null?info.reff*100:50,taxAuto:k==='npc'?(info.rtake!=null?info.rtake*100:5):0,
     sm:st===TATARA?0.055:st===ATHANOR?0.02:0,
     secm:secMod(info.system),
-    tax:c.tax!=null&&c.tax!==''?Number(c.tax):(k==='npc'?5:0)};
+    tax:c.tax!=null&&c.tax!==''?Number(c.tax):(k==='npc'?(info.rtake!=null?info.rtake*100:5):0)};
 }
 // hozam az adó előtt (g) és után (y); null, ha ott nem lehet reprocesszálni
 function repYield(cid,l,ti){
-  const L=locStats(l);if(L.k==='none')return null;let g;
+  const L=locStats(l);if(L.k==='none'||L.k==='nosvc')return null;let g;
   if(!ti.rs)g=(L.k==='npc'?L.base:50)/100*(1+0.02*lvlOf(cid,SCRAP)); // modul, loot: csak Scrapmetal Processing, rig és implant nem számít
   else{const sk=(1+0.03*lvlOf(cid,SK.repro))*(1+0.02*lvlOf(cid,SK.reproEff))*(1+0.02*lvlOf(cid,ti.rs))*(1+impOf(cid)/100);
     g=L.k==='struct'?(50+L.rig)/100*(1+(L.rig?L.secm:0))*(1+L.sm)*sk:L.base/100*sk}
@@ -47,6 +49,7 @@ async function repLocExtra(locs){
   for(const l of locs){const info=LOCINFO[l];if(!info)continue;
     if(locKind(l)==='struct'&&info.stype===undefined){info.stype=0;
       for(const c of CHARS){try{const s=await esi('/universe/structures/'+l+'/',{char:c});info.stype=s.type_id||0;if(!info.system)info.system=s.solar_system_id;break}catch(e){}}ch=true}
+    if(locKind(l)==='npc'&&info.rsvc===undefined){try{Object.assign(info,stationRepro(await esi('/universe/stations/'+l+'/')));ch=true}catch(e){}}
     if(info.system&&SYSSEC[info.system]==null){try{const s=await esi('/universe/systems/'+info.system+'/');SYSSEC[info.system]=s.security_status}catch(e){}}
   }
   if(ch)store('locinfo',LOCINFO);store('syssec',SYSSEC);
@@ -133,17 +136,17 @@ function renderRepChars(){
 }
 function renderRepLocs(locs){
   const el=$('#repLocs');const cs=repChars();
-  const kindName=(L)=>L.k==='npc'?T('NPC állomás'):L.k==='struct'?(L.st?(NAMES[L.st]||'Upwell'):'Upwell'):T('űrben – itt nem lehet');
+  const kindName=(L)=>L.k==='npc'?T('NPC állomás'):L.k==='nosvc'?T('NPC állomás – nincs reprocessing'):L.k==='struct'?(L.st?(NAMES[L.st]||'Upwell'):'Upwell'):T('űrben – itt nem lehet');
   el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Típus</th><th class="num">Sec</th><th>Rig</th><th class="num">Adó %</th><th class="num">Alap %</th><th class="num">Érc hozam</th><th class="num">Loot hozam</th></tr></thead><tbody>${locs.map(l=>{const L=locStats(l);const c=repCfg().loc[l]||{};
     const best=(ti)=>{let b=null;for(const cid of cs){const y=repYield(cid,l,ti);if(y&&(!b||y.y>b.y))b={y:y.y,cid}}return b};
     const yo=best({rs:-1,c:25,tm:[]}),yl=best({rs:null,c:7,tm:[]});
     const show=b=>b?`<span class="mono">${fmt(b.y*100,1)}%</span>${cs.length>1?`<div class="small muted">${esc(charName(b.cid))}</div>`:''}`:'–';
     return `<tr><td>${esc(locName(l))}</td><td class="small">${esc(kindName(L))}</td><td class="num">${L.sec!=null?fmt(L.sec,2):'–'}</td>
     <td>${L.k==='struct'?`<select data-rig="${l}">${[[0,'nincs'],[1,'T1'],[3,'T2']].map(([v,n])=>`<option value="${v}" ${L.rig===v?'selected':''}>${n}</option>`).join('')}</select>`:'<span class="muted">–</span>'}</td>
-    <td class="num">${L.k==='none'?'–':`<input type="number" step="0.1" min="0" max="100" style="width:70px" data-tax="${l}" value="${c.tax!=null&&c.tax!==''?c.tax:''}" placeholder="${L.k==='npc'?5:0}">`}</td>
-    <td class="num">${L.k==='npc'?`<input type="number" step="1" min="0" max="100" style="width:60px" data-base="${l}" value="${c.base!=null&&c.base!==''?c.base:''}" placeholder="50">`:L.k==='struct'?'50':'–'}</td>
+    <td class="num">${L.k==='none'||L.k==='nosvc'?'–':`<input type="number" step="0.1" min="0" max="100" style="width:70px" data-tax="${l}" value="${c.tax!=null&&c.tax!==''?c.tax:''}" placeholder="${fmt(L.taxAuto,1)}">`}</td>
+    <td class="num">${L.k==='npc'?`<input type="number" step="1" min="0" max="100" style="width:60px" data-base="${l}" value="${c.base!=null&&c.base!==''?c.base:''}" placeholder="${fmt(L.baseAuto,0)}">`:L.k==='struct'?'50':'–'}</td>
     <td class="num">${show(yo)}</td><td class="num">${show(yl)}</td></tr>`}).join('')}</tbody></table></div>
-  <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomáson az adó 0 standingnél 5%, 6,67 standingnél 0%; a struktúra adóját a tulajdonos állítja. Az adót a kinyert anyagból vonja le.</p>`;
+  <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adó jó standinggel kevesebb (6,67-nél 0%), ezt kézzel átírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`;
 }
 function renderRepSum(){
   const el=$('#repSum');const sel=(REP.rows||[]).filter(r=>REP.sel.has(repKey(r)));

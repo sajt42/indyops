@@ -501,7 +501,6 @@ window.I18N.de={
  "Alap %": "Basis %",
  "Érc hozam": "Erz-Ausbeute",
  "Loot hozam": "Loot-Ausbeute",
- "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomáson az adó 0 standingnél 5%, 6,67 standingnél 0%; a struktúra adóját a tulajdonos állítja. Az adót a kinyert anyagból vonja le.": "Erz-Ausbeute: ohne Erzverarbeitungs-Skill; der Skill pro Gegenstand steckt in der Liste. Upwell-Strukturen: Basis 50 %, plus Rig (T1 +1, T2 +3), Systemsicherheit (Lowsec +6 %, Null und WH +12 %, nur mit Rig) und Strukturbonus (Athanor +2 %, Tatara +5,5 %). Die NPC-Stationssteuer beträgt 5 % bei Standing 0 und 0 % bei 6,67; die Steuer einer Struktur legt der Besitzer fest. Die Steuer wird von der Ausbeute abgezogen.",
  "Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.": "Wähle Gegenstände in der Liste aus (oder alle im Kopf), dann wird hier zusammengefasst, was herauskommt.",
  "A „{0}” terv hiányából": "Gegen den Bedarf des Plans „{0}“",
  "Reprocessből": "Aus Reprocessing",
@@ -573,5 +572,7 @@ window.I18N.de={
  "market ordered van itt, régió: {0}": "du hast hier eine Marktorder, Region: {0}",
  "{0} industry job fut itt": "{0} Industry-Jobs laufen hier",
  "{0} tranzakció történt itt": "{0} Transaktionen hier",
- "egyéb hely (pl. asset safety vagy deliveries)": "sonstiger Ort (z. B. Asset Safety oder Deliveries)"
+ "egyéb hely (pl. asset safety vagy deliveries)": "sonstiger Ort (z. B. Asset Safety oder Deliveries)",
+ "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adó jó standinggel kevesebb (6,67-nél 0%), ezt kézzel átírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Erz-Ausbeute: ohne Erzverarbeitungs-Skill; der Skill pro Gegenstand steckt in der Liste. Upwell-Strukturen: Basis 50 %, plus Rig (T1 +1, T2 +3), Systemsicherheit (Lowsec +6 %, Null und WH +12 %, nur mit Rig) und Strukturbonus (Athanor +2 %, Tatara +5,5 %). Bei NPC-Stationen kommen Basisausbeute, Grundsteuer und ob Reprocessing verfügbar ist aus ESI; mit gutem Standing ist die Steuer niedriger (0 % bei 6,67), du kannst sie überschreiben. Rigs und Steuer einer Struktur liefert ESI nicht, die musst du selbst einstellen. Die Steuer wird von der Ausbeute abgezogen.",
+ "NPC állomás – nincs reprocessing": "NPC-Station – kein Reprocessing"
 };
