@@ -1314,8 +1314,8 @@ window.I18N.en={
  "{0} blueprint": "{0} blueprints",
  "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps has been updated (v{0}). This version needs your characters' data downloaded again: {1}.",
  "Mi változott?": "What changed?",
- "Az ESI a runokat csak a job leadásakor csökkenti; a még le nem adott jobok runjait ({0}) már levontam.": "ESI only lowers runs when the job is delivered; runs of jobs not yet delivered ({0}) are already subtracted.",
- "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál a még le nem adott jobokat már levontam.": "ESI snapshot: {0}, next update after {1} (ESI caches this list for up to an hour). Runs marked * already have jobs not yet delivered subtracted."
+ "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI still shows the state before the job was delivered ({0} more runs). Corrected here; the * disappears after ESI's next update.",
+ "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI snapshot: {0}, next update after {1}. *: ESI doesn't know about a job yet (still running, or delivered after ESI's snapshot), so the runs are corrected here. It disappears once ESI updates."
 };
 </script>
 <script>
@@ -1935,8 +1935,8 @@ window.I18N.de={
  "{0} blueprint": "{0} Blueprints",
  "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps wurde aktualisiert (v{0}). Diese Version braucht die Daten deiner Charaktere neu: {1}.",
  "Mi változott?": "Was ist neu?",
- "Az ESI a runokat csak a job leadásakor csökkenti; a még le nem adott jobok runjait ({0}) már levontam.": "ESI senkt die Runs erst bei der Auslieferung des Jobs; Runs noch nicht ausgelieferter Jobs ({0}) sind bereits abgezogen.",
- "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál a még le nem adott jobokat már levontam.": "ESI-Stand: {0}, nächste Aktualisierung nach {1} (ESI speichert diese Liste bis zu einer Stunde). Bei Runs mit * sind noch nicht ausgelieferte Jobs bereits abgezogen."
+ "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI zeigt noch den Stand vor der Auslieferung des Jobs ({0} Runs mehr). Hier bereits korrigiert; das * verschwindet nach der nächsten ESI-Aktualisierung.",
+ "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI-Stand: {0}, nächste Aktualisierung nach {1}. *: ESI weiß noch nichts von einem Job (läuft noch oder wurde nach dem ESI-Stand ausgeliefert), daher sind die Runs hier korrigiert. Verschwindet nach der ESI-Aktualisierung."
 };
 </script>
 <script>
@@ -1958,7 +1958,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
 // dataVersion: emeld meg, ha egy új verzió új adatot olvas az ESI-ből, és ehhez a felhasználónak frissítenie kell (a tool szól neki)
-const APP={dataVersion:2,name:'IndyOps',version:'1.10.3',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={dataVersion:2,name:'IndyOps',version:'1.10.4',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2593,11 +2593,11 @@ function renderBPs(){
   list.sort((a,b)=>{const k=bpSort.k;const va=a[k],vb=b[k];return (typeof va==='number'?va-vb:String(va).localeCompare(String(vb),'hu'))*bpSort.d});
   const pg=pageOf('bp',list,[f,kind,nm,bpSort.k,bpSort.d].join('|'),renderBPs);$('#bpPg1').innerHTML=pg.html;$('#bpPg2').innerHTML=pg.html;
   $('#bpTable tbody').innerHTML=pg.rows.map(x=>{const j=inJob(x.b.i);const max=x.b.r===-1&&x.me>=10&&x.te>=20;
-    return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}${x.b.adj?`<span title="${esc(T('Az ESI a runokat csak a job leadásakor csökkenti; a még le nem adott jobok runjait ({0}) már levontam.',x.b.adj))}">*</span>`:''}${x.b.r===0?' <span class="pill warn">'+esc(T('elfogyott'))+'</span>':''}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
+    return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}${x.b.adj?`<span title="${esc(T('Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.',x.b.adj))}">*</span>`:''}${x.b.r===0?' <span class="pill warn">'+esc(T('elfogyott'))+'</span>':''}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
   const ats=Object.values(DATA).map(d=>d.bpAt).filter(Boolean),exps=Object.values(DATA).map(d=>d.bpExp).filter(Boolean);
   const tf=v=>{const d=new Date(v);const today=d.toDateString()===new Date().toDateString();return (today?'':d.toLocaleDateString(LOC(),{month:'2-digit',day:'2-digit'})+' ')+d.toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'})};
   const per=CHARS.filter(c=>DATA[c.id]&&DATA[c.id].bpAt).map(c=>c.name+' '+tf(DATA[c.id].bpAt)).join(', ');
-  $('#bpCount').textContent=T('{0} blueprint',list.length)+(ats.length?' · '+T('ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál a még le nem adott jobokat már levontam.',per,tf(Math.max(...exps))):'');
+  $('#bpCount').textContent=T('{0} blueprint',list.length)+(ats.length?' · '+T('ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.',per,tf(Math.max(...exps))):'');
 }
 function renderStock(){
   const f=$('#stFilter').value.toLowerCase(),lf=$('#stLoc').value,only=$('#stOnlyPlan').checked;

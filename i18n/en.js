@@ -613,6 +613,6 @@ window.I18N.en={
  "{0} blueprint": "{0} blueprints",
  "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps has been updated (v{0}). This version needs your characters' data downloaded again: {1}.",
  "Mi változott?": "What changed?",
- "Az ESI a runokat csak a job leadásakor csökkenti; a még le nem adott jobok runjait ({0}) már levontam.": "ESI only lowers runs when the job is delivered; runs of jobs not yet delivered ({0}) are already subtracted.",
- "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál a még le nem adott jobokat már levontam.": "ESI snapshot: {0}, next update after {1} (ESI caches this list for up to an hour). Runs marked * already have jobs not yet delivered subtracted."
+ "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI still shows the state before the job was delivered ({0} more runs). Corrected here; the * disappears after ESI's next update.",
+ "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI snapshot: {0}, next update after {1}. *: ESI doesn't know about a job yet (still running, or delivered after ESI's snapshot), so the runs are corrected here. It disappears once ESI updates."
 };

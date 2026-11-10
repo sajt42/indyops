@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.4 – 2026-11-10
+
+- Blueprints tab: clearer explanation of runs marked * (ESI hasn't caught up with a job yet)
+
 ## 1.10.3 – 2026-11-10
 
 - Fix: BPC runs – ESI only lowers runs when a job is delivered, so runs of jobs still running or not yet delivered at ESI's snapshot are subtracted (marked *)
