@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.12.6 – 2026-11-10
+
+- Code: the long functions are split into named steps: character refresh (refreshChar), the planning engine (makeMulti → planNode, allocateRuns, jobMaterialQty, addInvention), plan rendering (renderResult → planTotals and one function per section), backup validation, and the reprocess summary and loading. No change in behavior: the tests and the rendered plan HTML are identical.
+- Tests: new characterization test for the character refresh (containers, ships, orders, standings, implants, wallet, failing and missing scopes).
+
 ## 1.12.5 – 2026-11-10
 
 - Code: the whole codebase is formatted with Prettier (one statement per line instead of long one-line functions) and all code comments are in English. No change in behavior: every test produces the same output.

@@ -1,0 +1,16 @@
+full:
+  assets: [{"t":17366,"q":1,"l":60000004,"f":"Hangar","cn":null,"c":null,"s":1},{"t":34,"q":5000,"l":60000004,"f":"Unlocked","cn":"Raktár","c":100,"s":0},{"t":17367,"q":1,"l":60000004,"f":"Unlocked","cn":"Raktár","c":100,"s":1},{"t":35,"q":70,"l":60000004,"f":"Unlocked","cn":null,"c":102,"s":0},{"t":648,"q":1,"l":60000004,"f":"Hangar","cn":null,"c":null,"s":1},{"t":36,"q":9,"l":60000004,"f":"Cargo","cn":"sün","c":200,"s":0},{"t":37,"q":3,"l":<EPOCH>,"f":"Hangar","cn":null,"c":null,"s":0}]
+  bps: [{"i":301,"t":688,"me":10,"te":20,"r":3,"q":-2,"l":60000004,"cn":"Raktár","c":100,"adj":1},{"i":302,"t":689,"me":8,"te":16,"r":-1,"q":-1,"l":60000004,"cn":null,"c":null}]
+  skills: {"3380":5,"3388":4}
+  jobs: [{"act":1,"bp":688,"bpi":301,"runs":1,"start":"2026-11-10T06:00:00Z","end":"2026-11-10T09:00:00Z","loc":60000004,"prod":638,"st":"active"}]
+  orders: [{"id":7,"t":34,"l":60003760,"reg":10000002,"p":4.1,"rem":900,"tot":1000,"buy":false,"iss":"<ISS>","dur":90}]
+  tx: [{"d":"<D>","t":35,"q":10,"p":12,"buy":true,"l":60003760}]
+  imp: [27174]
+  std: {"500001":-1,"1000035":2.5}
+  lm: {"60000004":{"t":"station","f":{"Hangar":2}},"<EPOCH>":{"t":"other","f":{"Hangar":1}}}
+  cont: {"100":{"n":"Raktár","t":17366,"l":60000004,"pc":null,"f":"Hangar","k":2},"102":{"n":null,"t":17367,"l":60000004,"pc":100,"f":"Unlocked","k":2},"200":{"n":"sün","t":648,"l":60000004,"pc":null,"f":"Hangar","k":6}}
+  bpAt: <EPOCH>
+  bpExp: <EPOCH>
+  dv: 3
+optional calls failing: std={} imp=null orders=0 tx=0 assets=7
+no scopes: std=null imp=null orders=0 tx=0

@@ -414,226 +414,282 @@ async function resolveLoc(locId, char) {
 }
 
 /* ============ character data ============ */
+/* ---- character refresh: download everything ESI gives for one character and store a compact copy in DATA ---- */
+const charPath = (c, path) => '/characters/' + c.id + path;
+
+// Asset tree helpers: the root location of an item (walking up the container chain) and its direct container.
+function assetTree(assets) {
+  const byItem = new Map(assets.map(a => [a.item_id, a]));
+  const root = id => {
+    let cur = id,
+      guard = 0;
+    while (byItem.has(cur) && guard++ < 10) cur = byItem.get(cur).location_id;
+    return cur;
+  };
+  const inC = id => (byItem.has(id) ? id : null);
+  return { byItem, root, inC };
+}
+
+// Containers are assembled items that hold other items. Their player-given names come from /assets/names/.
+async function containerNames(c, assets) {
+  const ids = assets.filter(a => a.is_singleton && assets.some(b => b.location_id === a.item_id)).map(a => a.item_id);
+  const names = {};
+  for (let i = 0; i < ids.length; i += 900) {
+    try {
+      const res = await esi(charPath(c, '/assets/names/'), { char: c, method: 'POST', body: ids.slice(i, i + 900) });
+      for (const x of res) if (x.name && x.name !== 'None') names[x.item_id] = x.name;
+    } catch (e) {}
+  }
+  return { ids, names };
+}
+
+function mapAssets(assets, tree, names) {
+  return assets
+    .filter(a => !a.is_blueprint_copy)
+    .map(a => ({
+      t: a.type_id,
+      q: a.quantity,
+      l: tree.root(a.location_id),
+      f: a.location_flag,
+      cn: names[a.location_id] || null,
+      c: tree.inC(a.location_id),
+      s: a.is_singleton ? 1 : 0
+    }));
+}
+
+function mapBlueprints(bps, tree, names) {
+  return bps.map(b => ({
+    i: b.item_id,
+    t: b.type_id,
+    me: b.material_efficiency,
+    te: b.time_efficiency,
+    r: b.runs,
+    q: b.quantity,
+    l: tree.root(b.location_id),
+    cn: names[b.location_id] || null,
+    c: tree.inC(b.location_id)
+  }));
+}
+
+// containers (and ships with cargo): name, type, location, parent container, type category (k; 6 = ship)
+async function mapContainers(ids, tree, names) {
+  const CONT = {};
+  for (const id of ids) {
+    const a = tree.byItem.get(id);
+    CONT[id] = {
+      n: names[id] || null,
+      t: a.type_id,
+      l: tree.root(a.location_id),
+      pc: tree.inC(a.location_id),
+      f: a.location_flag
+    };
+  }
+  const types = [...new Set(Object.values(CONT).map(x => x.t))];
+  await Promise.all(types.map(t => refGet('t', t).catch(() => null)));
+  for (const x of Object.values(CONT)) {
+    const ti = REFC.t[x.t];
+    x.k = ti ? ti.c : null;
+  }
+  return CONT;
+}
+
+// what ESI tells about each top-level location: its type and how many items sit under each hangar flag
+// (clues for naming unknown locations)
+function locationMeta(assets, tree) {
+  const LM = {};
+  for (const a of assets) {
+    if (tree.byItem.has(a.location_id)) continue;
+    const m = (LM[a.location_id] = LM[a.location_id] || { t: a.location_type, f: {} });
+    m.f[a.location_flag] = (m.f[a.location_flag] || 0) + 1;
+  }
+  return LM;
+}
+
+function mapSkills(skills) {
+  const SKL = {};
+  for (const s of skills.skills || []) SKL[s.skill_id] = s.active_skill_level;
+  return SKL;
+}
+
+function mapJobs(jobs) {
+  return jobs.map(j => ({
+    act: j.activity_id,
+    bp: j.blueprint_type_id,
+    bpi: j.blueprint_id,
+    runs: j.runs,
+    start: j.start_date,
+    end: j.end_date,
+    loc: j.facility_id,
+    prod: j.product_type_id,
+    st: j.status
+  }));
+}
+
+// ESI lowers BPC runs only when the job is delivered; while it runs, or is ready but not delivered, the old number
+// comes back (and the blueprint list may be cached for up to an hour). So the runs of every manufacturing or reaction
+// job not yet delivered at the time of the blueprint snapshot (bpAt) are subtracted; b.adj records how many.
+async function subtractUndeliveredRuns(c, B, jobs, bpAt) {
+  if (!bpAt) return;
+  const mapJ = j => ({
+    bpi: j.blueprint_id,
+    act: j.activity_id,
+    runs: j.runs,
+    st: j.status,
+    done: j.completed_date || null,
+    id: j.job_id
+  });
+  const JA = jobs.map(mapJ);
+  try {
+    const all = await esi(charPath(c, '/industry/jobs/?include_completed=true'), { char: c });
+    const seen = new Set(JA.map(x => x.id));
+    for (const j of all) if (!seen.has(j.job_id)) JA.push(mapJ(j));
+  } catch (e) {}
+  const openAt = (j, t) =>
+    j.st === 'active' || j.st === 'ready' || j.st === 'paused' || (j.done && Date.parse(j.done) > t);
+  for (const b of B) {
+    if (!(b.r > 0)) continue;
+    for (const j of JA) {
+      if (j.bpi !== b.i || !(j.act === 1 || j.act === 8)) continue;
+      if (openAt(j, bpAt)) {
+        b.r = Math.max(0, b.r - j.runs);
+        b.adj = (b.adj || 0) + j.runs;
+      }
+    }
+  }
+}
+
+// Optional data, each behind its own scope; a failure is logged and leaves the default (null or []).
+async function fetchStandings(c) {
+  if (!hasScope(c, 'esi-characters.read_standings.v1')) return null;
+  try {
+    const STD = {};
+    for (const x of await esi(charPath(c, '/standings/'), { char: c })) STD[x.from_id] = x.standing;
+    return STD;
+  } catch (e) {
+    log('Standingek: ' + e.message);
+    return {};
+  }
+}
+
+async function fetchImplants(c) {
+  if (!hasScope(c, 'esi-clones.read_implants.v1')) return null;
+  let IMP = null;
+  try {
+    IMP = await esi(charPath(c, '/implants/'), { char: c });
+    await resolveNames(IMP);
+  } catch (e) {
+    log('Implantok: ' + e.message);
+  }
+  return IMP;
+}
+
+async function fetchOrders(c) {
+  if (!hasScope(c, 'esi-markets.read_character_orders.v1')) return [];
+  try {
+    return (await esi(charPath(c, '/orders/'), { char: c })).map(o => ({
+      id: o.order_id,
+      t: o.type_id,
+      l: o.location_id,
+      reg: o.region_id,
+      p: o.price,
+      rem: o.volume_remain,
+      tot: o.volume_total,
+      buy: !!o.is_buy_order,
+      iss: o.issued,
+      dur: o.duration
+    }));
+  } catch (e) {
+    log('Orderek: ' + e.message);
+    return [];
+  }
+}
+
+// wallet transactions of the last 30 days (only if enabled in Settings)
+async function fetchTransactions(c) {
+  if (!(S.wallet && hasScope(c, WALLET_SCOPE))) return [];
+  try {
+    const lim = Date.now() - 30 * 86400000;
+    return (await esi(charPath(c, '/wallet/transactions/'), { char: c }))
+      .filter(x => new Date(x.date).getTime() >= lim)
+      .map(x => ({ d: x.date, t: x.type_id, q: x.quantity, p: x.unit_price, buy: x.is_buy, l: x.location_id }));
+  } catch (e) {
+    log('Wallet: ' + e.message);
+    return [];
+  }
+}
+
+// names of every type, region and location the character's data refers to
+async function resolveCharNames(c, d) {
+  await resolveNames(
+    d.orders
+      .map(o => o.t)
+      .concat(
+        d.tx.map(x => x.t),
+        d.orders.map(o => o.reg)
+      )
+  );
+  for (const l of new Set(d.orders.map(o => o.l))) await resolveLoc(l, c);
+  await resolveNames(
+    d.assets
+      .map(a => a.t)
+      .concat(
+        d.bps.map(b => b.t),
+        d.jobs.map(j => j.bp)
+      )
+  );
+  const locs = new Set(
+    d.assets
+      .map(a => a.l)
+      .concat(
+        d.bps.map(b => b.l),
+        d.jobs.map(j => j.loc)
+      )
+  );
+  for (const l of locs) await resolveLoc(l, c);
+}
+
 async function refreshChar(c) {
   status(T('frissítés: {0}…', c.name));
   log('Adatok letöltése: ' + c.name);
   try {
     const [assets, bpm, skills, jobs] = await Promise.all([
-      esi('/characters/' + c.id + '/assets/', { char: c, paged: true }),
-      esi('/characters/' + c.id + '/blueprints/', { char: c, paged: true, meta: true }),
-      esi('/characters/' + c.id + '/skills/', { char: c }),
-      esi('/characters/' + c.id + '/industry/jobs/', { char: c })
+      esi(charPath(c, '/assets/'), { char: c, paged: true }),
+      esi(charPath(c, '/blueprints/'), { char: c, paged: true, meta: true }),
+      esi(charPath(c, '/skills/'), { char: c }),
+      esi(charPath(c, '/industry/jobs/'), { char: c })
     ]);
-    const bps = bpm.data;
-    const bpLM = bpm.lm,
-      bpExp = bpm.exp;
-    // root location: walk up the container chain
-    const byItem = new Map(assets.map(a => [a.item_id, a]));
-    const root = id => {
-      let cur = id,
-        guard = 0;
-      while (byItem.has(cur) && guard++ < 10) cur = byItem.get(cur).location_id;
-      return cur;
-    };
-    const contNames = {};
-    const contIds = assets
-      .filter(a => a.is_singleton && assets.some(b => b.location_id === a.item_id))
-      .map(a => a.item_id);
-    for (let i = 0; i < contIds.length; i += 900) {
-      try {
-        (
-          await esi('/characters/' + c.id + '/assets/names/', {
-            char: c,
-            method: 'POST',
-            body: contIds.slice(i, i + 900)
-          })
-        ).forEach(x => {
-          if (x.name && x.name !== 'None') contNames[x.item_id] = x.name;
-        });
-      } catch (e) {}
-    }
-    const inC = id => (byItem.has(id) ? id : null); // direct container (if any)
-    const A = assets
-      .filter(a => !a.is_blueprint_copy)
-      .map(a => ({
-        t: a.type_id,
-        q: a.quantity,
-        l: root(a.location_id),
-        f: a.location_flag,
-        cn: contNames[a.location_id] || null,
-        c: inC(a.location_id),
-        s: a.is_singleton ? 1 : 0
-      }));
-    const B = bps.map(b => ({
-      i: b.item_id,
-      t: b.type_id,
-      me: b.material_efficiency,
-      te: b.time_efficiency,
-      r: b.runs,
-      q: b.quantity,
-      l: root(b.location_id),
-      cn: contNames[b.location_id] || null,
-      c: inC(b.location_id)
-    }));
-    // containers (and ships with cargo): name, type, location, parent container
-    const CONT = {};
-    for (const id of contIds) {
-      const a = byItem.get(id);
-      CONT[id] = {
-        n: contNames[id] || null,
-        t: a.type_id,
-        l: root(a.location_id),
-        pc: inC(a.location_id),
-        f: a.location_flag
-      };
-    }
-    await Promise.all([...new Set(Object.values(CONT).map(x => x.t))].map(t => refGet('t', t).catch(() => null)));
-    for (const x of Object.values(CONT)) {
-      const ti = REFC.t[x.t];
-      x.k = ti ? ti.c : null;
-    }
-    const LM = {};
-    for (const a of assets) {
-      if (byItem.has(a.location_id)) continue;
-      const m = (LM[a.location_id] = LM[a.location_id] || { t: a.location_type, f: {} });
-      m.f[a.location_flag] = (m.f[a.location_flag] || 0) + 1;
-    }
-    const SKL = {};
-    (skills.skills || []).forEach(s => (SKL[s.skill_id] = s.active_skill_level));
-    const J = jobs.map(j => ({
-      act: j.activity_id,
-      bp: j.blueprint_type_id,
-      bpi: j.blueprint_id,
-      runs: j.runs,
-      start: j.start_date,
-      end: j.end_date,
-      loc: j.facility_id,
-      prod: j.product_type_id,
-      st: j.status
-    }));
-    // ESI may cache the blueprint list for up to an hour.
-    // Jobs already delivered count too when the ESI snapshot is older than the delivery.
-    // ESI lowers BPC runs only when the job is delivered; while it runs, or is ready but not delivered, the old number comes back.
-    // So the runs of every job not yet delivered at the time of the ESI snapshot are subtracted.
-    const mapJ = j => ({
-      bpi: j.blueprint_id,
-      act: j.activity_id,
-      runs: j.runs,
-      st: j.status,
-      done: j.completed_date || null,
-      id: j.job_id
-    });
-    let JA = jobs.map(mapJ);
-    if (bpLM) {
-      try {
-        const all = await esi('/characters/' + c.id + '/industry/jobs/?include_completed=true', { char: c });
-        const seen = new Set(JA.map(x => x.id));
-        all.forEach(j => {
-          if (!seen.has(j.job_id)) JA.push(mapJ(j));
-        });
-      } catch (e) {}
-    }
-    const openAt = (j, t) =>
-      j.st === 'active' || j.st === 'ready' || j.st === 'paused' || (j.done && Date.parse(j.done) > t);
-    for (const b of B) {
-      if (!(b.r > 0)) continue;
-      for (const j of JA) {
-        if (j.bpi !== b.i || !(j.act === 1 || j.act === 8) || !bpLM) continue;
-        if (openAt(j, bpLM)) {
-          b.r = Math.max(0, b.r - j.runs);
-          b.adj = (b.adj || 0) + j.runs;
-        }
-      }
-    }
-    let O = [],
-      TX = [],
-      IMP = null,
-      STD = null;
-    if (hasScope(c, 'esi-characters.read_standings.v1')) {
-      try {
-        STD = {};
-        (await esi('/characters/' + c.id + '/standings/', { char: c })).forEach(x => (STD[x.from_id] = x.standing));
-      } catch (e) {
-        log('Standingek: ' + e.message);
-      }
-    }
-    if (hasScope(c, 'esi-clones.read_implants.v1')) {
-      try {
-        IMP = await esi('/characters/' + c.id + '/implants/', { char: c });
-        await resolveNames(IMP);
-      } catch (e) {
-        log('Implantok: ' + e.message);
-      }
-    }
-    if (hasScope(c, 'esi-markets.read_character_orders.v1')) {
-      try {
-        O = (await esi('/characters/' + c.id + '/orders/', { char: c })).map(o => ({
-          id: o.order_id,
-          t: o.type_id,
-          l: o.location_id,
-          reg: o.region_id,
-          p: o.price,
-          rem: o.volume_remain,
-          tot: o.volume_total,
-          buy: !!o.is_buy_order,
-          iss: o.issued,
-          dur: o.duration
-        }));
-      } catch (e) {
-        log('Orderek: ' + e.message);
-      }
-    }
-    if (S.wallet && hasScope(c, WALLET_SCOPE)) {
-      try {
-        const lim = Date.now() - 30 * 86400000;
-        TX = (await esi('/characters/' + c.id + '/wallet/transactions/', { char: c }))
-          .filter(x => new Date(x.date).getTime() >= lim)
-          .map(x => ({ d: x.date, t: x.type_id, q: x.quantity, p: x.unit_price, buy: x.is_buy, l: x.location_id }));
-      } catch (e) {
-        log('Wallet: ' + e.message);
-      }
-    }
-    DATA[c.id] = {
+    const tree = assetTree(assets);
+    const cont = await containerNames(c, assets);
+    const A = mapAssets(assets, tree, cont.names);
+    const B = mapBlueprints(bpm.data, tree, cont.names);
+    const CONT = await mapContainers(cont.ids, tree, cont.names);
+    await subtractUndeliveredRuns(c, B, jobs, bpm.lm);
+    const STD = await fetchStandings(c);
+    const IMP = await fetchImplants(c);
+    const O = await fetchOrders(c);
+    const TX = await fetchTransactions(c);
+    // field names are short because DATA is kept in localStorage
+    const d = {
       assets: A,
       bps: B,
-      skills: SKL,
-      jobs: J,
+      skills: mapSkills(skills),
+      jobs: mapJobs(jobs),
       orders: O,
       tx: TX,
       imp: IMP,
       std: STD,
-      lm: LM,
+      lm: locationMeta(assets, tree),
       cont: CONT,
-      bpAt: bpLM,
-      bpExp: bpExp,
+      bpAt: bpm.lm,
+      bpExp: bpm.exp,
       dv: APP.dataVersion,
       at: Date.now()
     };
-    await resolveNames(
-      O.map(o => o.t).concat(
-        TX.map(x => x.t),
-        O.map(o => o.reg)
-      )
-    );
-    for (const l of new Set(O.map(o => o.l))) await resolveLoc(l, c);
-    await resolveNames(
-      A.map(a => a.t).concat(
-        B.map(b => b.t),
-        J.map(j => j.bp)
-      )
-    );
-    const locs = [
-      ...new Set(
-        A.map(a => a.l).concat(
-          B.map(b => b.l),
-          J.map(j => j.loc)
-        )
-      )
-    ];
-    for (const l of locs) await resolveLoc(l, c);
+    DATA[c.id] = d;
+    await resolveCharNames(c, d);
     if (!store('data', DATA))
       log('Figyelem: a böngésző tárhelye megtelt, az adatok csak a lap bezárásáig maradnak meg.');
-    log(c.name + ': ' + A.length + ' tárgy, ' + B.length + ' blueprint, ' + J.length + ' job');
+    log(c.name + ': ' + d.assets.length + ' tárgy, ' + B.length + ' blueprint, ' + d.jobs.length + ' job');
   } catch (e) {
     log('Hiba (' + c.name + '): ' + e.message);
     alertBox(T('Nem sikerült frissíteni: {0}. {1}', c.name, e.message));

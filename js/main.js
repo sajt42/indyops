@@ -292,96 +292,116 @@ const SET_SCHEMA = {
   structBroker: 'mapNum',
   repro: 'repro'
 };
+// Backup validation per field: a known setting passes only with the expected type, unknown fields are dropped.
+// It never throws on bad input; the caller applies nothing when err is not empty.
+const isNum = x => typeof x === 'number' && isFinite(x);
+const isObj = x => x != null && typeof x === 'object' && !Array.isArray(x);
+const isNumish = x => isNum(x) || (typeof x === 'string' && x.trim() !== '' && isFinite(Number(x)));
+const everyValue = (o, f) => isObj(o) && Object.values(o).every(f);
+// expected type of each setting (SET_SCHEMA names the type, BACKUP_TYPES checks it)
+const BACKUP_TYPES = {
+  str: x => typeof x === 'string',
+  num: isNumish,
+  numOrEmpty: x => x === '' || x == null || isNumish(x),
+  bool: x => typeof x === 'boolean',
+  numArrOrNull: x => x === null || (Array.isArray(x) && x.every(isNum)),
+  mapBool: x => everyValue(x, v => typeof v === 'boolean'),
+  mapStr: x => everyValue(x, v => typeof v === 'string'),
+  mapNum: x => everyValue(x, isNumish),
+  repro: x =>
+    isObj(x) &&
+    (x.loc == null ||
+      everyValue(x.loc, v => isObj(v) && Object.values(v).every(y => y === '' || y == null || isNumish(y)))) &&
+    (x.imp == null || everyValue(x.imp, v => isNumish(v) || v === 'auto')) &&
+    (x.char == null || x.char === '' || isNumish(x.char))
+};
+
+function validSettings(d, out, err) {
+  if (d.settings != null && !isObj(d.settings)) err.push(T('a beállítások nem objektum'));
+  else
+    for (const [k, v] of Object.entries(d.settings || {})) {
+      const t = SET_SCHEMA[k];
+      if (!t) continue;
+      if (BACKUP_TYPES[t](v)) out.settings[k] = v;
+      else err.push(T('hibás beállítás: {0}', k));
+    }
+}
+// material sources of a project or item: {mode:'all'|'sel', locs, conts, excl} with numeric id lists
+const validSrc = x =>
+  x == null ||
+  (isObj(x) &&
+    (x.mode === 'all' || x.mode === 'sel') &&
+    ['locs', 'conts', 'excl'].every(f => x[f] == null || (Array.isArray(x[f]) && x[f].every(isNum))));
+const cleanSrc = x =>
+  x
+    ? { mode: x.mode, locs: (x.locs || []).slice(), conts: (x.conts || []).slice(), excl: (x.excl || []).slice() }
+    : undefined;
+function validProjects(d, out, err) {
+  if (d.projects != null && !Array.isArray(d.projects)) err.push(T('a projektek nem lista'));
+  for (const [i, p] of (Array.isArray(d.projects) ? d.projects : []).entries()) {
+    if (!isObj(p) || !isNum(p.id) || typeof p.name !== 'string' || !Array.isArray(p.items)) {
+      err.push(T('{0}. projekt hibás', i + 1));
+      continue;
+    }
+    if (!validSrc(p.src)) {
+      err.push(T('„{0}” projekt: hibás nyersanyag-forrás', p.name));
+      continue;
+    }
+    const items = [];
+    let bad = 0;
+    for (const it of p.items) {
+      if (
+        !isObj(it) ||
+        !isNum(it.runs) ||
+        !(it.runs > 0) ||
+        !(isNum(it.bpType) || isNum(it.invT1)) ||
+        !validSrc(it.src)
+      ) {
+        bad++;
+        continue;
+      }
+      const c = { runs: it.runs };
+      if (isNum(it.bpType)) c.bpType = it.bpType;
+      else {
+        c.invT1 = it.invT1;
+        if (isNum(it.t2)) c.t2 = it.t2;
+        c.dec = isNum(it.dec) ? it.dec : null;
+        c.pi = isNum(it.pi) ? it.pi : 0;
+      }
+      if (it.src) c.src = cleanSrc(it.src);
+      items.push(c);
+    }
+    if (bad) err.push(T('„{0}” projekt: {1} hibás tétel', p.name, bad));
+    out.projects.push({ id: p.id, name: p.name, active: p.active !== false, items, src: cleanSrc(p.src) });
+  }
+}
+function validChars(d, out, err) {
+  if (d.chars != null && !Array.isArray(d.chars)) err.push(T('hibás karakter-bejegyzés'));
+  for (const c of Array.isArray(d.chars) ? d.chars : []) {
+    if (!isObj(c) || !isNum(c.id) || typeof c.name !== 'string') {
+      err.push(T('hibás karakter-bejegyzés'));
+      continue;
+    }
+    out.chars.push({
+      id: c.id,
+      name: c.name,
+      refresh: typeof c.refresh === 'string' ? c.refresh : undefined,
+      cid: typeof c.cid === 'string' ? c.cid : undefined,
+      scp: Array.isArray(c.scp) ? c.scp.filter(x => typeof x === 'string') : undefined
+    });
+  }
+}
 function validateBackup(d) {
   const err = [];
   const out = { settings: {}, projects: [], chars: [], selp: null };
   try {
-    const num = x => typeof x === 'number' && isFinite(x);
-    const isObj = x => x != null && typeof x === 'object' && !Array.isArray(x);
-    const numish = x => num(x) || (typeof x === 'string' && x.trim() !== '' && isFinite(Number(x)));
-    const mapOf = (o, f) => isObj(o) && Object.values(o).every(f);
-    const okType = {
-      str: x => typeof x === 'string',
-      num: numish,
-      numOrEmpty: x => x === '' || x == null || numish(x),
-      bool: x => typeof x === 'boolean',
-      numArrOrNull: x => x === null || (Array.isArray(x) && x.every(num)),
-      mapBool: x => mapOf(x, v => typeof v === 'boolean'),
-      mapStr: x => mapOf(x, v => typeof v === 'string'),
-      mapNum: x => mapOf(x, numish),
-      repro: x =>
-        isObj(x) &&
-        (x.loc == null ||
-          mapOf(x.loc, v => isObj(v) && Object.values(v).every(y => y === '' || y == null || numish(y)))) &&
-        (x.imp == null || mapOf(x.imp, v => numish(v) || v === 'auto')) &&
-        (x.char == null || x.char === '' || numish(x.char))
-    };
     out.app = d.app;
     out.at = d.at;
     out.withTokens = !!d.withTokens;
-    if (d.settings != null && !isObj(d.settings)) err.push(T('a beállítások nem objektum'));
-    else
-      for (const [k, v] of Object.entries(d.settings || {})) {
-        const t = SET_SCHEMA[k];
-        if (!t) continue;
-        if (okType[t](v)) out.settings[k] = v;
-        else err.push(T('hibás beállítás: {0}', k));
-      }
-    if (d.projects != null && !Array.isArray(d.projects)) err.push(T('a projektek nem lista'));
-    const srcOk = x =>
-      x == null ||
-      (isObj(x) &&
-        (x.mode === 'all' || x.mode === 'sel') &&
-        ['locs', 'conts', 'excl'].every(f => x[f] == null || (Array.isArray(x[f]) && x[f].every(num))));
-    const cleanSrc = x =>
-      x
-        ? { mode: x.mode, locs: (x.locs || []).slice(), conts: (x.conts || []).slice(), excl: (x.excl || []).slice() }
-        : undefined;
-    for (const [i, p] of (Array.isArray(d.projects) ? d.projects : []).entries()) {
-      if (!isObj(p) || !num(p.id) || typeof p.name !== 'string' || !Array.isArray(p.items)) {
-        err.push(T('{0}. projekt hibás', i + 1));
-        continue;
-      }
-      if (!srcOk(p.src)) {
-        err.push(T('„{0}” projekt: hibás nyersanyag-forrás', p.name));
-        continue;
-      }
-      const items = [];
-      let bad = 0;
-      for (const it of p.items) {
-        if (!isObj(it) || !num(it.runs) || !(it.runs > 0) || !(num(it.bpType) || num(it.invT1)) || !srcOk(it.src)) {
-          bad++;
-          continue;
-        }
-        const c = { runs: it.runs };
-        if (num(it.bpType)) c.bpType = it.bpType;
-        else {
-          c.invT1 = it.invT1;
-          if (num(it.t2)) c.t2 = it.t2;
-          c.dec = num(it.dec) ? it.dec : null;
-          c.pi = num(it.pi) ? it.pi : 0;
-        }
-        if (it.src) c.src = cleanSrc(it.src);
-        items.push(c);
-      }
-      if (bad) err.push(T('„{0}” projekt: {1} hibás tétel', p.name, bad));
-      out.projects.push({ id: p.id, name: p.name, active: p.active !== false, items, src: cleanSrc(p.src) });
-    }
-    out.selp = num(d.selp) ? d.selp : null;
-    if (d.chars != null && !Array.isArray(d.chars)) err.push(T('hibás karakter-bejegyzés'));
-    for (const c of Array.isArray(d.chars) ? d.chars : []) {
-      if (!isObj(c) || !num(c.id) || typeof c.name !== 'string') {
-        err.push(T('hibás karakter-bejegyzés'));
-        continue;
-      }
-      out.chars.push({
-        id: c.id,
-        name: c.name,
-        refresh: typeof c.refresh === 'string' ? c.refresh : undefined,
-        cid: typeof c.cid === 'string' ? c.cid : undefined,
-        scp: Array.isArray(c.scp) ? c.scp.filter(x => typeof x === 'string') : undefined
-      });
-    }
+    validSettings(d, out, err);
+    validProjects(d, out, err);
+    out.selp = isNum(d.selp) ? d.selp : null;
+    validChars(d, out, err);
   } catch (e) {
     err.push(T('váratlan hiba: {0}', e.message));
   }

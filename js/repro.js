@@ -173,6 +173,91 @@ async function repLocExtra(locs) {
   const st = [...new Set(locs.map(l => LOCINFO[l] && LOCINFO[l].stype).filter(Boolean))];
   if (st.length) await resolveNames(st);
 }
+// Stage 1: type data (with reprocess materials) for every type in stock, with a live counter on the button
+async function repFetchTypes(types) {
+  const btn = $('#repLoad');
+  let done = 0;
+  const prog = () => {
+    const m = T('Beolvasás: {0} / {1} tárgytípus', fmt(done), fmt(types.length));
+    btn.textContent = m;
+    status(m);
+  };
+  prog();
+  const tick = setInterval(prog, 400);
+  try {
+    await Promise.all(
+      types.map(t =>
+        (REFC.t[t] !== undefined
+          ? Promise.resolve(REFC.t[t])
+          : refGet('t', t).then(v => {
+              repLog(((v && v.n) || '#' + t) + (v && v.tm && v.tm.length ? '  ✓ ' + T('reprocesszálható') : ''));
+              return v;
+            })
+        )
+          .catch(e => {
+            repLog('✗ #' + t + '  ' + e.message);
+            log('EVE Ref: ' + t + ' ' + e.message);
+            return null;
+          })
+          .finally(() => done++)
+      )
+    );
+  } finally {
+    clearInterval(tick);
+  }
+}
+// Stage 2: one row per type and location that can be reprocessed, with the quantity per owner
+function repRows(sm) {
+  const rows = [],
+    locs = new Set();
+  for (const [t, arr] of sm) {
+    const ti = REFC.t[t];
+    if (!ti || !ti.tm || !ti.tm.length || ti.c === 9) continue;
+    const byL = new Map();
+    for (const x of arr) {
+      if (!(x.q > 0)) continue;
+      let r = byL.get(x.l);
+      if (!r) {
+        r = { t, l: x.l, q: 0, own: new Map() };
+        byL.set(x.l, r);
+      }
+      r.q += x.q;
+      r.own.set(x.cid, (r.own.get(x.cid) || 0) + x.q);
+    }
+    for (const r of byL.values()) {
+      rows.push(r);
+      locs.add(r.l);
+    }
+  }
+  return { rows, locs };
+}
+// Stage 3: locations (with their reprocess stats), names and prices
+async function repPrepare(rows, locs) {
+  repLog(T('{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…', fmt(rows.length), fmt(locs.size)));
+  await Promise.all([...locs].map(l => resolveLoc(l).catch(() => null)));
+  await repLocExtra([...locs]);
+  for (const l of locs) {
+    const L = locStats(l);
+    repLog(
+      locName(l) +
+        '  · ' +
+        (L.k === 'npc' ? T('NPC állomás') : L.k === 'struct' ? NAMES[L.st] || 'Upwell' : T('űrben – itt nem lehet')) +
+        (L.sec != null ? '  sec ' + fmt(L.sec, 2) : '')
+    );
+  }
+  const mats = new Set(rows.flatMap(r => REFC.t[r.t].tm.map(x => x[0])));
+  await resolveNames([
+    ...mats,
+    ...rows.map(r => r.t),
+    ...rows.map(r => REFC.t[r.t].rs).filter(Boolean),
+    SCRAP,
+    SK.repro,
+    SK.reproEff
+  ]);
+  const its = [...new Set(rows.map(r => r.t))];
+  repLog(T('Jita árak lekérése: {0} típus…', fmt(its.length <= 200 ? mats.size + its.length : mats.size)));
+  await ensurePrices(its.length <= 200 ? [...mats, ...its] : [...mats]); // with many items only the selected ones, by button
+}
 async function repLoad() {
   if (REP.busy) return;
   if (!Object.keys(DATA).length) {
@@ -187,83 +272,11 @@ async function repLoad() {
     const sm = stockMap(false);
     const types = [...sm.keys()];
     repLog(T('{0} tárgytípus a készletben, receptek lekérése az EVE Refről…', fmt(types.length)));
-    const btn = $('#repLoad');
-    let done = 0;
-    const prog = () => {
-      const m = T('Beolvasás: {0} / {1} tárgytípus', fmt(done), fmt(types.length));
-      btn.textContent = m;
-      status(m);
-    };
-    prog();
-    const tick = setInterval(prog, 400);
-    try {
-      await Promise.all(
-        types.map(t =>
-          (REFC.t[t] !== undefined
-            ? Promise.resolve(REFC.t[t])
-            : refGet('t', t).then(v => {
-                repLog(((v && v.n) || '#' + t) + (v && v.tm && v.tm.length ? '  ✓ ' + T('reprocesszálható') : ''));
-                return v;
-              })
-          )
-            .catch(e => {
-              repLog('✗ #' + t + '  ' + e.message);
-              log('EVE Ref: ' + t + ' ' + e.message);
-              return null;
-            })
-            .finally(() => done++)
-        )
-      );
-    } finally {
-      clearInterval(tick);
-    }
-    btn.textContent = T('Helyszínek és árak…');
+    await repFetchTypes(types);
+    $('#repLoad').textContent = T('Helyszínek és árak…');
     status(T('Helyszínek és árak…'));
-    const rows = [],
-      locs = new Set();
-    for (const [t, arr] of sm) {
-      const ti = REFC.t[t];
-      if (!ti || !ti.tm || !ti.tm.length || ti.c === 9) continue;
-      const byL = new Map();
-      for (const x of arr) {
-        if (!(x.q > 0)) continue;
-        let r = byL.get(x.l);
-        if (!r) {
-          r = { t, l: x.l, q: 0, own: new Map() };
-          byL.set(x.l, r);
-        }
-        r.q += x.q;
-        r.own.set(x.cid, (r.own.get(x.cid) || 0) + x.q);
-      }
-      for (const r of byL.values()) {
-        rows.push(r);
-        locs.add(r.l);
-      }
-    }
-    repLog(T('{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…', fmt(rows.length), fmt(locs.size)));
-    await Promise.all([...locs].map(l => resolveLoc(l).catch(() => null)));
-    await repLocExtra([...locs]);
-    for (const l of locs) {
-      const L = locStats(l);
-      repLog(
-        locName(l) +
-          '  · ' +
-          (L.k === 'npc' ? T('NPC állomás') : L.k === 'struct' ? NAMES[L.st] || 'Upwell' : T('űrben – itt nem lehet')) +
-          (L.sec != null ? '  sec ' + fmt(L.sec, 2) : '')
-      );
-    }
-    const mats = new Set(rows.flatMap(r => REFC.t[r.t].tm.map(x => x[0])));
-    await resolveNames([
-      ...mats,
-      ...rows.map(r => r.t),
-      ...rows.map(r => REFC.t[r.t].rs).filter(Boolean),
-      SCRAP,
-      SK.repro,
-      SK.reproEff
-    ]);
-    const its = [...new Set(rows.map(r => r.t))];
-    repLog(T('Jita árak lekérése: {0} típus…', fmt(its.length <= 200 ? mats.size + its.length : mats.size)));
-    await ensurePrices(its.length <= 200 ? [...mats, ...its] : [...mats]); // with many items only the selected ones, by button
+    const { rows, locs } = repRows(sm);
+    await repPrepare(rows, locs);
     repLog(T('Kész: {0} tétel, {1} mp.', fmt(rows.length), fmt((Date.now() - t0) / 1000, 1)));
     REP.rows = rows;
     for (const k of [...REP.sel]) if (!rows.some(r => repKey(r) === k)) REP.sel.delete(k);
@@ -503,14 +516,9 @@ function renderRepLocs(locs) {
     .join('')}</tbody></table></div>
   <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`;
 }
-function renderRepSum() {
-  const el = $('#repSum');
-  const sel = (REP.rows || []).filter(r => REP.sel.has(repKey(r)));
-  if (!sel.length) {
-    el.innerHTML =
-      '<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>';
-    return;
-  }
+// Sums the selected rows: materials out, values in and out (Jita and the second market; a: some value is
+// approximate), rows that cannot be reprocessed where they are (none), and who reprocesses where (steps).
+function repSummary(sel) {
   const mats = new Map(),
     steps = new Map();
   let inV = 0,
@@ -540,39 +548,62 @@ function renderRepSum() {
     s.n++;
     for (const o of r.own.keys()) if (o !== c.pick.cid) s.from.add(o);
   }
+  return { mats, steps, inV, outV, in2, out2, a, none };
+}
+// how much of the last plan's shopping list the reprocess output covers
+function repCoverHtml(mats) {
+  if (typeof LASTPLAN === 'undefined' || !LASTPLAN) return '';
+  const need = [...LASTPLAN.buyList].filter(([t]) => mats.has(t));
+  return need.length
+    ? `<h3>${T('A „{0}” terv hiányából', esc(LASTPLAN.title || ''))}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need
+        .map(([t, q]) => {
+          const b = mats.get(t) || 0;
+          return `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span></td></tr>`;
+        })
+        .join('')}</tbody></table></div>`
+    : `<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.', esc(LASTPLAN.title || ''))}</p>`;
+}
+// materials that come out, most valuable first
+function repOutHtml(Q) {
+  const { mats, outV, out2, a } = Q;
   const ml = [...mats].sort((x, y) => y[1] * repPrice(y[0]).v - x[1] * repPrice(x[0]).v);
-  let cover = '';
-  if (typeof LASTPLAN !== 'undefined' && LASTPLAN) {
-    const need = [...LASTPLAN.buyList].filter(([t]) => mats.has(t));
-    cover = need.length
-      ? `<h3>${T('A „{0}” terv hiányából', esc(LASTPLAN.title || ''))}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need
-          .map(([t, q]) => {
-            const b = mats.get(t) || 0;
-            return `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span></td></tr>`;
-          })
-          .join('')}</tbody></table></div>`
-      : `<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.', esc(LASTPLAN.title || ''))}</p>`;
-  }
-  el.innerHTML = `<div class="row"><b>${T('{0} tétel kijelölve', fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On() ? T('Jita és {0} árak a kijelöltekre', esc(m2Short())) : T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
-  <div class="grid2" style="margin-top:10px"><div>
-  <h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num" data-noi18n>Jita sell</th>${m2On() ? `<th class="num" data-noi18n>${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${ml
+  return `<h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num" data-noi18n>Jita sell</th>${m2On() ? `<th class="num" data-noi18n>${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${ml
     .map(([m, q]) => {
       const p = repPrice(m);
       return `<tr><td>${esc(NAMES[m] || m)}</td><td class="num">${fmt(q)}</td><td class="num">${p.a ? '~' : ''}${isk(q * p.v)}</td>${m2On() ? `<td class="num">${sell2(m) ? isk(q * sell2(m)) : '–'}</td>` : ''}</tr>`;
     })
     .join('')}
-  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a ? '~' : ''}${isk(outV)}</b></td>${m2On() ? `<td class="num"><b>${isk(out2)}</b></td>` : ''}</tr></tbody></table></div>
-  ${(() => {
-    const mk = [['Jita', inV, outV, a]].concat(m2On() ? [[m2Short(), in2, out2, false]] : []);
-    return `<h3>Eladás vagy reprocess</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Piac</th><th class="num">Egyben eladva</th><th class="num">Szétszedve</th><th>Jobb</th></tr></thead><tbody>${mk.map(([n, i, o, ap]) => `<tr><td data-noi18n>${esc(n)}</td><td class="num">${ap ? '~' : ''}${i ? isk(i) : '–'}</td><td class="num">${ap ? '~' : ''}${o ? isk(o) : '–'}</td><td>${!i && !o ? '' : o > i ? `<span class="pill ok">${T('reprocess +{0}', isk(o - i))}</span>` : `<span class="pill warn">${T('eladás +{0}', isk(i - o))}</span>`}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.</p>`;
-  })()}
-  ${sellerHtml()}
-  ${none ? `<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).', none)}</p>` : ''}
-  </div><div>
-  <h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s => `<tr><td>${esc(locName(s.l))}</td><td>${esc(charName(s.cid))}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size ? T('Át kell adni tőle: {0}', [...s.from].map(charName).join(', ')) : ''}</td></tr>`).join('')}</tbody></table></div>
-  ${cover}</div></div>`;
+  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a ? '~' : ''}${isk(outV)}</b></td>${m2On() ? `<td class="num"><b>${isk(out2)}</b></td>` : ''}</tr></tbody></table></div>`;
 }
-
+// selling the items as they are vs. reprocessing them, per market (gross values)
+function repCompareHtml(Q) {
+  const { inV, outV, in2, out2, a } = Q;
+  const mk = [['Jita', inV, outV, a]].concat(m2On() ? [[m2Short(), in2, out2, false]] : []);
+  return `<h3>Eladás vagy reprocess</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Piac</th><th class="num">Egyben eladva</th><th class="num">Szétszedve</th><th>Jobb</th></tr></thead><tbody>${mk.map(([n, i, o, ap]) => `<tr><td data-noi18n>${esc(n)}</td><td class="num">${ap ? '~' : ''}${i ? isk(i) : '–'}</td><td class="num">${ap ? '~' : ''}${o ? isk(o) : '–'}</td><td>${!i && !o ? '' : o > i ? `<span class="pill ok">${T('reprocess +{0}', isk(o - i))}</span>` : `<span class="pill warn">${T('eladás +{0}', isk(i - o))}</span>`}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.</p>`;
+}
+function repWhereHtml(Q) {
+  const { steps } = Q;
+  return `<h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s => `<tr><td>${esc(locName(s.l))}</td><td>${esc(charName(s.cid))}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size ? T('Át kell adni tőle: {0}', [...s.from].map(charName).join(', ')) : ''}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function renderRepSum() {
+  const el = $('#repSum');
+  const sel = (REP.rows || []).filter(r => REP.sel.has(repKey(r)));
+  if (!sel.length) {
+    el.innerHTML =
+      '<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>';
+    return;
+  }
+  const Q = repSummary(sel);
+  el.innerHTML = `<div class="row"><b>${T('{0} tétel kijelölve', fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On() ? T('Jita és {0} árak a kijelöltekre', esc(m2Short())) : T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
+  <div class="grid2" style="margin-top:10px"><div>
+  ${repOutHtml(Q)}
+  ${repCompareHtml(Q)}
+  ${sellerHtml()}
+  ${Q.none ? `<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).', Q.none)}</p>` : ''}
+  </div><div>
+  ${repWhereHtml(Q)}
+  ${repCoverHtml(Q.mats)}</div></div>`;
+}
 // events
 (function () {
   const tab = document.getElementById('tab-repro');

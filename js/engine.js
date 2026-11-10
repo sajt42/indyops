@@ -52,218 +52,247 @@ async function buildPool(opt) {
   }
   return pool;
 }
-/* several items from one stock; shared={pool,runsLeft} is also shared between projects */
+/* ---- material trees for several items from one stock ----
+ * makeMulti(items, opt, shared) builds one tree per item. All items draw from the same stock pool and the same
+ * blueprint runs; pass shared={pool,runsLeft} to share them between calls (projects calculated one after another).
+ * Result: {trees:[{item,tree,made}], buyList: Map type->qty, usedList: Map type->qty taken from own stock,
+ *          jobs: [job], warn: [{t,miss}|{txt}]}
+ * A tree node: {t, need, stock:[taken pool entries], build:{act,jobs:[{c,r,short}],made}|null, buy, ch:[nodes], jobsRef:[jobs]}
+ */
+function planContext(opt, pool, runsLeft) {
+  return {
+    opt,
+    pool,
+    runsLeft,
+    resv: reservedMap(),
+    filters: new Map(), // per item: which stock entries it may take
+    buyList: new Map(),
+    usedList: new Map(),
+    jobs: [],
+    warn: [],
+    structME: Number(S.structME || 0) / 100
+  };
+}
+
+function stockAllowed(ctx, item) {
+  let f = ctx.filters.get(item);
+  if (!f) {
+    f = stockFilter(item, ctx.resv);
+    ctx.filters.set(item, f);
+  }
+  return f;
+}
+
+// takes up to q of type t from the pool entries the item may use; returns what was taken
+function takeStock(ctx, t, q, item) {
+  const arr = ctx.pool.get(t);
+  if (!arr) return [];
+  const ok = stockAllowed(ctx, item);
+  const used = [];
+  let rem = q;
+  for (const x of arr) {
+    if (rem <= 0) break;
+    if (!ok(x)) continue;
+    const k = Math.min(x.q, rem);
+    if (k > 0) {
+      x.q -= k;
+      rem -= k;
+      used.push({ l: x.l, cid: x.cid, q: k, ore: x.ore, c: x.c ?? null });
+    }
+  }
+  return used;
+}
+
+// what a job makes beyond the need goes back to the pool for later nodes and items
+function addSurplus(ctx, t, q) {
+  if (q <= 0) return;
+  let arr = ctx.pool.get(t);
+  if (!arr) {
+    arr = [];
+    ctx.pool.set(t, arr);
+  }
+  arr.push({ l: 'surplus', cid: 0, q });
+}
+
+// recipe of the first copy; null means "buy it" (a missing recipe on the top item is an error)
+async function recipeOf(copies, depth) {
+  const meta = BPPROD[copies[0].t];
+  const bpr = meta ? await refGet('b', copies[0].t) : null;
+  const rec = bpr && bpr[meta.act];
+  if (!rec) {
+    const name = NAMES[copies[0].t] || '#' + copies[0].t;
+    if (depth === 0) throw new Error(name + ': nem találtam a gyártási receptjét az EVE Ref adatbázisban.');
+    log('Recept hiányzik, vásárlásként számolom: ' + (NAMES[copies[0].t] || copies[0].t));
+    return null;
+  }
+  return { meta, rec };
+}
+
+// spreads the needed runs over the copies in order (BPOs are unlimited, BPC runs are tracked in ctx.runsLeft);
+// runs that fit nowhere go on the first copy marked short, with a warning
+function allocateRuns(ctx, t, copies, runsNeed) {
+  const jl = [];
+  for (const c of copies) {
+    if (runsNeed <= 0) break;
+    const avail = c.r === -1 ? Infinity : ctx.runsLeft.has(c.i) ? ctx.runsLeft.get(c.i) : c.r;
+    if (avail <= 0) continue;
+    const r = Math.min(avail, runsNeed);
+    runsNeed -= r;
+    if (c.r !== -1) ctx.runsLeft.set(c.i, avail - r);
+    jl.push({ c, r });
+  }
+  if (runsNeed > 0) {
+    ctx.warn.push({ t, miss: runsNeed });
+    jl.push({ c: copies[0], r: runsNeed, short: true });
+  }
+  return jl;
+}
+
+// material quantity of one job: blueprint ME and structure ME apply to manufacturing only, rounded up per job,
+// never less than one unit per run
+function jobMaterialQty(q, runs, act, me, structME) {
+  const m = act === 'm';
+  return Math.max(
+    runs,
+    Math.ceil(Math.round(q * runs * (1 - (m ? me : 0) / 100) * (1 - (m ? structME : 0)) * 100) / 100)
+  );
+}
+
+async function planNode(ctx, t, need, depth, forced, item) {
+  const n = { t, need, stock: [], build: null, buy: 0, ch: [], jobsRef: [] };
+  if (depth > 0 && ctx.opt.useStock !== false) {
+    n.stock = takeStock(ctx, t, need, item);
+    need -= n.stock.reduce((s, x) => s + x.q, 0);
+    for (const x of n.stock)
+      if (x.l !== 'surplus' && x.l !== 'job') ctx.usedList.set(t, (ctx.usedList.get(t) || 0) + x.q);
+  }
+  if (need <= 0) return n;
+  let copies = forced ? forced : ownedFor(t);
+  if (copies.length) copies = copies.filter(c => c.t === copies[0].t);
+  const wantBuild = depth === 0 || (ctx.opt.buildOwn && copies.length && S.buyOverride[t] !== true);
+  const recipe = wantBuild && copies.length ? await recipeOf(copies, depth) : null;
+  if (!recipe) {
+    n.buy = need;
+    ctx.buyList.set(t, (ctx.buyList.get(t) || 0) + need);
+    return n;
+  }
+  const { meta, rec } = recipe;
+  const act = meta.act;
+  const jl = allocateRuns(ctx, t, copies, Math.ceil(need / meta.qty));
+  const made = jl.reduce((s, x) => s + x.r, 0) * meta.qty;
+  n.build = { act, jobs: jl, made };
+  const matNeed = new Map();
+  for (const j of jl) {
+    for (const [m, q] of rec.m)
+      matNeed.set(m, (matNeed.get(m) || 0) + jobMaterialQty(q, j.r, act, j.c.me, ctx.structME));
+    const job = {
+      t,
+      bp: j.c,
+      runs: j.r,
+      act,
+      time: rec.t,
+      short: !!j.short,
+      base: rec.m,
+      miss: missingSkills(j.c.cid, rec),
+      item,
+      top: depth === 0
+    };
+    ctx.jobs.push(job);
+    n.jobsRef.push(job);
+  }
+  for (const [m, q] of matNeed) n.ch.push(await planNode(ctx, m, q, depth + 1, null, item));
+  addSurplus(ctx, t, made - need);
+  if (depth === 0) n.made = made;
+  return n;
+}
+
+// T2 item: adds an invention node in front of the tree (datacores, decryptor, the invention job, and a copy job
+// when the T1 blueprint is a BPO; with a T1 BPC its runs are used up and checked)
+async function addInvention(ctx, it, tree) {
+  const t1 = it.inv.t1;
+  const t1bp = await refGet('b', t1.t);
+  const inv = t1bp && t1bp.i;
+  if (!inv || !tree.build) return;
+  const info = invInfo(t1bp, it.inv.dec, it.inv.pi || 0);
+  const t2runs = tree.build.jobs.reduce((s, j) => s + j.r, 0);
+  const bpcs = Math.ceil(t2runs / info.runsPer);
+  const attempts = it.inv.expected ? bpcs / info.chance : Math.ceil(bpcs / info.chance);
+  const invNode = {
+    t: it.copies[0].t,
+    need: bpcs,
+    stock: [],
+    build: { act: 'i', jobs: [], made: bpcs },
+    buy: 0,
+    ch: [],
+    jobsRef: [],
+    inv: { attempts, chance: info.chance, runsPer: info.runsPer, dec: it.inv.dec }
+  };
+  for (const [m, q] of inv.m) invNode.ch.push(await planNode(ctx, m, q * attempts, 1, null, it));
+  if (it.inv.dec) invNode.ch.push(await planNode(ctx, it.inv.dec, attempts, 1, null, it));
+  const t2b = await refGet('b', it.copies[0].t);
+  const t2rec = t2b && t2b.m;
+  if (!t2rec) return;
+  const job = {
+    t: it.copies[0].t,
+    bp: Object.assign({}, t1),
+    runs: attempts,
+    act: 'i',
+    time: inv.t,
+    base: t2rec.m,
+    cm: 0.02,
+    rs: inv.rs,
+    miss: missingSkills(t1.cid, { rs: inv.rs }),
+    item: it,
+    top: false,
+    invInfo: info
+  };
+  ctx.jobs.push(job);
+  invNode.jobsRef.push(job);
+  if (t1.r === -1) {
+    const cj = {
+      t: t1.t,
+      bp: Object.assign({}, t1),
+      runs: Math.ceil(attempts),
+      act: 'c',
+      time: t1bp.ct || 0,
+      base: (t1bp.m || t1bp.r || { m: [] }).m,
+      cm: 0.02,
+      rs: null,
+      miss: [],
+      item: it,
+      top: false
+    };
+    ctx.jobs.push(cj);
+    invNode.jobsRef.push(cj);
+  } else {
+    const left = ctx.runsLeft.has(t1.i) ? ctx.runsLeft.get(t1.i) : t1.r;
+    const need = Math.ceil(attempts);
+    if (need > left)
+      ctx.warn.push({
+        txt: T(
+          '{0}: a T1 BPC-n {1} run van, az inventionhöz {2} kellene. Húzz copyt a BPO-ról, vagy szerezz BPC-t.',
+          NAMES[t1.t] || t1.t,
+          left,
+          need
+        )
+      });
+    ctx.runsLeft.set(t1.i, Math.max(0, left - need));
+  }
+  tree.ch.unshift(invNode);
+}
+
 async function makeMulti(items, opt, shared) {
   const pool = (shared && shared.pool) || (await buildPool(opt));
   const runsLeft = (shared && shared.runsLeft) || new Map();
-  const resv = reservedMap();
-  const filt = new Map(); // per item: which stock it may take from
-  const allowFor = item => {
-    let f = filt.get(item);
-    if (!f) {
-      f = stockFilter(item, resv);
-      filt.set(item, f);
-    }
-    return f;
-  };
-  const take = (t, q, item) => {
-    const arr = pool.get(t);
-    if (!arr) return [];
-    const ok = allowFor(item);
-    const used = [];
-    let rem = q;
-    for (const x of arr) {
-      if (rem <= 0) break;
-      if (!ok(x)) continue;
-      const k = Math.min(x.q, rem);
-      if (k > 0) {
-        x.q -= k;
-        rem -= k;
-        used.push({ l: x.l, cid: x.cid, q: k, ore: x.ore, c: x.c ?? null });
-      }
-    }
-    return used;
-  };
-  const addPool = (t, q) => {
-    if (q <= 0) return;
-    let arr = pool.get(t);
-    if (!arr) {
-      arr = [];
-      pool.set(t, arr);
-    }
-    arr.push({ l: 'surplus', cid: 0, q });
-  };
-  const buyList = new Map(),
-    usedList = new Map(),
-    jobs = [];
-  const warn = [];
-  const structME = Number(S.structME || 0) / 100;
-  async function node(t, need, depth, forced, item) {
-    const n = { t, need, stock: [], build: null, buy: 0, ch: [], jobsRef: [] };
-    if (depth > 0 && opt.useStock !== false) {
-      n.stock = take(t, need, item);
-      const got = n.stock.reduce((s, x) => s + x.q, 0);
-      need -= got;
-      n.stock.forEach(x => {
-        if (x.l !== 'surplus' && x.l !== 'job') usedList.set(t, (usedList.get(t) || 0) + x.q);
-      });
-    }
-    if (need <= 0) return n;
-    let copies = forced ? forced : ownedFor(t);
-    if (copies.length) copies = copies.filter(c => c.t === copies[0].t);
-    const override = S.buyOverride[t];
-    const wantBuild = depth === 0 || (opt.buildOwn && copies.length && override !== true);
-    let meta = null,
-      rec = null;
-    if (wantBuild && copies.length) {
-      meta = BPPROD[copies[0].t];
-      const bpr = meta ? await refGet('b', copies[0].t) : null;
-      rec = bpr && bpr[meta.act];
-      if (!rec) {
-        if (depth === 0)
-          throw new Error(
-            (NAMES[copies[0].t] || '#' + copies[0].t) + ': nem találtam a gyártási receptjét az EVE Ref adatbázisban.'
-          );
-        log('Recept hiányzik, vásárlásként számolom: ' + (NAMES[copies[0].t] || copies[0].t));
-      }
-    }
-    if (rec) {
-      const act = meta.act;
-      let runsNeed = Math.ceil(need / meta.qty);
-      const jl = [];
-      for (const c of copies) {
-        if (runsNeed <= 0) break;
-        let avail = c.r === -1 ? Infinity : runsLeft.has(c.i) ? runsLeft.get(c.i) : c.r;
-        if (avail <= 0) continue;
-        const r = Math.min(avail, runsNeed);
-        runsNeed -= r;
-        if (c.r !== -1) runsLeft.set(c.i, avail - r);
-        jl.push({ c, r });
-      }
-      if (runsNeed > 0) {
-        warn.push({ t, miss: runsNeed });
-        jl.push({ c: copies[0], r: runsNeed, short: true });
-        runsNeed = 0;
-      }
-      const totalRuns = jl.reduce((s, x) => s + x.r, 0);
-      const made = totalRuns * meta.qty;
-      n.build = { act, jobs: jl, made };
-      const matNeed = new Map();
-      for (const j of jl) {
-        const me = act === 'm' ? j.c.me : 0;
-        for (const [m, q] of rec.m) {
-          const qty = Math.max(
-            j.r,
-            Math.ceil(Math.round(q * j.r * (1 - me / 100) * (1 - (act === 'm' ? structME : 0)) * 100) / 100)
-          );
-          matNeed.set(m, (matNeed.get(m) || 0) + qty);
-        }
-        const job = {
-          t,
-          bp: j.c,
-          runs: j.r,
-          act,
-          time: rec.t,
-          short: !!j.short,
-          base: rec.m,
-          miss: missingSkills(j.c.cid, rec),
-          item,
-          top: depth === 0
-        };
-        jobs.push(job);
-        n.jobsRef.push(job);
-      }
-      for (const [m, q] of matNeed) {
-        n.ch.push(await node(m, q, depth + 1, null, item));
-      }
-      addPool(t, made - need);
-      if (depth === 0) n.made = made;
-    } else {
-      n.buy = need;
-      buyList.set(t, (buyList.get(t) || 0) + need);
-    }
-    return n;
-  }
-  async function addInvention(it, tree) {
-    const t1 = it.inv.t1;
-    const t1bp = await refGet('b', t1.t);
-    const inv = t1bp && t1bp.i;
-    if (!inv || !tree.build) return;
-    const info = invInfo(t1bp, it.inv.dec, it.inv.pi || 0);
-    const t2runs = tree.build.jobs.reduce((s, j) => s + j.r, 0);
-    const bpcs = Math.ceil(t2runs / info.runsPer);
-    const attempts = it.inv.expected ? bpcs / info.chance : Math.ceil(bpcs / info.chance);
-    const invNode = {
-      t: it.copies[0].t,
-      need: bpcs,
-      stock: [],
-      build: { act: 'i', jobs: [], made: bpcs },
-      buy: 0,
-      ch: [],
-      jobsRef: [],
-      inv: { attempts, chance: info.chance, runsPer: info.runsPer, dec: it.inv.dec }
-    };
-    for (const [m, q] of inv.m) invNode.ch.push(await node(m, q * attempts, 1, null, it));
-    if (it.inv.dec) invNode.ch.push(await node(it.inv.dec, attempts, 1, null, it));
-    const t2b = await refGet('b', it.copies[0].t);
-    const t2rec = t2b && t2b.m;
-    if (!t2rec) return;
-    const job = {
-      t: it.copies[0].t,
-      bp: Object.assign({}, t1),
-      runs: attempts,
-      act: 'i',
-      time: inv.t,
-      base: t2rec.m,
-      cm: 0.02,
-      rs: inv.rs,
-      miss: missingSkills(t1.cid, { rs: inv.rs }),
-      item: it,
-      top: false,
-      invInfo: info
-    };
-    jobs.push(job);
-    invNode.jobsRef.push(job);
-    if (t1.r === -1) {
-      const cj = {
-        t: t1.t,
-        bp: Object.assign({}, t1),
-        runs: Math.ceil(attempts),
-        act: 'c',
-        time: t1bp.ct || 0,
-        base: (t1bp.m || t1bp.r || { m: [] }).m,
-        cm: 0.02,
-        rs: null,
-        miss: [],
-        item: it,
-        top: false
-      };
-      jobs.push(cj);
-      invNode.jobsRef.push(cj);
-    } else {
-      const left = runsLeft.has(t1.i) ? runsLeft.get(t1.i) : t1.r;
-      const need = Math.ceil(attempts);
-      if (need > left)
-        warn.push({
-          txt: T(
-            '{0}: a T1 BPC-n {1} run van, az inventionhöz {2} kellene. Húzz copyt a BPO-ról, vagy szerezz BPC-t.',
-            NAMES[t1.t] || t1.t,
-            left,
-            need
-          )
-        });
-      runsLeft.set(t1.i, Math.max(0, left - need));
-    }
-    tree.ch.unshift(invNode);
-  }
+  const ctx = planContext(opt, pool, runsLeft);
   const trees = [];
   for (const it of items) {
     const meta = BPPROD[it.copies[0].t];
-    const tree = await node(meta.prod, it.runs * meta.qty, 0, it.copies, it);
-    if (it.inv) await addInvention(it, tree);
+    const tree = await planNode(ctx, meta.prod, it.runs * meta.qty, 0, it.copies, it);
+    if (it.inv) await addInvention(ctx, it, tree);
     trees.push({ item: it, tree, made: tree.made || 0 });
   }
-  return { trees, buyList, usedList, jobs, warn };
+  return { trees, buyList: ctx.buyList, usedList: ctx.usedList, jobs: ctx.jobs, warn: ctx.warn };
 }
 const DECS = {
   34201: { n: 'Accelerant Decryptor', p: 1.2, me: 2, te: 10, runs: 1 },

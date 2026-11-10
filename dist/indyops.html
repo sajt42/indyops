@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-I2bQ2vwqSLKMeJF8C1nnU39aQoQiLV0R9RxB1yUzOqo=' 'sha256-dsUsKh+wSvjIKmyrSYlPQMjxdOEUgdncot9HCpsDj8k=' 'sha256-xREZHxMDEtGK0Yo1KIJyzJc54wrAdRT7YqYpqAcVJ3A=' 'sha256-qzhv3lJBi1BTukR8F8dJ7SNVN8jAGEfakfO3LofeIyg=' 'sha256-P8caWBOsRj85x2f1Qe0qFJIvp76m13QLS03v6pef7go=' 'sha256-gKe3GHkPzYNTy5NqntmfoVFCGp1EKjDLc+ZTSKobh8o=' 'sha256-1UeZ72el7VAqCDBj2wFB6Es/Ubk8pqWkvzyXJ9MQp18=' 'sha256-5pvHm3GA753xqQq1sVAbAoVBMD4mRy6Rp36g/FwLgYA=' 'sha256-EnTtZC4s1cOJ2V09zj516zX/crNMIwE1veRq3tbdjHs=' 'sha256-XCr22OKrqn5T7TwjQUVl53i9p0191v1bSOeoB2TjHF4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-I2bQ2vwqSLKMeJF8C1nnU39aQoQiLV0R9RxB1yUzOqo=' 'sha256-dsUsKh+wSvjIKmyrSYlPQMjxdOEUgdncot9HCpsDj8k=' 'sha256-lniqgJrhIlFo3wx433wQJX8eqyNya/AFdKVnxmW2jD8=' 'sha256-n1eURjpfTIP1l/4fTyR+zg6syrCleDv/MwmK/Thiq9w=' 'sha256-P8caWBOsRj85x2f1Qe0qFJIvp76m13QLS03v6pef7go=' 'sha256-PkGZYp2u1zrJCuiJUp436M2b4f16LJtPYVjpeQvb7gA=' 'sha256-usHtTTyC6MACykjCVk4UjqRMfo6WZX1bK1ZPZP1mlJQ=' 'sha256-5pvHm3GA753xqQq1sVAbAoVBMD4mRy6Rp36g/FwLgYA=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-sPZRyfmfwe1SAia5JZXqQlO6DkhdkB4Z+aGRBRE+iTQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -2254,7 +2254,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.12.5',
+  version: '1.12.6',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -2888,226 +2888,282 @@ async function resolveLoc(locId, char) {
 }
 
 /* ============ character data ============ */
+/* ---- character refresh: download everything ESI gives for one character and store a compact copy in DATA ---- */
+const charPath = (c, path) => '/characters/' + c.id + path;
+
+// Asset tree helpers: the root location of an item (walking up the container chain) and its direct container.
+function assetTree(assets) {
+  const byItem = new Map(assets.map(a => [a.item_id, a]));
+  const root = id => {
+    let cur = id,
+      guard = 0;
+    while (byItem.has(cur) && guard++ < 10) cur = byItem.get(cur).location_id;
+    return cur;
+  };
+  const inC = id => (byItem.has(id) ? id : null);
+  return { byItem, root, inC };
+}
+
+// Containers are assembled items that hold other items. Their player-given names come from /assets/names/.
+async function containerNames(c, assets) {
+  const ids = assets.filter(a => a.is_singleton && assets.some(b => b.location_id === a.item_id)).map(a => a.item_id);
+  const names = {};
+  for (let i = 0; i < ids.length; i += 900) {
+    try {
+      const res = await esi(charPath(c, '/assets/names/'), { char: c, method: 'POST', body: ids.slice(i, i + 900) });
+      for (const x of res) if (x.name && x.name !== 'None') names[x.item_id] = x.name;
+    } catch (e) {}
+  }
+  return { ids, names };
+}
+
+function mapAssets(assets, tree, names) {
+  return assets
+    .filter(a => !a.is_blueprint_copy)
+    .map(a => ({
+      t: a.type_id,
+      q: a.quantity,
+      l: tree.root(a.location_id),
+      f: a.location_flag,
+      cn: names[a.location_id] || null,
+      c: tree.inC(a.location_id),
+      s: a.is_singleton ? 1 : 0
+    }));
+}
+
+function mapBlueprints(bps, tree, names) {
+  return bps.map(b => ({
+    i: b.item_id,
+    t: b.type_id,
+    me: b.material_efficiency,
+    te: b.time_efficiency,
+    r: b.runs,
+    q: b.quantity,
+    l: tree.root(b.location_id),
+    cn: names[b.location_id] || null,
+    c: tree.inC(b.location_id)
+  }));
+}
+
+// containers (and ships with cargo): name, type, location, parent container, type category (k; 6 = ship)
+async function mapContainers(ids, tree, names) {
+  const CONT = {};
+  for (const id of ids) {
+    const a = tree.byItem.get(id);
+    CONT[id] = {
+      n: names[id] || null,
+      t: a.type_id,
+      l: tree.root(a.location_id),
+      pc: tree.inC(a.location_id),
+      f: a.location_flag
+    };
+  }
+  const types = [...new Set(Object.values(CONT).map(x => x.t))];
+  await Promise.all(types.map(t => refGet('t', t).catch(() => null)));
+  for (const x of Object.values(CONT)) {
+    const ti = REFC.t[x.t];
+    x.k = ti ? ti.c : null;
+  }
+  return CONT;
+}
+
+// what ESI tells about each top-level location: its type and how many items sit under each hangar flag
+// (clues for naming unknown locations)
+function locationMeta(assets, tree) {
+  const LM = {};
+  for (const a of assets) {
+    if (tree.byItem.has(a.location_id)) continue;
+    const m = (LM[a.location_id] = LM[a.location_id] || { t: a.location_type, f: {} });
+    m.f[a.location_flag] = (m.f[a.location_flag] || 0) + 1;
+  }
+  return LM;
+}
+
+function mapSkills(skills) {
+  const SKL = {};
+  for (const s of skills.skills || []) SKL[s.skill_id] = s.active_skill_level;
+  return SKL;
+}
+
+function mapJobs(jobs) {
+  return jobs.map(j => ({
+    act: j.activity_id,
+    bp: j.blueprint_type_id,
+    bpi: j.blueprint_id,
+    runs: j.runs,
+    start: j.start_date,
+    end: j.end_date,
+    loc: j.facility_id,
+    prod: j.product_type_id,
+    st: j.status
+  }));
+}
+
+// ESI lowers BPC runs only when the job is delivered; while it runs, or is ready but not delivered, the old number
+// comes back (and the blueprint list may be cached for up to an hour). So the runs of every manufacturing or reaction
+// job not yet delivered at the time of the blueprint snapshot (bpAt) are subtracted; b.adj records how many.
+async function subtractUndeliveredRuns(c, B, jobs, bpAt) {
+  if (!bpAt) return;
+  const mapJ = j => ({
+    bpi: j.blueprint_id,
+    act: j.activity_id,
+    runs: j.runs,
+    st: j.status,
+    done: j.completed_date || null,
+    id: j.job_id
+  });
+  const JA = jobs.map(mapJ);
+  try {
+    const all = await esi(charPath(c, '/industry/jobs/?include_completed=true'), { char: c });
+    const seen = new Set(JA.map(x => x.id));
+    for (const j of all) if (!seen.has(j.job_id)) JA.push(mapJ(j));
+  } catch (e) {}
+  const openAt = (j, t) =>
+    j.st === 'active' || j.st === 'ready' || j.st === 'paused' || (j.done && Date.parse(j.done) > t);
+  for (const b of B) {
+    if (!(b.r > 0)) continue;
+    for (const j of JA) {
+      if (j.bpi !== b.i || !(j.act === 1 || j.act === 8)) continue;
+      if (openAt(j, bpAt)) {
+        b.r = Math.max(0, b.r - j.runs);
+        b.adj = (b.adj || 0) + j.runs;
+      }
+    }
+  }
+}
+
+// Optional data, each behind its own scope; a failure is logged and leaves the default (null or []).
+async function fetchStandings(c) {
+  if (!hasScope(c, 'esi-characters.read_standings.v1')) return null;
+  try {
+    const STD = {};
+    for (const x of await esi(charPath(c, '/standings/'), { char: c })) STD[x.from_id] = x.standing;
+    return STD;
+  } catch (e) {
+    log('Standingek: ' + e.message);
+    return {};
+  }
+}
+
+async function fetchImplants(c) {
+  if (!hasScope(c, 'esi-clones.read_implants.v1')) return null;
+  let IMP = null;
+  try {
+    IMP = await esi(charPath(c, '/implants/'), { char: c });
+    await resolveNames(IMP);
+  } catch (e) {
+    log('Implantok: ' + e.message);
+  }
+  return IMP;
+}
+
+async function fetchOrders(c) {
+  if (!hasScope(c, 'esi-markets.read_character_orders.v1')) return [];
+  try {
+    return (await esi(charPath(c, '/orders/'), { char: c })).map(o => ({
+      id: o.order_id,
+      t: o.type_id,
+      l: o.location_id,
+      reg: o.region_id,
+      p: o.price,
+      rem: o.volume_remain,
+      tot: o.volume_total,
+      buy: !!o.is_buy_order,
+      iss: o.issued,
+      dur: o.duration
+    }));
+  } catch (e) {
+    log('Orderek: ' + e.message);
+    return [];
+  }
+}
+
+// wallet transactions of the last 30 days (only if enabled in Settings)
+async function fetchTransactions(c) {
+  if (!(S.wallet && hasScope(c, WALLET_SCOPE))) return [];
+  try {
+    const lim = Date.now() - 30 * 86400000;
+    return (await esi(charPath(c, '/wallet/transactions/'), { char: c }))
+      .filter(x => new Date(x.date).getTime() >= lim)
+      .map(x => ({ d: x.date, t: x.type_id, q: x.quantity, p: x.unit_price, buy: x.is_buy, l: x.location_id }));
+  } catch (e) {
+    log('Wallet: ' + e.message);
+    return [];
+  }
+}
+
+// names of every type, region and location the character's data refers to
+async function resolveCharNames(c, d) {
+  await resolveNames(
+    d.orders
+      .map(o => o.t)
+      .concat(
+        d.tx.map(x => x.t),
+        d.orders.map(o => o.reg)
+      )
+  );
+  for (const l of new Set(d.orders.map(o => o.l))) await resolveLoc(l, c);
+  await resolveNames(
+    d.assets
+      .map(a => a.t)
+      .concat(
+        d.bps.map(b => b.t),
+        d.jobs.map(j => j.bp)
+      )
+  );
+  const locs = new Set(
+    d.assets
+      .map(a => a.l)
+      .concat(
+        d.bps.map(b => b.l),
+        d.jobs.map(j => j.loc)
+      )
+  );
+  for (const l of locs) await resolveLoc(l, c);
+}
+
 async function refreshChar(c) {
   status(T('frissítés: {0}…', c.name));
   log('Adatok letöltése: ' + c.name);
   try {
     const [assets, bpm, skills, jobs] = await Promise.all([
-      esi('/characters/' + c.id + '/assets/', { char: c, paged: true }),
-      esi('/characters/' + c.id + '/blueprints/', { char: c, paged: true, meta: true }),
-      esi('/characters/' + c.id + '/skills/', { char: c }),
-      esi('/characters/' + c.id + '/industry/jobs/', { char: c })
+      esi(charPath(c, '/assets/'), { char: c, paged: true }),
+      esi(charPath(c, '/blueprints/'), { char: c, paged: true, meta: true }),
+      esi(charPath(c, '/skills/'), { char: c }),
+      esi(charPath(c, '/industry/jobs/'), { char: c })
     ]);
-    const bps = bpm.data;
-    const bpLM = bpm.lm,
-      bpExp = bpm.exp;
-    // root location: walk up the container chain
-    const byItem = new Map(assets.map(a => [a.item_id, a]));
-    const root = id => {
-      let cur = id,
-        guard = 0;
-      while (byItem.has(cur) && guard++ < 10) cur = byItem.get(cur).location_id;
-      return cur;
-    };
-    const contNames = {};
-    const contIds = assets
-      .filter(a => a.is_singleton && assets.some(b => b.location_id === a.item_id))
-      .map(a => a.item_id);
-    for (let i = 0; i < contIds.length; i += 900) {
-      try {
-        (
-          await esi('/characters/' + c.id + '/assets/names/', {
-            char: c,
-            method: 'POST',
-            body: contIds.slice(i, i + 900)
-          })
-        ).forEach(x => {
-          if (x.name && x.name !== 'None') contNames[x.item_id] = x.name;
-        });
-      } catch (e) {}
-    }
-    const inC = id => (byItem.has(id) ? id : null); // direct container (if any)
-    const A = assets
-      .filter(a => !a.is_blueprint_copy)
-      .map(a => ({
-        t: a.type_id,
-        q: a.quantity,
-        l: root(a.location_id),
-        f: a.location_flag,
-        cn: contNames[a.location_id] || null,
-        c: inC(a.location_id),
-        s: a.is_singleton ? 1 : 0
-      }));
-    const B = bps.map(b => ({
-      i: b.item_id,
-      t: b.type_id,
-      me: b.material_efficiency,
-      te: b.time_efficiency,
-      r: b.runs,
-      q: b.quantity,
-      l: root(b.location_id),
-      cn: contNames[b.location_id] || null,
-      c: inC(b.location_id)
-    }));
-    // containers (and ships with cargo): name, type, location, parent container
-    const CONT = {};
-    for (const id of contIds) {
-      const a = byItem.get(id);
-      CONT[id] = {
-        n: contNames[id] || null,
-        t: a.type_id,
-        l: root(a.location_id),
-        pc: inC(a.location_id),
-        f: a.location_flag
-      };
-    }
-    await Promise.all([...new Set(Object.values(CONT).map(x => x.t))].map(t => refGet('t', t).catch(() => null)));
-    for (const x of Object.values(CONT)) {
-      const ti = REFC.t[x.t];
-      x.k = ti ? ti.c : null;
-    }
-    const LM = {};
-    for (const a of assets) {
-      if (byItem.has(a.location_id)) continue;
-      const m = (LM[a.location_id] = LM[a.location_id] || { t: a.location_type, f: {} });
-      m.f[a.location_flag] = (m.f[a.location_flag] || 0) + 1;
-    }
-    const SKL = {};
-    (skills.skills || []).forEach(s => (SKL[s.skill_id] = s.active_skill_level));
-    const J = jobs.map(j => ({
-      act: j.activity_id,
-      bp: j.blueprint_type_id,
-      bpi: j.blueprint_id,
-      runs: j.runs,
-      start: j.start_date,
-      end: j.end_date,
-      loc: j.facility_id,
-      prod: j.product_type_id,
-      st: j.status
-    }));
-    // ESI may cache the blueprint list for up to an hour.
-    // Jobs already delivered count too when the ESI snapshot is older than the delivery.
-    // ESI lowers BPC runs only when the job is delivered; while it runs, or is ready but not delivered, the old number comes back.
-    // So the runs of every job not yet delivered at the time of the ESI snapshot are subtracted.
-    const mapJ = j => ({
-      bpi: j.blueprint_id,
-      act: j.activity_id,
-      runs: j.runs,
-      st: j.status,
-      done: j.completed_date || null,
-      id: j.job_id
-    });
-    let JA = jobs.map(mapJ);
-    if (bpLM) {
-      try {
-        const all = await esi('/characters/' + c.id + '/industry/jobs/?include_completed=true', { char: c });
-        const seen = new Set(JA.map(x => x.id));
-        all.forEach(j => {
-          if (!seen.has(j.job_id)) JA.push(mapJ(j));
-        });
-      } catch (e) {}
-    }
-    const openAt = (j, t) =>
-      j.st === 'active' || j.st === 'ready' || j.st === 'paused' || (j.done && Date.parse(j.done) > t);
-    for (const b of B) {
-      if (!(b.r > 0)) continue;
-      for (const j of JA) {
-        if (j.bpi !== b.i || !(j.act === 1 || j.act === 8) || !bpLM) continue;
-        if (openAt(j, bpLM)) {
-          b.r = Math.max(0, b.r - j.runs);
-          b.adj = (b.adj || 0) + j.runs;
-        }
-      }
-    }
-    let O = [],
-      TX = [],
-      IMP = null,
-      STD = null;
-    if (hasScope(c, 'esi-characters.read_standings.v1')) {
-      try {
-        STD = {};
-        (await esi('/characters/' + c.id + '/standings/', { char: c })).forEach(x => (STD[x.from_id] = x.standing));
-      } catch (e) {
-        log('Standingek: ' + e.message);
-      }
-    }
-    if (hasScope(c, 'esi-clones.read_implants.v1')) {
-      try {
-        IMP = await esi('/characters/' + c.id + '/implants/', { char: c });
-        await resolveNames(IMP);
-      } catch (e) {
-        log('Implantok: ' + e.message);
-      }
-    }
-    if (hasScope(c, 'esi-markets.read_character_orders.v1')) {
-      try {
-        O = (await esi('/characters/' + c.id + '/orders/', { char: c })).map(o => ({
-          id: o.order_id,
-          t: o.type_id,
-          l: o.location_id,
-          reg: o.region_id,
-          p: o.price,
-          rem: o.volume_remain,
-          tot: o.volume_total,
-          buy: !!o.is_buy_order,
-          iss: o.issued,
-          dur: o.duration
-        }));
-      } catch (e) {
-        log('Orderek: ' + e.message);
-      }
-    }
-    if (S.wallet && hasScope(c, WALLET_SCOPE)) {
-      try {
-        const lim = Date.now() - 30 * 86400000;
-        TX = (await esi('/characters/' + c.id + '/wallet/transactions/', { char: c }))
-          .filter(x => new Date(x.date).getTime() >= lim)
-          .map(x => ({ d: x.date, t: x.type_id, q: x.quantity, p: x.unit_price, buy: x.is_buy, l: x.location_id }));
-      } catch (e) {
-        log('Wallet: ' + e.message);
-      }
-    }
-    DATA[c.id] = {
+    const tree = assetTree(assets);
+    const cont = await containerNames(c, assets);
+    const A = mapAssets(assets, tree, cont.names);
+    const B = mapBlueprints(bpm.data, tree, cont.names);
+    const CONT = await mapContainers(cont.ids, tree, cont.names);
+    await subtractUndeliveredRuns(c, B, jobs, bpm.lm);
+    const STD = await fetchStandings(c);
+    const IMP = await fetchImplants(c);
+    const O = await fetchOrders(c);
+    const TX = await fetchTransactions(c);
+    // field names are short because DATA is kept in localStorage
+    const d = {
       assets: A,
       bps: B,
-      skills: SKL,
-      jobs: J,
+      skills: mapSkills(skills),
+      jobs: mapJobs(jobs),
       orders: O,
       tx: TX,
       imp: IMP,
       std: STD,
-      lm: LM,
+      lm: locationMeta(assets, tree),
       cont: CONT,
-      bpAt: bpLM,
-      bpExp: bpExp,
+      bpAt: bpm.lm,
+      bpExp: bpm.exp,
       dv: APP.dataVersion,
       at: Date.now()
     };
-    await resolveNames(
-      O.map(o => o.t).concat(
-        TX.map(x => x.t),
-        O.map(o => o.reg)
-      )
-    );
-    for (const l of new Set(O.map(o => o.l))) await resolveLoc(l, c);
-    await resolveNames(
-      A.map(a => a.t).concat(
-        B.map(b => b.t),
-        J.map(j => j.bp)
-      )
-    );
-    const locs = [
-      ...new Set(
-        A.map(a => a.l).concat(
-          B.map(b => b.l),
-          J.map(j => j.loc)
-        )
-      )
-    ];
-    for (const l of locs) await resolveLoc(l, c);
+    DATA[c.id] = d;
+    await resolveCharNames(c, d);
     if (!store('data', DATA))
       log('Figyelem: a böngésző tárhelye megtelt, az adatok csak a lap bezárásáig maradnak meg.');
-    log(c.name + ': ' + A.length + ' tárgy, ' + B.length + ' blueprint, ' + J.length + ' job');
+    log(c.name + ': ' + d.assets.length + ' tárgy, ' + B.length + ' blueprint, ' + d.jobs.length + ' job');
   } catch (e) {
     log('Hiba (' + c.name + '): ' + e.message);
     alertBox(T('Nem sikerült frissíteni: {0}. {1}', c.name, e.message));
@@ -3856,218 +3912,247 @@ async function buildPool(opt) {
   }
   return pool;
 }
-/* several items from one stock; shared={pool,runsLeft} is also shared between projects */
+/* ---- material trees for several items from one stock ----
+ * makeMulti(items, opt, shared) builds one tree per item. All items draw from the same stock pool and the same
+ * blueprint runs; pass shared={pool,runsLeft} to share them between calls (projects calculated one after another).
+ * Result: {trees:[{item,tree,made}], buyList: Map type->qty, usedList: Map type->qty taken from own stock,
+ *          jobs: [job], warn: [{t,miss}|{txt}]}
+ * A tree node: {t, need, stock:[taken pool entries], build:{act,jobs:[{c,r,short}],made}|null, buy, ch:[nodes], jobsRef:[jobs]}
+ */
+function planContext(opt, pool, runsLeft) {
+  return {
+    opt,
+    pool,
+    runsLeft,
+    resv: reservedMap(),
+    filters: new Map(), // per item: which stock entries it may take
+    buyList: new Map(),
+    usedList: new Map(),
+    jobs: [],
+    warn: [],
+    structME: Number(S.structME || 0) / 100
+  };
+}
+
+function stockAllowed(ctx, item) {
+  let f = ctx.filters.get(item);
+  if (!f) {
+    f = stockFilter(item, ctx.resv);
+    ctx.filters.set(item, f);
+  }
+  return f;
+}
+
+// takes up to q of type t from the pool entries the item may use; returns what was taken
+function takeStock(ctx, t, q, item) {
+  const arr = ctx.pool.get(t);
+  if (!arr) return [];
+  const ok = stockAllowed(ctx, item);
+  const used = [];
+  let rem = q;
+  for (const x of arr) {
+    if (rem <= 0) break;
+    if (!ok(x)) continue;
+    const k = Math.min(x.q, rem);
+    if (k > 0) {
+      x.q -= k;
+      rem -= k;
+      used.push({ l: x.l, cid: x.cid, q: k, ore: x.ore, c: x.c ?? null });
+    }
+  }
+  return used;
+}
+
+// what a job makes beyond the need goes back to the pool for later nodes and items
+function addSurplus(ctx, t, q) {
+  if (q <= 0) return;
+  let arr = ctx.pool.get(t);
+  if (!arr) {
+    arr = [];
+    ctx.pool.set(t, arr);
+  }
+  arr.push({ l: 'surplus', cid: 0, q });
+}
+
+// recipe of the first copy; null means "buy it" (a missing recipe on the top item is an error)
+async function recipeOf(copies, depth) {
+  const meta = BPPROD[copies[0].t];
+  const bpr = meta ? await refGet('b', copies[0].t) : null;
+  const rec = bpr && bpr[meta.act];
+  if (!rec) {
+    const name = NAMES[copies[0].t] || '#' + copies[0].t;
+    if (depth === 0) throw new Error(name + ': nem találtam a gyártási receptjét az EVE Ref adatbázisban.');
+    log('Recept hiányzik, vásárlásként számolom: ' + (NAMES[copies[0].t] || copies[0].t));
+    return null;
+  }
+  return { meta, rec };
+}
+
+// spreads the needed runs over the copies in order (BPOs are unlimited, BPC runs are tracked in ctx.runsLeft);
+// runs that fit nowhere go on the first copy marked short, with a warning
+function allocateRuns(ctx, t, copies, runsNeed) {
+  const jl = [];
+  for (const c of copies) {
+    if (runsNeed <= 0) break;
+    const avail = c.r === -1 ? Infinity : ctx.runsLeft.has(c.i) ? ctx.runsLeft.get(c.i) : c.r;
+    if (avail <= 0) continue;
+    const r = Math.min(avail, runsNeed);
+    runsNeed -= r;
+    if (c.r !== -1) ctx.runsLeft.set(c.i, avail - r);
+    jl.push({ c, r });
+  }
+  if (runsNeed > 0) {
+    ctx.warn.push({ t, miss: runsNeed });
+    jl.push({ c: copies[0], r: runsNeed, short: true });
+  }
+  return jl;
+}
+
+// material quantity of one job: blueprint ME and structure ME apply to manufacturing only, rounded up per job,
+// never less than one unit per run
+function jobMaterialQty(q, runs, act, me, structME) {
+  const m = act === 'm';
+  return Math.max(
+    runs,
+    Math.ceil(Math.round(q * runs * (1 - (m ? me : 0) / 100) * (1 - (m ? structME : 0)) * 100) / 100)
+  );
+}
+
+async function planNode(ctx, t, need, depth, forced, item) {
+  const n = { t, need, stock: [], build: null, buy: 0, ch: [], jobsRef: [] };
+  if (depth > 0 && ctx.opt.useStock !== false) {
+    n.stock = takeStock(ctx, t, need, item);
+    need -= n.stock.reduce((s, x) => s + x.q, 0);
+    for (const x of n.stock)
+      if (x.l !== 'surplus' && x.l !== 'job') ctx.usedList.set(t, (ctx.usedList.get(t) || 0) + x.q);
+  }
+  if (need <= 0) return n;
+  let copies = forced ? forced : ownedFor(t);
+  if (copies.length) copies = copies.filter(c => c.t === copies[0].t);
+  const wantBuild = depth === 0 || (ctx.opt.buildOwn && copies.length && S.buyOverride[t] !== true);
+  const recipe = wantBuild && copies.length ? await recipeOf(copies, depth) : null;
+  if (!recipe) {
+    n.buy = need;
+    ctx.buyList.set(t, (ctx.buyList.get(t) || 0) + need);
+    return n;
+  }
+  const { meta, rec } = recipe;
+  const act = meta.act;
+  const jl = allocateRuns(ctx, t, copies, Math.ceil(need / meta.qty));
+  const made = jl.reduce((s, x) => s + x.r, 0) * meta.qty;
+  n.build = { act, jobs: jl, made };
+  const matNeed = new Map();
+  for (const j of jl) {
+    for (const [m, q] of rec.m)
+      matNeed.set(m, (matNeed.get(m) || 0) + jobMaterialQty(q, j.r, act, j.c.me, ctx.structME));
+    const job = {
+      t,
+      bp: j.c,
+      runs: j.r,
+      act,
+      time: rec.t,
+      short: !!j.short,
+      base: rec.m,
+      miss: missingSkills(j.c.cid, rec),
+      item,
+      top: depth === 0
+    };
+    ctx.jobs.push(job);
+    n.jobsRef.push(job);
+  }
+  for (const [m, q] of matNeed) n.ch.push(await planNode(ctx, m, q, depth + 1, null, item));
+  addSurplus(ctx, t, made - need);
+  if (depth === 0) n.made = made;
+  return n;
+}
+
+// T2 item: adds an invention node in front of the tree (datacores, decryptor, the invention job, and a copy job
+// when the T1 blueprint is a BPO; with a T1 BPC its runs are used up and checked)
+async function addInvention(ctx, it, tree) {
+  const t1 = it.inv.t1;
+  const t1bp = await refGet('b', t1.t);
+  const inv = t1bp && t1bp.i;
+  if (!inv || !tree.build) return;
+  const info = invInfo(t1bp, it.inv.dec, it.inv.pi || 0);
+  const t2runs = tree.build.jobs.reduce((s, j) => s + j.r, 0);
+  const bpcs = Math.ceil(t2runs / info.runsPer);
+  const attempts = it.inv.expected ? bpcs / info.chance : Math.ceil(bpcs / info.chance);
+  const invNode = {
+    t: it.copies[0].t,
+    need: bpcs,
+    stock: [],
+    build: { act: 'i', jobs: [], made: bpcs },
+    buy: 0,
+    ch: [],
+    jobsRef: [],
+    inv: { attempts, chance: info.chance, runsPer: info.runsPer, dec: it.inv.dec }
+  };
+  for (const [m, q] of inv.m) invNode.ch.push(await planNode(ctx, m, q * attempts, 1, null, it));
+  if (it.inv.dec) invNode.ch.push(await planNode(ctx, it.inv.dec, attempts, 1, null, it));
+  const t2b = await refGet('b', it.copies[0].t);
+  const t2rec = t2b && t2b.m;
+  if (!t2rec) return;
+  const job = {
+    t: it.copies[0].t,
+    bp: Object.assign({}, t1),
+    runs: attempts,
+    act: 'i',
+    time: inv.t,
+    base: t2rec.m,
+    cm: 0.02,
+    rs: inv.rs,
+    miss: missingSkills(t1.cid, { rs: inv.rs }),
+    item: it,
+    top: false,
+    invInfo: info
+  };
+  ctx.jobs.push(job);
+  invNode.jobsRef.push(job);
+  if (t1.r === -1) {
+    const cj = {
+      t: t1.t,
+      bp: Object.assign({}, t1),
+      runs: Math.ceil(attempts),
+      act: 'c',
+      time: t1bp.ct || 0,
+      base: (t1bp.m || t1bp.r || { m: [] }).m,
+      cm: 0.02,
+      rs: null,
+      miss: [],
+      item: it,
+      top: false
+    };
+    ctx.jobs.push(cj);
+    invNode.jobsRef.push(cj);
+  } else {
+    const left = ctx.runsLeft.has(t1.i) ? ctx.runsLeft.get(t1.i) : t1.r;
+    const need = Math.ceil(attempts);
+    if (need > left)
+      ctx.warn.push({
+        txt: T(
+          '{0}: a T1 BPC-n {1} run van, az inventionhöz {2} kellene. Húzz copyt a BPO-ról, vagy szerezz BPC-t.',
+          NAMES[t1.t] || t1.t,
+          left,
+          need
+        )
+      });
+    ctx.runsLeft.set(t1.i, Math.max(0, left - need));
+  }
+  tree.ch.unshift(invNode);
+}
+
 async function makeMulti(items, opt, shared) {
   const pool = (shared && shared.pool) || (await buildPool(opt));
   const runsLeft = (shared && shared.runsLeft) || new Map();
-  const resv = reservedMap();
-  const filt = new Map(); // per item: which stock it may take from
-  const allowFor = item => {
-    let f = filt.get(item);
-    if (!f) {
-      f = stockFilter(item, resv);
-      filt.set(item, f);
-    }
-    return f;
-  };
-  const take = (t, q, item) => {
-    const arr = pool.get(t);
-    if (!arr) return [];
-    const ok = allowFor(item);
-    const used = [];
-    let rem = q;
-    for (const x of arr) {
-      if (rem <= 0) break;
-      if (!ok(x)) continue;
-      const k = Math.min(x.q, rem);
-      if (k > 0) {
-        x.q -= k;
-        rem -= k;
-        used.push({ l: x.l, cid: x.cid, q: k, ore: x.ore, c: x.c ?? null });
-      }
-    }
-    return used;
-  };
-  const addPool = (t, q) => {
-    if (q <= 0) return;
-    let arr = pool.get(t);
-    if (!arr) {
-      arr = [];
-      pool.set(t, arr);
-    }
-    arr.push({ l: 'surplus', cid: 0, q });
-  };
-  const buyList = new Map(),
-    usedList = new Map(),
-    jobs = [];
-  const warn = [];
-  const structME = Number(S.structME || 0) / 100;
-  async function node(t, need, depth, forced, item) {
-    const n = { t, need, stock: [], build: null, buy: 0, ch: [], jobsRef: [] };
-    if (depth > 0 && opt.useStock !== false) {
-      n.stock = take(t, need, item);
-      const got = n.stock.reduce((s, x) => s + x.q, 0);
-      need -= got;
-      n.stock.forEach(x => {
-        if (x.l !== 'surplus' && x.l !== 'job') usedList.set(t, (usedList.get(t) || 0) + x.q);
-      });
-    }
-    if (need <= 0) return n;
-    let copies = forced ? forced : ownedFor(t);
-    if (copies.length) copies = copies.filter(c => c.t === copies[0].t);
-    const override = S.buyOverride[t];
-    const wantBuild = depth === 0 || (opt.buildOwn && copies.length && override !== true);
-    let meta = null,
-      rec = null;
-    if (wantBuild && copies.length) {
-      meta = BPPROD[copies[0].t];
-      const bpr = meta ? await refGet('b', copies[0].t) : null;
-      rec = bpr && bpr[meta.act];
-      if (!rec) {
-        if (depth === 0)
-          throw new Error(
-            (NAMES[copies[0].t] || '#' + copies[0].t) + ': nem találtam a gyártási receptjét az EVE Ref adatbázisban.'
-          );
-        log('Recept hiányzik, vásárlásként számolom: ' + (NAMES[copies[0].t] || copies[0].t));
-      }
-    }
-    if (rec) {
-      const act = meta.act;
-      let runsNeed = Math.ceil(need / meta.qty);
-      const jl = [];
-      for (const c of copies) {
-        if (runsNeed <= 0) break;
-        let avail = c.r === -1 ? Infinity : runsLeft.has(c.i) ? runsLeft.get(c.i) : c.r;
-        if (avail <= 0) continue;
-        const r = Math.min(avail, runsNeed);
-        runsNeed -= r;
-        if (c.r !== -1) runsLeft.set(c.i, avail - r);
-        jl.push({ c, r });
-      }
-      if (runsNeed > 0) {
-        warn.push({ t, miss: runsNeed });
-        jl.push({ c: copies[0], r: runsNeed, short: true });
-        runsNeed = 0;
-      }
-      const totalRuns = jl.reduce((s, x) => s + x.r, 0);
-      const made = totalRuns * meta.qty;
-      n.build = { act, jobs: jl, made };
-      const matNeed = new Map();
-      for (const j of jl) {
-        const me = act === 'm' ? j.c.me : 0;
-        for (const [m, q] of rec.m) {
-          const qty = Math.max(
-            j.r,
-            Math.ceil(Math.round(q * j.r * (1 - me / 100) * (1 - (act === 'm' ? structME : 0)) * 100) / 100)
-          );
-          matNeed.set(m, (matNeed.get(m) || 0) + qty);
-        }
-        const job = {
-          t,
-          bp: j.c,
-          runs: j.r,
-          act,
-          time: rec.t,
-          short: !!j.short,
-          base: rec.m,
-          miss: missingSkills(j.c.cid, rec),
-          item,
-          top: depth === 0
-        };
-        jobs.push(job);
-        n.jobsRef.push(job);
-      }
-      for (const [m, q] of matNeed) {
-        n.ch.push(await node(m, q, depth + 1, null, item));
-      }
-      addPool(t, made - need);
-      if (depth === 0) n.made = made;
-    } else {
-      n.buy = need;
-      buyList.set(t, (buyList.get(t) || 0) + need);
-    }
-    return n;
-  }
-  async function addInvention(it, tree) {
-    const t1 = it.inv.t1;
-    const t1bp = await refGet('b', t1.t);
-    const inv = t1bp && t1bp.i;
-    if (!inv || !tree.build) return;
-    const info = invInfo(t1bp, it.inv.dec, it.inv.pi || 0);
-    const t2runs = tree.build.jobs.reduce((s, j) => s + j.r, 0);
-    const bpcs = Math.ceil(t2runs / info.runsPer);
-    const attempts = it.inv.expected ? bpcs / info.chance : Math.ceil(bpcs / info.chance);
-    const invNode = {
-      t: it.copies[0].t,
-      need: bpcs,
-      stock: [],
-      build: { act: 'i', jobs: [], made: bpcs },
-      buy: 0,
-      ch: [],
-      jobsRef: [],
-      inv: { attempts, chance: info.chance, runsPer: info.runsPer, dec: it.inv.dec }
-    };
-    for (const [m, q] of inv.m) invNode.ch.push(await node(m, q * attempts, 1, null, it));
-    if (it.inv.dec) invNode.ch.push(await node(it.inv.dec, attempts, 1, null, it));
-    const t2b = await refGet('b', it.copies[0].t);
-    const t2rec = t2b && t2b.m;
-    if (!t2rec) return;
-    const job = {
-      t: it.copies[0].t,
-      bp: Object.assign({}, t1),
-      runs: attempts,
-      act: 'i',
-      time: inv.t,
-      base: t2rec.m,
-      cm: 0.02,
-      rs: inv.rs,
-      miss: missingSkills(t1.cid, { rs: inv.rs }),
-      item: it,
-      top: false,
-      invInfo: info
-    };
-    jobs.push(job);
-    invNode.jobsRef.push(job);
-    if (t1.r === -1) {
-      const cj = {
-        t: t1.t,
-        bp: Object.assign({}, t1),
-        runs: Math.ceil(attempts),
-        act: 'c',
-        time: t1bp.ct || 0,
-        base: (t1bp.m || t1bp.r || { m: [] }).m,
-        cm: 0.02,
-        rs: null,
-        miss: [],
-        item: it,
-        top: false
-      };
-      jobs.push(cj);
-      invNode.jobsRef.push(cj);
-    } else {
-      const left = runsLeft.has(t1.i) ? runsLeft.get(t1.i) : t1.r;
-      const need = Math.ceil(attempts);
-      if (need > left)
-        warn.push({
-          txt: T(
-            '{0}: a T1 BPC-n {1} run van, az inventionhöz {2} kellene. Húzz copyt a BPO-ról, vagy szerezz BPC-t.',
-            NAMES[t1.t] || t1.t,
-            left,
-            need
-          )
-        });
-      runsLeft.set(t1.i, Math.max(0, left - need));
-    }
-    tree.ch.unshift(invNode);
-  }
+  const ctx = planContext(opt, pool, runsLeft);
   const trees = [];
   for (const it of items) {
     const meta = BPPROD[it.copies[0].t];
-    const tree = await node(meta.prod, it.runs * meta.qty, 0, it.copies, it);
-    if (it.inv) await addInvention(it, tree);
+    const tree = await planNode(ctx, meta.prod, it.runs * meta.qty, 0, it.copies, it);
+    if (it.inv) await addInvention(ctx, it, tree);
     trees.push({ item: it, tree, made: tree.made || 0 });
   }
-  return { trees, buyList, usedList, jobs, warn };
+  return { trees, buyList: ctx.buyList, usedList: ctx.usedList, jobs: ctx.jobs, warn: ctx.warn };
 }
 const DECS = {
   34201: { n: 'Accelerant Decryptor', p: 1.2, me: 2, te: 10, runs: 1 },
@@ -5059,11 +5144,10 @@ async function refreshHaul(R) {
     if (R.haulPending === sig) R.haulPending = null;
   }
 }
-// Pure rendering of a finished plan (finishResult or showResult has already assigned characters and prepared hauling).
-function renderResult(el, R, rerun) {
-  const free = $('#optStockFree').checked;
-  const fee = salesTax() + brokerFee();
-  // items without price: profit cannot be computed (they are not counted as 0)
+// Totals of a plan, the same numbers the KPIs and the per-product table show.
+// free: own stock counts as free; fee: selling fees (sales tax + broker).
+// Items without a price make the profit "not computable" (unk) instead of being counted as 0.
+function planTotals(R, free, fee) {
   const unkOf = tree => {
     const u = new Set();
     const scan = n => {
@@ -5099,10 +5183,11 @@ function renderResult(el, R, rerun) {
   const jcT = R.jobs.reduce((s, j) => s + jobCost(j, R.sys), 0);
   const net = rows.reduce((s, r) => s + r.net, 0);
   const profit = net - buyCost - stockCost - jcT;
-  const ix = IDX.p[R.sys];
-  const multi = R.trees.length > 1;
-  const ixm = ix && ix.manufacturing;
-  let h = `<div class="kpis">
+  return { rows, unkAll, buyCost, stockCost, jcT, net, profit };
+}
+function resultKpis(R, P, free, multi) {
+  const { unkAll, buyCost, stockCost, jcT, net, profit } = P;
+  return `<div class="kpis">
     <div class="kpi"><div class="k">${multi ? 'Termékek' : 'Termék'}</div><div class="v" style="font-size:16px">${multi ? R.trees.length + ' tétel' : esc(R.title || '')}</div></div>
     <div class="kpi"><div class="k">Vásárolni kell</div><div class="v">${isk(buyCost)}</div></div>
     <div class="kpi"><div class="k">Saját készlet értéke</div><div class="v">${free ? 'ingyen' : isk(stockCost)}</div></div>
@@ -5118,23 +5203,30 @@ function renderResult(el, R, rerun) {
     }</div>
     <div class="kpi"><div class="k">Profit</div>${unkAll.size ? `<div class="v">${T('nem számolható')}</div><div class="small muted">${T('becslés ár nélküli tételek nélkül: {0}', isk(profit))}</div>` : `<div class="v ${profit >= 0 ? 'pos' : 'neg'}">${isk(profit)}</div>`}</div>
   </div>${unkAll.size ? `<div class="notice" style="margin:8px 0"><p class="small">${T('Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.', esc([...unkAll].map(t => NAMES[t] || t).join(', ')))}</p></div>` : ''}`;
+}
+// production systems with their cost index, and the selling fees used
+function resultSystems(R) {
   const syss = [...new Set(R.jobs.map(j => jobSysOf(j, R.sys)).filter(Boolean))];
-  h +=
+  return (
     `<p class="small muted">${syss.length > 1 ? T('Gyártási rendszerek: {0}', syss.map(s => esc(NAMES[s] || s) + ((IDX.p[s] || {}).manufacturing != null ? ' (' + fmt(IDX.p[s].manufacturing * 100, 2) + '%)' : '')).join(', ')) : T('Gyártási rendszer: {0}', esc(NAMES[syss[0] || R.sys] || syss[0] || R.sys || T('ismeretlen'))) + ((IDX.p[syss[0] || R.sys] || {}).manufacturing != null ? ' · cost index ' + fmt(IDX.p[syss[0] || R.sys].manufacturing * 100, 2) + '%' : '')} · sales tax ${fmt(salesTax() * 100, 2)}% · broker ${fmt(brokerFee() * 100, 2)}%${bestSeller() ? ' · ' + T('eladó: {0}', esc(charName(bestSeller().cid))) : ''}</p>` +
-    m2Hint();
-  R.warn.forEach(w => (h += `<div class="notice">${esc(warnText(w))}</div>`));
-  // per product
-  h += `<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi ? '<th>Projekt</th>' : ''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On() ? `<th class="num">${esc(m2Short())} sell / db</th>` : ''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r => `<tr>${multi ? `<td>${esc(r.x.item.label || '')}</td>` : ''}<td>${esc(NAMES[r.p] || r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On() ? `<td class="num">${m2Cell(sell(r.p), sell2(r.p))}</td>` : ''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${r.unk ? '<span title="' + esc(T('Nincs ára valaminek ebben a tételben.')) + '">?</span>' : isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
+    m2Hint()
+  );
+}
+function resultProducts(R, rows, multi) {
+  let h = `<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi ? '<th>Projekt</th>' : ''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On() ? `<th class="num">${esc(m2Short())} sell / db</th>` : ''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r => `<tr>${multi ? `<td>${esc(r.x.item.label || '')}</td>` : ''}<td>${esc(NAMES[r.p] || r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On() ? `<td class="num">${m2Cell(sell(r.p), sell2(r.p))}</td>` : ''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${r.unk ? '<span title="' + esc(T('Nincs ára valaminek ebben a tételben.')) + '">?</span>' : isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
   if (multi)
     h += `<p class="small muted" style="margin-top:4px">A tételenkénti anyagköltségben a másik tétel jobjából maradt felesleg ingyen számít, ezért a sorok összege kicsit eltérhet a fenti összesítéstől.</p>`;
-  // shopping list
-  const bl = [...R.buyList].sort((a, b) => b[1] * buyPrice(b[0]) - a[1] * buyPrice(a[0]));
+  return h;
+}
+// shopping list (bl: what to buy, most expensive first); its closing </div> comes after the jobs table (grid2)
+function resultShopping(bl) {
   const bm2 = buyM2On();
-  h += `<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th>${m2On() ? `<th class="num">${esc(m2Short())} sell</th>` : ''}${bm2 ? '<th>Hol veszed</th>' : ''}<th class="num">Összesen</th></tr></thead><tbody>${bl.map(([t, q]) => `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : '<span class="pill warn">nincs ár</span>'}</td>${m2On() ? `<td class="num">${m2Cell(unitPrice(t), sell2(t), true)}</td>` : ''}${bm2 ? `<td class="small" data-noi18n>${buyAt(t) === JITA_STATION ? 'Jita' : esc(m2Short())}</td>` : ''}<td class="num">${buyPrice(t) ? isk(q * buyPrice(t)) : '–'}</td></tr>`).join('') || '<tr><td colspan="6" class="pos">Semmit nem kell venni, minden megvan.</td></tr>'}</tbody></table></div>
+  return `<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th>${m2On() ? `<th class="num">${esc(m2Short())} sell</th>` : ''}${bm2 ? '<th>Hol veszed</th>' : ''}<th class="num">Összesen</th></tr></thead><tbody>${bl.map(([t, q]) => `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : '<span class="pill warn">nincs ár</span>'}</td>${m2On() ? `<td class="num">${m2Cell(unitPrice(t), sell2(t), true)}</td>` : ''}${bm2 ? `<td class="small" data-noi18n>${buyAt(t) === JITA_STATION ? 'Jita' : esc(m2Short())}</td>` : ''}<td class="num">${buyPrice(t) ? isk(q * buyPrice(t)) : '–'}</td></tr>`).join('') || '<tr><td colspan="6" class="pos">Semmit nem kell venni, minden megvan.</td></tr>'}</tbody></table></div>
   ${bl.some(([t]) => !unitPrice(t)) ? '<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs Jita ára, ezért 0-val számít a költségekben.</p>' : ''}
   <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button></p></div>`;
-  // jobs
-  h += `<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs
+}
+function resultJobs(R, multi) {
+  return `<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs
     .slice()
     .reverse()
     .map(
@@ -5142,7 +5234,9 @@ function renderResult(el, R, rerun) {
         `<tr><td>${esc(NAMES[j.t] || j.t)}${j.act === 'r' ? ' <span class="pill">reakció</span>' : ''}${j.act === 'i' ? ` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance * 100, 1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>` : ''}${j.act === 'c' ? ' <span class="pill">copy</span>' : ''}${multi && j.item && j.item.label ? `<div class="src">${esc(j.item.label)}</div>` : ''}</td><td><b>${esc(charName(j.who ?? j.bp.cid))}</b> ${j.wait ? `<span class="pill warn" title="${esc(T('Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.'))}">${T('nincs szabad slot')}</span> ` : ''}${j.who != null && j.who !== j.bp.cid ? `<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak', esc(charName(j.bp.cid)), esc(charName(j.who)))}</div>` : ''}${j.miss.length ? `<span class="pill bad">hiányzó skill</span><div class="src">${esc(j.miss.map(m => (NAMES[m[0]] || m[0]) + ' ' + m[2] + ' → ' + m[1]).join(', '))}</div>` : '<span class="pill ok">skill ok</span>'}</td><td class="small">${j.bp.virtual ? T('inventált BPC') : (j.act === 'i' ? 'T1 ' : '') + (j.bp.r === -1 ? 'BPO' : 'BPC')} ME${j.act === 'm' ? j.bp.me : j.bp.virtual ? j.bp.me : j.bp.me} · ${esc(locName(j.bp.l))}${j.short ? ' <span class="pill bad">nincs elég run</span>' : ''}</td><td class="num">${j.act === 'i' ? fmt(Math.ceil(j.runs)) + ' kísérlet' : fmt(j.runs)}</td><td class="num">${dur(jobTime(j))}</td><td class="num">${isk(jobCost(j, R.sys))}</td></tr>`
     )
     .join('')}</tbody></table></div></div></div>`;
-  // characters
+}
+// load per character: jobs per activity against free slots, total time and an estimated wall-clock time
+function resultCharLoad(R) {
   const per = new Map();
   for (const j of R.jobs) {
     const c = j.who ?? j.bp.cid;
@@ -5158,7 +5252,7 @@ function renderResult(el, R, rerun) {
     x['t' + k] += jt;
     if (j.miss.length) x.miss++;
   }
-  h += `<h3>Karakterek terhelése</h3><p class="small muted">Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél a szabad slotok és a gyártási idő alapján a leghamarabb elkészül. Egyenlő esetben marad annál, akinél a BP most van, vagy akinél ugyanilyen BP is van.</p><div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Gyártó job</th><th class="num">Szabad gyártó slot</th><th class="num">Reakció job</th><th class="num">Szabad reakció slot</th><th class="num">Science job</th><th class="num">Szabad science slot</th><th class="num">Össz. idő</th><th class="num">Becsült átfutás</th><th>Megjegyzés</th></tr></thead><tbody>${[
+  return `<h3>Karakterek terhelése</h3><p class="small muted">Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél a szabad slotok és a gyártási idő alapján a leghamarabb elkészül. Egyenlő esetben marad annál, akinél a BP most van, vagy akinél ugyanilyen BP is van.</p><div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Gyártó job</th><th class="num">Szabad gyártó slot</th><th class="num">Reakció job</th><th class="num">Szabad reakció slot</th><th class="num">Science job</th><th class="num">Szabad science slot</th><th class="num">Össz. idő</th><th class="num">Becsült átfutás</th><th>Megjegyzés</th></tr></thead><tbody>${[
     ...per
   ]
     .map(([c, x]) => {
@@ -5181,12 +5275,29 @@ function renderResult(el, R, rerun) {
       return `<tr><td><b>${esc(charName(c))}</b></td><td class="num">${x.m}</td><td class="num">${fm} / ${sl.m}</td><td class="num">${x.r}</td><td class="num">${fr} / ${sl.r}</td><td class="num">${x.s}</td><td class="num">${fs} / ${sl.s}</td><td class="num">${dur(x.tm + x.tr + x.ts)}</td><td class="num">${dur(wall)}</td><td class="small ${notes.length ? '' : 'muted'}">${esc(notes.join('; ') || T('rendben'))}</td></tr>`;
     })
     .join('')}</tbody></table></div>`;
-  h += renderHaul(R);
-  // trees
-  h += `<h3>Anyagfa</h3><p class="small muted">Komponens sorára kattintva: gyártom ↔ veszem. A „Gyártva / Jita” oszlop egy darab árát mutatja: saját gyártásban (anyag piaci áron + job) és megvéve. A zöld az olcsóbb. A „Honnan” oszlopban a hely is látszik.</p>`;
+}
+function resultTrees(R, multi) {
+  let h = `<h3>Anyagfa</h3><p class="small muted">Komponens sorára kattintva: gyártom ↔ veszem. A „Gyártva / Jita” oszlop egy darab árát mutatja: saját gyártásban (anyag piaci áron + job) és megvéve. A zöld az olcsóbb. A „Honnan” oszlopban a hely is látszik.</p>`;
   R.trees.forEach(x => {
     h += `<details ${multi ? '' : 'open'} style="margin-bottom:8px"><summary>${esc((x.item.label ? x.item.label + ' · ' : '') + fmt(x.made) + ' × ' + (NAMES[x.tree.t] || x.tree.t))}</summary><div class="tablewrap" style="margin-top:6px"><table class="tree"><thead><tr><th>Tárgy</th><th class="num">Kell</th><th class="num">Készletből</th><th class="num">Gyártom</th><th class="num">Veszem</th><th class="num">Gyártva / Jita (db)${m2On() ? '<span data-noi18n> · ' + esc(m2Short()) + '</span>' : ''}</th><th>Honnan</th></tr></thead><tbody>${treeRows(x.tree, 0, R.sys)}</tbody></table></div></details>`;
   });
+  return h;
+}
+// Pure rendering of a finished plan (finishResult or showResult has already assigned characters and prepared hauling).
+function renderResult(el, R, rerun) {
+  const free = $('#optStockFree').checked;
+  const P = planTotals(R, free, salesTax() + brokerFee());
+  const multi = R.trees.length > 1;
+  const bl = [...R.buyList].sort((a, b) => b[1] * buyPrice(b[0]) - a[1] * buyPrice(a[0]));
+  let h = resultKpis(R, P, free, multi);
+  h += resultSystems(R);
+  R.warn.forEach(w => (h += `<div class="notice">${esc(warnText(w))}</div>`));
+  h += resultProducts(R, P.rows, multi);
+  h += resultShopping(bl);
+  h += resultJobs(R, multi);
+  h += resultCharLoad(R);
+  h += renderHaul(R);
+  h += resultTrees(R, multi);
   el.innerHTML = h;
   const cb = el.querySelector('[data-copybuy]');
   cb &&
@@ -6579,6 +6690,91 @@ async function repLocExtra(locs) {
   const st = [...new Set(locs.map(l => LOCINFO[l] && LOCINFO[l].stype).filter(Boolean))];
   if (st.length) await resolveNames(st);
 }
+// Stage 1: type data (with reprocess materials) for every type in stock, with a live counter on the button
+async function repFetchTypes(types) {
+  const btn = $('#repLoad');
+  let done = 0;
+  const prog = () => {
+    const m = T('Beolvasás: {0} / {1} tárgytípus', fmt(done), fmt(types.length));
+    btn.textContent = m;
+    status(m);
+  };
+  prog();
+  const tick = setInterval(prog, 400);
+  try {
+    await Promise.all(
+      types.map(t =>
+        (REFC.t[t] !== undefined
+          ? Promise.resolve(REFC.t[t])
+          : refGet('t', t).then(v => {
+              repLog(((v && v.n) || '#' + t) + (v && v.tm && v.tm.length ? '  ✓ ' + T('reprocesszálható') : ''));
+              return v;
+            })
+        )
+          .catch(e => {
+            repLog('✗ #' + t + '  ' + e.message);
+            log('EVE Ref: ' + t + ' ' + e.message);
+            return null;
+          })
+          .finally(() => done++)
+      )
+    );
+  } finally {
+    clearInterval(tick);
+  }
+}
+// Stage 2: one row per type and location that can be reprocessed, with the quantity per owner
+function repRows(sm) {
+  const rows = [],
+    locs = new Set();
+  for (const [t, arr] of sm) {
+    const ti = REFC.t[t];
+    if (!ti || !ti.tm || !ti.tm.length || ti.c === 9) continue;
+    const byL = new Map();
+    for (const x of arr) {
+      if (!(x.q > 0)) continue;
+      let r = byL.get(x.l);
+      if (!r) {
+        r = { t, l: x.l, q: 0, own: new Map() };
+        byL.set(x.l, r);
+      }
+      r.q += x.q;
+      r.own.set(x.cid, (r.own.get(x.cid) || 0) + x.q);
+    }
+    for (const r of byL.values()) {
+      rows.push(r);
+      locs.add(r.l);
+    }
+  }
+  return { rows, locs };
+}
+// Stage 3: locations (with their reprocess stats), names and prices
+async function repPrepare(rows, locs) {
+  repLog(T('{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…', fmt(rows.length), fmt(locs.size)));
+  await Promise.all([...locs].map(l => resolveLoc(l).catch(() => null)));
+  await repLocExtra([...locs]);
+  for (const l of locs) {
+    const L = locStats(l);
+    repLog(
+      locName(l) +
+        '  · ' +
+        (L.k === 'npc' ? T('NPC állomás') : L.k === 'struct' ? NAMES[L.st] || 'Upwell' : T('űrben – itt nem lehet')) +
+        (L.sec != null ? '  sec ' + fmt(L.sec, 2) : '')
+    );
+  }
+  const mats = new Set(rows.flatMap(r => REFC.t[r.t].tm.map(x => x[0])));
+  await resolveNames([
+    ...mats,
+    ...rows.map(r => r.t),
+    ...rows.map(r => REFC.t[r.t].rs).filter(Boolean),
+    SCRAP,
+    SK.repro,
+    SK.reproEff
+  ]);
+  const its = [...new Set(rows.map(r => r.t))];
+  repLog(T('Jita árak lekérése: {0} típus…', fmt(its.length <= 200 ? mats.size + its.length : mats.size)));
+  await ensurePrices(its.length <= 200 ? [...mats, ...its] : [...mats]); // with many items only the selected ones, by button
+}
 async function repLoad() {
   if (REP.busy) return;
   if (!Object.keys(DATA).length) {
@@ -6593,83 +6789,11 @@ async function repLoad() {
     const sm = stockMap(false);
     const types = [...sm.keys()];
     repLog(T('{0} tárgytípus a készletben, receptek lekérése az EVE Refről…', fmt(types.length)));
-    const btn = $('#repLoad');
-    let done = 0;
-    const prog = () => {
-      const m = T('Beolvasás: {0} / {1} tárgytípus', fmt(done), fmt(types.length));
-      btn.textContent = m;
-      status(m);
-    };
-    prog();
-    const tick = setInterval(prog, 400);
-    try {
-      await Promise.all(
-        types.map(t =>
-          (REFC.t[t] !== undefined
-            ? Promise.resolve(REFC.t[t])
-            : refGet('t', t).then(v => {
-                repLog(((v && v.n) || '#' + t) + (v && v.tm && v.tm.length ? '  ✓ ' + T('reprocesszálható') : ''));
-                return v;
-              })
-          )
-            .catch(e => {
-              repLog('✗ #' + t + '  ' + e.message);
-              log('EVE Ref: ' + t + ' ' + e.message);
-              return null;
-            })
-            .finally(() => done++)
-        )
-      );
-    } finally {
-      clearInterval(tick);
-    }
-    btn.textContent = T('Helyszínek és árak…');
+    await repFetchTypes(types);
+    $('#repLoad').textContent = T('Helyszínek és árak…');
     status(T('Helyszínek és árak…'));
-    const rows = [],
-      locs = new Set();
-    for (const [t, arr] of sm) {
-      const ti = REFC.t[t];
-      if (!ti || !ti.tm || !ti.tm.length || ti.c === 9) continue;
-      const byL = new Map();
-      for (const x of arr) {
-        if (!(x.q > 0)) continue;
-        let r = byL.get(x.l);
-        if (!r) {
-          r = { t, l: x.l, q: 0, own: new Map() };
-          byL.set(x.l, r);
-        }
-        r.q += x.q;
-        r.own.set(x.cid, (r.own.get(x.cid) || 0) + x.q);
-      }
-      for (const r of byL.values()) {
-        rows.push(r);
-        locs.add(r.l);
-      }
-    }
-    repLog(T('{0} reprocesszálható tétel, {1} helyszín. Helyszínek lekérése…', fmt(rows.length), fmt(locs.size)));
-    await Promise.all([...locs].map(l => resolveLoc(l).catch(() => null)));
-    await repLocExtra([...locs]);
-    for (const l of locs) {
-      const L = locStats(l);
-      repLog(
-        locName(l) +
-          '  · ' +
-          (L.k === 'npc' ? T('NPC állomás') : L.k === 'struct' ? NAMES[L.st] || 'Upwell' : T('űrben – itt nem lehet')) +
-          (L.sec != null ? '  sec ' + fmt(L.sec, 2) : '')
-      );
-    }
-    const mats = new Set(rows.flatMap(r => REFC.t[r.t].tm.map(x => x[0])));
-    await resolveNames([
-      ...mats,
-      ...rows.map(r => r.t),
-      ...rows.map(r => REFC.t[r.t].rs).filter(Boolean),
-      SCRAP,
-      SK.repro,
-      SK.reproEff
-    ]);
-    const its = [...new Set(rows.map(r => r.t))];
-    repLog(T('Jita árak lekérése: {0} típus…', fmt(its.length <= 200 ? mats.size + its.length : mats.size)));
-    await ensurePrices(its.length <= 200 ? [...mats, ...its] : [...mats]); // with many items only the selected ones, by button
+    const { rows, locs } = repRows(sm);
+    await repPrepare(rows, locs);
     repLog(T('Kész: {0} tétel, {1} mp.', fmt(rows.length), fmt((Date.now() - t0) / 1000, 1)));
     REP.rows = rows;
     for (const k of [...REP.sel]) if (!rows.some(r => repKey(r) === k)) REP.sel.delete(k);
@@ -6909,14 +7033,9 @@ function renderRepLocs(locs) {
     .join('')}</tbody></table></div>
   <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`;
 }
-function renderRepSum() {
-  const el = $('#repSum');
-  const sel = (REP.rows || []).filter(r => REP.sel.has(repKey(r)));
-  if (!sel.length) {
-    el.innerHTML =
-      '<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>';
-    return;
-  }
+// Sums the selected rows: materials out, values in and out (Jita and the second market; a: some value is
+// approximate), rows that cannot be reprocessed where they are (none), and who reprocesses where (steps).
+function repSummary(sel) {
   const mats = new Map(),
     steps = new Map();
   let inV = 0,
@@ -6946,39 +7065,62 @@ function renderRepSum() {
     s.n++;
     for (const o of r.own.keys()) if (o !== c.pick.cid) s.from.add(o);
   }
+  return { mats, steps, inV, outV, in2, out2, a, none };
+}
+// how much of the last plan's shopping list the reprocess output covers
+function repCoverHtml(mats) {
+  if (typeof LASTPLAN === 'undefined' || !LASTPLAN) return '';
+  const need = [...LASTPLAN.buyList].filter(([t]) => mats.has(t));
+  return need.length
+    ? `<h3>${T('A „{0}” terv hiányából', esc(LASTPLAN.title || ''))}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need
+        .map(([t, q]) => {
+          const b = mats.get(t) || 0;
+          return `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span></td></tr>`;
+        })
+        .join('')}</tbody></table></div>`
+    : `<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.', esc(LASTPLAN.title || ''))}</p>`;
+}
+// materials that come out, most valuable first
+function repOutHtml(Q) {
+  const { mats, outV, out2, a } = Q;
   const ml = [...mats].sort((x, y) => y[1] * repPrice(y[0]).v - x[1] * repPrice(x[0]).v);
-  let cover = '';
-  if (typeof LASTPLAN !== 'undefined' && LASTPLAN) {
-    const need = [...LASTPLAN.buyList].filter(([t]) => mats.has(t));
-    cover = need.length
-      ? `<h3>${T('A „{0}” terv hiányából', esc(LASTPLAN.title || ''))}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need
-          .map(([t, q]) => {
-            const b = mats.get(t) || 0;
-            return `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span></td></tr>`;
-          })
-          .join('')}</tbody></table></div>`
-      : `<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.', esc(LASTPLAN.title || ''))}</p>`;
-  }
-  el.innerHTML = `<div class="row"><b>${T('{0} tétel kijelölve', fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On() ? T('Jita és {0} árak a kijelöltekre', esc(m2Short())) : T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
-  <div class="grid2" style="margin-top:10px"><div>
-  <h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num" data-noi18n>Jita sell</th>${m2On() ? `<th class="num" data-noi18n>${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${ml
+  return `<h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num" data-noi18n>Jita sell</th>${m2On() ? `<th class="num" data-noi18n>${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${ml
     .map(([m, q]) => {
       const p = repPrice(m);
       return `<tr><td>${esc(NAMES[m] || m)}</td><td class="num">${fmt(q)}</td><td class="num">${p.a ? '~' : ''}${isk(q * p.v)}</td>${m2On() ? `<td class="num">${sell2(m) ? isk(q * sell2(m)) : '–'}</td>` : ''}</tr>`;
     })
     .join('')}
-  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a ? '~' : ''}${isk(outV)}</b></td>${m2On() ? `<td class="num"><b>${isk(out2)}</b></td>` : ''}</tr></tbody></table></div>
-  ${(() => {
-    const mk = [['Jita', inV, outV, a]].concat(m2On() ? [[m2Short(), in2, out2, false]] : []);
-    return `<h3>Eladás vagy reprocess</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Piac</th><th class="num">Egyben eladva</th><th class="num">Szétszedve</th><th>Jobb</th></tr></thead><tbody>${mk.map(([n, i, o, ap]) => `<tr><td data-noi18n>${esc(n)}</td><td class="num">${ap ? '~' : ''}${i ? isk(i) : '–'}</td><td class="num">${ap ? '~' : ''}${o ? isk(o) : '–'}</td><td>${!i && !o ? '' : o > i ? `<span class="pill ok">${T('reprocess +{0}', isk(o - i))}</span>` : `<span class="pill warn">${T('eladás +{0}', isk(i - o))}</span>`}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.</p>`;
-  })()}
-  ${sellerHtml()}
-  ${none ? `<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).', none)}</p>` : ''}
-  </div><div>
-  <h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s => `<tr><td>${esc(locName(s.l))}</td><td>${esc(charName(s.cid))}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size ? T('Át kell adni tőle: {0}', [...s.from].map(charName).join(', ')) : ''}</td></tr>`).join('')}</tbody></table></div>
-  ${cover}</div></div>`;
+  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a ? '~' : ''}${isk(outV)}</b></td>${m2On() ? `<td class="num"><b>${isk(out2)}</b></td>` : ''}</tr></tbody></table></div>`;
 }
-
+// selling the items as they are vs. reprocessing them, per market (gross values)
+function repCompareHtml(Q) {
+  const { inV, outV, in2, out2, a } = Q;
+  const mk = [['Jita', inV, outV, a]].concat(m2On() ? [[m2Short(), in2, out2, false]] : []);
+  return `<h3>Eladás vagy reprocess</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Piac</th><th class="num">Egyben eladva</th><th class="num">Szétszedve</th><th>Jobb</th></tr></thead><tbody>${mk.map(([n, i, o, ap]) => `<tr><td data-noi18n>${esc(n)}</td><td class="num">${ap ? '~' : ''}${i ? isk(i) : '–'}</td><td class="num">${ap ? '~' : ''}${o ? isk(o) : '–'}</td><td>${!i && !o ? '' : o > i ? `<span class="pill ok">${T('reprocess +{0}', isk(o - i))}</span>` : `<span class="pill warn">${T('eladás +{0}', isk(i - o))}</span>`}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.</p>`;
+}
+function repWhereHtml(Q) {
+  const { steps } = Q;
+  return `<h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s => `<tr><td>${esc(locName(s.l))}</td><td>${esc(charName(s.cid))}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size ? T('Át kell adni tőle: {0}', [...s.from].map(charName).join(', ')) : ''}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function renderRepSum() {
+  const el = $('#repSum');
+  const sel = (REP.rows || []).filter(r => REP.sel.has(repKey(r)));
+  if (!sel.length) {
+    el.innerHTML =
+      '<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>';
+    return;
+  }
+  const Q = repSummary(sel);
+  el.innerHTML = `<div class="row"><b>${T('{0} tétel kijelölve', fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On() ? T('Jita és {0} árak a kijelöltekre', esc(m2Short())) : T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
+  <div class="grid2" style="margin-top:10px"><div>
+  ${repOutHtml(Q)}
+  ${repCompareHtml(Q)}
+  ${sellerHtml()}
+  ${Q.none ? `<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).', Q.none)}</p>` : ''}
+  </div><div>
+  ${repWhereHtml(Q)}
+  ${repCoverHtml(Q.mats)}</div></div>`;
+}
 // events
 (function () {
   const tab = document.getElementById('tab-repro');
@@ -7338,96 +7480,116 @@ const SET_SCHEMA = {
   structBroker: 'mapNum',
   repro: 'repro'
 };
+// Backup validation per field: a known setting passes only with the expected type, unknown fields are dropped.
+// It never throws on bad input; the caller applies nothing when err is not empty.
+const isNum = x => typeof x === 'number' && isFinite(x);
+const isObj = x => x != null && typeof x === 'object' && !Array.isArray(x);
+const isNumish = x => isNum(x) || (typeof x === 'string' && x.trim() !== '' && isFinite(Number(x)));
+const everyValue = (o, f) => isObj(o) && Object.values(o).every(f);
+// expected type of each setting (SET_SCHEMA names the type, BACKUP_TYPES checks it)
+const BACKUP_TYPES = {
+  str: x => typeof x === 'string',
+  num: isNumish,
+  numOrEmpty: x => x === '' || x == null || isNumish(x),
+  bool: x => typeof x === 'boolean',
+  numArrOrNull: x => x === null || (Array.isArray(x) && x.every(isNum)),
+  mapBool: x => everyValue(x, v => typeof v === 'boolean'),
+  mapStr: x => everyValue(x, v => typeof v === 'string'),
+  mapNum: x => everyValue(x, isNumish),
+  repro: x =>
+    isObj(x) &&
+    (x.loc == null ||
+      everyValue(x.loc, v => isObj(v) && Object.values(v).every(y => y === '' || y == null || isNumish(y)))) &&
+    (x.imp == null || everyValue(x.imp, v => isNumish(v) || v === 'auto')) &&
+    (x.char == null || x.char === '' || isNumish(x.char))
+};
+
+function validSettings(d, out, err) {
+  if (d.settings != null && !isObj(d.settings)) err.push(T('a beállítások nem objektum'));
+  else
+    for (const [k, v] of Object.entries(d.settings || {})) {
+      const t = SET_SCHEMA[k];
+      if (!t) continue;
+      if (BACKUP_TYPES[t](v)) out.settings[k] = v;
+      else err.push(T('hibás beállítás: {0}', k));
+    }
+}
+// material sources of a project or item: {mode:'all'|'sel', locs, conts, excl} with numeric id lists
+const validSrc = x =>
+  x == null ||
+  (isObj(x) &&
+    (x.mode === 'all' || x.mode === 'sel') &&
+    ['locs', 'conts', 'excl'].every(f => x[f] == null || (Array.isArray(x[f]) && x[f].every(isNum))));
+const cleanSrc = x =>
+  x
+    ? { mode: x.mode, locs: (x.locs || []).slice(), conts: (x.conts || []).slice(), excl: (x.excl || []).slice() }
+    : undefined;
+function validProjects(d, out, err) {
+  if (d.projects != null && !Array.isArray(d.projects)) err.push(T('a projektek nem lista'));
+  for (const [i, p] of (Array.isArray(d.projects) ? d.projects : []).entries()) {
+    if (!isObj(p) || !isNum(p.id) || typeof p.name !== 'string' || !Array.isArray(p.items)) {
+      err.push(T('{0}. projekt hibás', i + 1));
+      continue;
+    }
+    if (!validSrc(p.src)) {
+      err.push(T('„{0}” projekt: hibás nyersanyag-forrás', p.name));
+      continue;
+    }
+    const items = [];
+    let bad = 0;
+    for (const it of p.items) {
+      if (
+        !isObj(it) ||
+        !isNum(it.runs) ||
+        !(it.runs > 0) ||
+        !(isNum(it.bpType) || isNum(it.invT1)) ||
+        !validSrc(it.src)
+      ) {
+        bad++;
+        continue;
+      }
+      const c = { runs: it.runs };
+      if (isNum(it.bpType)) c.bpType = it.bpType;
+      else {
+        c.invT1 = it.invT1;
+        if (isNum(it.t2)) c.t2 = it.t2;
+        c.dec = isNum(it.dec) ? it.dec : null;
+        c.pi = isNum(it.pi) ? it.pi : 0;
+      }
+      if (it.src) c.src = cleanSrc(it.src);
+      items.push(c);
+    }
+    if (bad) err.push(T('„{0}” projekt: {1} hibás tétel', p.name, bad));
+    out.projects.push({ id: p.id, name: p.name, active: p.active !== false, items, src: cleanSrc(p.src) });
+  }
+}
+function validChars(d, out, err) {
+  if (d.chars != null && !Array.isArray(d.chars)) err.push(T('hibás karakter-bejegyzés'));
+  for (const c of Array.isArray(d.chars) ? d.chars : []) {
+    if (!isObj(c) || !isNum(c.id) || typeof c.name !== 'string') {
+      err.push(T('hibás karakter-bejegyzés'));
+      continue;
+    }
+    out.chars.push({
+      id: c.id,
+      name: c.name,
+      refresh: typeof c.refresh === 'string' ? c.refresh : undefined,
+      cid: typeof c.cid === 'string' ? c.cid : undefined,
+      scp: Array.isArray(c.scp) ? c.scp.filter(x => typeof x === 'string') : undefined
+    });
+  }
+}
 function validateBackup(d) {
   const err = [];
   const out = { settings: {}, projects: [], chars: [], selp: null };
   try {
-    const num = x => typeof x === 'number' && isFinite(x);
-    const isObj = x => x != null && typeof x === 'object' && !Array.isArray(x);
-    const numish = x => num(x) || (typeof x === 'string' && x.trim() !== '' && isFinite(Number(x)));
-    const mapOf = (o, f) => isObj(o) && Object.values(o).every(f);
-    const okType = {
-      str: x => typeof x === 'string',
-      num: numish,
-      numOrEmpty: x => x === '' || x == null || numish(x),
-      bool: x => typeof x === 'boolean',
-      numArrOrNull: x => x === null || (Array.isArray(x) && x.every(num)),
-      mapBool: x => mapOf(x, v => typeof v === 'boolean'),
-      mapStr: x => mapOf(x, v => typeof v === 'string'),
-      mapNum: x => mapOf(x, numish),
-      repro: x =>
-        isObj(x) &&
-        (x.loc == null ||
-          mapOf(x.loc, v => isObj(v) && Object.values(v).every(y => y === '' || y == null || numish(y)))) &&
-        (x.imp == null || mapOf(x.imp, v => numish(v) || v === 'auto')) &&
-        (x.char == null || x.char === '' || numish(x.char))
-    };
     out.app = d.app;
     out.at = d.at;
     out.withTokens = !!d.withTokens;
-    if (d.settings != null && !isObj(d.settings)) err.push(T('a beállítások nem objektum'));
-    else
-      for (const [k, v] of Object.entries(d.settings || {})) {
-        const t = SET_SCHEMA[k];
-        if (!t) continue;
-        if (okType[t](v)) out.settings[k] = v;
-        else err.push(T('hibás beállítás: {0}', k));
-      }
-    if (d.projects != null && !Array.isArray(d.projects)) err.push(T('a projektek nem lista'));
-    const srcOk = x =>
-      x == null ||
-      (isObj(x) &&
-        (x.mode === 'all' || x.mode === 'sel') &&
-        ['locs', 'conts', 'excl'].every(f => x[f] == null || (Array.isArray(x[f]) && x[f].every(num))));
-    const cleanSrc = x =>
-      x
-        ? { mode: x.mode, locs: (x.locs || []).slice(), conts: (x.conts || []).slice(), excl: (x.excl || []).slice() }
-        : undefined;
-    for (const [i, p] of (Array.isArray(d.projects) ? d.projects : []).entries()) {
-      if (!isObj(p) || !num(p.id) || typeof p.name !== 'string' || !Array.isArray(p.items)) {
-        err.push(T('{0}. projekt hibás', i + 1));
-        continue;
-      }
-      if (!srcOk(p.src)) {
-        err.push(T('„{0}” projekt: hibás nyersanyag-forrás', p.name));
-        continue;
-      }
-      const items = [];
-      let bad = 0;
-      for (const it of p.items) {
-        if (!isObj(it) || !num(it.runs) || !(it.runs > 0) || !(num(it.bpType) || num(it.invT1)) || !srcOk(it.src)) {
-          bad++;
-          continue;
-        }
-        const c = { runs: it.runs };
-        if (num(it.bpType)) c.bpType = it.bpType;
-        else {
-          c.invT1 = it.invT1;
-          if (num(it.t2)) c.t2 = it.t2;
-          c.dec = num(it.dec) ? it.dec : null;
-          c.pi = num(it.pi) ? it.pi : 0;
-        }
-        if (it.src) c.src = cleanSrc(it.src);
-        items.push(c);
-      }
-      if (bad) err.push(T('„{0}” projekt: {1} hibás tétel', p.name, bad));
-      out.projects.push({ id: p.id, name: p.name, active: p.active !== false, items, src: cleanSrc(p.src) });
-    }
-    out.selp = num(d.selp) ? d.selp : null;
-    if (d.chars != null && !Array.isArray(d.chars)) err.push(T('hibás karakter-bejegyzés'));
-    for (const c of Array.isArray(d.chars) ? d.chars : []) {
-      if (!isObj(c) || !num(c.id) || typeof c.name !== 'string') {
-        err.push(T('hibás karakter-bejegyzés'));
-        continue;
-      }
-      out.chars.push({
-        id: c.id,
-        name: c.name,
-        refresh: typeof c.refresh === 'string' ? c.refresh : undefined,
-        cid: typeof c.cid === 'string' ? c.cid : undefined,
-        scp: Array.isArray(c.scp) ? c.scp.filter(x => typeof x === 'string') : undefined
-      });
-    }
+    validSettings(d, out, err);
+    validProjects(d, out, err);
+    out.selp = isNum(d.selp) ? d.selp : null;
+    validChars(d, out, err);
   } catch (e) {
     err.push(T('váratlan hiba: {0}', e.message));
   }
