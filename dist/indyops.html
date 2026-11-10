@@ -167,6 +167,7 @@ th.sortable:hover{text-decoration:underline}
   <div class="status" id="status">kész</div>
 </div></header>
 <main>
+<div id="dvNote"></div>
 <div id="storageWarn" class="notice err" hidden><p><b>A böngésző tárhelye megtelt.</b> Az IndyOps nem tud több adatot elmenteni, ezért a legutóbbi adatok csak a lap bezárásáig maradnak meg. A Beállításokban töröld a gyorsítótárakat, vagy kevesebb karakterrel/helyszínnel dolgozz.</p></div>
 
 <!-- KARAKTEREK -->
@@ -1309,10 +1310,12 @@ window.I18N.en={
  "(díjak nélkül)": "(before fees)",
  "Vásárlás a második piacon, ha ott olcsóbb": "Buy at the second market when it's cheaper",
  "Hol veszed": "Where to buy",
- "Az ESI még a régebbi értéket mutatja; az azóta indított jobok runjait ({0}) már levontam.": "ESI still shows the older value; runs of jobs started since then ({0}) are already subtracted.",
  "elfogyott": "used up",
  "{0} blueprint": "{0} blueprints",
- "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.": "ESI snapshot: {0}, next update after {1} (ESI caches this list for up to an hour). Runs marked * already have jobs started since then subtracted."
+ "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps has been updated (v{0}). This version needs your characters' data downloaded again: {1}.",
+ "Mi változott?": "What changed?",
+ "Az ESI a runokat csak a job leadásakor csökkenti; a még le nem adott jobok runjait ({0}) már levontam.": "ESI only lowers runs when the job is delivered; runs of jobs not yet delivered ({0}) are already subtracted.",
+ "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál a még le nem adott jobokat már levontam.": "ESI snapshot: {0}, next update after {1} (ESI caches this list for up to an hour). Runs marked * already have jobs not yet delivered subtracted."
 };
 </script>
 <script>
@@ -1928,10 +1931,12 @@ window.I18N.de={
  "(díjak nélkül)": "(vor Gebühren)",
  "Vásárlás a második piacon, ha ott olcsóbb": "Am zweiten Markt kaufen, wenn es dort billiger ist",
  "Hol veszed": "Wo kaufen",
- "Az ESI még a régebbi értéket mutatja; az azóta indított jobok runjait ({0}) már levontam.": "ESI zeigt noch den älteren Wert; die Runs seither gestarteter Jobs ({0}) sind bereits abgezogen.",
  "elfogyott": "aufgebraucht",
  "{0} blueprint": "{0} Blueprints",
- "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.": "ESI-Stand: {0}, nächste Aktualisierung nach {1} (ESI speichert diese Liste bis zu einer Stunde). Bei Runs mit * sind seither gestartete Jobs bereits abgezogen."
+ "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps wurde aktualisiert (v{0}). Diese Version braucht die Daten deiner Charaktere neu: {1}.",
+ "Mi változott?": "Was ist neu?",
+ "Az ESI a runokat csak a job leadásakor csökkenti; a még le nem adott jobok runjait ({0}) már levontam.": "ESI senkt die Runs erst bei der Auslieferung des Jobs; Runs noch nicht ausgelieferter Jobs ({0}) sind bereits abgezogen.",
+ "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál a még le nem adott jobokat már levontam.": "ESI-Stand: {0}, nächste Aktualisierung nach {1} (ESI speichert diese Liste bis zu einer Stunde). Bei Runs mit * sind noch nicht ausgelieferte Jobs bereits abgezogen."
 };
 </script>
 <script>
@@ -1952,7 +1957,8 @@ const SK={connections:3359,diplomacy:3357,industry:3380,advInd:3388,accounting:1
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.10.2',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+// dataVersion: emeld meg, ha egy új verzió új adatot olvas az ESI-ből, és ehhez a felhasználónak frissítenie kell (a tool szól neki)
+const APP={dataVersion:2,name:'IndyOps',version:'1.10.3',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2183,15 +2189,19 @@ async function refreshChar(c){
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,start:j.start_date,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
     // az ESI a blueprint-listát akár egy óráig gyorsítótárazza: a azóta indított jobok runjait levonjuk a BPC-kből (a játék induláskor vonja le)
     // a már leadott (delivered) jobokat is figyelembe vesszük, ha az ESI-pillanatkép régebbi náluk
-    let JA=jobs.map(j=>({bpi:j.blueprint_id,act:j.activity_id,runs:j.runs,start:j.start_date,id:j.job_id}));
-    if(bpLM){try{const done=await esi('/characters/'+c.id+'/industry/jobs/?include_completed=true',{char:c});const seen=new Set(JA.map(x=>x.id));done.forEach(j=>{if(!seen.has(j.job_id))JA.push({bpi:j.blueprint_id,act:j.activity_id,runs:j.runs,start:j.start_date,id:j.job_id})})}catch(e){}}
-    for(const b of B){if(!(b.r>0))continue;for(const j of JA){if(j.bpi!==b.i||!(j.act===1||j.act===8)||!j.start||!bpLM)continue;if(Date.parse(j.start)>bpLM){b.r=Math.max(0,b.r-j.runs);b.adj=(b.adj||0)+j.runs}}}
+    // az ESI a BPC runjait csak a job leadásakor (deliver) csökkenti; amíg a job fut vagy kész, de nincs leadva, a régi szám jön.
+    // Ezért levonjuk minden olyan job runjait, ami az ESI-pillanatkép idején még nem volt leadva.
+    const mapJ=j=>({bpi:j.blueprint_id,act:j.activity_id,runs:j.runs,st:j.status,done:j.completed_date||null,id:j.job_id});
+    let JA=jobs.map(mapJ);
+    if(bpLM){try{const all=await esi('/characters/'+c.id+'/industry/jobs/?include_completed=true',{char:c});const seen=new Set(JA.map(x=>x.id));all.forEach(j=>{if(!seen.has(j.job_id))JA.push(mapJ(j))})}catch(e){}}
+    const openAt=(j,t)=>j.st==='active'||j.st==='ready'||j.st==='paused'||(j.done&&Date.parse(j.done)>t);
+    for(const b of B){if(!(b.r>0))continue;for(const j of JA){if(j.bpi!==b.i||!(j.act===1||j.act===8)||!bpLM)continue;if(openAt(j,bpLM)){b.r=Math.max(0,b.r-j.runs);b.adj=(b.adj||0)+j.runs}}}
     let O=[],TX=[],IMP=null,STD=null;
     if(hasScope(c,'esi-characters.read_standings.v1')){try{STD={};(await esi('/characters/'+c.id+'/standings/',{char:c})).forEach(x=>STD[x.from_id]=x.standing)}catch(e){log('Standingek: '+e.message)}}
     if(hasScope(c,'esi-clones.read_implants.v1')){try{IMP=await esi('/characters/'+c.id+'/implants/',{char:c});await resolveNames(IMP)}catch(e){log('Implantok: '+e.message)}}
     if(hasScope(c,'esi-markets.read_character_orders.v1')){try{O=(await esi('/characters/'+c.id+'/orders/',{char:c})).map(o=>({id:o.order_id,t:o.type_id,l:o.location_id,reg:o.region_id,p:o.price,rem:o.volume_remain,tot:o.volume_total,buy:!!o.is_buy_order,iss:o.issued,dur:o.duration}))}catch(e){log('Orderek: '+e.message)}}
     if(S.wallet&&hasScope(c,WALLET_SCOPE)){try{const lim=Date.now()-30*86400000;TX=(await esi('/characters/'+c.id+'/wallet/transactions/',{char:c})).filter(x=>new Date(x.date).getTime()>=lim).map(x=>({d:x.date,t:x.type_id,q:x.quantity,p:x.unit_price,buy:x.is_buy,l:x.location_id}))}catch(e){log('Wallet: '+e.message)}}
-    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,std:STD,lm:LM,cont:CONT,bpAt:bpLM,bpExp:bpExp,at:Date.now()};
+    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,std:STD,lm:LM,cont:CONT,bpAt:bpLM,bpExp:bpExp,dv:APP.dataVersion,at:Date.now()};
     await resolveNames(O.map(o=>o.t).concat(TX.map(x=>x.t),O.map(o=>o.reg)));for(const l of new Set(O.map(o=>o.l)))await resolveLoc(l,c);
     await resolveNames(A.map(a=>a.t).concat(B.map(b=>b.t),J.map(j=>j.bp)));
     const locs=[...new Set(A.map(a=>a.l).concat(B.map(b=>b.l),J.map(j=>j.loc)))];
@@ -2556,7 +2566,11 @@ function sortRows(key,rows,get){const s=SRT[key];if(!s)return rows;return rows.s
 document.addEventListener('click',e=>{const th=e.target.closest('[data-srt]');if(!th)return;const [k,f,num]=th.dataset.srt.split('|');const s=SRT[k]||{};SRT[k]=s.f===f?{f,d:-s.d}:{f,d:num==='1'?-1:1};if(PG[k])PG[k].p=0;PGR[k]&&PGR[k]()});
 
 /* ============ RENDER ============ */
-function renderAll(){renderProjects();renderChars();renderJobs();renderBPs();renderStock();renderLocList();renderPlanOptions();renderSettings();renderUnknownLocs()}
+function renderDataNote(){const el=document.getElementById('dvNote');if(!el)return;
+  const old=CHARS.filter(c=>DATA[c.id]&&(DATA[c.id].dv||1)<APP.dataVersion);
+  el.innerHTML=old.length?`<div class="notice" style="margin:12px 0"><p>${T('Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.',APP.version,esc(old.map(c=>c.name).join(', ')))} <button class="btn primary" id="dvRefresh">${T('Minden adat frissítése')}</button> <a href="https://github.com/${APP.repo}/blob/main/CHANGELOG.md" target="_blank" rel="noopener">${T('Mi változott?')}</a></p></div>`:'';
+  const b=document.getElementById('dvRefresh');if(b)b.onclick=async()=>{b.disabled=true;await refreshAll()}}
+function renderAll(){renderDataNote();renderProjects();renderChars();renderJobs();renderBPs();renderStock();renderLocList();renderPlanOptions();renderSettings();renderUnknownLocs()}
 function alertBox(msg){const d=document.createElement('div');d.className='notice err';d.innerHTML='<p>'+esc(msg)+'</p>';const host=document.querySelector('section:not([hidden])')||document.body;host.prepend(d);setTimeout(()=>d.remove(),12000)}
 function renderChars(){
   $('#setupBox').hidden=!!clientId();
@@ -2579,11 +2593,11 @@ function renderBPs(){
   list.sort((a,b)=>{const k=bpSort.k;const va=a[k],vb=b[k];return (typeof va==='number'?va-vb:String(va).localeCompare(String(vb),'hu'))*bpSort.d});
   const pg=pageOf('bp',list,[f,kind,nm,bpSort.k,bpSort.d].join('|'),renderBPs);$('#bpPg1').innerHTML=pg.html;$('#bpPg2').innerHTML=pg.html;
   $('#bpTable tbody').innerHTML=pg.rows.map(x=>{const j=inJob(x.b.i);const max=x.b.r===-1&&x.me>=10&&x.te>=20;
-    return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}${x.b.adj?`<span title="${esc(T('Az ESI még a régebbi értéket mutatja; az azóta indított jobok runjait ({0}) már levontam.',x.b.adj))}">*</span>`:''}${x.b.r===0?' <span class="pill warn">'+esc(T('elfogyott'))+'</span>':''}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
+    return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}${x.b.adj?`<span title="${esc(T('Az ESI a runokat csak a job leadásakor csökkenti; a még le nem adott jobok runjait ({0}) már levontam.',x.b.adj))}">*</span>`:''}${x.b.r===0?' <span class="pill warn">'+esc(T('elfogyott'))+'</span>':''}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
   const ats=Object.values(DATA).map(d=>d.bpAt).filter(Boolean),exps=Object.values(DATA).map(d=>d.bpExp).filter(Boolean);
   const tf=v=>{const d=new Date(v);const today=d.toDateString()===new Date().toDateString();return (today?'':d.toLocaleDateString(LOC(),{month:'2-digit',day:'2-digit'})+' ')+d.toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'})};
   const per=CHARS.filter(c=>DATA[c.id]&&DATA[c.id].bpAt).map(c=>c.name+' '+tf(DATA[c.id].bpAt)).join(', ');
-  $('#bpCount').textContent=T('{0} blueprint',list.length)+(ats.length?' · '+T('ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.',per,tf(Math.max(...exps))):'');
+  $('#bpCount').textContent=T('{0} blueprint',list.length)+(ats.length?' · '+T('ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál a még le nem adott jobokat már levontam.',per,tf(Math.max(...exps))):'');
 }
 function renderStock(){
   const f=$('#stFilter').value.toLowerCase(),lf=$('#stLoc').value,only=$('#stOnlyPlan').checked;

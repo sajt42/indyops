@@ -609,8 +609,10 @@ window.I18N.de={
  "(díjak nélkül)": "(vor Gebühren)",
  "Vásárlás a második piacon, ha ott olcsóbb": "Am zweiten Markt kaufen, wenn es dort billiger ist",
  "Hol veszed": "Wo kaufen",
- "Az ESI még a régebbi értéket mutatja; az azóta indított jobok runjait ({0}) már levontam.": "ESI zeigt noch den älteren Wert; die Runs seither gestarteter Jobs ({0}) sind bereits abgezogen.",
  "elfogyott": "aufgebraucht",
  "{0} blueprint": "{0} Blueprints",
- "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál az azóta indított jobokat már levontam.": "ESI-Stand: {0}, nächste Aktualisierung nach {1} (ESI speichert diese Liste bis zu einer Stunde). Bei Runs mit * sind seither gestartete Jobs bereits abgezogen."
+ "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps wurde aktualisiert (v{0}). Diese Version braucht die Daten deiner Charaktere neu: {1}.",
+ "Mi változott?": "Was ist neu?",
+ "Az ESI a runokat csak a job leadásakor csökkenti; a még le nem adott jobok runjait ({0}) már levontam.": "ESI senkt die Runs erst bei der Auslieferung des Jobs; Runs noch nicht ausgelieferter Jobs ({0}) sind bereits abgezogen.",
+ "ESI állapot: {0}, legközelebb {1} után frissül (az ESI ezt a listát legfeljebb egy óráig tárolja). A * jelű runoknál a még le nem adott jobokat már levontam.": "ESI-Stand: {0}, nächste Aktualisierung nach {1} (ESI speichert diese Liste bis zu einer Stunde). Bei Runs mit * sind noch nicht ausgelieferte Jobs bereits abgezogen."
 };

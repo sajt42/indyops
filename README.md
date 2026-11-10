@@ -81,6 +81,8 @@ git commit -am "vX.Y.Z: what changed" && git push origin main
 
 The `Tag versions` GitHub Action then tags the release (`vX.Y.Z`) automatically.
 
+If a release reads new data from ESI and users must refresh their characters, raise `dataVersion` in `APP` (`js/core.js`); the app then shows a banner with a refresh button to everyone whose stored data is older.
+
 **Translations:** copy `i18n/en.js` to a new language file, translate the values (keep `#` and `{0}` placeholders), add it to `index.html` and to `LANGS` in `js/core.js`.
 
 ## Legal

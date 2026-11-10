@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.3 – 2026-11-10
+
+- Fix: BPC runs – ESI only lowers runs when a job is delivered, so runs of jobs still running or not yet delivered at ESI's snapshot are subtracted (marked *)
+- After an update that needs fresh data, a banner asks you to refresh all data (with a button and a link to what changed)
+
 ## 1.10.2 – 2026-11-10
 
 - BPC runs: jobs already delivered are also checked against ESI's blueprint snapshot; the Blueprints tab shows the ESI snapshot time per character (with date if not today)
