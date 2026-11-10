@@ -53,7 +53,7 @@ async function runInvention() {
   await resolveNames(prods);
   status('piaci forgalom…');
   await ensureHistory(prods);
-  const fee = salesTax() + brokerFee();
+  const fees = sellFees();
   const best = new Map();
   const sysCache = {};
   for (const x of calc) {
@@ -64,7 +64,7 @@ async function runInvention() {
     const noPrice = [...x.R.buyList].filter(([t]) => !buyPrice(t)).map(([t]) => t);
     await assignJobSys(x.R.jobs);
     const jc = x.R.jobs.reduce((s, j) => s + jobCost(j, sys), 0);
-    const net = price ? tr.made * price * (1 - fee) : 0;
+    const net = price ? netOfFees(tr.made * price, fees) : 0;
     const profit = net - mat - jc;
     const invCost =
       nodeCost(tr.tree.ch.find(n => n.inv) || { t: 0, buy: 0, stock: [], ch: [] }, false) +

@@ -107,7 +107,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -749,6 +749,13 @@ const ok = (c, msg) => {
     );
     T.setHtml(el, T.html`<table><tbody><tr>${h}</tr></tbody></table>`);
     ok(el.querySelector('td i') && el.querySelector('td u'), 'setHtml renders a template');
+  }
+  // 25. broker fee is at least 100 ISK per order
+  {
+    const f = { tax: 0.0337, broker: 0.0123 };
+    ok(Math.abs(T.netOfFees(5000, f) - (5000 - 168.5 - 100)) < 1e-9, 'small order: broker fee 100 ISK minimum');
+    ok(Math.abs(T.netOfFees(1e6, f) - (1e6 - 33700 - 12300)) < 1e-6, 'large order: broker fee by rate');
+    ok(T.netOfFees(0, f) === 0 && T.netOfFees(NaN, f) === 0, 'no value, no fee');
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

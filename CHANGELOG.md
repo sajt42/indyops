@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.13.3 – 2026-11-10
+
+- Selling: the broker fee is at least 100 ISK per order, as in the game; Planner, Projects, What pays? and Invention count it (it matters only for orders below about 8,000 ISK).
+
 ## 1.13.2 – 2026-11-10
 
 - Security: every view builds its markup with the html`` template tag, which escapes every value by default, and sets it only through setHtml/appendHtml. A string that was not converted is shown as text instead of being run as markup. The rendered pages are identical to 1.13.1 in all 21 test scenarios.

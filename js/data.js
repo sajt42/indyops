@@ -216,12 +216,19 @@ function sellers(l = JITA_STATION) {
     .sort((a, b) => a.fee - b.fee);
 }
 // fee of the cheapest seller at the second market (null if the structure fee is not set)
-function m2Fee() {
+// selling fees of the cheapest seller at the second market: {tax, broker}, or null if the structure fee is not set
+function m2Fees() {
   const b = sellers()
     .filter(x => x.b2 != null)
-    .map(x => x.tax + x.b2)
-    .sort((a, b) => a - b)[0];
-  return b ?? null;
+    .sort((a, b) => a.tax + a.b2 - (b.tax + b.b2))[0];
+  return b ? { tax: b.tax, broker: b.b2 } : null;
+}
+// the broker fee is at least this much per order (the game's minimum)
+const BROKER_MIN_ISK = 100;
+// value of one sell order after sales tax and broker fee; fees = {tax, broker} as fractions
+function netOfFees(gross, fees) {
+  if (!(gross > 0)) return 0;
+  return gross - gross * fees.tax - Math.max(BROKER_MIN_ISK, gross * fees.broker);
 }
 function bestSeller() {
   return sellers()[0] || null;
@@ -234,6 +241,8 @@ function brokerFee() {
   const b = bestSeller();
   return b ? b.broker : brokerFeeOf(null);
 }
+// fees of the suggested seller at Jita: {tax, broker}
+const sellFees = () => ({ tax: salesTax(), broker: brokerFee() });
 function sellerHtml() {
   const ss = sellers();
   if (!ss.length) return '';

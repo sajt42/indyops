@@ -21,7 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.13.2">
+<link rel="stylesheet" href="css/style.css?v=1.13.3">
 </head>
 <body>
 <header><div class="hwrap">
@@ -414,7 +414,7 @@
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze. Ha van második piac, a profit runonként ott is látszik, az ottani díjakkal.</dd>
     <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
     <dt>Kutatás &amp; copy</dt><dd>BPO-nként a következő ME szint ideje és költsége, mennyit spórol runonként, mikor térül meg, plusz a copy ideje és a science slotjaid.</dd>
-    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). A broker fee a nyers standinggel számol, Connections és Diplomacy nélkül (a játékban a Standings ablak a skillel javított értéket mutatja). Az eladó-táblában a broker fee fölé víve az egeret látszik a képlet a karakter skilljeivel, a frakció és a corp nevével, a nyers és a játékban látható standinggel, így a játékban feladott order díjával össze tudod vetni. A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van. Játékos-struktúránál a broker fee-t a tulaj állítja, ezt egyszer beírhatod, és onnantól az eladó-javaslat és az összeg is számol vele. A struktúrában lévő ordereidnél az alá-ígérést a struktúra piacáról nézi.</dd>
+    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). A broker fee a nyers standinggel számol, Connections és Diplomacy nélkül (a játékban a Standings ablak a skillel javított értéket mutatja). Az eladó-táblában a broker fee fölé víve az egeret látszik a képlet a karakter skilljeivel, a frakció és a corp nevével, a nyers és a játékban látható standinggel, így a játékban feladott order díjával össze tudod vetni. A broker fee orderenként legalább 100 ISK, ezt a profitszámítás is figyelembe veszi. A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van. Játékos-struktúránál a broker fee-t a tulaj állítja, ezt egyszer beírhatod, és onnantól az eladó-javaslat és az összeg is számol vele. A struktúrában lévő ordereidnél az alá-ígérést a struktúra piacáról nézi.</dd>
     <dt>Vásárlás nélkül</dt><dd>Hány runt tudsz legyártani csak abból, ami megvan, és mi fogy el először.</dd>
     <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind). Minden listás oldalon (Blueprintek, Készlet, Mit érdemes?, Invention, Kutatás, Eladás, Vásárlás nélkül, Reprocess) a fejlécre kattintva rendezhetsz, újabb kattintásra fordított sorrendben.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
@@ -479,7 +479,7 @@
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together. With a second market, profit per run is shown there too, with that market's fees.</dd>
     <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
     <dt>Research &amp; copy</dt><dd>Per BPO: time and cost of the next ME level, how much it saves per run, when it pays off, plus copy time and your science slots.</dd>
-    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). The broker fee uses the raw standings, without Connections and Diplomacy (the game's Standings window shows the skill-adjusted value). Hover over a broker fee in the seller table to see the formula with the character's skills, the faction and corp names, and the raw and in-game standings, so you can compare it with the fee the game shows for an order. In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do. In a player structure the owner sets the broker fee; enter it once and the seller suggestion and totals use it. For your orders in structures, undercuts are checked on the structure's own market.</dd>
+    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). The broker fee uses the raw standings, without Connections and Diplomacy (the game's Standings window shows the skill-adjusted value). Hover over a broker fee in the seller table to see the formula with the character's skills, the faction and corp names, and the raw and in-game standings, so you can compare it with the fee the game shows for an order. The broker fee is at least 100 ISK per order, and the profit figures include that. In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do. In a player structure the owner sets the broker fee; enter it once and the seller suggestion and totals use it. For your orders in structures, undercuts are checked on the structure's own market.</dd>
     <dt>No-buy builds</dt><dd>How many runs you can build from what you already have, and what runs out first.</dd>
     <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all). On every list page (Blueprints, Stock, What pays?, Invention, Research, Selling, No-buy builds, Reprocess) click a header to sort, click again to reverse.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
@@ -544,7 +544,7 @@
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen. Mit einem zweiten Markt wird der Gewinn pro Run auch dort angezeigt, mit dessen Gebühren.</dd>
     <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
     <dt>Forschung &amp; Kopie</dt><dd>Pro BPO: Zeit und Kosten der nächsten ME-Stufe, Ersparnis pro Run, wann es sich lohnt, dazu Kopierzeit und deine Science-Slots.</dd>
-    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). Die Broker Fee rechnet mit den Roh-Standings, ohne Connections und Diplomacy (das Standings-Fenster im Spiel zeigt den mit Skills angepassten Wert). Fährst du in der Verkäufertabelle mit der Maus über eine Broker Fee, siehst du die Formel mit den Skills, den Namen von Fraktion und Corp sowie dem rohen und dem im Spiel angezeigten Standing und kannst sie mit der Gebühr vergleichen, die das Spiel für eine Order anzeigt. In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen. In einer Spielerstruktur legt der Besitzer die Broker Fee fest; trage sie einmal ein, dann rechnen Verkäufervorschlag und Summen damit. Bei deinen Orders in Strukturen wird das Unterbieten am Markt der Struktur geprüft.</dd>
+    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). Die Broker Fee rechnet mit den Roh-Standings, ohne Connections und Diplomacy (das Standings-Fenster im Spiel zeigt den mit Skills angepassten Wert). Fährst du in der Verkäufertabelle mit der Maus über eine Broker Fee, siehst du die Formel mit den Skills, den Namen von Fraktion und Corp sowie dem rohen und dem im Spiel angezeigten Standing und kannst sie mit der Gebühr vergleichen, die das Spiel für eine Order anzeigt. Die Broker Fee beträgt mindestens 100 ISK pro Order; die Gewinnberechnung berücksichtigt das. In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen. In einer Spielerstruktur legt der Besitzer die Broker Fee fest; trage sie einmal ein, dann rechnen Verkäufervorschlag und Summen damit. Bei deinen Orders in Strukturen wird das Unterbieten am Markt der Struktur geprüft.</dd>
     <dt>Ohne Einkauf</dt><dd>Wie viele Runs du nur aus deinem Bestand bauen kannst und was zuerst ausgeht.</dd>
     <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle). Auf jeder Listenseite (Blueprints, Bestand, Was lohnt sich?, Invention, Forschung, Verkauf, Ohne Einkauf, Reprocess) sortierst du per Klick auf die Kopfzeile, erneuter Klick dreht die Reihenfolge.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
@@ -594,21 +594,21 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.13.2"></script>
-<script src="i18n/de.js?v=1.13.2"></script>
-<script src="js/core.js?v=1.13.2"></script>
-<script src="js/esi.js?v=1.13.2"></script>
-<script src="js/data.js?v=1.13.2"></script>
-<script src="js/engine.js?v=1.13.2"></script>
-<script src="js/views.js?v=1.13.2"></script>
-<script src="js/tab-projects.js?v=1.13.2"></script>
-<script src="js/tab-profit.js?v=1.13.2"></script>
-<script src="js/tab-invention.js?v=1.13.2"></script>
-<script src="js/tab-research.js?v=1.13.2"></script>
-<script src="js/tab-sales.js?v=1.13.2"></script>
-<script src="js/tab-canbuild.js?v=1.13.2"></script>
-<script src="js/tab-mining.js?v=1.13.2"></script>
-<script src="js/repro.js?v=1.13.2"></script>
-<script src="js/main.js?v=1.13.2"></script>
+<script src="i18n/en.js?v=1.13.3"></script>
+<script src="i18n/de.js?v=1.13.3"></script>
+<script src="js/core.js?v=1.13.3"></script>
+<script src="js/esi.js?v=1.13.3"></script>
+<script src="js/data.js?v=1.13.3"></script>
+<script src="js/engine.js?v=1.13.3"></script>
+<script src="js/views.js?v=1.13.3"></script>
+<script src="js/tab-projects.js?v=1.13.3"></script>
+<script src="js/tab-profit.js?v=1.13.3"></script>
+<script src="js/tab-invention.js?v=1.13.3"></script>
+<script src="js/tab-research.js?v=1.13.3"></script>
+<script src="js/tab-sales.js?v=1.13.3"></script>
+<script src="js/tab-canbuild.js?v=1.13.3"></script>
+<script src="js/tab-mining.js?v=1.13.3"></script>
+<script src="js/repro.js?v=1.13.3"></script>
+<script src="js/main.js?v=1.13.3"></script>
 </body>
 </html>

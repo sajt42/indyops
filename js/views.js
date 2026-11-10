@@ -832,9 +832,9 @@ async function refreshHaul(R) {
   }
 }
 // Totals of a plan, the same numbers the KPIs and the per-product table show.
-// free: own stock counts as free; fee: selling fees (sales tax + broker).
+// free: own stock counts as free; fees: selling fees {tax, broker} (the broker fee is at least 100 ISK per order).
 // Items without a price make the profit "not computable" (unk) instead of being counted as 0.
-function planTotals(R, free, fee) {
+function planTotals(R, free, fees) {
   const unkOf = tree => {
     const u = new Set();
     const scan = n => {
@@ -857,10 +857,10 @@ function planTotals(R, free, fee) {
     return {
       x,
       p,
-      net: gross * (1 - fee),
+      net: netOfFees(gross, fees),
       jc,
       mat,
-      profit: gross * (1 - fee) - jc - mat,
+      profit: netOfFees(gross, fees) - jc - mat,
       tm,
       unk: unkOf(x.tree).size > 0
     };
@@ -883,8 +883,8 @@ function resultKpis(R, P, free, multi) {
       m2On()
         ? (() => {
             const g = R.trees.reduce((s, x) => s + x.made * (sell2(x.tree.t) || 0), 0);
-            const f2 = m2Fee();
-            return html`<div class="small muted">${m2Short()}: ${f2 != null ? isk(g * (1 - f2)) : isk(g) + ' ' + T('(díjak nélkül)')}</div>`;
+            const f2 = m2Fees();
+            return html`<div class="small muted">${m2Short()}: ${f2 ? isk(netOfFees(g, f2)) : isk(g) + ' ' + T('(díjak nélkül)')}</div>`;
           })()
         : ''
     }</div>
@@ -1003,7 +1003,7 @@ function resultTrees(R, multi) {
 // Pure rendering of a finished plan (finishResult or showResult has already assigned characters and prepared hauling).
 function renderResult(el, R, rerun) {
   const free = $('#optStockFree').checked;
-  const P = planTotals(R, free, salesTax() + brokerFee());
+  const P = planTotals(R, free, sellFees());
   const multi = R.trees.length > 1;
   const bl = [...R.buyList].sort((a, b) => b[1] * buyPrice(b[0]) - a[1] * buyPrice(a[0]));
   let h = resultKpis(R, P, free, multi);

@@ -68,8 +68,8 @@ async function runProfit() {
   await ensurePrices([...types]);
   status('piaci forgalom…');
   await ensureHistory(plans.map(x => x.p));
-  const fee = salesTax() + brokerFee();
-  const fee2 = m2Fee();
+  const fees = sellFees();
+  const fees2 = m2Fees();
   const sysCache = {};
   PROFROWS = [];
   PROFM2 = S.market2 || null;
@@ -82,7 +82,7 @@ async function runProfit() {
     await assignJobSys(x.R.jobs);
     const jc = x.R.jobs.reduce((s, j) => s + jobCost(j, sysId), 0);
     const hours = x.R.jobs.reduce((s, j) => s + jobTime(j), 0) / 3600;
-    const net = price ? made * price * (1 - fee) : 0;
+    const net = price ? netOfFees(made * price, fees) : 0;
     const profit = net - mat - jc;
     const perUnit = made ? profit / made : 0;
     const perRun = profit / x.runs;
@@ -90,7 +90,7 @@ async function runProfit() {
     const h = HIST[x.p] || { vol: 0 };
     const perRunUnits = made / x.runs;
     const p2 = sell2(x.p);
-    const perRun2 = m2On() && p2 && fee2 != null ? (made * p2 * (1 - fee2) - mat - jc) / x.runs : null;
+    const perRun2 = m2On() && p2 && fees2 ? (netOfFees(made * p2, fees2) - mat - jc) / x.runs : null;
     PROFROWS.push({
       p: x.p,
       best: x.best,
