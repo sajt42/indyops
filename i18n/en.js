@@ -614,5 +614,6 @@ window.I18N.en={
  "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps has been updated (v{0}). This version needs your characters' data downloaded again: {1}.",
  "Mi változott?": "What changed?",
  "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI still shows the state before the job was delivered ({0} more runs). Corrected here; the * disappears after ESI's next update.",
- "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI snapshot: {0}, next update after {1}. *: ESI doesn't know about a job yet (still running, or delivered after ESI's snapshot), so the runs are corrected here. It disappears once ESI updates."
+ "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI snapshot: {0}, next update after {1}. *: ESI doesn't know about a job yet (still running, or delivered after ESI's snapshot), so the runs are corrected here. It disappears once ESI updates.",
+ "hajók is": "ships too"
 };

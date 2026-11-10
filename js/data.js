@@ -173,7 +173,9 @@ function renderUnknownLocs(){
 
 /* ============ konténerek és projekt-források ============ */
 function allConts(){const m=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid)||!d.cont)continue;for(const [id,c] of Object.entries(d.cont))m.set(Number(id),Object.assign({id:Number(id),cid:Number(cid)},c))}return m}
-function contLabel(id,all){const c=(all||allConts()).get(Number(id));if(!c)return '#'+id;return c.n||NAMES[c.t]||('#'+c.t)}
+// konténer/hajó felirata: saját név (típus), hajónál 🚀, konténernél 📦
+const contIsShip=c=>c.k===6;
+function contLabel(id,all){const c=(all||allConts()).get(Number(id));if(!c)return '#'+id;const tn=NAMES[c.t]||('#'+c.t);return (contIsShip(c)?'🚀 ':'📦 ')+(c.n&&c.n!==tn?c.n+' ('+tn+')':tn)}
 // a konténer és minden benne lévő konténer
 function contTree(ids,all){all=all||allConts();const kids=new Map();for(const c of all.values())if(c.pc!=null){if(!kids.has(c.pc))kids.set(c.pc,[]);kids.get(c.pc).push(c.id)}
   const out=new Set();const st=[...ids].map(Number);while(st.length){const x=st.pop();if(out.has(x))continue;out.add(x);(kids.get(x)||[]).forEach(k=>st.push(k))}return out}

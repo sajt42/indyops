@@ -33,14 +33,15 @@ function srcEditor(spec,key,withExcl,pid){
   const selL=new Set((spec.locs||[]).map(Number)),selC=new Set((spec.conts||[]).map(Number)),ex=new Set((spec.excl||[]).map(Number));
   const kinds=new Map(),ckinds=new Map();
   for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets){if(a.f&&/Slot\d|SubSystemSlot|FighterTube/.test(a.f))continue;(kinds.get(a.l)||kinds.set(a.l,new Set()).get(a.l)).add(a.t);if(a.c!=null)(ckinds.get(a.c)||ckinds.set(a.c,new Set()).get(a.c)).add(a.t)}}
-  const byLoc=new Map();for(const c of all.values()){if(!ckinds.has(c.id)&&![...all.values()].some(x=>x.pc===c.id))continue;if(!byLoc.has(c.l))byLoc.set(c.l,[]);byLoc.get(c.l).push(c)}
+  const showShips=S.srcShips!==false;
+  const byLoc=new Map();for(const c of [...all.values()].sort((a,b)=>(contIsShip(a)-contIsShip(b))||String(a.n||NAMES[a.t]||'').localeCompare(String(b.n||NAMES[b.t]||'')))){if(!showShips&&contIsShip(c))continue;if(!ckinds.has(c.id)&&![...all.values()].some(x=>x.pc===c.id))continue;if(!byLoc.has(c.l))byLoc.set(c.l,[]);byLoc.get(c.l).push(c)}
   const pname=id=>{const q=PROJ.find(x=>x.id===id);return q?q.name:'?'};
   const contRow=(c,d)=>{const other=resv.has(c.id)&&resv.get(c.id)!==pid;
-    return `<div class="srcc" style="padding-left:${22+d*18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id)?'checked':''}> 📦 ${esc(contLabel(c.id,all))}</label> <span class="small muted">${esc(charName(c.cid))} · ${T('{0} féle tárgy',fmt((ckinds.get(c.id)||new Set()).size))}</span>${withExcl?` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id)?'checked':''}> ${T('csak ez a projekt')}</label>`:''}${other?` <span class="pill warn">${T('foglalja: {0}',esc(pname(resv.get(c.id))))}</span>`:''}</div>`+
+    return `<div class="srcc" style="padding-left:${22+d*18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id)?'checked':''}> ${esc(contLabel(c.id,all))}</label> <span class="small muted">${esc(charName(c.cid))} · ${T('{0} féle tárgy',fmt((ckinds.get(c.id)||new Set()).size))}</span>${withExcl?` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id)?'checked':''}> ${T('csak ez a projekt')}</label>`:''}${other?` <span class="pill warn">${T('foglalja: {0}',esc(pname(resv.get(c.id))))}</span>`:''}</div>`+
       [...all.values()].filter(x=>x.pc===c.id&&byLoc.get(c.l)&&byLoc.get(c.l).includes(x)).map(x=>contRow(x,d+1)).join('')};
   const locs=[...kinds.keys()].sort((a,b)=>locName(a).localeCompare(locName(b)));
   const nL=selL.size,nC=selC.size;
-  return `<div class="srcbox"><p class="small">${T('Kiválasztva: {0} helyszín, {1} konténer.',nL,nC)} ${withExcl&&ex.size?T('Foglalt doboz: {0}.',ex.size):''}${nL+nC?'':` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
+  return `<div class="srcbox"><p class="small"><label class="inline" style="float:right"><input type="checkbox" data-srcships ${showShips?'checked':''}> ${T('hajók is')}</label>${T('Kiválasztva: {0} helyszín, {1} konténer.',nL,nC)} ${withExcl&&ex.size?T('Foglalt doboz: {0}.',ex.size):''}${nL+nC?'':` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
   ${hasCont?'':`<p class="small muted">${T('A konténerek listájához frissítsd egyszer a karaktereket.')}</p>`}
   ${locs.map(l=>{const cs=(byLoc.get(l)||[]).filter(c=>c.pc==null||!all.has(c.pc)||all.get(c.pc).l!==l);const open=[...(byLoc.get(l)||[])].some(c=>selC.has(c.id)||ex.has(c.id));
     return `<details data-dl="${key}|${l}" ${open||SRCOPEN.has(key+'|'+l)?'open':''}><summary><input type="checkbox" data-sloc="${key}|${l}" ${selL.has(l)?'checked':''} aria-label="${esc(locName(l))}"> ${esc(locName(l))} <span class="small muted">${T('{0} féle tárgy',fmt(kinds.get(l).size))}${byLoc.get(l)?' · '+T('{0} konténer',byLoc.get(l).length):''}</span></summary>${cs.map(c=>contRow(c,0)).join('')||`<div class="srcc small muted" style="padding-left:22px">${T('nincs konténer')}</div>`}</details>`}).join('')}
@@ -50,6 +51,7 @@ function srcRerender(){const ed=$('#pEdit');SRCOPEN=new Set([...ed.querySelector
 function srcChange(e){const t=e.target;const p=PROJ.find(x=>x.id===SELP);if(!p)return;
   const specOf=k=>k==='p'?(p.src=p.src||{mode:'sel'}):(p.items[Number(k.slice(1))].src=p.items[Number(k.slice(1))].src||{mode:'sel'});
   const tog=(arr,id,on)=>{arr=(arr||[]).map(Number).filter(x=>x!==id);if(on)arr.push(id);return arr};
+  if(t.dataset.srcships!=null){S.srcShips=t.checked;saveS();srcRerender();return}
   if(t.name==='psrcm'){p.src=p.src||{};p.src.mode=t.value;saveP();renderProjects();return}
   if(t.dataset.isrc!=null){const it=p.items[Number(t.dataset.isrc)];if(t.value==='sel')it.src=Object.assign(it.src||{},{mode:'sel'});else delete it.src;saveP();renderProjects();return}
   for(const [k,arr] of [['sloc','locs'],['scont','conts'],['sexcl','excl']]){const v=t.dataset[k];if(v==null)continue;const [key,id]=v.split('|');const sp=specOf(key);sp[arr]=tog(sp[arr],Number(id),t.checked);

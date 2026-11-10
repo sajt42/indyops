@@ -1315,7 +1315,8 @@ window.I18N.en={
  "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps has been updated (v{0}). This version needs your characters' data downloaded again: {1}.",
  "Mi változott?": "What changed?",
  "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI still shows the state before the job was delivered ({0} more runs). Corrected here; the * disappears after ESI's next update.",
- "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI snapshot: {0}, next update after {1}. *: ESI doesn't know about a job yet (still running, or delivered after ESI's snapshot), so the runs are corrected here. It disappears once ESI updates."
+ "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI snapshot: {0}, next update after {1}. *: ESI doesn't know about a job yet (still running, or delivered after ESI's snapshot), so the runs are corrected here. It disappears once ESI updates.",
+ "hajók is": "ships too"
 };
 </script>
 <script>
@@ -1936,7 +1937,8 @@ window.I18N.de={
  "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps wurde aktualisiert (v{0}). Diese Version braucht die Daten deiner Charaktere neu: {1}.",
  "Mi változott?": "Was ist neu?",
  "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI zeigt noch den Stand vor der Auslieferung des Jobs ({0} Runs mehr). Hier bereits korrigiert; das * verschwindet nach der nächsten ESI-Aktualisierung.",
- "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI-Stand: {0}, nächste Aktualisierung nach {1}. *: ESI weiß noch nichts von einem Job (läuft noch oder wurde nach dem ESI-Stand ausgeliefert), daher sind die Runs hier korrigiert. Verschwindet nach der ESI-Aktualisierung."
+ "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI-Stand: {0}, nächste Aktualisierung nach {1}. *: ESI weiß noch nichts von einem Job (läuft noch oder wurde nach dem ESI-Stand ausgeliefert), daher sind die Runs hier korrigiert. Verschwindet nach der ESI-Aktualisierung.",
+ "hajók is": "auch Schiffe"
 };
 </script>
 <script>
@@ -1958,7 +1960,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
 // dataVersion: emeld meg, ha egy új verzió új adatot olvas az ESI-ből, és ehhez a felhasználónak frissítenie kell (a tool szól neki)
-const APP={dataVersion:2,name:'IndyOps',version:'1.10.4',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={dataVersion:3,name:'IndyOps',version:'1.10.5',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2184,6 +2186,7 @@ async function refreshChar(c){
     const B=bps.map(b=>({i:b.item_id,t:b.type_id,me:b.material_efficiency,te:b.time_efficiency,r:b.runs,q:b.quantity,l:root(b.location_id),cn:contNames[b.location_id]||null,c:inC(b.location_id)}));
     // konténerek (és rakománnyal teli hajók): név, típus, hely, szülő konténer
     const CONT={};for(const id of contIds){const a=byItem.get(id);CONT[id]={n:contNames[id]||null,t:a.type_id,l:root(a.location_id),pc:inC(a.location_id),f:a.location_flag}}
+    await Promise.all([...new Set(Object.values(CONT).map(x=>x.t))].map(t=>refGet('t',t).catch(()=>null)));for(const x of Object.values(CONT)){const ti=REFC.t[x.t];x.k=ti?ti.c:null}
     const LM={};for(const a of assets){if(byItem.has(a.location_id))continue;const m=LM[a.location_id]=LM[a.location_id]||{t:a.location_type,f:{}};m.f[a.location_flag]=(m.f[a.location_flag]||0)+1}
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,start:j.start_date,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
@@ -2390,7 +2393,9 @@ function renderUnknownLocs(){
 
 /* ============ konténerek és projekt-források ============ */
 function allConts(){const m=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid)||!d.cont)continue;for(const [id,c] of Object.entries(d.cont))m.set(Number(id),Object.assign({id:Number(id),cid:Number(cid)},c))}return m}
-function contLabel(id,all){const c=(all||allConts()).get(Number(id));if(!c)return '#'+id;return c.n||NAMES[c.t]||('#'+c.t)}
+// konténer/hajó felirata: saját név (típus), hajónál 🚀, konténernél 📦
+const contIsShip=c=>c.k===6;
+function contLabel(id,all){const c=(all||allConts()).get(Number(id));if(!c)return '#'+id;const tn=NAMES[c.t]||('#'+c.t);return (contIsShip(c)?'🚀 ':'📦 ')+(c.n&&c.n!==tn?c.n+' ('+tn+')':tn)}
 // a konténer és minden benne lévő konténer
 function contTree(ids,all){all=all||allConts();const kids=new Map();for(const c of all.values())if(c.pc!=null){if(!kids.has(c.pc))kids.set(c.pc,[]);kids.get(c.pc).push(c.id)}
   const out=new Set();const st=[...ids].map(Number);while(st.length){const x=st.pop();if(out.has(x))continue;out.add(x);(kids.get(x)||[]).forEach(k=>st.push(k))}return out}
@@ -2806,7 +2811,7 @@ function bbCell(n,d,sys){const up=unitPrice(n.t);const m2=m2On()&&sell2(n.t)?`<d
 function bbCell0(n,d,sys,up){if(!n.build)return up?isk(up):'–';const ub=buildUnit(n,sys);if(ub==null)return '–';if(!up)return isk(ub)+' / –';const cheaper=ub<=up;return `<span class="${cheaper?'pos':''}">${isk(ub)}</span> / <span class="${cheaper?'':'pos'}">${isk(up)}</span>`}
 function treeRows(n,d,sys){
   const st=n.stock.reduce((s,x)=>s+x.q,0);const canToggle=d>0&&(ownedFor(n.t).length>0);
-  const src=n.stock.map(x=>x.l==='surplus'?T('felesleg más jobból'):x.l==='job'?T('futó job ({0})',charName(x.cid)):locName(x.l)+(x.c!=null?' · 📦 '+contLabel(x.c):'')+(x.ore?' '+T('(ércből)'):''));
+  const src=n.stock.map(x=>x.l==='surplus'?T('felesleg más jobból'):x.l==='job'?T('futó job ({0})',charName(x.cid)):locName(x.l)+(x.c!=null?' · '+contLabel(x.c):'')+(x.ore?' '+T('(ércből)'):''));
   const where=src.filter((v,i,a)=>a.indexOf(v)===i).map(esc).join(', ');
   const mark=n.inv?`<span class="pill">invention</span> <span class="src">${T('{0}% esély · {1} kísérlet',fmt(n.inv.chance*100,1),n.inv.attempts%1?T('átlag {0}',fmt(n.inv.attempts,2)):fmt(n.inv.attempts))}${n.inv.dec?' · '+esc(DECS[n.inv.dec].n):''}</span>`:canToggle?(S.buyOverride[n.t]?'<span class="pill warn">veszem</span>':(n.build?'<span class="pill ok">gyártom</span>':'')):'';
   let h=`<tr ${canToggle?`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"`:''}><td class="name" style="padding-left:${10+d*18}px">${esc(NAMES[n.t]||n.t)} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st?fmt(st):'–'}</td><td class="num">${n.build?fmt(n.build.made):'–'}</td><td class="num">${n.buy?fmt(n.buy):'–'}</td><td class="num small">${bbCell(n,d,sys)}</td><td class="src">${where}</td></tr>`;
@@ -2850,14 +2855,15 @@ function srcEditor(spec,key,withExcl,pid){
   const selL=new Set((spec.locs||[]).map(Number)),selC=new Set((spec.conts||[]).map(Number)),ex=new Set((spec.excl||[]).map(Number));
   const kinds=new Map(),ckinds=new Map();
   for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets){if(a.f&&/Slot\d|SubSystemSlot|FighterTube/.test(a.f))continue;(kinds.get(a.l)||kinds.set(a.l,new Set()).get(a.l)).add(a.t);if(a.c!=null)(ckinds.get(a.c)||ckinds.set(a.c,new Set()).get(a.c)).add(a.t)}}
-  const byLoc=new Map();for(const c of all.values()){if(!ckinds.has(c.id)&&![...all.values()].some(x=>x.pc===c.id))continue;if(!byLoc.has(c.l))byLoc.set(c.l,[]);byLoc.get(c.l).push(c)}
+  const showShips=S.srcShips!==false;
+  const byLoc=new Map();for(const c of [...all.values()].sort((a,b)=>(contIsShip(a)-contIsShip(b))||String(a.n||NAMES[a.t]||'').localeCompare(String(b.n||NAMES[b.t]||'')))){if(!showShips&&contIsShip(c))continue;if(!ckinds.has(c.id)&&![...all.values()].some(x=>x.pc===c.id))continue;if(!byLoc.has(c.l))byLoc.set(c.l,[]);byLoc.get(c.l).push(c)}
   const pname=id=>{const q=PROJ.find(x=>x.id===id);return q?q.name:'?'};
   const contRow=(c,d)=>{const other=resv.has(c.id)&&resv.get(c.id)!==pid;
-    return `<div class="srcc" style="padding-left:${22+d*18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id)?'checked':''}> 📦 ${esc(contLabel(c.id,all))}</label> <span class="small muted">${esc(charName(c.cid))} · ${T('{0} féle tárgy',fmt((ckinds.get(c.id)||new Set()).size))}</span>${withExcl?` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id)?'checked':''}> ${T('csak ez a projekt')}</label>`:''}${other?` <span class="pill warn">${T('foglalja: {0}',esc(pname(resv.get(c.id))))}</span>`:''}</div>`+
+    return `<div class="srcc" style="padding-left:${22+d*18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id)?'checked':''}> ${esc(contLabel(c.id,all))}</label> <span class="small muted">${esc(charName(c.cid))} · ${T('{0} féle tárgy',fmt((ckinds.get(c.id)||new Set()).size))}</span>${withExcl?` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id)?'checked':''}> ${T('csak ez a projekt')}</label>`:''}${other?` <span class="pill warn">${T('foglalja: {0}',esc(pname(resv.get(c.id))))}</span>`:''}</div>`+
       [...all.values()].filter(x=>x.pc===c.id&&byLoc.get(c.l)&&byLoc.get(c.l).includes(x)).map(x=>contRow(x,d+1)).join('')};
   const locs=[...kinds.keys()].sort((a,b)=>locName(a).localeCompare(locName(b)));
   const nL=selL.size,nC=selC.size;
-  return `<div class="srcbox"><p class="small">${T('Kiválasztva: {0} helyszín, {1} konténer.',nL,nC)} ${withExcl&&ex.size?T('Foglalt doboz: {0}.',ex.size):''}${nL+nC?'':` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
+  return `<div class="srcbox"><p class="small"><label class="inline" style="float:right"><input type="checkbox" data-srcships ${showShips?'checked':''}> ${T('hajók is')}</label>${T('Kiválasztva: {0} helyszín, {1} konténer.',nL,nC)} ${withExcl&&ex.size?T('Foglalt doboz: {0}.',ex.size):''}${nL+nC?'':` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
   ${hasCont?'':`<p class="small muted">${T('A konténerek listájához frissítsd egyszer a karaktereket.')}</p>`}
   ${locs.map(l=>{const cs=(byLoc.get(l)||[]).filter(c=>c.pc==null||!all.has(c.pc)||all.get(c.pc).l!==l);const open=[...(byLoc.get(l)||[])].some(c=>selC.has(c.id)||ex.has(c.id));
     return `<details data-dl="${key}|${l}" ${open||SRCOPEN.has(key+'|'+l)?'open':''}><summary><input type="checkbox" data-sloc="${key}|${l}" ${selL.has(l)?'checked':''} aria-label="${esc(locName(l))}"> ${esc(locName(l))} <span class="small muted">${T('{0} féle tárgy',fmt(kinds.get(l).size))}${byLoc.get(l)?' · '+T('{0} konténer',byLoc.get(l).length):''}</span></summary>${cs.map(c=>contRow(c,0)).join('')||`<div class="srcc small muted" style="padding-left:22px">${T('nincs konténer')}</div>`}</details>`}).join('')}
@@ -2867,6 +2873,7 @@ function srcRerender(){const ed=$('#pEdit');SRCOPEN=new Set([...ed.querySelector
 function srcChange(e){const t=e.target;const p=PROJ.find(x=>x.id===SELP);if(!p)return;
   const specOf=k=>k==='p'?(p.src=p.src||{mode:'sel'}):(p.items[Number(k.slice(1))].src=p.items[Number(k.slice(1))].src||{mode:'sel'});
   const tog=(arr,id,on)=>{arr=(arr||[]).map(Number).filter(x=>x!==id);if(on)arr.push(id);return arr};
+  if(t.dataset.srcships!=null){S.srcShips=t.checked;saveS();srcRerender();return}
   if(t.name==='psrcm'){p.src=p.src||{};p.src.mode=t.value;saveP();renderProjects();return}
   if(t.dataset.isrc!=null){const it=p.items[Number(t.dataset.isrc)];if(t.value==='sel')it.src=Object.assign(it.src||{},{mode:'sel'});else delete it.src;saveP();renderProjects();return}
   for(const [k,arr] of [['sloc','locs'],['scont','conts'],['sexcl','excl']]){const v=t.dataset[k];if(v==null)continue;const [key,id]=v.split('|');const sp=specOf(key);sp[arr]=tog(sp[arr],Number(id),t.checked);

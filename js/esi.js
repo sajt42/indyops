@@ -153,6 +153,7 @@ async function refreshChar(c){
     const B=bps.map(b=>({i:b.item_id,t:b.type_id,me:b.material_efficiency,te:b.time_efficiency,r:b.runs,q:b.quantity,l:root(b.location_id),cn:contNames[b.location_id]||null,c:inC(b.location_id)}));
     // konténerek (és rakománnyal teli hajók): név, típus, hely, szülő konténer
     const CONT={};for(const id of contIds){const a=byItem.get(id);CONT[id]={n:contNames[id]||null,t:a.type_id,l:root(a.location_id),pc:inC(a.location_id),f:a.location_flag}}
+    await Promise.all([...new Set(Object.values(CONT).map(x=>x.t))].map(t=>refGet('t',t).catch(()=>null)));for(const x of Object.values(CONT)){const ti=REFC.t[x.t];x.k=ti?ti.c:null}
     const LM={};for(const a of assets){if(byItem.has(a.location_id))continue;const m=LM[a.location_id]=LM[a.location_id]||{t:a.location_type,f:{}};m.f[a.location_flag]=(m.f[a.location_flag]||0)+1}
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,start:j.start_date,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.5 – 2026-11-10
+
+- Project sources: containers and ships show their type next to your name (e.g. “sün (Vargur)”), ships get 🚀 and are listed after containers; a “ships too” switch hides ship cargo holds; needs one data refresh
+
 ## 1.10.4 – 2026-11-10
 
 - Blueprints tab: clearer explanation of runs marked * (ESI hasn't caught up with a job yet)

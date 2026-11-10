@@ -614,5 +614,6 @@ window.I18N.de={
  "Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.": "IndyOps wurde aktualisiert (v{0}). Diese Version braucht die Daten deiner Charaktere neu: {1}.",
  "Mi változott?": "Was ist neu?",
  "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI zeigt noch den Stand vor der Auslieferung des Jobs ({0} Runs mehr). Hier bereits korrigiert; das * verschwindet nach der nächsten ESI-Aktualisierung.",
- "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI-Stand: {0}, nächste Aktualisierung nach {1}. *: ESI weiß noch nichts von einem Job (läuft noch oder wurde nach dem ESI-Stand ausgeliefert), daher sind die Runs hier korrigiert. Verschwindet nach der ESI-Aktualisierung."
+ "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI-Stand: {0}, nächste Aktualisierung nach {1}. *: ESI weiß noch nichts von einem Job (läuft noch oder wurde nach dem ESI-Stand ausgeliefert), daher sind die Runs hier korrigiert. Verschwindet nach der ESI-Aktualisierung.",
+ "hajók is": "auch Schiffe"
 };
