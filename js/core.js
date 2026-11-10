@@ -61,7 +61,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.13.0',
+  version: '1.13.1',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -207,7 +207,41 @@ const isk = n => {
   return fmt(n, a < 100 ? 2 : 0);
 };
 const esc = s =>
-  String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  String(s ?? '').replace(
+    /[&<>"']/g,
+    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+  );
+
+/* ---- HTML templates that escape by default ----
+ * html`<td>${name}</td>` escapes every interpolated value. Exceptions, which are passed through as they are:
+ * - another html`` result (SafeHtml), - an array (each element by the same rules), - null, undefined and false (nothing).
+ * raw(s) marks markup written in this code base (never data) as safe. setHtml(el, h) is the only way to set innerHTML:
+ * a plain string is shown as text (and logged), so a view that was not converted cannot inject markup.
+ */
+class SafeHtml {
+  constructor(s) {
+    this.s = s;
+  }
+  toString() {
+    return this.s;
+  }
+}
+const htmlPart = v =>
+  v == null || v === false ? '' : v instanceof SafeHtml ? v.s : Array.isArray(v) ? v.map(htmlPart).join('') : esc(v);
+function html(strings, ...vals) {
+  let out = strings[0];
+  for (let i = 0; i < vals.length; i++) out += htmlPart(vals[i]) + strings[i + 1];
+  return new SafeHtml(out);
+}
+const raw = s => new SafeHtml(String(s ?? ''));
+function setHtml(el, h) {
+  if (!el) return;
+  if (h instanceof SafeHtml) el.innerHTML = h.s;
+  else {
+    console.warn('setHtml: plain string shown as text');
+    el.textContent = String(h ?? '');
+  }
+}
 const dur = s => {
   s = Math.round(s);
   const d = Math.floor(s / 86400),

@@ -1,5 +1,6 @@
 // Runs every scenario against dist/indyops.html.
-// - regress.js: explicit assertions (prints "FAIL: …").
+// - regress.js, xss.js: explicit assertions (print "FAIL: …"); xss.js poisons every outside string and checks
+//   that no view turns it into markup or escapes it twice.
 // - every other scenario: characterization ("golden") test – its normalized output must equal tests/golden/<name>.txt.
 //   The golden files were reviewed when created; after an intended change, inspect the diff and refresh them with
 //   UPDATE_GOLDEN=1 node run-all.mjs [names…]
@@ -8,6 +9,7 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 const ALL = [
   'regress',
+  'xss',
   'help',
   'repro',
   'unk',
@@ -48,7 +50,7 @@ for (const t of tests) {
   if (r.status !== 0) out += '\nFAIL (exit ' + r.status + ')';
   let bad = /FAIL|TypeError|ReferenceError|SyntaxError/.test(out),
     why = bad ? 'error' : '';
-  if (!bad && t !== 'regress') {
+  if (!bad && t !== 'regress' && t !== 'xss') {
     const g = 'golden/' + t + '.txt',
       n = norm(out);
     if (process.env.UPDATE_GOLDEN || !existsSync(g)) writeFileSync(g, n);

@@ -106,7 +106,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -709,7 +709,10 @@ const ok = (c, msg) => {
     const elp = d.createElement('div');
     d.body.appendChild(elp);
     T.renderResult(elp, R, () => {});
-    ok(/Párhuzamos gyártás \(gyorsabb\): .*1 → 3 job/.test(elp.textContent) && /Többletanyag/.test(elp.textContent), 'plan shows the split and the extra material');
+    ok(
+      /Párhuzamos gyártás \(gyorsabb\): .*1 → 3 job/.test(elp.textContent) && /Többletanyag/.test(elp.textContent),
+      'plan shows the split and the extra material'
+    );
     const stack = [{ i: 310, t: 688, me: 10, te: 20, r: -1, q: 3, l: 60003760, cid: 1 }];
     setup(slots7, stack);
     S0.parMode = 'speed';
@@ -727,6 +730,24 @@ const ok = (c, msg) => {
     ok(ids.length === 2 && new Set(ids).size === 2, 'jobs keep separate blueprints after assignment (' + ids + ')');
     S0.parallel = false;
     S0.parMode = 'material';
+  }
+  // 24. html templates escape by default
+  {
+    const x = `<b a="1" b='2'>&`;
+    const h = T.html`<td title="${x}">${x}${T.html`<i>${x}</i>`}${[x, T.raw('<u>ok</u>')]}${null}${false}${0}</td>`;
+    ok(
+      String(h) ===
+        '<td title="&lt;b a=&quot;1&quot; b=&#39;2&#39;&gt;&amp;">&lt;b a=&quot;1&quot; b=&#39;2&#39;&gt;&amp;<i>&lt;b a=&quot;1&quot; b=&#39;2&#39;&gt;&amp;</i>&lt;b a=&quot;1&quot; b=&#39;2&#39;&gt;&amp;<u>ok</u>0</td>',
+      'html`` escapes values and passes nested templates, arrays and raw()'
+    );
+    const el = d.createElement('div');
+    T.setHtml(el, '<b class="pwn2">x</b>');
+    ok(
+      !el.querySelector('.pwn2') && el.textContent === '<b class="pwn2">x</b>',
+      'setHtml shows a plain string as text'
+    );
+    T.setHtml(el, T.html`<table><tbody><tr>${h}</tr></tbody></table>`);
+    ok(el.querySelector('td i') && el.querySelector('td u'), 'setHtml renders a template');
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

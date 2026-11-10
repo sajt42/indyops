@@ -60,7 +60,7 @@ js/esi.js           EVE SSO (PKCE), ESI requests, names, character data
 js/data.js          aggregated stock/blueprints, prices, ore reprocessing
 js/engine.js        production engine: trees, BPC runs, invention, cost, time
 js/views.js         rendering: characters, blueprints, stock, plans, hauling
-js/tabs.js          projects, profit, invention, research, selling, mining
+js/tab-*.js         one file per tab: projects, profit, invention, research, selling, no-buy builds, mining
 js/repro.js         reprocess calculator (stock, skills, location yield)
 js/main.js          event wiring, backup/restore, bug report, start-up
 i18n/en.js, de.js   translations (keys are the Hungarian source strings)
@@ -73,7 +73,7 @@ node tools/bundle.mjs          # rebuild dist/indyops.html
 cd tests && npm install && npm test
 ```
 
-`tests/regress.js` holds assertion-based checks. Every other scenario in `tests/` is a characterization test: its output (with dates and times masked) must match `tests/golden/<name>.txt`, so any change in what the app shows is caught. After an intended change, review the reported difference and refresh the reference with `UPDATE_GOLDEN=1 node run-all.mjs <name>`.
+`tests/regress.js` holds assertion-based checks. `tests/xss.js` gives every name that comes from outside (types, stations, structures, containers, ships, characters, projects, pasted scans) an HTML payload, draws every tab, and fails if a payload turns into markup or text is escaped twice. Every other scenario in `tests/` is a characterization test: its output (with dates and times masked) must match `tests/golden/<name>.txt`, so any change in what the app shows is caught. After an intended change, review the reported difference and refresh the reference with `UPDATE_GOLDEN=1 node run-all.mjs <name>`.
 
 **Code style:** the sources are formatted with [Prettier](https://prettier.io) (settings in `.prettierrc.json`): `npx prettier@3.3.3 --write "js/*.js" "i18n/*.js" "tools/*.mjs" "tests/*.js" "tests/*.mjs"`. Code and comments are in English; the UI strings in the code are the Hungarian source texts that serve as translation keys. How the modules, the global state and the planning pipeline fit together is described in [ARCHITECTURE.md](ARCHITECTURE.md).
 

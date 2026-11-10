@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-PUjPiTeUqA3posMelXWnE1tIx2LT7/ptgrabJBYWtXM=' 'sha256-h9ooF1fuhR8l22nO+kD+W6zv4h3FKNoFvbpwoMB/2XA=' 'sha256-Ya3WgNSSKEXPGOrcog70ABqopvMeTxEo5hg6Dv0wTRU=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-22gaW2Zr+XIcDaYwH++eb7V0/6Ur+bZluAzsnS6K0sA=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-rr/VpwPdEtGWOQnIv3MlwpERwjKKp9x4IKpF5sbXCRU=' 'sha256-A0lvB96CGsnu8xwGYol9pkAE68NoXxIk837g4J9uPCc=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-zo88KkfgoMybDL4SnFKUsxDjHPJhe2oKtUtlgUy1VwY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-PUjPiTeUqA3posMelXWnE1tIx2LT7/ptgrabJBYWtXM=' 'sha256-h9ooF1fuhR8l22nO+kD+W6zv4h3FKNoFvbpwoMB/2XA=' 'sha256-95JND+gmYbvFwAwV6P8MUkjSmmpEJ0WHuiKw/8wXzCY=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-kVRthuHI/noDXT04OoYIZr4IvGfNo3tLpaAjj35NssI=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-rr/VpwPdEtGWOQnIv3MlwpERwjKKp9x4IKpF5sbXCRU=' 'sha256-gN2jHYXRCMfND7EI3nXvYtAAlVoXrmhgpMnDnBlbRSE=' 'sha256-RJi9JuqPzmqb4a6/dQenTs3vaZhbzb/TDhA8T4JNDDM=' 'sha256-99e+O3z8EmWZFS+dLhkKcOB5W6f8Z/OccWJP5uOtT7U=' 'sha256-XbkBwETIQCIIlhJjFDgKhGrUgkc7Fhzmu7JBlODOY/g=' 'sha256-OhlsJpjBE9HUmgD1UPS61kE2IR0lDE5MshAKDXmPlUI=' 'sha256-MEXUB7JbWpqtMYwhOQ5Pf5wZs+tBgjDtq9NP58IZpVY=' 'sha256-sIuHhyUXlNdtjx6OehWEJsw1TtyvUqzWMQfhjkluxVY=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-zo88KkfgoMybDL4SnFKUsxDjHPJhe2oKtUtlgUy1VwY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -2319,7 +2319,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.13.0',
+  version: '1.13.1',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -2465,7 +2465,41 @@ const isk = n => {
   return fmt(n, a < 100 ? 2 : 0);
 };
 const esc = s =>
-  String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  String(s ?? '').replace(
+    /[&<>"']/g,
+    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+  );
+
+/* ---- HTML templates that escape by default ----
+ * html`<td>${name}</td>` escapes every interpolated value. Exceptions, which are passed through as they are:
+ * - another html`` result (SafeHtml), - an array (each element by the same rules), - null, undefined and false (nothing).
+ * raw(s) marks markup written in this code base (never data) as safe. setHtml(el, h) is the only way to set innerHTML:
+ * a plain string is shown as text (and logged), so a view that was not converted cannot inject markup.
+ */
+class SafeHtml {
+  constructor(s) {
+    this.s = s;
+  }
+  toString() {
+    return this.s;
+  }
+}
+const htmlPart = v =>
+  v == null || v === false ? '' : v instanceof SafeHtml ? v.s : Array.isArray(v) ? v.map(htmlPart).join('') : esc(v);
+function html(strings, ...vals) {
+  let out = strings[0];
+  for (let i = 0; i < vals.length; i++) out += htmlPart(vals[i]) + strings[i + 1];
+  return new SafeHtml(out);
+}
+const raw = s => new SafeHtml(String(s ?? ''));
+function setHtml(el, h) {
+  if (!el) return;
+  if (h instanceof SafeHtml) el.innerHTML = h.s;
+  else {
+    console.warn('setHtml: plain string shown as text');
+    el.textContent = String(h ?? '');
+  }
+}
 const dur = s => {
   s = Math.round(s);
   const d = Math.floor(s / 86400),
@@ -3881,12 +3915,13 @@ function locClues(l) {
       )
     );
   if (lt) c.push(T('ESI hely-típus: {0}', lt));
-  if (cn.size) c.push(T('konténerek: {0}', [...cn].slice(0, 5).map(esc).join(', ')));
-  if (reg) c.push(T('market ordered van itt, régió: {0}', esc(NAMES[reg] || reg)));
+  if (cn.size) c.push(T('konténerek: {0}', [...cn].slice(0, 5).join(', ')));
+  if (reg) c.push(T('market ordered van itt, régió: {0}', NAMES[reg] || reg));
   if (jobs) c.push(T('{0} industry job fut itt', jobs));
   if (tx) c.push(T('{0} tranzakció történt itt', tx));
   if (lt === 'other') c.push(T('egyéb hely (pl. asset safety vagy deliveries)'));
-  return c.length ? `<div class="src">${c.join(' · ')}</div>` : '';
+  // plain text parts (names come from ESI and from players): escaped as one string
+  return c.length ? html`<div class="src">${c.join(' · ')}</div>` : '';
 }
 function renderUnknownLocs() {
   const el = document.getElementById('unkLocs');
@@ -5616,8 +5651,8 @@ function treeRows(n, d, sys) {
 }
 </script>
 <script>
-/* js/tabs.js */
-/* IndyOps – Tabs: projects, profit ranking, invention, research, selling, no-buy builds, mining. */
+/* js/tab-projects.js */
+/* IndyOps – Projects tab: project list, items, material sources, calculation. */
 'use strict';
 /* ---- projects ---- */
 let PROJ = load('projects', []);
@@ -5902,7 +5937,11 @@ async function calcProjects(list) {
     log(e.stack || e.message);
   }
 }
-
+</script>
+<script>
+/* js/tab-profit.js */
+/* IndyOps – What pays? tab: profit ranking of the blueprints you own. */
+'use strict';
 /* ---- profit ranking ---- */
 let HIST = load('hist', {}); // typeId -> {at, vol, avg}
 async function ensureHistory(types) {
@@ -6104,7 +6143,11 @@ function fillCatSelect(sel, prodTypes) {
     [...cats].map(c => `<option value="${c}">${names[c] || 'Kategória ' + c}</option>`).join('');
   sel.value = cur;
 }
-
+</script>
+<script>
+/* js/tab-invention.js */
+/* IndyOps – Invention tab: T2 invention candidates, chance, decryptors. */
+'use strict';
 /* ---- invention ---- */
 let INVROWS = [],
   INVSKIP = [];
@@ -6263,7 +6306,11 @@ function renderInvention() {
     })
   );
 }
-
+</script>
+<script>
+/* js/tab-research.js */
+/* IndyOps – Research & copy tab: ME/TE research and copying. */
+'use strict';
 /* ---- research & copy ---- */
 const RLM = [0, 105, 250, 595, 1414, 3360, 8000, 19000, 45255, 107700, 256000];
 function bestLvl(id) {
@@ -6406,7 +6453,11 @@ function renderResearch(mME, mTE, mCP) {
   ${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('res', 'name', T('BPO'))}${sortTh('res', 'me', T('ME / TE'), 1)}${sortTh('res', 'next', T('Következő ME szint'), 1)}${sortTh('res', 'cost', T('Költsége'), 1)}${sortTh('res', 'saving', T('Megtakarítás / run'), 1)}${sortTh('res', 'payback', T('Megtérül'), 1)}${sortTh('res', 'meT', T('ME → 10'), 1)}${sortTh('res', 'teT', T('TE → 20'), 1)}${sortTh('res', 'cp', T('Copy idő / run'), 1)}${sortTh('res', 'lim', T('Max run / BPC'), 1)}<th>Állapot</th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r.name)}<div class="src">${esc(charName(r.bp.cid))} · ${esc(locName(r.bp.l))}</div></td><td class="num">${r.me} / ${r.te}</td><td class="num">${r.isReac ? '–' : r.nextME ? dur(r.nextME.t) : '<span class="pill ok">max</span>'}</td><td class="num">${r.nextME && !r.isReac ? isk(r.nextME.c) : '–'}</td><td class="num">${r.isReac ? '–' : r.nextME ? isk(r.saving) : '–'}</td><td class="num">${r.payback != null && !r.isReac ? fmt(Math.ceil(r.payback)) + ' run' : '–'}</td><td class="num">${r.isReac ? '–' : r.me < 10 ? dur(r.meT) + '<div class="src">' + isk(r.meC) + '</div>' : '–'}</td><td class="num">${r.te < 20 ? dur(r.teT) + '<div class="src">' + isk(r.teC) + '</div>' : '–'}</td><td class="num">${dur(r.cpRun)}</td><td class="num">${fmt(r.lim)}<div class="src">${dur(r.cpRun * r.lim)}</div></td><td>${r.job ? '<span class="pill warn">jobban</span>' : ''}${r.isReac ? '<span class="pill">reakció</span>' : ''}</td></tr>`).join('') || '<tr><td colspan="11" class="muted">Nincs találat.</td></tr>'}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Megtakarítás / run: a következő ME szint 1%-a az alapanyagok mai Jita-értékéből. Megtérül: hány gyártott run után hozza vissza a következő ME szint kutatási költségét. A kutatás költsége: EIV × 2% × szintszorzó × a BP helyének research cost indexe, plusz adók. A copy ideje egy runra szól; a „Max run / BPC” alatt egy teljes BPC másolási ideje látszik. Reakció formulát nem lehet ME-re kutatni.</p>`;
 }
-
+</script>
+<script>
+/* js/tab-sales.js */
+/* IndyOps – Selling tab: active market orders, undercuts, sales history. */
+'use strict';
 /* ---- selling ---- */
 function priceTick(p) {
   if (!p || p <= 0) return 0.01;
@@ -6572,7 +6623,11 @@ function salesHistory() {
   const tot = rows.reduce((s, r) => s + r.sv, 0);
   return `<h3>Eladások az elmúlt 30 napban</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Eladva (db)</th><th class="num">Bevétel</th><th class="num">Átlagár</th><th class="num">Mai Jita sell</th>${m2On() ? `<th class="num">${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${rows.map(r => `<tr><td>${esc(NAMES[r.t] || r.t)}</td><td class="num">${fmt(r.sq)}</td><td class="num">${isk(r.sv)}</td><td class="num">${isk(r.sv / r.sq)}</td><td class="num">${isk(sell(r.t))}</td>${m2On() ? `<td class="num">${m2Cell(sell(r.t), sell2(r.t))}</td>` : ''}</tr>`).join('') || '<tr><td colspan="6" class="muted">Nem adtál el semmit.</td></tr>'}<tr><td><b>Összesen</b></td><td></td><td class="num"><b>${isk(tot)}</b></td><td></td><td></td>${m2On() ? '<td></td>' : ''}</tr></tbody></table></div><p class="small muted" style="margin-top:6px">A bevétel bruttó, az eladási adó és a broker díj nélkül.</p>`;
 }
-
+</script>
+<script>
+/* js/tab-canbuild.js */
+/* IndyOps – Builds without buying tab: what the stock can build. */
+'use strict';
 /* ---- builds without buying ---- */
 async function runCanBuild() {
   const out = $('#cbOut');
@@ -6678,7 +6733,11 @@ function fillCats(prodTypes) {
     [...cats].map(c => `<option value="${c}">${names[c] || 'Kategória ' + c}</option>`).join('');
   sel.value = cur;
 }
-
+</script>
+<script>
+/* js/tab-mining.js */
+/* IndyOps – Mining tab: survey scan, ore value, minerals for the plan. */
+'use strict';
 /* ---- mining ---- */
 let LASTSCAN = null;
 async function runScan() {

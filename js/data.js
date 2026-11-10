@@ -626,12 +626,13 @@ function locClues(l) {
       )
     );
   if (lt) c.push(T('ESI hely-típus: {0}', lt));
-  if (cn.size) c.push(T('konténerek: {0}', [...cn].slice(0, 5).map(esc).join(', ')));
-  if (reg) c.push(T('market ordered van itt, régió: {0}', esc(NAMES[reg] || reg)));
+  if (cn.size) c.push(T('konténerek: {0}', [...cn].slice(0, 5).join(', ')));
+  if (reg) c.push(T('market ordered van itt, régió: {0}', NAMES[reg] || reg));
   if (jobs) c.push(T('{0} industry job fut itt', jobs));
   if (tx) c.push(T('{0} tranzakció történt itt', tx));
   if (lt === 'other') c.push(T('egyéb hely (pl. asset safety vagy deliveries)'));
-  return c.length ? `<div class="src">${c.join(' · ')}</div>` : '';
+  // plain text parts (names come from ESI and from players): escaped as one string
+  return c.length ? html`<div class="src">${c.join(' · ')}</div>` : '';
 }
 function renderUnknownLocs() {
   const el = document.getElementById('unkLocs');

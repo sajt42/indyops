@@ -19,7 +19,13 @@ The scripts are classic (non-module) scripts. They load in this order from `inde
 | `js/data.js` | aggregated views over all characters: stock, blueprints, skills, fees, standings, prices, second market, ores, unknown locations, containers and project material sources | `allBPs`, `stockMap`, `ensurePrices`, `brokerFee`, `salesTax`, `stockFilter` |
 | `js/engine.js` | planning engine: material trees, BPC runs, invention, job systems, job cost and time | `makeMulti`, `planNode`, `addInvention`, `assignJobSys`, `jobCost`, `jobTime` |
 | `js/views.js` | paging and sorting, rendering of the Characters / Blueprints / Stock / Settings tabs, plan pipeline, character assignment, hauling | `renderAll`, `pageOf`, `sortTh`, `finishResult`, `assignChars`, `showResult`, `renderResult`, `prepHaul` |
-| `js/tabs.js` | Projects (incl. material sources), Profit, Invention, Research, Selling, Build without buying, Mining | `calcProjects`, `runProfit`, `runInvention`, `runResearch`, `runSales`, `runCanBuild`, `runScan` |
+| `js/tab-projects.js` | Projects tab, incl. material sources | `renderProjects`, `calcProjects` |
+| `js/tab-profit.js` | What pays? (profit ranking) | `runProfit`, `renderProfit` |
+| `js/tab-invention.js` | Invention | `runInvention`, `renderInvention` |
+| `js/tab-research.js` | Research & copy | `runResearch`, `renderResearch` |
+| `js/tab-sales.js` | Selling: orders, undercuts, history | `runSales`, `renderSales` |
+| `js/tab-canbuild.js` | Builds without buying | `runCanBuild`, `renderCanBuild` |
+| `js/tab-mining.js` | Mining: survey scan, ore value | `runScan`, `renderMineNeed` |
 | `js/repro.js` | Reprocess calculator: rows from stock, location yield (structure, rig, security, NPC station), tax, skills, implants | `repLoad`, `repCalc`, `renderRepro`, `renderRepSum` |
 | `js/main.js` | event wiring, backup and restore (`makeBackup`, `validateBackup`), bug report link, start-up | – |
 
@@ -41,9 +47,9 @@ All state is global (`let` at the top level of a file). Persisted entries are st
 | `PRICES` | type → `{s, b, at, err, retry}` Jita prices | `prices` | `ensurePrices`, cache reset in `main.js` |
 | `ADJ`, `IDX` | adjusted prices; system → activity cost index | `adj`, `idx2` | `data.js` |
 | `ORES`, `CORPFAC`, `SYSSEC`, `HIST`, `ROUTES`, `SHIPC` | ore types, NPC corp → faction (from EVE Ref), system security, market history, routes, ship capacities | own keys | the module that declares them |
-| `PROJ`, `SELP` | projects and the selected project | `projects`, `selp` | `tabs.js`, restore |
+| `PROJ`, `SELP` | projects and the selected project | `projects`, `selp` | `tab-projects.js`, restore |
 | `BPPROD` | blueprint type → `{prod, qty, act}` index of recipes | – | `indexBPProducts` (`engine.js`), reset in `main.js` |
-| `LASTPLAN`, `LASTRENDER` | the plan on screen and a function that redraws it | – | `runPlan` (`views.js`), `calcProjects` (`tabs.js`) |
+| `LASTPLAN`, `LASTRENDER` | the plan on screen and a function that redraws it | – | `runPlan` (`views.js`), `calcProjects` (`tab-projects.js`) |
 | `REP`, `REPLOG` | reprocess rows, selection, load log | – | `repro.js` |
 | `PROFROWS`, `INVROWS`, `RESROWS`, `SLROWS`, `CBROWS`, `PG`, `PGR`, `SRT` | last result rows of the list tabs, their paging and sort state | – | the tab that owns them |
 
@@ -113,6 +119,7 @@ showResult(el, R, rerun)             views.js    re-assigns characters, draws, r
 `tests/` runs the bundled `dist/indyops.html` in jsdom with a mocked `fetch`:
 
 - `regress.js` holds assertion checks;
+- `xss.js` poisons every outside string with an HTML payload and checks every tab (no markup, no double escaping);
 - every other scenario is a characterization test compared with `tests/golden/<name>.txt`.
 
 See the README for commands. Build with `node tools/bundle.mjs` before running them.

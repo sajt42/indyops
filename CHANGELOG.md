@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.13.1 – 2026-11-10
+
+- Security: new test (tests/xss.js) that gives every name coming from outside an HTML payload and draws every tab. It found one hole: the clues for unknown locations showed character names and hangar flags without escaping. Fixed.
+- Code: escaping also covers the apostrophe; new html`` template helpers that escape by default (html, raw, setHtml), used by the next releases.
+- Code: tabs.js is split into one file per tab (js/tab-*.js); no change in behavior.
+
 ## 1.13.0 – 2026-11-10
 
 - Parallel manufacturing (Settings → Manufacturing, off by default): with several blueprints for one item (BPCs, BPOs, or a stack of BPOs) the runs are split into jobs that run at the same time, up to the number of blueprints and free slots, with at least one hour of base time per job. Mode 'less material' splits only as far as no extra material is needed (ME rounds up per job); 'more speed' splits as far as possible. The plan lists the split items and the extra material in ISK.
