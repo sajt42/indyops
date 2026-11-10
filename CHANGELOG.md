@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.2 – 2026-11-10
+
+- Fix: restoring a backup with “buy instead of build” overrides failed validation (they are booleans); numeric settings may also be empty
+- Hauling: only the most recent route preparation may publish its result (an older, slower one can no longer overwrite it); the marker is updated only on success
+- Tests: no always-true check; full export → import round trip; reversed-completion race test (38 checks)
+
 ## 1.12.1 – 2026-11-10
 
 - Backup restore: every setting and project field is type-checked, unknown fields are dropped, and bad input never throws

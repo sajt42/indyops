@@ -13,14 +13,14 @@ w.fetch=async(u,o)=>{u=String(u);if(hang){const h=hang(u,o);if(h)return h}const 
   if(m=u.match(/orders\/\?type_id=(\d+)/)){if(failPrice.has(Number(m[1])))return {ok:false,status:503,headers:{get:()=>null},text:async()=>'down'};const p=prices[m[1]];return J(p?[{location_id:60003760,is_buy_order:false,price:p}]:[])}
   if(u.includes('/markets/prices/'))return J([{type_id:34,adjusted_price:3.2},{type_id:35,adjusted_price:13},{type_id:36,adjusted_price:40},{type_id:37,adjusted_price:200},{type_id:38,adjusted_price:700},{type_id:39,adjusted_price:1000},{type_id:40,adjusted_price:2000}]);
   if(u.includes('/industry/systems/'))return J([{solar_system_id:30001,cost_indices:[{activity:'manufacturing',cost_index:0.02}]},{solar_system_id:30002,cost_indices:[{activity:'manufacturing',cost_index:0.08}]}]);
-  if(m=u.match(/\/route\/(\d+)\/(\d+)\/(\?flag=secure)?/)){const r=route(Number(m[1]),Number(m[2]),!!m[3]);return r?J(r):{ok:false,status:404,headers:{get:()=>null},text:async()=>'no route'}}
+  if(m=u.match(/\/route\/(\d+)\/(\d+)\/(\?flag=secure)?/)){const r=route(Number(m[1]),Number(m[2]),!!m[3]);if(r&&r.delay){await new Promise(z=>setTimeout(z,r.delay));return J(r.path)}return r?J(r):{ok:false,status:404,headers:{get:()=>null},text:async()=>'no route'}}
   if(m=u.match(/universe\/systems\/(\d+)/))return J({security_status:sec[m[1]]??0.9});
   if(u.includes('/universe/names/'))return J([]);
   if(m=u.match(/universe\/stations\/(\d+)/))return J({name:'Station '+m[1],system_id:m[1]==='60000005'?30002:30001});
   throw new Error('unmocked '+u)};
 const code=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
 w.localStorage.setItem('indyops.settings',JSON.stringify({lang:'hu'}));
-w.eval(code+`;window.__t={esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+w.eval(code+`;window.__t={makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC};`);
 const T=w.__t,d=w.document;let fails=0,checks=0;
 const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
@@ -80,7 +80,7 @@ const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
   // 9. import: field-level validation, never throws
   let v1,v2,thrown=false;try{v1=T.validateBackup({app:'indyops',settings:{locs:'nem-tömb',buyOverride:null},projects:[]});v2=T.validateBackup({app:'indyops',projects:[{id:1,name:'Teszt',items:[],src:{mode:'sel',locs:'hibás'}}]})}catch(e){thrown=true}
   ok(!thrown,'validator does not throw on bad input');ok(v1&&v1.err.length>0,'bad settings fields rejected ('+(v1&&v1.err.join('; '))+')');ok(v2&&v2.err.length>0,'bad project source rejected');
-  ok(T.validateBackup(null).err.length>0||true,'null input handled');
+  {const rn=T.validateBackup(null);ok(rn.err.length>0,'null backup is rejected')}
   const v3=T.validateBackup({app:'indyops',settings:{facTax:1,unknownKey:5},projects:[]});ok(v3.err.length===0&&v3.d.settings.facTax===1&&!('unknownKey' in v3.d.settings),'unknown setting dropped, known kept');
 
   // 10. timeout covers the response body; body error retried; then success
@@ -113,5 +113,25 @@ const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
   T.setData({1:{assets:[],bps:[{i:201,t:688,me:10,te:20,r:8,q:-2,l:L}],skills:{},jobs:[],at:Date.now()},2:{assets:[],bps:[{i:202,t:688,me:10,te:20,r:8,q:-2,l:L2}],skills:{3380:5},jobs:[],at:Date.now()}});
   const jb=[{t:638,bp:{cid:1,i:201,t:688,l:L,me:10,te:20,r:8},runs:1,act:'m',time:3600,base:[[34,1000]],miss:[],item:{}}];
   T.assignChars(jb);await T.assignJobSys(jb);ok(jb[0].who===2&&jb[0].bp.l===L2&&T.jobSysOf(jb[0])===30002,'reassigned BP moves the job to its system (who '+jb[0].who+', sys '+T.jobSysOf(jb[0])+')');
+
+  // 15. boolean buy override survives validation; full export → import round trip
+  {const r=T.validateBackup({app:'indyops',settings:{buyOverride:{'57478':true}},projects:[]});ok(r.err.length===0&&r.d.settings.buyOverride[57478]===true,'boolean buy override survives backup validation')}
+  Object.assign(T.S,{buyOverride:{57478:true},locs:[L,L2],workChars:[1],market2:60008494,buyM2:false,srcShips:false,salesTax:'',broker:'2.5',facTax:'',structBroker:{1000000000001:1.5},locNames:{1000000000010:'Malac kuckó'},
+    repro:{loc:{[L]:{rig:3,tax:'1.2',base:''}},imp:{1:4,2:'auto'},char:''},structME:1,system:'',prodLoc:'',wallet:true,lang:'hu'});
+  T.setProj([{id:1,name:'Ravenek',active:true,items:[{bpType:688,runs:2,src:{mode:'sel',locs:[L2],conts:[],excl:[]}},{invT1:688,t2:999,dec:null,runs:1,pi:0}],src:{mode:'sel',locs:[],conts:[9001],excl:[9001]}},{id:2,name:'B',active:false,items:[]}]);
+  const back=JSON.parse(JSON.stringify(T.makeBackup(false)));const rt=T.validateBackup(back);
+  ok(rt.err.length===0,'own export validates ('+rt.err.join('; ')+')');
+  ok(rt.d.settings.buyOverride[57478]===true&&rt.d.settings.repro.loc[L].rig===3&&rt.d.settings.locNames[1000000000010]==='Malac kuckó'&&rt.d.settings.market2===60008494,'settings survive round trip');
+  ok(rt.d.projects.length===2&&rt.d.projects[0].src.excl[0]===9001&&rt.d.projects[0].items[0].src.locs[0]===L2&&rt.d.projects[0].items[1].invT1===688&&rt.d.projects[1].active===false,'projects survive round trip');
+
+  // 16. haul preparation: an older, slower run must not overwrite a newer one
+  T.setChars([{id:1,name:'Pilot A',refresh:'x',access:'x',exp:Date.now()+1e9}]);T.setData({1:{assets:[],bps:[],skills:{},jobs:[],at:Date.now()}});
+  const tree=l=>({tree:{t:638,buy:0,stock:[],ch:[],build:{jobs:[{c:{l}}]}},made:1});
+  T.LI[60000006]={name:'S6',system:30040};T.LI[60000007]={name:'S7',system:30041};sec[30040]=0.9;sec[30041]=0.9;sec[30000142]=0.9;
+  route=(a,b)=>({delay:a===30040?200:10,path:[a,b]});
+  const RH={trees:[tree(60000006)],jobs:[]};const pA=T.prepHaul(RH);RH.trees=[tree(60000007)];const pB=T.prepHaul(RH);
+  const [fa,fb]=await Promise.all([pA,pB]);
+  ok(fb===true&&fa===false,'only the newest preparation publishes (A '+fa+', B '+fb+')');
+  ok(RH.haulCtx&&('60000007|60003760' in RH.haulCtx.jumps)&&!('60000006|60003760' in RH.haulCtx.jumps),'final context belongs to the newest assignment');
   console.log(`regress: ${checks-fails}/${checks} checks passed`);
 })().catch(e=>console.error('FAIL',e));

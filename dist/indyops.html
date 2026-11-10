@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aR1shMIrRyAgtZuqUbzSi3BQgmyEWlaor3h0qdQZmVc=' 'sha256-yXijC94hRM9CpcXhDT7K+WgSY1HIvPrmY46kENh2PGw=' 'sha256-TjEZ0n7mybdqzORc58/3EtbqMrl++fyUSOvcp7jETKs=' 'sha256-yktekfaKHQZcGnP07gLCV9rqyOEeRPma9HYl2jYRieQ=' 'sha256-EC/fkYYbSVnbYd6m3DrzQmfLSHuBJ3UJLVIVEy7Utuw=' 'sha256-eXDbQbjeNGkTv74xLSQSROUyBEWqDGSII6h14mqn5v8=' 'sha256-c1p8bknU2t2m8KiQe0Cj9Lur0JfeLtFwU+QPhZLh/JM=' 'sha256-g8/LcYTbdQDDwRkOTSCKS1HuyOkwXvDvqFV1rEczCy8=' 'sha256-Cpub085pjNoe3DonPDenCStwloDQWBfob/AXuIRiIHY=' 'sha256-0kjOUf46GUzjVViMQx4EM2JVeP8UJVRH2oradfWDyDo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aR1shMIrRyAgtZuqUbzSi3BQgmyEWlaor3h0qdQZmVc=' 'sha256-yXijC94hRM9CpcXhDT7K+WgSY1HIvPrmY46kENh2PGw=' 'sha256-EHQyNJQD4kyPNTpRhEirFwhgTZhe1+7t/NS1gnbdJlw=' 'sha256-yktekfaKHQZcGnP07gLCV9rqyOEeRPma9HYl2jYRieQ=' 'sha256-EC/fkYYbSVnbYd6m3DrzQmfLSHuBJ3UJLVIVEy7Utuw=' 'sha256-eXDbQbjeNGkTv74xLSQSROUyBEWqDGSII6h14mqn5v8=' 'sha256-N9/Pto0dKR1ebDWF02kxqMWcZiHeu2qt7Tf0FtIoASc=' 'sha256-g8/LcYTbdQDDwRkOTSCKS1HuyOkwXvDvqFV1rEczCy8=' 'sha256-Cpub085pjNoe3DonPDenCStwloDQWBfob/AXuIRiIHY=' 'sha256-+9kyLQsa1xk+fDck7loryq8R/zqe1BW/ENpN/AFVaqc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -2004,7 +2004,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
 // dataVersion: emeld meg, ha egy új verzió új adatot olvas az ESI-ből, és ehhez a felhasználónak frissítenie kell (a tool szól neki)
-const APP={dataVersion:3,name:'IndyOps',version:'1.12.1',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={dataVersion:3,name:'IndyOps',version:'1.12.2',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2727,7 +2727,7 @@ async function finishResult(R,firstBP){
   R.sys=firstBP?await sysFor(firstBP):null;
   // sorrend: előbb a végleges karakter-/BP-kiosztás, utána a rendszerek és a szállítás
   assignChars(R.jobs);await assignJobSys(R.jobs);await resolveNames([...new Set(R.jobs.map(j=>jobSysOf(j,R.sys)).filter(Boolean))]);
-  try{await prepHaul(R);R.haulSig=haulSig(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
+  try{await prepHaul(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
   return R;
 }
 async function runPlan(){
@@ -2829,13 +2829,17 @@ async function ensureRoute(a,b){
   }
   ROUTES[k]=res||{fail:true,at:Date.now()};store('routes2',ROUTES);return res;
 }
+// szállítási kontextus: a hívás pillanatában vett pillanatképből dolgozik, és csak a legutóbb indított előkészítés írhatja be az eredményt
 async function prepHaul(R){
+  const gen=R.haulGen=(R.haulGen||0)+1;const sig=haulSig(R);
   const H=haulList(R);const pairs=[];
   for(const k of H.moves.keys()){const [f,t]=k.split('|').map(Number);pairs.push([f,t])}
   for(const f of H.sale.keys())pairs.push([f,JITA_STATION]);
   for(const [f,t] of pairs){for(const l of [f,t])if(l!==JITA_STATION&&!LOCINFO[l])await resolveLoc(l)}
   const jumps={};for(const [f,t] of pairs)jumps[f+'|'+t]=await ensureRoute(sysOfLoc(f),sysOfLoc(t));
-  R.haulCtx={jumps,ships:await ownShips()};
+  const ctx={jumps,ships:await ownShips()};
+  if(gen!==R.haulGen)return false; // közben újabb előkészítés indult: a régi eredmény nem írhatja felül
+  R.haulCtx=ctx;R.haulSig=sig;return true;
 }
 function shipAdvice(R,key,vol,maxUnit){
   const ctx=R.haulCtx;if(!ctx||!vol)return '';const rt=ctx.jumps[key];const j=rt?rt.n:null;
@@ -2866,7 +2870,8 @@ function buildUnit(n,sys){ // gyártási egységár: részfa piaci áron + a cso
 function renderResult(el,R,rerun){
   assignChars(R.jobs);
   // ha a kiosztás változott (pl. más karakterek dolgoznak), a szállítási útvonalakat újra előkészíti, majd újrarajzol
-  {const sig=haulSig(R);if(R.haulSig!==sig){R.haulSig=sig;Promise.all([assignJobSys(R.jobs),prepHaul(R)]).then(()=>{if(R.haulSig===sig&&el.isConnected)renderResult(el,R,rerun)}).catch(e=>log('Szállítás előkészítés: '+e.message))}}
+  // a jelzés (haulSig) csak sikeres előkészítés után frissül; ugyanarra a kiosztásra egyszerre csak egy előkészítés fut
+  {const sig=haulSig(R);if(R.haulSig!==sig&&R.haulPending!==sig){R.haulPending=sig;assignJobSys(R.jobs).then(()=>prepHaul(R)).then(fresh=>{if(R.haulPending===sig)R.haulPending=null;if(fresh&&R.haulSig===sig&&el.isConnected)renderResult(el,R,rerun)}).catch(e=>{if(R.haulPending===sig)R.haulPending=null;log('Szállítás előkészítés: '+e.message)})}}
   const free=$('#optStockFree').checked;const fee=salesTax()+brokerFee();
   // ár nélküli tételek: ezekből a profit nem számolható (nem 0 költséggel számolunk)
   const unkOf=(tree)=>{const u=new Set();const scan=n=>{if(n.buy>0&&!buyPrice(n.t))u.add(n.t);if(!free&&n.stock.some(x=>x.l!=='surplus'&&x.l!=='job'&&x.q>0)&&!unitPrice(n.t))u.add(n.t);n.ch.forEach(scan)};scan(tree);if(!sell(tree.t))u.add(tree.t);return u};
@@ -3540,10 +3545,10 @@ $('#clearYes').onclick=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith
 
 /* ---- mentés / visszatöltés ---- */
 $('#expTokens').addEventListener('change',e=>$('#expWarn').hidden=!e.target.checked);
+function makeBackup(withTok){return {app:'indyops',version:APP.version,v:1,at:new Date().toISOString(),settings:S,projects:PROJ,selp:SELP,
+    chars:withTok?CHARS:CHARS.map(c=>({id:c.id,name:c.name})),withTokens:withTok}}
 $('#expBtn').onclick=()=>{
-  const withTok=$('#expTokens').checked;
-  const data={app:'indyops',version:APP.version,v:1,at:new Date().toISOString(),settings:S,projects:PROJ,selp:SELP,
-    chars:withTok?CHARS:CHARS.map(c=>({id:c.id,name:c.name})),withTokens:withTok};
+  const withTok=$('#expTokens').checked;const data=makeBackup(withTok);
   const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='indyops-backup-'+new Date().toISOString().slice(0,10)+(withTok?'-with-logins':'')+'.json';
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);status('mentés letöltve');
@@ -3551,9 +3556,9 @@ $('#expBtn').onclick=()=>{
 // mentés ellenőrzése mezőnként: ismert beállítás csak a várt típussal jöhet át, ismeretlen mező kimarad;
 // hibás bemenetre sem dob kivételt, és hiba esetén semmit nem alkalmaz
 const SET_SCHEMA={clientId:'str',system:'str',lang:'str',prodLoc:'numOrEmpty',salesTax:'numOrEmpty',broker:'numOrEmpty',market2:'numOrEmpty',
-  structME:'num',structTE:'num',structRes:'num',facTax:'num',scc:'num',yieldBase:'num',implant:'num',
+  structME:'numOrEmpty',structTE:'numOrEmpty',structRes:'numOrEmpty',facTax:'numOrEmpty',scc:'numOrEmpty',yieldBase:'numOrEmpty',implant:'numOrEmpty',
   locs:'numArrOrNull',workChars:'numArrOrNull',wallet:'bool',buyM2:'bool',srcShips:'bool',
-  buyOverride:'mapNumOrStr',locNames:'mapStr',structBroker:'mapNum',repro:'repro'};
+  buyOverride:'mapBool',locNames:'mapStr',structBroker:'mapNum',repro:'repro'};
 function validateBackup(d){
   const err=[];const out={settings:{},projects:[],chars:[],selp:null};
   try{
@@ -3561,7 +3566,7 @@ function validateBackup(d){
     const numish=x=>num(x)||(typeof x==='string'&&x.trim()!==''&&isFinite(Number(x)));
     const mapOf=(o,f)=>isObj(o)&&Object.values(o).every(f);
     const okType={str:x=>typeof x==='string',num:numish,numOrEmpty:x=>x===''||x==null||numish(x),bool:x=>typeof x==='boolean',
-      numArrOrNull:x=>x===null||(Array.isArray(x)&&x.every(num)),mapNumOrStr:x=>mapOf(x,v=>numish(v)||typeof v==='string'),mapStr:x=>mapOf(x,v=>typeof v==='string'),mapNum:x=>mapOf(x,numish),
+      numArrOrNull:x=>x===null||(Array.isArray(x)&&x.every(num)),mapBool:x=>mapOf(x,v=>typeof v==='boolean'),mapStr:x=>mapOf(x,v=>typeof v==='string'),mapNum:x=>mapOf(x,numish),
       repro:x=>isObj(x)&&(x.loc==null||mapOf(x.loc,v=>isObj(v)&&Object.values(v).every(y=>y===''||y==null||numish(y))))&&(x.imp==null||mapOf(x.imp,v=>numish(v)||v==='auto'))&&(x.char==null||x.char===''||numish(x.char))};
     out.app=d.app;out.at=d.at;out.withTokens=!!d.withTokens;
     if(d.settings!=null&&!isObj(d.settings))err.push(T('a beállítások nem objektum'));

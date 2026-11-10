@@ -101,7 +101,7 @@ async function finishResult(R,firstBP){
   R.sys=firstBP?await sysFor(firstBP):null;
   // sorrend: előbb a végleges karakter-/BP-kiosztás, utána a rendszerek és a szállítás
   assignChars(R.jobs);await assignJobSys(R.jobs);await resolveNames([...new Set(R.jobs.map(j=>jobSysOf(j,R.sys)).filter(Boolean))]);
-  try{await prepHaul(R);R.haulSig=haulSig(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
+  try{await prepHaul(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
   return R;
 }
 async function runPlan(){
@@ -203,13 +203,17 @@ async function ensureRoute(a,b){
   }
   ROUTES[k]=res||{fail:true,at:Date.now()};store('routes2',ROUTES);return res;
 }
+// szállítási kontextus: a hívás pillanatában vett pillanatképből dolgozik, és csak a legutóbb indított előkészítés írhatja be az eredményt
 async function prepHaul(R){
+  const gen=R.haulGen=(R.haulGen||0)+1;const sig=haulSig(R);
   const H=haulList(R);const pairs=[];
   for(const k of H.moves.keys()){const [f,t]=k.split('|').map(Number);pairs.push([f,t])}
   for(const f of H.sale.keys())pairs.push([f,JITA_STATION]);
   for(const [f,t] of pairs){for(const l of [f,t])if(l!==JITA_STATION&&!LOCINFO[l])await resolveLoc(l)}
   const jumps={};for(const [f,t] of pairs)jumps[f+'|'+t]=await ensureRoute(sysOfLoc(f),sysOfLoc(t));
-  R.haulCtx={jumps,ships:await ownShips()};
+  const ctx={jumps,ships:await ownShips()};
+  if(gen!==R.haulGen)return false; // közben újabb előkészítés indult: a régi eredmény nem írhatja felül
+  R.haulCtx=ctx;R.haulSig=sig;return true;
 }
 function shipAdvice(R,key,vol,maxUnit){
   const ctx=R.haulCtx;if(!ctx||!vol)return '';const rt=ctx.jumps[key];const j=rt?rt.n:null;
@@ -240,7 +244,8 @@ function buildUnit(n,sys){ // gyártási egységár: részfa piaci áron + a cso
 function renderResult(el,R,rerun){
   assignChars(R.jobs);
   // ha a kiosztás változott (pl. más karakterek dolgoznak), a szállítási útvonalakat újra előkészíti, majd újrarajzol
-  {const sig=haulSig(R);if(R.haulSig!==sig){R.haulSig=sig;Promise.all([assignJobSys(R.jobs),prepHaul(R)]).then(()=>{if(R.haulSig===sig&&el.isConnected)renderResult(el,R,rerun)}).catch(e=>log('Szállítás előkészítés: '+e.message))}}
+  // a jelzés (haulSig) csak sikeres előkészítés után frissül; ugyanarra a kiosztásra egyszerre csak egy előkészítés fut
+  {const sig=haulSig(R);if(R.haulSig!==sig&&R.haulPending!==sig){R.haulPending=sig;assignJobSys(R.jobs).then(()=>prepHaul(R)).then(fresh=>{if(R.haulPending===sig)R.haulPending=null;if(fresh&&R.haulSig===sig&&el.isConnected)renderResult(el,R,rerun)}).catch(e=>{if(R.haulPending===sig)R.haulPending=null;log('Szállítás előkészítés: '+e.message)})}}
   const free=$('#optStockFree').checked;const fee=salesTax()+brokerFee();
   // ár nélküli tételek: ezekből a profit nem számolható (nem 0 költséggel számolunk)
   const unkOf=(tree)=>{const u=new Set();const scan=n=>{if(n.buy>0&&!buyPrice(n.t))u.add(n.t);if(!free&&n.stock.some(x=>x.l!=='surplus'&&x.l!=='job'&&x.q>0)&&!unitPrice(n.t))u.add(n.t);n.ch.forEach(scan)};scan(tree);if(!sell(tree.t))u.add(tree.t);return u};

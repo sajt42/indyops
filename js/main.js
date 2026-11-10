@@ -43,10 +43,10 @@ $('#clearYes').onclick=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith
 
 /* ---- mentés / visszatöltés ---- */
 $('#expTokens').addEventListener('change',e=>$('#expWarn').hidden=!e.target.checked);
+function makeBackup(withTok){return {app:'indyops',version:APP.version,v:1,at:new Date().toISOString(),settings:S,projects:PROJ,selp:SELP,
+    chars:withTok?CHARS:CHARS.map(c=>({id:c.id,name:c.name})),withTokens:withTok}}
 $('#expBtn').onclick=()=>{
-  const withTok=$('#expTokens').checked;
-  const data={app:'indyops',version:APP.version,v:1,at:new Date().toISOString(),settings:S,projects:PROJ,selp:SELP,
-    chars:withTok?CHARS:CHARS.map(c=>({id:c.id,name:c.name})),withTokens:withTok};
+  const withTok=$('#expTokens').checked;const data=makeBackup(withTok);
   const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='indyops-backup-'+new Date().toISOString().slice(0,10)+(withTok?'-with-logins':'')+'.json';
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);status('mentés letöltve');
@@ -54,9 +54,9 @@ $('#expBtn').onclick=()=>{
 // mentés ellenőrzése mezőnként: ismert beállítás csak a várt típussal jöhet át, ismeretlen mező kimarad;
 // hibás bemenetre sem dob kivételt, és hiba esetén semmit nem alkalmaz
 const SET_SCHEMA={clientId:'str',system:'str',lang:'str',prodLoc:'numOrEmpty',salesTax:'numOrEmpty',broker:'numOrEmpty',market2:'numOrEmpty',
-  structME:'num',structTE:'num',structRes:'num',facTax:'num',scc:'num',yieldBase:'num',implant:'num',
+  structME:'numOrEmpty',structTE:'numOrEmpty',structRes:'numOrEmpty',facTax:'numOrEmpty',scc:'numOrEmpty',yieldBase:'numOrEmpty',implant:'numOrEmpty',
   locs:'numArrOrNull',workChars:'numArrOrNull',wallet:'bool',buyM2:'bool',srcShips:'bool',
-  buyOverride:'mapNumOrStr',locNames:'mapStr',structBroker:'mapNum',repro:'repro'};
+  buyOverride:'mapBool',locNames:'mapStr',structBroker:'mapNum',repro:'repro'};
 function validateBackup(d){
   const err=[];const out={settings:{},projects:[],chars:[],selp:null};
   try{
@@ -64,7 +64,7 @@ function validateBackup(d){
     const numish=x=>num(x)||(typeof x==='string'&&x.trim()!==''&&isFinite(Number(x)));
     const mapOf=(o,f)=>isObj(o)&&Object.values(o).every(f);
     const okType={str:x=>typeof x==='string',num:numish,numOrEmpty:x=>x===''||x==null||numish(x),bool:x=>typeof x==='boolean',
-      numArrOrNull:x=>x===null||(Array.isArray(x)&&x.every(num)),mapNumOrStr:x=>mapOf(x,v=>numish(v)||typeof v==='string'),mapStr:x=>mapOf(x,v=>typeof v==='string'),mapNum:x=>mapOf(x,numish),
+      numArrOrNull:x=>x===null||(Array.isArray(x)&&x.every(num)),mapBool:x=>mapOf(x,v=>typeof v==='boolean'),mapStr:x=>mapOf(x,v=>typeof v==='string'),mapNum:x=>mapOf(x,numish),
       repro:x=>isObj(x)&&(x.loc==null||mapOf(x.loc,v=>isObj(v)&&Object.values(v).every(y=>y===''||y==null||numish(y))))&&(x.imp==null||mapOf(x.imp,v=>numish(v)||v==='auto'))&&(x.char==null||x.char===''||numish(x.char))};
     out.app=d.app;out.at=d.at;out.withTokens=!!d.withTokens;
     if(d.settings!=null&&!isObj(d.settings))err.push(T('a beállítások nem objektum'));
