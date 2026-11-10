@@ -12,7 +12,7 @@ function stockMap(onlyPlan){
   const allow=onlyPlan?planLocs():null;const m=new Map();
   for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;
     for(const a of d.assets){if(allow&&!allow.has(a.l))continue;if(a.f&&/Slot\d|SubSystemSlot|FighterTube/.test(a.f))continue;
-      let arr=m.get(a.t);if(!arr){arr=[];m.set(a.t,arr)}const ex=arr.find(x=>x.l===a.l&&x.cid==cid);if(ex)ex.q+=a.q;else arr.push({l:a.l,cid:Number(cid),q:a.q})}}
+      let arr=m.get(a.t);if(!arr){arr=[];m.set(a.t,arr)}const c=a.c??null;const ex=arr.find(x=>x.l===a.l&&x.cid==cid&&x.c===c);if(ex)ex.q+=a.q;else arr.push({l:a.l,cid:Number(cid),q:a.q,c})}}
   return m;
 }
 // kik dolgoznak: a javaslatok (gyártás, invention, kutatás, eladás, reprocess) csak közülük választanak; a készlet mindenkié számít
@@ -156,4 +156,22 @@ function renderUnknownLocs(){
     const items=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets)if(a.l===l)items.set(a.t,(items.get(a.t)||0)+a.q);for(const b of d.bps)if(b.l===l)items.set(b.t,(items.get(b.t)||0)+1)}
     const top=[...items.keys()].slice(0,5).map(t=>esc(NAMES[t]||t)).join(', ');
     return `<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy',fmt(items.size))}${top?': '+top+(items.size>5?' …':''):''}${locClues(l)}</td><td><input data-locname="${l}" value="${esc((S.locNames&&S.locNames[l])||'')}" placeholder="${esc(T('pl. a játék Assets ablakából'))}" style="width:100%"></td></tr>`}).join('')}</tbody></table></div>`;
+}
+
+/* ============ konténerek és projekt-források ============ */
+function allConts(){const m=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid)||!d.cont)continue;for(const [id,c] of Object.entries(d.cont))m.set(Number(id),Object.assign({id:Number(id),cid:Number(cid)},c))}return m}
+function contLabel(id,all){const c=(all||allConts()).get(Number(id));if(!c)return '#'+id;return c.n||NAMES[c.t]||('#'+c.t)}
+// a konténer és minden benne lévő konténer
+function contTree(ids,all){all=all||allConts();const kids=new Map();for(const c of all.values())if(c.pc!=null){if(!kids.has(c.pc))kids.set(c.pc,[]);kids.get(c.pc).push(c.id)}
+  const out=new Set();const st=[...ids].map(Number);while(st.length){const x=st.pop();if(out.has(x))continue;out.add(x);(kids.get(x)||[]).forEach(k=>st.push(k))}return out}
+// foglalt konténerek: konténer -> projekt id (a prioritásban előbb álló projekt nyer)
+function reservedMap(){const m=new Map();if(typeof PROJ==='undefined')return m;const all=allConts();
+  for(const p of PROJ){const s=p.src;if(!p.active||!s||s.mode!=='sel'||!s.excl)continue;for(const d of contTree(s.excl,all))if(!m.has(d))m.set(d,p.id)}return m}
+// melyik készlet-bejegyzést veheti el egy tétel: a projekt/tétel forrásai szerint, vagy a Beállítások helyszínei szerint
+function stockFilter(item,resv){
+  const pid=item&&item.pid;const own=x=>x.c==null||!resv.has(x.c)||resv.get(x.c)===pid;
+  const sp=item&&item.src&&item.src.mode==='sel'?item.src:null;
+  if(!sp){const pl=planLocs();return x=>x.l==='job'||x.l==='surplus'||(pl.has(x.l)&&own(x))}
+  const locs=new Set((sp.locs||[]).map(Number));const conts=contTree(sp.conts||[]);
+  return x=>x.l==='job'||x.l==='surplus'||(own(x)&&(locs.has(x.l)||(x.c!=null&&conts.has(x.c))));
 }

@@ -1,7 +1,7 @@
 // Runs every scenario against dist/indyops.html and fails if any of them throws.
 // Build first: node ../tools/bundle.mjs
 import { execFileSync } from 'node:child_process';
-const tests = ['help','repro','unk','run','ui','ui2','ui3','proj','prof','exp','inv','res','sales','mine','empty','switch','hosted'];
+const tests = ['help','repro','unk','projsrc','run','ui','ui2','ui3','proj','prof','exp','inv','res','sales','mine','empty','switch','hosted'];
 let failed = 0;
 for (const t of tests) {
   let out = '';

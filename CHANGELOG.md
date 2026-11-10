@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.0 – 2026-11-10
+
+- Projects: material sources per project or per item: from everywhere (as before) or only from chosen stations, structures and containers
+- Containers can be reserved for one project (“this project only”); other projects never take from them
+- Material tree shows which container stock comes from; container data needs one character refresh
+
 ## 1.7.1 – 2026-11-10
 
 - Help and README updated for the latest features (seller, second market, reprocessing with station data, standings and implants, who does the work, unknown locations)

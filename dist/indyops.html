@@ -130,6 +130,12 @@ select{max-width:100%;text-overflow:ellipsis}
 #sMarket2{width:100%}
 .m2hint{margin-top:6px}
 .seltab td,.seltab th{padding-top:4px;padding-bottom:4px}
+.srcbox{border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:6px;max-height:420px;overflow:auto}
+.srcbox details{border-top:1px solid var(--line);padding:4px 0}
+.srcbox summary{cursor:pointer;list-style-position:inside}
+.srcc{padding:2px 0;display:flex;flex-wrap:wrap;gap:2px 14px;align-items:center}
+.srcc label.inline{display:inline-flex;width:auto;margin:0}
+.srcrow td{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -504,7 +510,7 @@ select{max-width:100%;text-overflow:ellipsis}
   <h3>A fülek</h3>
   <dl class="helpdl">
     <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között.</dd>
-    <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak.</dd>
+    <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak. Projektenként (vagy tételenként) kiválaszthatod, honnan vehet nyersanyagot: állomások, struktúrák vagy konkrét konténerek. Egy konténert le is foglalhatsz egy projektnek („csak ez a projekt”), ahhoz más projekt nem nyúl.</dd>
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze.</dd>
     <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
     <dt>Kutatás &amp; copy</dt><dd>BPO-nként a következő ME szint ideje és költsége, mennyit spórol runonként, mikor térül meg, plusz a copy ideje és a science slotjaid.</dd>
@@ -565,7 +571,7 @@ select{max-width:100%;text-overflow:ellipsis}
   <h3>The tabs</h3>
   <dl class="helpdl">
     <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it.</dd>
-    <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock.</dd>
+    <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock. Per project (or per item) you can choose where materials may come from: stations, structures or specific containers. You can also reserve a container for one project (“this project only”) so no other project touches it.</dd>
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together.</dd>
     <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
     <dt>Research &amp; copy</dt><dd>Per BPO: time and cost of the next ME level, how much it saves per run, when it pays off, plus copy time and your science slots.</dd>
@@ -626,7 +632,7 @@ select{max-width:100%;text-overflow:ellipsis}
   <h3>Die Reiter</h3>
   <dl class="helpdl">
     <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen.</dd>
-    <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand.</dd>
+    <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand. Pro Projekt (oder pro Position) kannst du wählen, woher Material kommen darf: Stationen, Strukturen oder bestimmte Container. Einen Container kannst du auch für ein Projekt reservieren („nur dieses Projekt“), dann greift kein anderes Projekt darauf zu.</dd>
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen.</dd>
     <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
     <dt>Forschung &amp; Kopie</dt><dd>Pro BPO: Zeit und Kosten der nächsten ME-Stufe, Ersparnis pro Run, wann es sich lohnt, dazu Kopierzeit und deine Science-Slots.</dd>
@@ -1257,7 +1263,24 @@ window.I18N.en={
  "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Ore yield: without ore processing skills; the per-item skill is included in the list. Upwell structures: base 50%, plus rig (T1 +1, T2 +3), system security (lowsec +6%, null and WH +12%, only with a rig) and structure bonus (Athanor +2%, Tatara +5.5%). For NPC stations, base yield, base tax and whether reprocessing is available come from ESI; the tax is lowered per character by standing towards the owner corporation (0% at 6.67); you can overwrite it. ESI doesn't provide a structure's rigs or tax, so set those yourself. Tax is deducted from the output.",
  "adó {0}%": "tax {0}%",
  "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.": "Fees come from skills (Accounting, Broker Relations). Log in again with your characters to include standings; until then the real broker fee may be a bit lower.",
- "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Fees come from skills (Accounting, Broker Relations) and standing towards the station owner (Connections and Diplomacy included). In player structures the owner sets the broker fee."
+ "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Fees come from skills (Accounting, Broker Relations) and standing towards the station owner (Connections and Diplomacy included). In player structures the owner sets the broker fee.",
+ "Nyersanyag": "Materials",
+ "projekt szerint": "as project",
+ "saját források": "own sources",
+ "Nyersanyag-források": "Material sources",
+ "Mindenhonnan (a Beállításokban kijelölt helyekről)": "From everywhere (locations ticked in Settings)",
+ "Kiválasztott forrásokból": "From selected sources",
+ "A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.": "The project uses the shared stock, in priority order with the other active projects. Switch to “From selected sources” if the project has its own station, container or reserved box.",
+ "csak ez a projekt": "this project only",
+ "foglalja: {0}": "reserved by: {0}",
+ "Kiválasztva: {0} helyszín, {1} konténer.": "Selected: {0} locations, {1} containers.",
+ "Foglalt doboz: {0}.": "Reserved boxes: {0}.",
+ "Még nincs kiválasztva forrás: így minden anyagot venni kell.": "No source selected yet: everything would have to be bought.",
+ "A konténerek listájához frissítsd egyszer a karaktereket.": "Refresh your characters once to list containers.",
+ "{0} konténer": "{0} containers",
+ "nincs konténer": "no containers",
+ "A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.": "Ticking a location means its hangar and all containers there (except those reserved by another project). You can also tick a container on its own, without the location.",
+ "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "“This project only”: no other project touches the box, even one working from everywhere; if two projects reserve it, the one higher in priority wins."
 };
 </script>
 <script>
@@ -1840,7 +1863,24 @@ window.I18N.de={
  "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Erz-Ausbeute: ohne Erzverarbeitungs-Skill; der Skill pro Gegenstand steckt in der Liste. Upwell-Strukturen: Basis 50 %, plus Rig (T1 +1, T2 +3), Systemsicherheit (Lowsec +6 %, Null und WH +12 %, nur mit Rig) und Strukturbonus (Athanor +2 %, Tatara +5,5 %). Bei NPC-Stationen kommen Basisausbeute, Grundsteuer und ob Reprocessing verfügbar ist aus ESI; die Steuer sinkt pro Charakter mit dem Standing zur Besitzer-Corporation (0 % bei 6,67); du kannst sie überschreiben. Rigs und Steuer einer Struktur liefert ESI nicht, die musst du selbst einstellen. Die Steuer wird von der Ausbeute abgezogen.",
  "adó {0}%": "Steuer {0} %",
  "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations). Melde dich mit deinen Charakteren erneut an, damit Standings zählen; bis dahin kann die echte Broker Fee etwas niedriger sein.",
- "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations) und dem Standing zum Stationsbesitzer (Connections und Diplomacy eingerechnet). In Spielerstrukturen legt der Besitzer die Broker Fee fest."
+ "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations) und dem Standing zum Stationsbesitzer (Connections und Diplomacy eingerechnet). In Spielerstrukturen legt der Besitzer die Broker Fee fest.",
+ "Nyersanyag": "Material",
+ "projekt szerint": "wie Projekt",
+ "saját források": "eigene Quellen",
+ "Nyersanyag-források": "Materialquellen",
+ "Mindenhonnan (a Beállításokban kijelölt helyekről)": "Von überall (in den Einstellungen gewählte Orte)",
+ "Kiválasztott forrásokból": "Aus gewählten Quellen",
+ "A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.": "Das Projekt nutzt den gemeinsamen Bestand, in Prioritätsreihenfolge mit den anderen aktiven Projekten. Wechsle zu „Aus gewählten Quellen“, wenn das Projekt eine eigene Station, einen Container oder eine reservierte Kiste hat.",
+ "csak ez a projekt": "nur dieses Projekt",
+ "foglalja: {0}": "reserviert von: {0}",
+ "Kiválasztva: {0} helyszín, {1} konténer.": "Ausgewählt: {0} Orte, {1} Container.",
+ "Foglalt doboz: {0}.": "Reservierte Kisten: {0}.",
+ "Még nincs kiválasztva forrás: így minden anyagot venni kell.": "Noch keine Quelle gewählt: alles müsste gekauft werden.",
+ "A konténerek listájához frissítsd egyszer a karaktereket.": "Aktualisiere deine Charaktere einmal, um Container aufzulisten.",
+ "{0} konténer": "{0} Container",
+ "nincs konténer": "keine Container",
+ "A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.": "Ein angehakter Ort bedeutet seinen Hangar und alle Container dort (außer den von einem anderen Projekt reservierten). Du kannst auch einen Container allein anhaken, ohne den Ort.",
+ "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "„Nur dieses Projekt“: Kein anderes Projekt greift auf die Kiste zu, auch keines, das von überall nimmt; bei zwei Reservierungen gewinnt das Projekt mit höherer Priorität."
 };
 </script>
 <script>
@@ -1861,7 +1901,7 @@ const SK={connections:3359,diplomacy:3357,industry:3380,advInd:3388,accounting:1
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.7.1',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.8.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2081,8 +2121,11 @@ async function refreshChar(c){
     const contNames={};
     const contIds=assets.filter(a=>a.is_singleton&&assets.some(b=>b.location_id===a.item_id)).map(a=>a.item_id);
     for(let i=0;i<contIds.length;i+=900){try{(await esi('/characters/'+c.id+'/assets/names/',{char:c,method:'POST',body:contIds.slice(i,i+900)})).forEach(x=>{if(x.name&&x.name!=='None')contNames[x.item_id]=x.name})}catch(e){}}
-    const A=assets.filter(a=>!a.is_blueprint_copy).map(a=>({t:a.type_id,q:a.quantity,l:root(a.location_id),f:a.location_flag,cn:contNames[a.location_id]||null,s:a.is_singleton?1:0}));
-    const B=bps.map(b=>({i:b.item_id,t:b.type_id,me:b.material_efficiency,te:b.time_efficiency,r:b.runs,q:b.quantity,l:root(b.location_id),cn:contNames[b.location_id]||null}));
+    const inC=id=>byItem.has(id)?id:null; // közvetlen konténer (ha van)
+    const A=assets.filter(a=>!a.is_blueprint_copy).map(a=>({t:a.type_id,q:a.quantity,l:root(a.location_id),f:a.location_flag,cn:contNames[a.location_id]||null,c:inC(a.location_id),s:a.is_singleton?1:0}));
+    const B=bps.map(b=>({i:b.item_id,t:b.type_id,me:b.material_efficiency,te:b.time_efficiency,r:b.runs,q:b.quantity,l:root(b.location_id),cn:contNames[b.location_id]||null,c:inC(b.location_id)}));
+    // konténerek (és rakománnyal teli hajók): név, típus, hely, szülő konténer
+    const CONT={};for(const id of contIds){const a=byItem.get(id);CONT[id]={n:contNames[id]||null,t:a.type_id,l:root(a.location_id),pc:inC(a.location_id),f:a.location_flag}}
     const LM={};for(const a of assets){if(byItem.has(a.location_id))continue;const m=LM[a.location_id]=LM[a.location_id]||{t:a.location_type,f:{}};m.f[a.location_flag]=(m.f[a.location_flag]||0)+1}
     const SKL={};(skills.skills||[]).forEach(s=>SKL[s.skill_id]=s.active_skill_level);
     const J=jobs.map(j=>({act:j.activity_id,bp:j.blueprint_type_id,bpi:j.blueprint_id,runs:j.runs,end:j.end_date,loc:j.facility_id,prod:j.product_type_id,st:j.status}));
@@ -2091,7 +2134,7 @@ async function refreshChar(c){
     if(hasScope(c,'esi-clones.read_implants.v1')){try{IMP=await esi('/characters/'+c.id+'/implants/',{char:c});await resolveNames(IMP)}catch(e){log('Implantok: '+e.message)}}
     if(hasScope(c,'esi-markets.read_character_orders.v1')){try{O=(await esi('/characters/'+c.id+'/orders/',{char:c})).map(o=>({id:o.order_id,t:o.type_id,l:o.location_id,reg:o.region_id,p:o.price,rem:o.volume_remain,tot:o.volume_total,buy:!!o.is_buy_order,iss:o.issued,dur:o.duration}))}catch(e){log('Orderek: '+e.message)}}
     if(S.wallet&&hasScope(c,WALLET_SCOPE)){try{const lim=Date.now()-30*86400000;TX=(await esi('/characters/'+c.id+'/wallet/transactions/',{char:c})).filter(x=>new Date(x.date).getTime()>=lim).map(x=>({d:x.date,t:x.type_id,q:x.quantity,p:x.unit_price,buy:x.is_buy,l:x.location_id}))}catch(e){log('Wallet: '+e.message)}}
-    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,std:STD,lm:LM,at:Date.now()};
+    DATA[c.id]={assets:A,bps:B,skills:SKL,jobs:J,orders:O,tx:TX,imp:IMP,std:STD,lm:LM,cont:CONT,at:Date.now()};
     await resolveNames(O.map(o=>o.t).concat(TX.map(x=>x.t),O.map(o=>o.reg)));for(const l of new Set(O.map(o=>o.l)))await resolveLoc(l,c);
     await resolveNames(A.map(a=>a.t).concat(B.map(b=>b.t),J.map(j=>j.bp)));
     const locs=[...new Set(A.map(a=>a.l).concat(B.map(b=>b.l),J.map(j=>j.loc)))];
@@ -2119,7 +2162,7 @@ function stockMap(onlyPlan){
   const allow=onlyPlan?planLocs():null;const m=new Map();
   for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;
     for(const a of d.assets){if(allow&&!allow.has(a.l))continue;if(a.f&&/Slot\d|SubSystemSlot|FighterTube/.test(a.f))continue;
-      let arr=m.get(a.t);if(!arr){arr=[];m.set(a.t,arr)}const ex=arr.find(x=>x.l===a.l&&x.cid==cid);if(ex)ex.q+=a.q;else arr.push({l:a.l,cid:Number(cid),q:a.q})}}
+      let arr=m.get(a.t);if(!arr){arr=[];m.set(a.t,arr)}const c=a.c??null;const ex=arr.find(x=>x.l===a.l&&x.cid==cid&&x.c===c);if(ex)ex.q+=a.q;else arr.push({l:a.l,cid:Number(cid),q:a.q,c})}}
   return m;
 }
 // kik dolgoznak: a javaslatok (gyártás, invention, kutatás, eladás, reprocess) csak közülük választanak; a készlet mindenkié számít
@@ -2264,6 +2307,24 @@ function renderUnknownLocs(){
     const top=[...items.keys()].slice(0,5).map(t=>esc(NAMES[t]||t)).join(', ');
     return `<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy',fmt(items.size))}${top?': '+top+(items.size>5?' …':''):''}${locClues(l)}</td><td><input data-locname="${l}" value="${esc((S.locNames&&S.locNames[l])||'')}" placeholder="${esc(T('pl. a játék Assets ablakából'))}" style="width:100%"></td></tr>`}).join('')}</tbody></table></div>`;
 }
+
+/* ============ konténerek és projekt-források ============ */
+function allConts(){const m=new Map();for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid)||!d.cont)continue;for(const [id,c] of Object.entries(d.cont))m.set(Number(id),Object.assign({id:Number(id),cid:Number(cid)},c))}return m}
+function contLabel(id,all){const c=(all||allConts()).get(Number(id));if(!c)return '#'+id;return c.n||NAMES[c.t]||('#'+c.t)}
+// a konténer és minden benne lévő konténer
+function contTree(ids,all){all=all||allConts();const kids=new Map();for(const c of all.values())if(c.pc!=null){if(!kids.has(c.pc))kids.set(c.pc,[]);kids.get(c.pc).push(c.id)}
+  const out=new Set();const st=[...ids].map(Number);while(st.length){const x=st.pop();if(out.has(x))continue;out.add(x);(kids.get(x)||[]).forEach(k=>st.push(k))}return out}
+// foglalt konténerek: konténer -> projekt id (a prioritásban előbb álló projekt nyer)
+function reservedMap(){const m=new Map();if(typeof PROJ==='undefined')return m;const all=allConts();
+  for(const p of PROJ){const s=p.src;if(!p.active||!s||s.mode!=='sel'||!s.excl)continue;for(const d of contTree(s.excl,all))if(!m.has(d))m.set(d,p.id)}return m}
+// melyik készlet-bejegyzést veheti el egy tétel: a projekt/tétel forrásai szerint, vagy a Beállítások helyszínei szerint
+function stockFilter(item,resv){
+  const pid=item&&item.pid;const own=x=>x.c==null||!resv.has(x.c)||resv.get(x.c)===pid;
+  const sp=item&&item.src&&item.src.mode==='sel'?item.src:null;
+  if(!sp){const pl=planLocs();return x=>x.l==='job'||x.l==='surplus'||(pl.has(x.l)&&own(x))}
+  const locs=new Set((sp.locs||[]).map(Number));const conts=contTree(sp.conts||[]);
+  return x=>x.l==='job'||x.l==='surplus'||(own(x)&&(locs.has(x.l)||(x.c!=null&&conts.has(x.c))));
+}
 </script>
 <script>
 /* js/engine.js */
@@ -2284,7 +2345,7 @@ function ownedFor(prodType){ // saját példányok, legjobb elöl
 /* készlet-pool: raktár + (opcionálisan) érc + futó jobok termékei */
 async function buildPool(opt){
   const pool=new Map();
-  if(opt.useStock){const sm=stockMap(true);for(const [t,arr] of sm)pool.set(t,arr.map(x=>Object.assign({},x)));if(opt.ore)await addOreToPool(pool)}
+  if(opt.useStock){const sm=stockMap(false);for(const [t,arr] of sm)pool.set(t,arr.map(x=>Object.assign({},x)));if(opt.ore)await addOreToPool(pool)}
   if(opt.incoming){for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;
     for(const j of d.jobs){if(j.st!=='active'||!(j.act===1||j.act===9||j.act===11)||!j.prod)continue;
       const meta=BPPROD[j.bp];const q=j.runs*(meta?meta.qty:1);let a=pool.get(j.prod);if(!a){a=[];pool.set(j.prod,a)}a.push({l:'job',cid:Number(cid),q})}}}
@@ -2294,13 +2355,15 @@ async function buildPool(opt){
 async function makeMulti(items,opt,shared){
   const pool=(shared&&shared.pool)||await buildPool(opt);
   const runsLeft=(shared&&shared.runsLeft)||new Map();
-  const take=(t,q)=>{const arr=pool.get(t);if(!arr)return [];const used=[];let rem=q;for(const x of arr){if(rem<=0)break;const k=Math.min(x.q,rem);if(k>0){x.q-=k;rem-=k;used.push({l:x.l,cid:x.cid,q:k,ore:x.ore})}}return used};
+  const resv=reservedMap();const filt=new Map(); // tételenként: melyik készletből vehet
+  const allowFor=item=>{let f=filt.get(item);if(!f){f=stockFilter(item,resv);filt.set(item,f)}return f};
+  const take=(t,q,item)=>{const arr=pool.get(t);if(!arr)return [];const ok=allowFor(item);const used=[];let rem=q;for(const x of arr){if(rem<=0)break;if(!ok(x))continue;const k=Math.min(x.q,rem);if(k>0){x.q-=k;rem-=k;used.push({l:x.l,cid:x.cid,q:k,ore:x.ore,c:x.c??null})}}return used};
   const addPool=(t,q)=>{if(q<=0)return;let arr=pool.get(t);if(!arr){arr=[];pool.set(t,arr)}arr.push({l:'surplus',cid:0,q})};
   const buyList=new Map(),usedList=new Map(),jobs=[];const warn=[];
   const structME=Number(S.structME||0)/100;
   async function node(t,need,depth,forced,item){
     const n={t,need,stock:[],build:null,buy:0,ch:[],jobsRef:[]};
-    if(depth>0&&opt.useStock!==false){n.stock=take(t,need);const got=n.stock.reduce((s,x)=>s+x.q,0);need-=got;n.stock.forEach(x=>{if(x.l!=='surplus'&&x.l!=='job')usedList.set(t,(usedList.get(t)||0)+x.q)})}
+    if(depth>0&&opt.useStock!==false){n.stock=take(t,need,item);const got=n.stock.reduce((s,x)=>s+x.q,0);need-=got;n.stock.forEach(x=>{if(x.l!=='surplus'&&x.l!=='job')usedList.set(t,(usedList.get(t)||0)+x.q)})}
     if(need<=0)return n;
     let copies=forced?forced:ownedFor(t);if(copies.length)copies=copies.filter(c=>c.t===copies[0].t);
     const override=S.buyOverride[t];
@@ -2365,7 +2428,7 @@ async function makePlan(topBP,runs,opt){const r=await makeMulti([{copies:[topBP]
 async function addOreToPool(pool){
   const ores=new Set(await ensureOres());const add=new Map();
   for(const [t,arr] of [...pool]){if(!ores.has(t))continue;
-    for(const x of arr){if(x.q<=0)continue;const mins=await oreToMinerals(t,x.q);for(const [m,q] of mins){if(q<=0)continue;let a=pool.get(m);if(!a){a=[];pool.set(m,a)}a.push({l:x.l,cid:x.cid,q,ore:t})}x.q=0}}
+    for(const x of arr){if(x.q<=0)continue;const mins=await oreToMinerals(t,x.q);for(const [m,q] of mins){if(q<=0)continue;let a=pool.get(m);if(!a){a=[];pool.set(m,a)}a.push({l:x.l,cid:x.cid,q,ore:t,c:x.c??null})}x.q=0}}
 }
 async function prefetchTree(prodType,seen=new Set()){ // receptek előtöltése párhuzamosan
   if(seen.has(prodType))return;seen.add(prodType);
@@ -2634,7 +2697,7 @@ function bbCell(n,d,sys){const up=unitPrice(n.t);const m2=m2On()&&sell2(n.t)?`<d
 function bbCell0(n,d,sys,up){if(!n.build)return up?isk(up):'–';const ub=buildUnit(n,sys);if(ub==null)return '–';if(!up)return isk(ub)+' / –';const cheaper=ub<=up;return `<span class="${cheaper?'pos':''}">${isk(ub)}</span> / <span class="${cheaper?'':'pos'}">${isk(up)}</span>`}
 function treeRows(n,d,sys){
   const st=n.stock.reduce((s,x)=>s+x.q,0);const canToggle=d>0&&(ownedFor(n.t).length>0);
-  const src=n.stock.map(x=>x.l==='surplus'?T('felesleg más jobból'):x.l==='job'?T('futó job ({0})',charName(x.cid)):locName(x.l)+(x.ore?' '+T('(ércből)'):''));
+  const src=n.stock.map(x=>x.l==='surplus'?T('felesleg más jobból'):x.l==='job'?T('futó job ({0})',charName(x.cid)):locName(x.l)+(x.c!=null?' · 📦 '+contLabel(x.c):'')+(x.ore?' '+T('(ércből)'):''));
   const where=src.filter((v,i,a)=>a.indexOf(v)===i).map(esc).join(', ');
   const mark=n.inv?`<span class="pill">invention</span> <span class="src">${T('{0}% esély · {1} kísérlet',fmt(n.inv.chance*100,1),n.inv.attempts%1?T('átlag {0}',fmt(n.inv.attempts,2)):fmt(n.inv.attempts))}${n.inv.dec?' · '+esc(DECS[n.inv.dec].n):''}</span>`:canToggle?(S.buyOverride[n.t]?'<span class="pill warn">veszem</span>':(n.build?'<span class="pill ok">gyártom</span>':'')):'';
   let h=`<tr ${canToggle?`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"`:''}><td class="name" style="padding-left:${10+d*18}px">${esc(NAMES[n.t]||n.t)} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st?fmt(st):'–'}</td><td class="num">${n.build?fmt(n.build.made):'–'}</td><td class="num">${n.buy?fmt(n.buy):'–'}</td><td class="num small">${bbCell(n,d,sys)}</td><td class="src">${where}</td></tr>`;
@@ -2650,12 +2713,13 @@ let PROJ=load('projects',[]);let SELP=load('selp',null);
 const saveP=()=>{store('projects',PROJ);store('selp',SELP)};
 function bpTypeByName(n){const b=allBPs().find(x=>NAMES[x.t]===n);return b?b.t:null}
 function renderProjects(){
-  $('#pList').innerHTML=PROJ.length?PROJ.map((p,i)=>`<div class="prow ${p.id===SELP?'sel':''}" data-pid="${p.id}"><label class="inline" title="Aktív: beleszámít az összesített tervbe"><input type="checkbox" data-pact="${p.id}" ${p.active?'checked':''}></label><button class="plink" data-psel="${p.id}">${esc(p.name)}<span class="small muted"> · ${p.items.length} tétel</span></button><span class="pord"><button class="btn mini" data-pup="${i}" ${i===0?'disabled':''} aria-label="Feljebb">▲</button><button class="btn mini" data-pdown="${i}" ${i===PROJ.length-1?'disabled':''} aria-label="Lejjebb">▼</button></span></div>`).join(''):'<p class="small muted">Még nincs projekt. Adj egy nevet, pl. „Orca rendelés”, és hozd létre.</p>';
+  $('#pList').innerHTML=PROJ.length?PROJ.map((p,i)=>`<div class="prow ${p.id===SELP?'sel':''}" data-pid="${p.id}"><label class="inline" title="Aktív: beleszámít az összesített tervbe"><input type="checkbox" data-pact="${p.id}" ${p.active?'checked':''}></label><button class="plink" data-psel="${p.id}">${esc(p.name)}<span class="small muted"> · ${p.items.length} tétel${p.src&&p.src.mode==='sel'?' · 📦':''}</span></button><span class="pord"><button class="btn mini" data-pup="${i}" ${i===0?'disabled':''} aria-label="Feljebb">▲</button><button class="btn mini" data-pdown="${i}" ${i===PROJ.length-1?'disabled':''} aria-label="Lejjebb">▼</button></span></div>`).join(''):'<p class="small muted">Még nincs projekt. Adj egy nevet, pl. „Orca rendelés”, és hozd létre.</p>';
   const p=PROJ.find(x=>x.id===SELP);const ed=$('#pEdit');
   if(!p){ed.innerHTML='<h2>Projekt</h2><p class="muted">Válassz vagy hozz létre egy projektet a bal oldalon.</p>';return}
   ed.innerHTML=`<div class="row" style="justify-content:space-between"><label style="flex:1;min-width:200px">Projekt neve<input id="pName" value="${esc(p.name)}"></label><button class="btn" id="pDel">Projekt törlése</button></div>
   <div id="pDelConfirm" class="notice err" hidden><p>${T('Biztosan törlöd a(z) „{0}” projektet?',esc(p.name))}</p><div class="row"><button class="btn primary" id="pDelYes">Igen, törlöm</button><button class="btn" id="pDelNo">Mégse</button></div></div>
-  <h3>Tételek</h3><div class="tablewrap"><table><thead><tr><th>Blueprint</th><th class="num">Run</th><th>Saját példányok</th><th></th></tr></thead><tbody>${p.items.map((it,i)=>{if(it.invT1){const c1=copiesOf(it.invT1);return `<tr><td>${esc(NAMES[it.t2]||'T2 BPC')} <span class="pill">invention</span><div class="src">${esc(it.dec?DECS[it.dec].n:'decryptor nélkül')}</div></td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${c1.length?'T1: '+esc(NAMES[it.invT1]||it.invT1)+' · '+(c1[0].r===-1?'BPO':'BPC '+c1[0].r+' run'):'<span class="pill bad">nincs T1 BP</span>'}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>`}const cp=copiesOf(it.bpType);const runs=cp.reduce((s,c)=>c.r===-1?Infinity:s+c.r,0);return `<tr><td>${esc(NAMES[it.bpType]||it.bpType)}</td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${cp.length?cp.length+' db · legjobb: '+(cp[0].r===-1?'BPO':'BPC')+' ME'+cp[0].me+(runs!==Infinity?' · összesen '+runs+' run'+(runs<it.runs?' <span class="pill bad">kevés</span>':''):''):'<span class="pill bad">nincs saját példány</span>'}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>`}).join('')||'<tr><td colspan="4" class="muted">Még nincs tétel.</td></tr>'}</tbody></table></div>
+  <h3>Tételek</h3><div class="tablewrap"><table><thead><tr><th>Blueprint</th><th class="num">Run</th><th>Saját példányok</th><th>Nyersanyag</th><th></th></tr></thead><tbody>${p.items.map((it,i)=>{if(it.invT1){const c1=copiesOf(it.invT1);return `<tr><td>${esc(NAMES[it.t2]||'T2 BPC')} <span class="pill">invention</span><div class="src">${esc(it.dec?DECS[it.dec].n:'decryptor nélkül')}</div></td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${c1.length?'T1: '+esc(NAMES[it.invT1]||it.invT1)+' · '+(c1[0].r===-1?'BPO':'BPC '+c1[0].r+' run'):'<span class="pill bad">nincs T1 BP</span>'}</td><td>${itemSrcSel(it,i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it,i,p)}`}const cp=copiesOf(it.bpType);const runs=cp.reduce((s,c)=>c.r===-1?Infinity:s+c.r,0);return `<tr><td>${esc(NAMES[it.bpType]||it.bpType)}</td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${cp.length?cp.length+' db · legjobb: '+(cp[0].r===-1?'BPO':'BPC')+' ME'+cp[0].me+(runs!==Infinity?' · összesen '+runs+' run'+(runs<it.runs?' <span class="pill bad">kevés</span>':''):''):'<span class="pill bad">nincs saját példány</span>'}</td><td>${itemSrcSel(it,i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it,i,p)}`}).join('')||'<tr><td colspan="5" class="muted">Még nincs tétel.</td></tr>'}</tbody></table></div>
+  ${projSrcHtml(p)}
   <div class="row" style="margin-top:10px"><label style="flex:1;min-width:220px">Új tétel (saját BP)<input id="pItemName" list="bpOptions" placeholder="pl. Hurricane Blueprint"></label><label>Run<input type="number" id="pItemRuns" min="1" value="1"></label><button class="btn" id="pItemAdd">Hozzáadás</button></div>
   <div class="row" style="margin-top:14px"><button class="btn primary" id="pCalc">Ennek a projektnek a számolása</button></div>`;
   $('#pName').addEventListener('change',e=>{p.name=e.target.value.trim()||p.name;saveP();renderProjects()});
@@ -2666,6 +2730,41 @@ function renderProjects(){
   $('#pItemAdd').onclick=()=>{const t=bpTypeByName($('#pItemName').value.trim());if(!t){alertBox('Ilyen saját blueprintet nem találok. Válassz a listából.');return}p.items.push({bpType:t,runs:Math.max(1,Number($('#pItemRuns').value)||1)});saveP();renderProjects()};
   $('#pCalc').onclick=()=>calcProjects([p]);
 }
+/* ---- projekt nyersanyag-forrásai ---- */
+function itemSrcSel(it,i){const sel=it.src&&it.src.mode==='sel';return `<select data-isrc="${i}"><option value="">${T('projekt szerint')}</option><option value="sel" ${sel?'selected':''}>${T('saját források')}</option></select>`}
+function itemSrcRow(it,i,p){if(!(it.src&&it.src.mode==='sel'))return '';return `<tr class="srcrow"><td colspan="5">${srcEditor(it.src,'i'+i,false,p.id)}</td></tr>`}
+function projSrcHtml(p){const s=p.src||{mode:'all'};const sel=s.mode==='sel';
+  return `<h3>Nyersanyag-források</h3><div class="row"><label class="inline"><input type="radio" name="psrcm" value="all" ${sel?'':'checked'}> Mindenhonnan (a Beállításokban kijelölt helyekről)</label><label class="inline"><input type="radio" name="psrcm" value="sel" ${sel?'checked':''}> Kiválasztott forrásokból</label></div>
+  ${sel?srcEditor(s,'p',true,p.id):'<p class="small muted">A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.</p>'}`}
+function srcEditor(spec,key,withExcl,pid){
+  const all=allConts();const resv=reservedMap();const hasCont=Object.values(DATA).some(d=>d.cont);
+  const selL=new Set((spec.locs||[]).map(Number)),selC=new Set((spec.conts||[]).map(Number)),ex=new Set((spec.excl||[]).map(Number));
+  const kinds=new Map(),ckinds=new Map();
+  for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;for(const a of d.assets){if(a.f&&/Slot\d|SubSystemSlot|FighterTube/.test(a.f))continue;(kinds.get(a.l)||kinds.set(a.l,new Set()).get(a.l)).add(a.t);if(a.c!=null)(ckinds.get(a.c)||ckinds.set(a.c,new Set()).get(a.c)).add(a.t)}}
+  const byLoc=new Map();for(const c of all.values()){if(!ckinds.has(c.id)&&![...all.values()].some(x=>x.pc===c.id))continue;if(!byLoc.has(c.l))byLoc.set(c.l,[]);byLoc.get(c.l).push(c)}
+  const pname=id=>{const q=PROJ.find(x=>x.id===id);return q?q.name:'?'};
+  const contRow=(c,d)=>{const other=resv.has(c.id)&&resv.get(c.id)!==pid;
+    return `<div class="srcc" style="padding-left:${22+d*18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id)?'checked':''}> 📦 ${esc(contLabel(c.id,all))}</label> <span class="small muted">${esc(charName(c.cid))} · ${T('{0} féle tárgy',fmt((ckinds.get(c.id)||new Set()).size))}</span>${withExcl?` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id)?'checked':''}> ${T('csak ez a projekt')}</label>`:''}${other?` <span class="pill warn">${T('foglalja: {0}',esc(pname(resv.get(c.id))))}</span>`:''}</div>`+
+      [...all.values()].filter(x=>x.pc===c.id&&byLoc.get(c.l)&&byLoc.get(c.l).includes(x)).map(x=>contRow(x,d+1)).join('')};
+  const locs=[...kinds.keys()].sort((a,b)=>locName(a).localeCompare(locName(b)));
+  const nL=selL.size,nC=selC.size;
+  return `<div class="srcbox"><p class="small">${T('Kiválasztva: {0} helyszín, {1} konténer.',nL,nC)} ${withExcl&&ex.size?T('Foglalt doboz: {0}.',ex.size):''}${nL+nC?'':` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
+  ${hasCont?'':`<p class="small muted">${T('A konténerek listájához frissítsd egyszer a karaktereket.')}</p>`}
+  ${locs.map(l=>{const cs=(byLoc.get(l)||[]).filter(c=>c.pc==null||!all.has(c.pc)||all.get(c.pc).l!==l);const open=[...(byLoc.get(l)||[])].some(c=>selC.has(c.id)||ex.has(c.id));
+    return `<details data-dl="${key}|${l}" ${open||SRCOPEN.has(key+'|'+l)?'open':''}><summary><input type="checkbox" data-sloc="${key}|${l}" ${selL.has(l)?'checked':''} aria-label="${esc(locName(l))}"> ${esc(locName(l))} <span class="small muted">${T('{0} féle tárgy',fmt(kinds.get(l).size))}${byLoc.get(l)?' · '+T('{0} konténer',byLoc.get(l).length):''}</span></summary>${cs.map(c=>contRow(c,0)).join('')||`<div class="srcc small muted" style="padding-left:22px">${T('nincs konténer')}</div>`}</details>`}).join('')}
+  <p class="small muted" style="margin-top:6px">${T('A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.')}${withExcl?' '+T('„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.'):''}</p></div>`}
+let SRCOPEN=new Set();
+function srcRerender(){const ed=$('#pEdit');SRCOPEN=new Set([...ed.querySelectorAll('details[data-dl][open]')].map(d=>d.dataset.dl));const sc=[...ed.querySelectorAll('.srcbox')].map(x=>x.scrollTop);renderProjects();[...ed.querySelectorAll('.srcbox')].forEach((x,i)=>{if(sc[i])x.scrollTop=sc[i]})}
+function srcChange(e){const t=e.target;const p=PROJ.find(x=>x.id===SELP);if(!p)return;
+  const specOf=k=>k==='p'?(p.src=p.src||{mode:'sel'}):(p.items[Number(k.slice(1))].src=p.items[Number(k.slice(1))].src||{mode:'sel'});
+  const tog=(arr,id,on)=>{arr=(arr||[]).map(Number).filter(x=>x!==id);if(on)arr.push(id);return arr};
+  if(t.name==='psrcm'){p.src=p.src||{};p.src.mode=t.value;saveP();renderProjects();return}
+  if(t.dataset.isrc!=null){const it=p.items[Number(t.dataset.isrc)];if(t.value==='sel')it.src=Object.assign(it.src||{},{mode:'sel'});else delete it.src;saveP();renderProjects();return}
+  for(const [k,arr] of [['sloc','locs'],['scont','conts'],['sexcl','excl']]){const v=t.dataset[k];if(v==null)continue;const [key,id]=v.split('|');const sp=specOf(key);sp[arr]=tog(sp[arr],Number(id),t.checked);
+    if(arr==='excl'&&t.checked)sp.conts=tog(sp.conts,Number(id),true);saveP();srcRerender();return}
+}
+document.getElementById('pEdit').addEventListener('change',srcChange);
+
 async function calcProjects(list){
   const out=$('#pOut');out.innerHTML='<div class="card muted">Számolás…</div>';
   try{
@@ -2674,9 +2773,10 @@ async function calcProjects(list){
     const R={trees:[],buyList:new Map(),usedList:new Map(),jobs:[],warn:[]};let firstBP=null;
     for(const p of list){
       const items=[];
-      for(const it of p.items){if(it.invT1){const c1=copiesOf(it.invT1)[0];const vi=c1&&await virtualItem(c1,it.dec,it.runs,p.name,false,it.pi||0);if(!vi){R.warn.push({txt:T('{0}: {1} – nincs meg a T1 BP, kihagytam.',p.name,NAMES[it.t2]||T('invention tétel'))});continue}items.push(vi);if(!firstBP)firstBP=c1;continue}
+      for(const it of p.items){const src=it.src&&it.src.mode==='sel'?it.src:(p.src||null);
+        if(it.invT1){const c1=copiesOf(it.invT1)[0];const vi=c1&&await virtualItem(c1,it.dec,it.runs,p.name,false,it.pi||0);if(!vi){R.warn.push({txt:T('{0}: {1} – nincs meg a T1 BP, kihagytam.',p.name,NAMES[it.t2]||T('invention tétel'))});continue}vi.src=src;vi.pid=p.id;items.push(vi);if(!firstBP)firstBP=c1;continue}
         const copies=copiesOf(it.bpType);if(!copies.length||!BPPROD[it.bpType]){R.warn.push({txt:T('{0}: {1} – nincs saját példány vagy recept, kihagytam.',p.name,NAMES[it.bpType]||it.bpType)});continue}
-        await prefetchTree(BPPROD[it.bpType].prod);items.push({copies,runs:it.runs,label:p.name});if(!firstBP)firstBP=copies[0]}
+        await prefetchTree(BPPROD[it.bpType].prod);items.push({copies,runs:it.runs,label:p.name,src,pid:p.id});if(!firstBP)firstBP=copies[0]}
       if(!items.length)continue;
       const r=await makeMulti(items,opt,shared);
       R.trees.push(...r.trees);R.jobs.push(...r.jobs);R.warn.push(...r.warn);

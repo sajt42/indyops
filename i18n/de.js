@@ -576,5 +576,22 @@ window.I18N.de={
  "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Erz-Ausbeute: ohne Erzverarbeitungs-Skill; der Skill pro Gegenstand steckt in der Liste. Upwell-Strukturen: Basis 50 %, plus Rig (T1 +1, T2 +3), Systemsicherheit (Lowsec +6 %, Null und WH +12 %, nur mit Rig) und Strukturbonus (Athanor +2 %, Tatara +5,5 %). Bei NPC-Stationen kommen Basisausbeute, Grundsteuer und ob Reprocessing verfügbar ist aus ESI; die Steuer sinkt pro Charakter mit dem Standing zur Besitzer-Corporation (0 % bei 6,67); du kannst sie überschreiben. Rigs und Steuer einer Struktur liefert ESI nicht, die musst du selbst einstellen. Die Steuer wird von der Ausbeute abgezogen.",
  "adó {0}%": "Steuer {0} %",
  "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations). Melde dich mit deinen Charakteren erneut an, damit Standings zählen; bis dahin kann die echte Broker Fee etwas niedriger sein.",
- "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations) und dem Standing zum Stationsbesitzer (Connections und Diplomacy eingerechnet). In Spielerstrukturen legt der Besitzer die Broker Fee fest."
+ "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Die Gebühren kommen aus den Skills (Accounting, Broker Relations) und dem Standing zum Stationsbesitzer (Connections und Diplomacy eingerechnet). In Spielerstrukturen legt der Besitzer die Broker Fee fest.",
+ "Nyersanyag": "Material",
+ "projekt szerint": "wie Projekt",
+ "saját források": "eigene Quellen",
+ "Nyersanyag-források": "Materialquellen",
+ "Mindenhonnan (a Beállításokban kijelölt helyekről)": "Von überall (in den Einstellungen gewählte Orte)",
+ "Kiválasztott forrásokból": "Aus gewählten Quellen",
+ "A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.": "Das Projekt nutzt den gemeinsamen Bestand, in Prioritätsreihenfolge mit den anderen aktiven Projekten. Wechsle zu „Aus gewählten Quellen“, wenn das Projekt eine eigene Station, einen Container oder eine reservierte Kiste hat.",
+ "csak ez a projekt": "nur dieses Projekt",
+ "foglalja: {0}": "reserviert von: {0}",
+ "Kiválasztva: {0} helyszín, {1} konténer.": "Ausgewählt: {0} Orte, {1} Container.",
+ "Foglalt doboz: {0}.": "Reservierte Kisten: {0}.",
+ "Még nincs kiválasztva forrás: így minden anyagot venni kell.": "Noch keine Quelle gewählt: alles müsste gekauft werden.",
+ "A konténerek listájához frissítsd egyszer a karaktereket.": "Aktualisiere deine Charaktere einmal, um Container aufzulisten.",
+ "{0} konténer": "{0} Container",
+ "nincs konténer": "keine Container",
+ "A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.": "Ein angehakter Ort bedeutet seinen Hangar und alle Container dort (außer den von einem anderen Projekt reservierten). Du kannst auch einen Container allein anhaken, ohne den Ort.",
+ "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "„Nur dieses Projekt“: Kein anderes Projekt greift auf die Kiste zu, auch keines, das von überall nimmt; bei zwei Reservierungen gewinnt das Projekt mit höherer Priorität."
 };

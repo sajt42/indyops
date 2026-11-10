@@ -107,3 +107,9 @@ select{max-width:100%;text-overflow:ellipsis}
 #sMarket2{width:100%}
 .m2hint{margin-top:6px}
 .seltab td,.seltab th{padding-top:4px;padding-bottom:4px}
+.srcbox{border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:6px;max-height:420px;overflow:auto}
+.srcbox details{border-top:1px solid var(--line);padding:4px 0}
+.srcbox summary{cursor:pointer;list-style-position:inside}
+.srcc{padding:2px 0;display:flex;flex-wrap:wrap;gap:2px 14px;align-items:center}
+.srcc label.inline{display:inline-flex;width:auto;margin:0}
+.srcrow td{background:var(--bg)}

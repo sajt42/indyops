@@ -576,5 +576,22 @@ window.I18N.en={
  "Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.": "Ore yield: without ore processing skills; the per-item skill is included in the list. Upwell structures: base 50%, plus rig (T1 +1, T2 +3), system security (lowsec +6%, null and WH +12%, only with a rig) and structure bonus (Athanor +2%, Tatara +5.5%). For NPC stations, base yield, base tax and whether reprocessing is available come from ESI; the tax is lowered per character by standing towards the owner corporation (0% at 6.67); you can overwrite it. ESI doesn't provide a structure's rigs or tax, so set those yourself. Tax is deducted from the output.",
  "adó {0}%": "tax {0}%",
  "A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.": "Fees come from skills (Accounting, Broker Relations). Log in again with your characters to include standings; until then the real broker fee may be a bit lower.",
- "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Fees come from skills (Accounting, Broker Relations) and standing towards the station owner (Connections and Diplomacy included). In player structures the owner sets the broker fee."
+ "A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.": "Fees come from skills (Accounting, Broker Relations) and standing towards the station owner (Connections and Diplomacy included). In player structures the owner sets the broker fee.",
+ "Nyersanyag": "Materials",
+ "projekt szerint": "as project",
+ "saját források": "own sources",
+ "Nyersanyag-források": "Material sources",
+ "Mindenhonnan (a Beállításokban kijelölt helyekről)": "From everywhere (locations ticked in Settings)",
+ "Kiválasztott forrásokból": "From selected sources",
+ "A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.": "The project uses the shared stock, in priority order with the other active projects. Switch to “From selected sources” if the project has its own station, container or reserved box.",
+ "csak ez a projekt": "this project only",
+ "foglalja: {0}": "reserved by: {0}",
+ "Kiválasztva: {0} helyszín, {1} konténer.": "Selected: {0} locations, {1} containers.",
+ "Foglalt doboz: {0}.": "Reserved boxes: {0}.",
+ "Még nincs kiválasztva forrás: így minden anyagot venni kell.": "No source selected yet: everything would have to be bought.",
+ "A konténerek listájához frissítsd egyszer a karaktereket.": "Refresh your characters once to list containers.",
+ "{0} konténer": "{0} containers",
+ "nincs konténer": "no containers",
+ "A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.": "Ticking a location means its hangar and all containers there (except those reserved by another project). You can also tick a container on its own, without the location.",
+ "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "“This project only”: no other project touches the box, even one working from everywhere; if two projects reserve it, the one higher in priority wins."
 };

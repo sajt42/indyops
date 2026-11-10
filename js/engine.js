@@ -15,7 +15,7 @@ function ownedFor(prodType){ // saját példányok, legjobb elöl
 /* készlet-pool: raktár + (opcionálisan) érc + futó jobok termékei */
 async function buildPool(opt){
   const pool=new Map();
-  if(opt.useStock){const sm=stockMap(true);for(const [t,arr] of sm)pool.set(t,arr.map(x=>Object.assign({},x)));if(opt.ore)await addOreToPool(pool)}
+  if(opt.useStock){const sm=stockMap(false);for(const [t,arr] of sm)pool.set(t,arr.map(x=>Object.assign({},x)));if(opt.ore)await addOreToPool(pool)}
   if(opt.incoming){for(const [cid,d] of Object.entries(DATA)){if(!CHARS.find(c=>c.id==cid))continue;
     for(const j of d.jobs){if(j.st!=='active'||!(j.act===1||j.act===9||j.act===11)||!j.prod)continue;
       const meta=BPPROD[j.bp];const q=j.runs*(meta?meta.qty:1);let a=pool.get(j.prod);if(!a){a=[];pool.set(j.prod,a)}a.push({l:'job',cid:Number(cid),q})}}}
@@ -25,13 +25,15 @@ async function buildPool(opt){
 async function makeMulti(items,opt,shared){
   const pool=(shared&&shared.pool)||await buildPool(opt);
   const runsLeft=(shared&&shared.runsLeft)||new Map();
-  const take=(t,q)=>{const arr=pool.get(t);if(!arr)return [];const used=[];let rem=q;for(const x of arr){if(rem<=0)break;const k=Math.min(x.q,rem);if(k>0){x.q-=k;rem-=k;used.push({l:x.l,cid:x.cid,q:k,ore:x.ore})}}return used};
+  const resv=reservedMap();const filt=new Map(); // tételenként: melyik készletből vehet
+  const allowFor=item=>{let f=filt.get(item);if(!f){f=stockFilter(item,resv);filt.set(item,f)}return f};
+  const take=(t,q,item)=>{const arr=pool.get(t);if(!arr)return [];const ok=allowFor(item);const used=[];let rem=q;for(const x of arr){if(rem<=0)break;if(!ok(x))continue;const k=Math.min(x.q,rem);if(k>0){x.q-=k;rem-=k;used.push({l:x.l,cid:x.cid,q:k,ore:x.ore,c:x.c??null})}}return used};
   const addPool=(t,q)=>{if(q<=0)return;let arr=pool.get(t);if(!arr){arr=[];pool.set(t,arr)}arr.push({l:'surplus',cid:0,q})};
   const buyList=new Map(),usedList=new Map(),jobs=[];const warn=[];
   const structME=Number(S.structME||0)/100;
   async function node(t,need,depth,forced,item){
     const n={t,need,stock:[],build:null,buy:0,ch:[],jobsRef:[]};
-    if(depth>0&&opt.useStock!==false){n.stock=take(t,need);const got=n.stock.reduce((s,x)=>s+x.q,0);need-=got;n.stock.forEach(x=>{if(x.l!=='surplus'&&x.l!=='job')usedList.set(t,(usedList.get(t)||0)+x.q)})}
+    if(depth>0&&opt.useStock!==false){n.stock=take(t,need,item);const got=n.stock.reduce((s,x)=>s+x.q,0);need-=got;n.stock.forEach(x=>{if(x.l!=='surplus'&&x.l!=='job')usedList.set(t,(usedList.get(t)||0)+x.q)})}
     if(need<=0)return n;
     let copies=forced?forced:ownedFor(t);if(copies.length)copies=copies.filter(c=>c.t===copies[0].t);
     const override=S.buyOverride[t];
@@ -96,7 +98,7 @@ async function makePlan(topBP,runs,opt){const r=await makeMulti([{copies:[topBP]
 async function addOreToPool(pool){
   const ores=new Set(await ensureOres());const add=new Map();
   for(const [t,arr] of [...pool]){if(!ores.has(t))continue;
-    for(const x of arr){if(x.q<=0)continue;const mins=await oreToMinerals(t,x.q);for(const [m,q] of mins){if(q<=0)continue;let a=pool.get(m);if(!a){a=[];pool.set(m,a)}a.push({l:x.l,cid:x.cid,q,ore:t})}x.q=0}}
+    for(const x of arr){if(x.q<=0)continue;const mins=await oreToMinerals(t,x.q);for(const [m,q] of mins){if(q<=0)continue;let a=pool.get(m);if(!a){a=[];pool.set(m,a)}a.push({l:x.l,cid:x.cid,q,ore:t,c:x.c??null})}x.q=0}}
 }
 async function prefetchTree(prodType,seen=new Set()){ // receptek előtöltése párhuzamosan
   if(seen.has(prodType))return;seen.add(prodType);
