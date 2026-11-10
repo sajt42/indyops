@@ -51,10 +51,26 @@ $('#expBtn').onclick=()=>{
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='indyops-backup-'+new Date().toISOString().slice(0,10)+(withTok?'-with-logins':'')+'.json';
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);status('mentés letöltve');
 };
+// mentés ellenőrzése: típusok és kötelező mezők; ismeretlen mezőket eldob, a hibás projekteket nem veszi át
+function validateBackup(d){const err=[];const num=x=>typeof x==='number'&&isFinite(x);const out={app:d.app,at:d.at,withTokens:!!d.withTokens};
+  if(d.settings!=null&&(typeof d.settings!=='object'||Array.isArray(d.settings)))err.push(T('a beállítások nem objektum'));
+  out.settings=d.settings&&typeof d.settings==='object'&&!Array.isArray(d.settings)?d.settings:{};
+  if(d.projects!=null&&!Array.isArray(d.projects))err.push(T('a projektek nem lista'));
+  out.projects=[];for(const [i,p] of (Array.isArray(d.projects)?d.projects:[]).entries()){
+    if(!p||typeof p!=='object'||!num(p.id)||typeof p.name!=='string'||!Array.isArray(p.items)){err.push(T('{0}. projekt hibás',i+1));continue}
+    const items=p.items.filter(it=>it&&typeof it==='object'&&num(it.runs)&&it.runs>0&&(num(it.bpType)||num(it.invT1)));
+    if(items.length!==p.items.length)err.push(T('„{0}” projekt: {1} hibás tétel',p.name,p.items.length-items.length));
+    const src=p.src&&typeof p.src==='object'&&(p.src.mode==='all'||p.src.mode==='sel')?{mode:p.src.mode,locs:(p.src.locs||[]).filter(num),conts:(p.src.conts||[]).filter(num),excl:(p.src.excl||[]).filter(num)}:undefined;
+    out.projects.push(Object.assign({},p,{items,src,active:p.active!==false}))}
+  out.selp=num(d.selp)?d.selp:null;
+  out.chars=Array.isArray(d.chars)?d.chars.filter(c=>c&&num(c.id)&&typeof c.name==='string'):[];
+  if(Array.isArray(d.chars)&&out.chars.length!==d.chars.length)err.push(T('hibás karakter-bejegyzés'));
+  return {err,d:out}}
 $('#impFile').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;const rd=new FileReader();
   rd.onload=()=>{let d;try{d=JSON.parse(rd.result)}catch(x){alertBox('Ez nem egy IndyOps mentésfájl (nem olvasható JSON).');return}
     if(!d||(d.app!=='indyops'&&d.app!=='gyartopult')){alertBox('Ez nem egy IndyOps mentésfájl.');return}
+    const v=validateBackup(d);if(v.err.length){alertBox(T('A mentésfájl hibás, nem töltöttem vissza: {0}',v.err.slice(0,5).join('; ')));e.target.value='';return}d=v.d;
     const box=$('#impConfirm');box.hidden=false;
     box.innerHTML=`<p>Mentés dátuma: <b>${esc(new Date(d.at).toLocaleString(LOC()))}</b> · ${(d.projects||[]).length} projekt · ${(d.chars||[]).length} karakter${d.withTokens?' (bejelentkezésekkel)':' (bejelentkezések nélkül)'}.</p><p>A visszatöltés felülírja a mostani beállításokat és projekteket.${d.withTokens?' A karakterek bejelentkezései is visszaállnak.':' A karaktereket utána újra be kell jelentkeztetni, ha ebben a böngészőben még nincsenek.'}</p><div class="row"><button class="btn primary" id="impYes">Visszatöltés</button><button class="btn" id="impNo">Mégse</button></div>`;
     $('#impNo').onclick=()=>{box.hidden=true;e.target.value=''};

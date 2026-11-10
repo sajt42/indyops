@@ -126,8 +126,8 @@ async function runProfit(){
     const sysId=sysCache[x.best.l]!==undefined?sysCache[x.best.l]:(sysCache[x.best.l]=await sysFor(x.best));
     const made=x.R.trees[0].made;const price=sell(x.p);
     const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);
-    const noPrice=[...x.R.buyList].filter(([t])=>!unitPrice(t)).map(([t])=>t);
-    const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sysId),0);
+    const noPrice=[...x.R.buyList].filter(([t])=>!buyPrice(t)).map(([t])=>t);
+    await assignJobSys(x.R.jobs);const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sysId),0);
     const hours=x.R.jobs.reduce((s,j)=>s+jobTime(j),0)/3600;
     const net=price?made*price*(1-fee):0;const profit=net-mat-jc;
     const perUnit=made?profit/made:0;const perRun=profit/x.runs;
@@ -186,8 +186,8 @@ async function runInvention(){
   for(const x of calc){
     const sys=sysCache[x.copy.l]!==undefined?sysCache[x.copy.l]:(sysCache[x.copy.l]=await sysFor(x.copy));
     const tr=x.R.trees[0];const price=sell(tr.tree.t);
-    const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);const noPrice=[...x.R.buyList].filter(([t])=>!unitPrice(t)).map(([t])=>t);
-    const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sys),0);const net=price?tr.made*price*(1-fee):0;const profit=net-mat-jc;
+    const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);const noPrice=[...x.R.buyList].filter(([t])=>!buyPrice(t)).map(([t])=>t);
+    await assignJobSys(x.R.jobs);const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sys),0);const net=price?tr.made*price*(1-fee):0;const profit=net-mat-jc;
     const invCost=nodeCost(tr.tree.ch.find(n=>n.inv)||{t:0,buy:0,stock:[],ch:[]},false)+x.R.jobs.filter(j=>j.act==='i'||j.act==='c').reduce((s,j)=>s+jobCost(j,sys),0);
     const row={t1:x.t,copy:x.copy,dec:x.dec,info:x.it.info,prod:tr.tree.t,t2:x.it.copies[0].t,made:tr.made,price,profit,perRun:profit/x.it.info.runsPer,margin:net?profit/net:null,invCost,noPrice,vol:(HIST[tr.tree.t]||{}).vol||0};
     const k=x.t+'_'+x.pi;if(!best.has(k))best.set(k,{none:null,best:null,all:[]});const b=best.get(k);b.all.push(row);if(x.dec==null)b.none=row;if(!b.best||row.profit>b.best.profit)b.best=row;

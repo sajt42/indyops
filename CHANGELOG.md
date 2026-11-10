@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.12.0 – 2026-11-10
+
+- Prices: a failed download keeps the last good price and retries in 5 minutes; items without a price make profit “can't be calculated” (with the missing items listed) instead of counting them as free
+- Hauling: “highsec route” only when every system on the route is highsec; otherwise a warning with the lowest security
+- Job costs: each job uses the cost index of its own system; the production location setting is respected
+- Hauling to Jita grouped by origin when products are built in several places
+- ESI requests time out after 30 s and retry; one token refresh per character for parallel requests
+- Backup restore validates the file before applying it
+- Jobs beyond a character's free slots are marked “no free slot” (later start assumed, waiting time not included)
+- Content-Security-Policy: the page can only contact ESI, EVE SSO and EVE Ref
+- Assertion-based regression tests
+
 ## 1.11.0 – 2026-11-10
 
 - Sort by clicking the column header on every list page: Stock, Invention, Research, Selling (orders), No-buy builds (Blueprints, What pays? and Reprocess already had it)

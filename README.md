@@ -64,7 +64,7 @@ js/repro.js         reprocess calculator (stock, skills, location yield)
 js/main.js          event wiring, backup/restore, bug report, start-up
 i18n/en.js, de.js   translations (keys are the Hungarian source strings)
 tools/bundle.mjs    builds the single-file dist/indyops.html
-tests/              headless tests (jsdom) against dist/indyops.html
+tests/              headless tests (jsdom) against dist/indyops.html; regress.js has assertion-based regression checks
 ```
 
 ```

@@ -615,5 +615,22 @@ window.I18N.de={
  "Mi változott?": "Was ist neu?",
  "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI zeigt noch den Stand vor der Auslieferung des Jobs ({0} Runs mehr). Hier bereits korrigiert; das * verschwindet nach der nächsten ESI-Aktualisierung.",
  "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI-Stand: {0}, nächste Aktualisierung nach {1}. *: ESI weiß noch nichts von einem Job (läuft noch oder wurde nach dem ESI-Stand ausgeliefert), daher sind die Runs hier korrigiert. Verschwindet nach der ESI-Aktualisierung.",
- "hajók is": "auch Schiffe"
+ "hajók is": "auch Schiffe",
+ "Nincs ára valaminek ebben a tételben.": "Etwas in dieser Position hat keinen Preis.",
+ "nem számolható": "nicht berechenbar",
+ "becslés ár nélküli tételek nélkül: {0}": "Schätzung ohne die Posten ohne Preis: {0}",
+ "Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.": "Diese haben keinen Marktpreis, daher sind Kosten und Gewinn nicht genau: {0}. War es ein Netzwerkfehler, rechne in ein paar Minuten neu.",
+ "highsec útvonal": "Highsec-Route",
+ "az útvonal low- vagy nullsecen visz át (legalacsonyabb sec: {0})": "die Route führt durch Low- oder Nullsec (niedrigste Sec: {0})",
+ "az útvonal biztonsága nem ismert": "Sicherheit der Route unbekannt",
+ "{0} ugrás": "{0} Sprünge",
+ "Gyártási rendszerek: {0}": "Produktionssysteme: {0}",
+ "A mentésfájl hibás, nem töltöttem vissza: {0}": "Die Sicherungsdatei ist fehlerhaft, nichts wiederhergestellt: {0}",
+ "a beállítások nem objektum": "Einstellungen sind kein Objekt",
+ "a projektek nem lista": "Projekte sind keine Liste",
+ "{0}. projekt hibás": "Projekt {0} ist fehlerhaft",
+ "„{0}” projekt: {1} hibás tétel": "Projekt „{0}“: {1} fehlerhafte Positionen",
+ "hibás karakter-bejegyzés": "fehlerhafter Charaktereintrag",
+ "Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.": "Kein freier Slot; der Vorschlag rechnet mit einem späteren Start, die Wartezeit ist nicht enthalten.",
+ "nincs szabad slot": "kein freier Slot"
 };

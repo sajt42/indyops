@@ -111,9 +111,17 @@ function collectTypes(n,s=new Set()){s.add(n.t);n.ch.forEach(c=>collectTypes(c,s
 
 /* ============ költség ============ */
 const ACT_IDX={m:'manufacturing',r:'reaction',i:'invention',c:'copying',rme:'researching_material_efficiency',rte:'researching_time_efficiency'};
+// minden job a saját gyártási helyének rendszerével számol; a Beállítások „rendszer” mezője mindent felülír, a „gyártási hely” a helyet
+const SYSNAME={};
+async function sysByName(n){if(SYSNAME[n]!==undefined)return SYSNAME[n];try{const r=await esi('/universe/ids/',{method:'POST',body:[n]});SYSNAME[n]=r.systems&&r.systems[0]?r.systems[0].id:null}catch(e){SYSNAME[n]=null}return SYSNAME[n]}
+async function assignJobSys(jobs){
+  const ov=S.system?await sysByName(S.system):null;const cache={};
+  for(const j of jobs){if(ov){j.sys=ov;continue}const l=S.prodLoc?Number(S.prodLoc):(j.bp&&j.bp.l);if(l==null)continue;
+    if(cache[l]===undefined){let li=LOCINFO[l];if(!li){try{li=await resolveLoc(l)}catch(e){li=null}}cache[l]=li&&li.system||null}j.sys=cache[l]||j.sys||null}
+}
 function jobCost(j,sysId){
   const eiv=j.base.reduce((s,[m,q])=>s+(ADJ.p[m]||0)*q,0)*j.runs*(j.cm||1);
-  const index=((IDX.p[sysId]||{})[ACT_IDX[j.act]])||0;
+  const index=((IDX.p[j.sys??sysId]||{})[ACT_IDX[j.act]])||0;
   return eiv*(index+Number(S.facTax||0)/100+Number(S.scc||0)/100);
 }
 function jobTime(j){
@@ -126,6 +134,6 @@ function jobTime(j){
 }
 const slotKey=a=>a==='m'?'m':a==='r'?'r':'s';
 async function sysFor(bp){
-  if(S.system){try{const r=await esi('/universe/ids/',{method:'POST',body:[S.system]});if(r.systems&&r.systems[0])return r.systems[0].id}catch(e){}}
-  const li=LOCINFO[bp.l]||await resolveLoc(bp.l);return li&&li.system;
+  if(S.system){const id=await sysByName(S.system);if(id)return id}
+  const l=S.prodLoc?Number(S.prodLoc):bp.l;const li=LOCINFO[l]||await resolveLoc(l);return li&&li.system;
 }

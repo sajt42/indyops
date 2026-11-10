@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -552,6 +553,7 @@ th.sortable:hover{text-decoration:underline}
   <h3>Gyakori kérdések</h3>
   <dl class="helpdl">
     <dt>„Ismeretlen hely” látszik egy citadella helyett.</dt><dd>A struktúra nevét csak akkor adja ki az ESI, ha a karakterednek van dokkolási joga. Ha a struktúra megszűnt, a tárgyak asset safetyben lehetnek. Az IndyOps megpróbálja a nevet az EVE Ref nyilvános struktúralistájából kideríteni; ha ott sincs, a Beállítások „Ismeretlen helyek” kártyáján elnevezheted.</dd>
+    <dt>A profitnál „nem számolható” áll.</dt><dd>Valamelyik anyagnak vagy a terméknek nincs piaci ára (vagy épp nem sikerült letölteni). Ilyenkor nem számolunk 0 költséggel, hanem kiírjuk, melyik tétel hiányzik, és mellé egy becslést nélküle. Hálózati hibánál a korábbi jó ár megmarad, és pár perc múlva újrapróbálja.</dd>
     <dt>A BPC-n más run látszik, mint a játékban.</dt><dd>Az ESI a BPC runjait csak a job leadásakor csökkenti, és a blueprint-listát akár egy óráig tárolja. Az IndyOps ezért levonja azoknak a joboknak a runjait, amelyekről az ESI még nem tud, és csillaggal (*) jelzi; az ESI frissülése után a csillag eltűnik. A Blueprintek fül alján látod, mikori az ESI-adat.</dd>
     <dt>Az oldal tetején egy sáv adatfrissítést kér.</dt><dd>Egy új verzió új adatot olvas az ESI-ből. Nyomd meg a sávban a „Minden adat frissítése” gombot; a „Mi változott?” link a változásokat mutatja.</dd>
     <dt>Bejelentkeztem, de nincs adat.</dt><dd>Nyomd meg a „Minden adat frissítése” gombot. Ha egy karakterkártya új engedélyt kér, jelentkezz be újra azzal a karakterrel.</dd>
@@ -615,6 +617,7 @@ th.sortable:hover{text-decoration:underline}
   <h3>FAQ</h3>
   <dl class="helpdl">
     <dt>I see "Unknown location" instead of a citadel.</dt><dd>ESI only returns a structure's name if your character has docking access. If the structure is gone, your items may be in asset safety. IndyOps tries to find the name in EVE Ref's public structure list; if it isn't there either, you can name it on the “Unknown locations” card in Settings.</dd>
+    <dt>Profit says “can't be calculated”.</dt><dd>A material or the product has no market price (or it couldn't be downloaded). Instead of counting it as free, IndyOps lists what's missing and shows an estimate without it. After a network error the last good price is kept and retried in a few minutes.</dd>
     <dt>A BPC shows different runs than the game.</dt><dd>ESI only lowers a BPC's runs when the job is delivered, and caches the blueprint list for up to an hour. IndyOps therefore subtracts the runs of jobs ESI doesn't know about yet and marks them with an asterisk (*); it disappears once ESI updates. The bottom of the Blueprints tab shows how old ESI's data is.</dd>
     <dt>A banner at the top asks me to refresh data.</dt><dd>A new version reads new data from ESI. Press “Refresh all data” in the banner; the “What changed?” link shows the changes.</dd>
     <dt>I logged in but there is no data.</dt><dd>Press "Refresh all data". If a character card asks for a new permission, log in again with that character.</dd>
@@ -678,6 +681,7 @@ th.sortable:hover{text-decoration:underline}
   <h3>Häufige Fragen</h3>
   <dl class="helpdl">
     <dt>Statt einer Citadel steht „Unbekannter Ort“ da.</dt><dd>ESI liefert den Namen einer Struktur nur, wenn dein Charakter Andockrechte hat. Wenn die Struktur weg ist, liegen deine Sachen eventuell in Asset Safety. IndyOps versucht, den Namen in der öffentlichen Strukturliste von EVE Ref zu finden; steht er dort auch nicht, kannst du ihn auf der Karte „Unbekannte Orte“ in den Einstellungen benennen.</dd>
+    <dt>Beim Gewinn steht „nicht berechenbar“.</dt><dd>Ein Material oder das Produkt hat keinen Marktpreis (oder er konnte nicht geladen werden). Statt es als kostenlos zu zählen, listet IndyOps auf, was fehlt, und zeigt eine Schätzung ohne es. Nach einem Netzwerkfehler bleibt der letzte gute Preis erhalten und wird in ein paar Minuten erneut versucht.</dd>
     <dt>Eine BPC zeigt andere Runs als das Spiel.</dt><dd>ESI senkt die Runs einer BPC erst bei der Auslieferung des Jobs und speichert die Blueprint-Liste bis zu einer Stunde. IndyOps zieht daher die Runs von Jobs ab, die ESI noch nicht kennt, und markiert sie mit einem Sternchen (*); es verschwindet nach der ESI-Aktualisierung. Unten im Blueprints-Tab steht, wie alt die ESI-Daten sind.</dd>
     <dt>Oben bittet ein Balken um eine Datenaktualisierung.</dt><dd>Eine neue Version liest neue Daten aus ESI. Drücke im Balken „Alle Daten aktualisieren“; der Link „Was ist neu?“ zeigt die Änderungen.</dd>
     <dt>Ich bin angemeldet, sehe aber keine Daten.</dt><dd>Drücke „Alle Daten aktualisieren“. Wenn eine Charakterkarte eine neue Berechtigung verlangt, melde dich mit diesem Charakter erneut an.</dd>
@@ -1322,7 +1326,24 @@ window.I18N.en={
  "Mi változott?": "What changed?",
  "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI still shows the state before the job was delivered ({0} more runs). Corrected here; the * disappears after ESI's next update.",
  "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI snapshot: {0}, next update after {1}. *: ESI doesn't know about a job yet (still running, or delivered after ESI's snapshot), so the runs are corrected here. It disappears once ESI updates.",
- "hajók is": "ships too"
+ "hajók is": "ships too",
+ "Nincs ára valaminek ebben a tételben.": "Something in this item has no price.",
+ "nem számolható": "can't be calculated",
+ "becslés ár nélküli tételek nélkül: {0}": "estimate without the unpriced items: {0}",
+ "Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.": "These have no market price, so cost and profit aren't accurate: {0}. If it was a network error, recalculate in a few minutes.",
+ "highsec útvonal": "highsec route",
+ "az útvonal low- vagy nullsecen visz át (legalacsonyabb sec: {0})": "the route goes through low- or nullsec (lowest sec: {0})",
+ "az útvonal biztonsága nem ismert": "route safety unknown",
+ "{0} ugrás": "{0} jumps",
+ "Gyártási rendszerek: {0}": "Manufacturing systems: {0}",
+ "A mentésfájl hibás, nem töltöttem vissza: {0}": "The backup file is invalid, nothing restored: {0}",
+ "a beállítások nem objektum": "settings are not an object",
+ "a projektek nem lista": "projects are not a list",
+ "{0}. projekt hibás": "project {0} is invalid",
+ "„{0}” projekt: {1} hibás tétel": "project “{0}”: {1} invalid items",
+ "hibás karakter-bejegyzés": "invalid character entry",
+ "Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.": "No free slot; the suggestion assumes a later start and does not include the waiting time.",
+ "nincs szabad slot": "no free slot"
 };
 </script>
 <script>
@@ -1944,7 +1965,24 @@ window.I18N.de={
  "Mi változott?": "Was ist neu?",
  "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI zeigt noch den Stand vor der Auslieferung des Jobs ({0} Runs mehr). Hier bereits korrigiert; das * verschwindet nach der nächsten ESI-Aktualisierung.",
  "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI-Stand: {0}, nächste Aktualisierung nach {1}. *: ESI weiß noch nichts von einem Job (läuft noch oder wurde nach dem ESI-Stand ausgeliefert), daher sind die Runs hier korrigiert. Verschwindet nach der ESI-Aktualisierung.",
- "hajók is": "auch Schiffe"
+ "hajók is": "auch Schiffe",
+ "Nincs ára valaminek ebben a tételben.": "Etwas in dieser Position hat keinen Preis.",
+ "nem számolható": "nicht berechenbar",
+ "becslés ár nélküli tételek nélkül: {0}": "Schätzung ohne die Posten ohne Preis: {0}",
+ "Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.": "Diese haben keinen Marktpreis, daher sind Kosten und Gewinn nicht genau: {0}. War es ein Netzwerkfehler, rechne in ein paar Minuten neu.",
+ "highsec útvonal": "Highsec-Route",
+ "az útvonal low- vagy nullsecen visz át (legalacsonyabb sec: {0})": "die Route führt durch Low- oder Nullsec (niedrigste Sec: {0})",
+ "az útvonal biztonsága nem ismert": "Sicherheit der Route unbekannt",
+ "{0} ugrás": "{0} Sprünge",
+ "Gyártási rendszerek: {0}": "Produktionssysteme: {0}",
+ "A mentésfájl hibás, nem töltöttem vissza: {0}": "Die Sicherungsdatei ist fehlerhaft, nichts wiederhergestellt: {0}",
+ "a beállítások nem objektum": "Einstellungen sind kein Objekt",
+ "a projektek nem lista": "Projekte sind keine Liste",
+ "{0}. projekt hibás": "Projekt {0} ist fehlerhaft",
+ "„{0}” projekt: {1} hibás tétel": "Projekt „{0}“: {1} fehlerhafte Positionen",
+ "hibás karakter-bejegyzés": "fehlerhafter Charaktereintrag",
+ "Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.": "Kein freier Slot; der Vorschlag rechnet mit einem späteren Start, die Wartezeit ist nicht enthalten.",
+ "nincs szabad slot": "kein freier Slot"
 };
 </script>
 <script>
@@ -1966,7 +2004,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
 // dataVersion: emeld meg, ha egy új verzió új adatot olvas az ESI-ből, és ehhez a felhasználónak frissítenie kell (a tool szól neki)
-const APP={dataVersion:3,name:'IndyOps',version:'1.11.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={dataVersion:3,name:'IndyOps',version:'1.12.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2089,11 +2127,15 @@ async function handleRedirect(){ // weben a CCP ide irányít vissza ?code=…&s
   if(!code)return;try{history.replaceState(null,'',APP.home)}catch(e){}
   await completeLogin(code,state);
 }
+// karakterenként egyszerre csak egy tokenfrissítés fut; a párhuzamos kérések ugyanarra várnak
+const TOKREF=new Map();
 async function accessToken(c){
   if(c.access&&c.exp>Date.now()+60000) return c.access;
-  const j=await tokenCall({grant_type:'refresh_token',refresh_token:c.refresh,client_id:c.cid||clientId()});
-  c.access=j.access_token;c.exp=Date.now()+j.expires_in*1000;c.scp=scpOf(j.access_token);if(j.refresh_token)c.refresh=j.refresh_token;
-  store('chars',CHARS);return c.access;
+  if(TOKREF.has(c.id))return TOKREF.get(c.id);
+  const p=(async()=>{const j=await tokenCall({grant_type:'refresh_token',refresh_token:c.refresh,client_id:c.cid||clientId()});
+    c.access=j.access_token;c.exp=Date.now()+j.expires_in*1000;c.scp=scpOf(j.access_token);if(j.refresh_token)c.refresh=j.refresh_token;
+    store('chars',CHARS);return c.access})();
+  TOKREF.set(c.id,p);try{return await p}finally{TOKREF.delete(c.id)}
 }
 
 /* ============ hálózat ============ */
@@ -2109,7 +2151,11 @@ async function esi(path,{char,method='GET',body,paged=false,meta=false}={}){
     const h={'Accept':'application/json'};if(body)h['Content-Type']='application/json';
     if(char)h.Authorization='Bearer '+await accessToken(char);
     for(let attempt=0;attempt<3;attempt++){
-      const r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined});
+      // időkorlát: egy beragadt kérés ne foglalja örökre a helyet; időtúllépésnél és hálózati hibánál újrapróbálja
+      let r;const ac=new AbortController();const to=setTimeout(()=>ac.abort(),30000);
+      try{r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined,signal:ac.signal})}
+      catch(e){clearTimeout(to);const msg=e.name==='AbortError'?'időtúllépés (30 s)':'hálózati hiba';if(attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}const er=new Error('ESI '+msg+' '+path);er.status=0;throw er}
+      clearTimeout(to);
       const rem=r.headers.get('x-esi-error-limit-remain'); if(rem!=null&&Number(rem)<20){log('ESI hibakeret alacsony ('+rem+'), várakozás…');await new Promise(z=>setTimeout(z,5000))}
       if(r.ok) return {data:await r.json(),pages:Number(r.headers.get('x-pages')||1),lm:Date.parse(r.headers.get('last-modified')||'')||null,exp:Date.parse(r.headers.get('expires')||'')||null};
       if(r.status>=500&&attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}
@@ -2297,6 +2343,8 @@ function buyAt(t){const j=unitPrice(t),m=sell2(t);return buyM2On()&&m&&(!j||m<j)
 function buyPrice(t){return buyAt(t)===JITA_STATION?unitPrice(t):sell2(t)}
 
 /* ============ árak ============ */
+// sikertelen árletöltés: a korábbi jó ár megmarad (hibajelzéssel), és 5 perc múlva újrapróbálja; ha nem volt ár, „nincs ár” marad, nem 0
+function priceFail(old,now){const retry=now-25*60000;return old&&(old.s||old.b)?Object.assign({},old,{at:Math.min(old.at,retry),err:now}):{s:null,b:null,at:retry,err:now}}
 async function ensurePrices(typeIds){
   const now=Date.now();const m2=m2On()?Number(S.market2):null;const isStr=m2&&m2>1e12;const reg2=m2&&!isStr?await regionOf(m2):null;PRICES.p2=PRICES.p2||{};
   const stale=(x,loc)=>!x||now-x.at>30*60000||(loc!=null&&x.loc!==loc);
@@ -2308,10 +2356,10 @@ async function ensurePrices(typeIds){
   await Promise.all(need.map(async t=>{
     try{const o=await esi('/markets/'+JITA_REGION+'/orders/?type_id='+t+'&order_type=all',{paged:true});
       PRICES.p[t]=best(o,JITA_STATION);if(m2&&reg2===JITA_REGION)PRICES.p2[t]=best(o,m2);
-    }catch(e){PRICES.p[t]={s:null,b:null,at:now};log('Ár hiba '+t)}
+    }catch(e){PRICES.p[t]=priceFail(PRICES.p[t],now);log('Ár hiba '+t)}
   }).concat(need2.map(async t=>{
     try{const o=await esi('/markets/'+reg2+'/orders/?type_id='+t+'&order_type=all',{paged:true});PRICES.p2[t]=best(o,m2)}
-    catch(e){PRICES.p2[t]={s:null,b:null,at:now,loc:m2};log('Ár hiba ('+m2Short()+') '+t)}
+    catch(e){PRICES.p2[t]=Object.assign(priceFail(PRICES.p2[t]&&PRICES.p2[t].loc===m2?PRICES.p2[t]:null,now),{loc:m2});log('Ár hiba ('+m2Short()+') '+t)}
   })));
   store('prices',PRICES);
   try{await ensureOwners([JITA_STATION,m2])}catch(e){}
@@ -2532,9 +2580,17 @@ function collectTypes(n,s=new Set()){s.add(n.t);n.ch.forEach(c=>collectTypes(c,s
 
 /* ============ költség ============ */
 const ACT_IDX={m:'manufacturing',r:'reaction',i:'invention',c:'copying',rme:'researching_material_efficiency',rte:'researching_time_efficiency'};
+// minden job a saját gyártási helyének rendszerével számol; a Beállítások „rendszer” mezője mindent felülír, a „gyártási hely” a helyet
+const SYSNAME={};
+async function sysByName(n){if(SYSNAME[n]!==undefined)return SYSNAME[n];try{const r=await esi('/universe/ids/',{method:'POST',body:[n]});SYSNAME[n]=r.systems&&r.systems[0]?r.systems[0].id:null}catch(e){SYSNAME[n]=null}return SYSNAME[n]}
+async function assignJobSys(jobs){
+  const ov=S.system?await sysByName(S.system):null;const cache={};
+  for(const j of jobs){if(ov){j.sys=ov;continue}const l=S.prodLoc?Number(S.prodLoc):(j.bp&&j.bp.l);if(l==null)continue;
+    if(cache[l]===undefined){let li=LOCINFO[l];if(!li){try{li=await resolveLoc(l)}catch(e){li=null}}cache[l]=li&&li.system||null}j.sys=cache[l]||j.sys||null}
+}
 function jobCost(j,sysId){
   const eiv=j.base.reduce((s,[m,q])=>s+(ADJ.p[m]||0)*q,0)*j.runs*(j.cm||1);
-  const index=((IDX.p[sysId]||{})[ACT_IDX[j.act]])||0;
+  const index=((IDX.p[j.sys??sysId]||{})[ACT_IDX[j.act]])||0;
   return eiv*(index+Number(S.facTax||0)/100+Number(S.scc||0)/100);
 }
 function jobTime(j){
@@ -2547,8 +2603,8 @@ function jobTime(j){
 }
 const slotKey=a=>a==='m'?'m':a==='r'?'r':'s';
 async function sysFor(bp){
-  if(S.system){try{const r=await esi('/universe/ids/',{method:'POST',body:[S.system]});if(r.systems&&r.systems[0])return r.systems[0].id}catch(e){}}
-  const li=LOCINFO[bp.l]||await resolveLoc(bp.l);return li&&li.system;
+  if(S.system){const id=await sysByName(S.system);if(id)return id}
+  const l=S.prodLoc?Number(S.prodLoc):bp.l;const li=LOCINFO[l]||await resolveLoc(l);return li&&li.system;
 }
 </script>
 <script>
@@ -2653,7 +2709,7 @@ async function finishResult(R,firstBP){
   await resolveNames([...types]);await ensurePrices([...types]);
   await Promise.all([...types].map(t=>refGet('t',t).catch(()=>null)));
   await resolveNames(R.jobs.flatMap(j=>j.miss.map(m=>m[0])));
-  R.sys=firstBP?await sysFor(firstBP):null;
+  R.sys=firstBP?await sysFor(firstBP):null;await assignJobSys(R.jobs);await resolveNames([...new Set(R.jobs.map(j=>j.sys).filter(Boolean))]);
   try{await prepHaul(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
   return R;
 }
@@ -2675,7 +2731,7 @@ async function runPlan(){
 }
 function assignChars(jobs){ // ki csinálja: skill + idő + szabad slot alapján, LPT elosztás
   const cs=workChars();if(!cs.length)return;
-  const load={};cs.forEach(c=>load[c]={m:0,r:0,s:0});
+  const load={},cnt={};cs.forEach(c=>{load[c]={m:0,r:0,s:0};cnt[c]={m:0,r:0,s:0}});
   const free=(c,k)=>{const sl=slotsOf(c),bz=busyOf(c);return Math.max(1,sl[k]-bz[k])};
   const tFor=(j,c)=>{const o=j.who;j.who=c;const t=jobTime(j);j.who=o;return t};
   jobs.forEach(j=>{if(j.bp0)j.bp=j.bp0;else j.bp0=j.bp;j.who=null});
@@ -2689,6 +2745,8 @@ function assignChars(jobs){ // ki csinálja: skill + idő + szabad slot alapján
     const mine=own(best);if(mine&&mine!==j.bp&&!j.bp.virtual)j.bp=Object.assign({},mine);
     if(j.bp.virtual)j.bp=Object.assign({},j.bp,{cid:best});
     j.who=best;j.miss=missingSkills(best,rec);j.noone=noone;load[best][k]+=tFor(j,best);
+    // ha több jobot kap, mint ahány szabad slotja van, a többi egy futó job végére vár (ez becslés, nem ütemező)
+    cnt[best][k]++;const realFree=slotsOf(best)[k]-busyOf(best)[k];j.wait=cnt[best][k]>Math.max(0,realFree);
   }
 }
 function nodeCost(n,free){ // egy fa anyagköltsége: vásárlás + saját készlet
@@ -2707,12 +2765,13 @@ function haulList(R){ // mit honnan hova kell vinni
       walk(c)}};
   R.trees.forEach(x=>walk(x.tree));
   // érc forrás: mennyiség a pool bejegyzésből nem visszakövethető pontosan -> külön jelöljük
-  const sale=new Map();R.trees.forEach(x=>{const from=prodLocOf(x.tree);if(from!=null&&from!==JITA_STATION)sale.set(x.tree.t,(sale.get(x.tree.t)||0)+x.made)});
-  return {moves,sale,oreRoutes,from:R.trees[0]?prodLocOf(R.trees[0].tree):null};
+  // eladásra Jitába: indulási hely szerint csoportosítva (from -> típus -> db)
+  const sale=new Map();R.trees.forEach(x=>{const from=prodLocOf(x.tree);if(from==null||from===JITA_STATION)return;if(!sale.has(from))sale.set(from,new Map());const m=sale.get(from);m.set(x.tree.t,(m.get(x.tree.t)||0)+x.made)});
+  return {moves,sale,oreRoutes};
 }
 const volOf=t=>(REFC.t[t]&&REFC.t[t].vol)||0;
 /* ---- hajók és útvonalak a szállításhoz ---- */
-let SHIPC=load('shipc',{}),ROUTES=load('routes',{});
+let SHIPC=load('shipc',{}),ROUTES=load('routes2',{}); // {n: ugrás, hs: végig highsec-e (null: nem tudni), min: legalacsonyabb sec}
 async function getShipType(t){
   if(SHIPC[t]!==undefined)return SHIPC[t];
   const j=await limit(async()=>{const r=await fetch(REF+'/types/'+t);return r.ok?r.json():null});
@@ -2737,35 +2796,43 @@ async function ownShips(){ // a karakterek hangárjában lévő összerakott haj
 const JUMP_SEC={513:120,902:120,941:110,28:75,380:75,1202:45,463:60,543:70};
 function sysOfLoc(l){if(l===JITA_STATION)return 30000142;return LOCINFO[l]&&LOCINFO[l].system}
 async function ensureRoute(a,b){
-  if(a==null||b==null)return null;if(a===b)return 0;const k=a+'|'+b;if(ROUTES[k]!==undefined)return ROUTES[k];
-  let n=null;try{const r=await esi('/route/'+a+'/'+b+'/?flag=secure');n=r.length-1}catch(e){try{const r=await esi('/route/'+a+'/'+b+'/');n=r.length-1}catch(e2){n=null}}
-  ROUTES[k]=n;store('routes',ROUTES);return n;
+  if(a==null||b==null)return null;if(a===b)return {n:0,hs:SYSSEC[a]!=null?SYSSEC[a]>=0.45:null,min:SYSSEC[a]??null};const k=a+'|'+b;if(ROUTES[k]!==undefined)return ROUTES[k];
+  let r=null;try{r=await esi('/route/'+a+'/'+b+'/?flag=secure')}catch(e){}
+  if(!r){try{r=await esi('/route/'+a+'/'+b+'/')}catch(e){}}
+  let res=null;
+  if(Array.isArray(r)&&r.length){ // a biztonságot rendszerenként ellenőrizzük, nem a kérés módjából találgatjuk
+    const need=r.filter(id=>SYSSEC[id]==null);await Promise.all(need.map(async id=>{try{SYSSEC[id]=(await esi('/universe/systems/'+id+'/')).security_status}catch(e){}}));store('syssec',SYSSEC);
+    const known=r.every(id=>SYSSEC[id]!=null);const min=known?Math.min(...r.map(id=>SYSSEC[id])):null;
+    res={n:r.length-1,hs:known?min>=0.45:null,min};
+  }
+  ROUTES[k]=res;store('routes2',ROUTES);return res;
 }
 async function prepHaul(R){
   const H=haulList(R);const pairs=[];
   for(const k of H.moves.keys()){const [f,t]=k.split('|').map(Number);pairs.push([f,t])}
-  if(H.sale.size&&H.from!=null)pairs.push([H.from,JITA_STATION]);
+  for(const f of H.sale.keys())pairs.push([f,JITA_STATION]);
   for(const [f,t] of pairs){for(const l of [f,t])if(l!==JITA_STATION&&!LOCINFO[l])await resolveLoc(l)}
   const jumps={};for(const [f,t] of pairs)jumps[f+'|'+t]=await ensureRoute(sysOfLoc(f),sysOfLoc(t));
   R.haulCtx={jumps,ships:await ownShips()};
 }
 function shipAdvice(R,key,vol,maxUnit){
-  const ctx=R.haulCtx;if(!ctx||!vol)return '';const j=ctx.jumps[key];
+  const ctx=R.haulCtx;if(!ctx||!vol)return '';const rt=ctx.jumps[key];const j=rt?rt.n:null;
+  const safety=rt==null?'':rt.hs===true?T('highsec útvonal'):rt.hs===false?'⚠ '+T('az útvonal low- vagy nullsecen visz át (legalacsonyabb sec: {0})',fmt(rt.min,1)):T('az útvonal biztonsága nem ismert');
   const flyable=ctx.ships.filter(x=>x.canFly);const ships=flyable.filter(x=>x.cap>=(maxUnit||0));
-  if(!flyable.length)return `<tr><td colspan="3" class="small muted">${j!=null?j+' ugrás (highsec). ':''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</td></tr>`;
-  if(!ships.length)return `<tr><td colspan="3" class="small muted">${j!=null?j+' ugrás (highsec). ':''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</td></tr>`;
+  if(!flyable.length)return `<tr><td colspan="3" class="small muted">${j!=null?T('{0} ugrás',j)+' ('+safety+'). ':''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</td></tr>`;
+  if(!ships.length)return `<tr><td colspan="3" class="small muted">${j!=null?T('{0} ugrás',j)+' ('+safety+'). ':''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</td></tr>`;
   const opts=ships.map(x=>{const trips=Math.ceil(vol/x.cap);const per=JUMP_SEC[x.g]||60;const time=j==null?null:(j===0?trips*300:(2*trips-1)*j*per);return Object.assign({trips,time},x)});
   opts.sort((a,b)=>(a.time??a.trips*1e6)-(b.time??b.trips*1e6)||a.trips-b.trips);
   const seen=new Set();const best=opts.filter(o=>{const k=o.t+'|'+o.cid;if(seen.has(k))return false;seen.add(k);return true}).slice(0,3);
-  return `<tr><td colspan="3" class="small">${j==null?T('Útvonal nem ismert.')+' ':(j===0?T('Ugyanabban a rendszerben.')+' ':T('<b>{0} ugrás</b> (highsec útvonal).',j)+' ')}${best.map((o,i)=>`${i?'<br>':''}${esc(o.n)} <span class="muted">(${esc(charName(o.cid))}, ${esc(locName(o.l))}, ${T('raktér {0} m³',fmt(o.cap))})</span>: <b>${T('{0} forduló',o.trips)}</b>${o.time!=null?' · '+T('kb. {0}',dur(o.time)):''}`).join('')}</td></tr>`;
+  return `<tr><td colspan="3" class="small">${j==null?T('Útvonal nem ismert.')+' ':(j===0?T('Ugyanabban a rendszerben.')+' ':`<b>${T('{0} ugrás',j)}</b> (${rt.hs===false?'<span class="neg">'+safety+'</span>':safety}). `)}${best.map((o,i)=>`${i?'<br>':''}${esc(o.n)} <span class="muted">(${esc(charName(o.cid))}, ${esc(locName(o.l))}, ${T('raktér {0} m³',fmt(o.cap))})</span>: <b>${T('{0} forduló',o.trips)}</b>${o.time!=null?' · '+T('kb. {0}',dur(o.time)):''}`).join('')}</td></tr>`;
 }
 function renderHaul(R){
   const H=haulList(R);if(!H.moves.size&&!H.sale.size)return '<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>';
   let tot=0;let h='<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="grid2">';
   for(const [k,m] of H.moves){const [from,to]=k.split('|').map(Number);const rows=[...m].map(([t,q])=>({t,q,v:q*volOf(t)}));const sum=rows.reduce((s,r)=>s+(r.v||0),0);tot+=sum;
     h+=`<div class="tablewrap"><table><thead><tr><th colspan="3">${esc(from===JITA_STATION?T('Jita (vásárlás)'):locName(from))} → ${esc(locName(to))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.sort((a,b)=>(b.v||0)-(a.v||0)).map(r=>`<tr><td>${esc(NAMES[r.t]||r.t)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`).join('')}${H.oreRoutes.has(k)?'<tr><td colspan="3" class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</td></tr>':''}${shipAdvice(R,k,sum,Math.max(0,...rows.map(r=>volOf(r.t))))}</tbody></table></div>`}
-  if(H.sale.size){const rows=[...H.sale].map(([t,q])=>({t,q,v:q*volOf(t)}));const sum=rows.reduce((s,r)=>s+r.v,0);
-    h+=`<div class="tablewrap"><table><thead><tr><th colspan="3">${T('Eladásra: {0} → Jita',esc(locName(H.from)))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(NAMES[r.t]||r.t)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`).join('')}${shipAdvice(R,H.from+'|'+JITA_STATION,sum,Math.max(0,...rows.map(r=>volOf(r.t))))}</tbody></table></div>`}
+  for(const [from,m] of H.sale){const rows=[...m].map(([t,q])=>({t,q,v:q*volOf(t)}));const sum=rows.reduce((s,r)=>s+r.v,0);
+    h+=`<div class="tablewrap"><table><thead><tr><th colspan="3">${T('Eladásra: {0} → Jita',esc(locName(from)))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(NAMES[r.t]||r.t)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`).join('')}${shipAdvice(R,from+'|'+JITA_STATION,sum,Math.max(0,...rows.map(r=>volOf(r.t))))}</tbody></table></div>`}
   h+='</div>';if(tot)h+=`<p class="small muted" style="margin-top:6px">Odaszállítás összesen: <span class="mono">${fmt(tot)} m³</span></p>`;
   return h;
 }
@@ -2777,7 +2844,10 @@ function buildUnit(n,sys){ // gyártási egységár: részfa piaci áron + a cso
 function renderResult(el,R,rerun){
   assignChars(R.jobs);
   const free=$('#optStockFree').checked;const fee=salesTax()+brokerFee();
-  const rows=R.trees.map(x=>{const p=x.tree.t;const gross=x.made*(sell(p)||0);const jc=R.jobs.filter(j=>j.item===x.item).reduce((s,j)=>s+jobCost(j,R.sys),0);const mat=nodeCost(x.tree,free);const tm=R.jobs.filter(j=>j.item===x.item&&j.top).reduce((m,j)=>Math.max(m,jobTime(j)),0);return {x,p,net:gross*(1-fee),jc,mat,profit:gross*(1-fee)-jc-mat,tm}});
+  // ár nélküli tételek: ezekből a profit nem számolható (nem 0 költséggel számolunk)
+  const unkOf=(tree)=>{const u=new Set();const scan=n=>{if(n.buy>0&&!buyPrice(n.t))u.add(n.t);if(!free&&n.stock.some(x=>x.l!=='surplus'&&x.l!=='job'&&x.q>0)&&!unitPrice(n.t))u.add(n.t);n.ch.forEach(scan)};scan(tree);if(!sell(tree.t))u.add(tree.t);return u};
+  const unkAll=new Set();R.trees.forEach(x=>unkOf(x.tree).forEach(t=>unkAll.add(t)));
+  const rows=R.trees.map(x=>{const p=x.tree.t;const gross=x.made*(sell(p)||0);const jc=R.jobs.filter(j=>j.item===x.item).reduce((s,j)=>s+jobCost(j,R.sys),0);const mat=nodeCost(x.tree,free);const tm=R.jobs.filter(j=>j.item===x.item&&j.top).reduce((m,j)=>Math.max(m,jobTime(j)),0);return {x,p,net:gross*(1-fee),jc,mat,profit:gross*(1-fee)-jc-mat,tm,unk:unkOf(x.tree).size>0}});
   const buyCost=[...R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);
   const stockCost=free?0:[...R.usedList].reduce((s,[t,q])=>s+q*unitPrice(t),0);
   const jcT=R.jobs.reduce((s,j)=>s+jobCost(j,R.sys),0);
@@ -2789,12 +2859,13 @@ function renderResult(el,R,rerun){
     <div class="kpi"><div class="k">Saját készlet értéke</div><div class="v">${free?'ingyen':isk(stockCost)}</div></div>
     <div class="kpi"><div class="k">Job költség</div><div class="v">${isk(jcT)}</div></div>
     <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?(()=>{const g=R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0);const f2=m2Fee();return `<div class="small muted">${esc(m2Short())}: ${f2!=null?isk(g*(1-f2)):isk(g)+' '+T('(díjak nélkül)')}</div>`})():''}</div>
-    <div class="kpi"><div class="k">Profit</div><div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div></div>
-  </div>`;
-  h+=`<p class="small muted">${T('Gyártási rendszer: {0}',esc(NAMES[R.sys]||R.sys||T('ismeretlen')))}${ixm!=null?' · cost index '+fmt(ixm*100,2)+'%':''} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
+    <div class="kpi"><div class="k">Profit</div>${unkAll.size?`<div class="v">${T('nem számolható')}</div><div class="small muted">${T('becslés ár nélküli tételek nélkül: {0}',isk(profit))}</div>`:`<div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div>`}</div>
+  </div>${unkAll.size?`<div class="notice" style="margin:8px 0"><p class="small">${T('Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.',esc([...unkAll].map(t=>NAMES[t]||t).join(', ')))}</p></div>`:''}`;
+  const syss=[...new Set(R.jobs.map(j=>j.sys??R.sys).filter(Boolean))];
+  h+=`<p class="small muted">${syss.length>1?T('Gyártási rendszerek: {0}',syss.map(s=>esc(NAMES[s]||s)+((IDX.p[s]||{}).manufacturing!=null?' ('+fmt(IDX.p[s].manufacturing*100,2)+'%)':'')).join(', ')):T('Gyártási rendszer: {0}',esc(NAMES[syss[0]||R.sys]||syss[0]||R.sys||T('ismeretlen')))+(((IDX.p[syss[0]||R.sys]||{}).manufacturing)!=null?' · cost index '+fmt(IDX.p[syss[0]||R.sys].manufacturing*100,2)+'%':'')} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
   R.warn.forEach(w=>h+=`<div class="notice">${esc(warnText(w))}</div>`);
   // termékenként
-  h+=`<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi?'<th>Projekt</th>':''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On()?`<th class="num">${esc(m2Short())} sell / db</th>`:''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r=>`<tr>${multi?`<td>${esc(r.x.item.label||'')}</td>`:''}<td>${esc(NAMES[r.p]||r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On()?`<td class="num">${m2Cell(sell(r.p),sell2(r.p))}</td>`:''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.profit>=0?'pos':'neg'}">${isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
+  h+=`<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi?'<th>Projekt</th>':''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On()?`<th class="num">${esc(m2Short())} sell / db</th>`:''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r=>`<tr>${multi?`<td>${esc(r.x.item.label||'')}</td>`:''}<td>${esc(NAMES[r.p]||r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On()?`<td class="num">${m2Cell(sell(r.p),sell2(r.p))}</td>`:''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk?'':(r.profit>=0?'pos':'neg')}">${r.unk?'<span title="'+esc(T('Nincs ára valaminek ebben a tételben.'))+'">?</span>':isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
   if(multi)h+=`<p class="small muted" style="margin-top:4px">A tételenkénti anyagköltségben a másik tétel jobjából maradt felesleg ingyen számít, ezért a sorok összege kicsit eltérhet a fenti összesítéstől.</p>`;
   // bevásárlólista
   const bl=[...R.buyList].sort((a,b)=>b[1]*buyPrice(b[0])-a[1]*buyPrice(a[0]));const bm2=buyM2On();
@@ -2802,7 +2873,7 @@ function renderResult(el,R,rerun){
   ${bl.some(([t])=>!unitPrice(t))?'<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs Jita ára, ezért 0-val számít a költségekben.</p>':''}
   <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button></p></div>`;
   // jobok
-  h+=`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs.slice().reverse().map(j=>`<tr><td>${esc(NAMES[j.t]||j.t)}${j.act==='r'?' <span class="pill">reakció</span>':''}${j.act==='i'?` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance*100,1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>`:''}${j.act==='c'?' <span class="pill">copy</span>':''}${multi&&j.item&&j.item.label?`<div class="src">${esc(j.item.label)}</div>`:''}</td><td><b>${esc(charName(j.who??j.bp.cid))}</b> ${j.who!=null&&j.who!==j.bp.cid?`<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak',esc(charName(j.bp.cid)),esc(charName(j.who)))}</div>`:''}${j.miss.length?`<span class="pill bad">hiányzó skill</span><div class="src">${esc(j.miss.map(m=>(NAMES[m[0]]||m[0])+' '+m[2]+' → '+m[1]).join(', '))}</div>`:'<span class="pill ok">skill ok</span>'}</td><td class="small">${j.bp.virtual?T('inventált BPC'):(j.act==='i'?'T1 ':'')+(j.bp.r===-1?'BPO':'BPC')} ME${j.act==='m'?j.bp.me:(j.bp.virtual?j.bp.me:j.bp.me)} · ${esc(locName(j.bp.l))}${j.short?' <span class="pill bad">nincs elég run</span>':''}</td><td class="num">${j.act==='i'?fmt(Math.ceil(j.runs))+' kísérlet':fmt(j.runs)}</td><td class="num">${dur(jobTime(j))}</td><td class="num">${isk(jobCost(j,R.sys))}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+  h+=`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs.slice().reverse().map(j=>`<tr><td>${esc(NAMES[j.t]||j.t)}${j.act==='r'?' <span class="pill">reakció</span>':''}${j.act==='i'?` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance*100,1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>`:''}${j.act==='c'?' <span class="pill">copy</span>':''}${multi&&j.item&&j.item.label?`<div class="src">${esc(j.item.label)}</div>`:''}</td><td><b>${esc(charName(j.who??j.bp.cid))}</b> ${j.wait?`<span class="pill warn" title="${esc(T('Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.'))}">${T('nincs szabad slot')}</span> `:''}${j.who!=null&&j.who!==j.bp.cid?`<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak',esc(charName(j.bp.cid)),esc(charName(j.who)))}</div>`:''}${j.miss.length?`<span class="pill bad">hiányzó skill</span><div class="src">${esc(j.miss.map(m=>(NAMES[m[0]]||m[0])+' '+m[2]+' → '+m[1]).join(', '))}</div>`:'<span class="pill ok">skill ok</span>'}</td><td class="small">${j.bp.virtual?T('inventált BPC'):(j.act==='i'?'T1 ':'')+(j.bp.r===-1?'BPO':'BPC')} ME${j.act==='m'?j.bp.me:(j.bp.virtual?j.bp.me:j.bp.me)} · ${esc(locName(j.bp.l))}${j.short?' <span class="pill bad">nincs elég run</span>':''}</td><td class="num">${j.act==='i'?fmt(Math.ceil(j.runs))+' kísérlet':fmt(j.runs)}</td><td class="num">${dur(jobTime(j))}</td><td class="num">${isk(jobCost(j,R.sys))}</td></tr>`).join('')}</tbody></table></div></div></div>`;
   // karakterek
   const per=new Map();for(const j of R.jobs){const c=j.who??j.bp.cid;let x=per.get(c);if(!x){x={m:0,r:0,s:0,tm:0,tr:0,ts:0,miss:0,mx:0};per.set(c,x)}const jt=jobTime(j);x.mx=Math.max(x.mx,jt);const k=slotKey(j.act);x[k]++;x['t'+k]+=jt;if(j.miss.length)x.miss++}
   h+=`<h3>Karakterek terhelése</h3><p class="small muted">Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél a szabad slotok és a gyártási idő alapján a leghamarabb elkészül. Egyenlő esetben marad annál, akinél a BP most van, vagy akinél ugyanilyen BP is van.</p><div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Gyártó job</th><th class="num">Szabad gyártó slot</th><th class="num">Reakció job</th><th class="num">Szabad reakció slot</th><th class="num">Science job</th><th class="num">Szabad science slot</th><th class="num">Össz. idő</th><th class="num">Becsült átfutás</th><th>Megjegyzés</th></tr></thead><tbody>${[...per].map(([c,x])=>{const sl=slotsOf(c),bz=busyOf(c);const fm=Math.max(0,sl.m-bz.m),fr=Math.max(0,sl.r-bz.r),fs=Math.max(0,sl.s-bz.s);const wall=Math.max(x.mx,x.m?x.tm/Math.max(1,fm):0,x.r?x.tr/Math.max(1,fr):0,x.s?x.ts/Math.max(1,fs):0);const notes=[];if(x.miss)notes.push(T('{0} jobhoz egyik karakternek sincs meg a skill',x.miss));if(x.m>fm)notes.push(T('több gyártó job, mint szabad slot: sorban kell futtatni'));if(x.r>fr)notes.push(T('több reakció job, mint szabad slot'));if(x.s>fs)notes.push(T('több science job, mint szabad slot'));return `<tr><td><b>${esc(charName(c))}</b></td><td class="num">${x.m}</td><td class="num">${fm} / ${sl.m}</td><td class="num">${x.r}</td><td class="num">${fr} / ${sl.r}</td><td class="num">${x.s}</td><td class="num">${fs} / ${sl.s}</td><td class="num">${dur(x.tm+x.tr+x.ts)}</td><td class="num">${dur(wall)}</td><td class="small ${notes.length?'':'muted'}">${esc(notes.join('; ')||T('rendben'))}</td></tr>`}).join('')}</tbody></table></div>`;
@@ -2955,8 +3026,8 @@ async function runProfit(){
     const sysId=sysCache[x.best.l]!==undefined?sysCache[x.best.l]:(sysCache[x.best.l]=await sysFor(x.best));
     const made=x.R.trees[0].made;const price=sell(x.p);
     const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);
-    const noPrice=[...x.R.buyList].filter(([t])=>!unitPrice(t)).map(([t])=>t);
-    const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sysId),0);
+    const noPrice=[...x.R.buyList].filter(([t])=>!buyPrice(t)).map(([t])=>t);
+    await assignJobSys(x.R.jobs);const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sysId),0);
     const hours=x.R.jobs.reduce((s,j)=>s+jobTime(j),0)/3600;
     const net=price?made*price*(1-fee):0;const profit=net-mat-jc;
     const perUnit=made?profit/made:0;const perRun=profit/x.runs;
@@ -3015,8 +3086,8 @@ async function runInvention(){
   for(const x of calc){
     const sys=sysCache[x.copy.l]!==undefined?sysCache[x.copy.l]:(sysCache[x.copy.l]=await sysFor(x.copy));
     const tr=x.R.trees[0];const price=sell(tr.tree.t);
-    const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);const noPrice=[...x.R.buyList].filter(([t])=>!unitPrice(t)).map(([t])=>t);
-    const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sys),0);const net=price?tr.made*price*(1-fee):0;const profit=net-mat-jc;
+    const mat=[...x.R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);const noPrice=[...x.R.buyList].filter(([t])=>!buyPrice(t)).map(([t])=>t);
+    await assignJobSys(x.R.jobs);const jc=x.R.jobs.reduce((s,j)=>s+jobCost(j,sys),0);const net=price?tr.made*price*(1-fee):0;const profit=net-mat-jc;
     const invCost=nodeCost(tr.tree.ch.find(n=>n.inv)||{t:0,buy:0,stock:[],ch:[]},false)+x.R.jobs.filter(j=>j.act==='i'||j.act==='c').reduce((s,j)=>s+jobCost(j,sys),0);
     const row={t1:x.t,copy:x.copy,dec:x.dec,info:x.it.info,prod:tr.tree.t,t2:x.it.copies[0].t,made:tr.made,price,profit,perRun:profit/x.it.info.runsPer,margin:net?profit/net:null,invCost,noPrice,vol:(HIST[tr.tree.t]||{}).vol||0};
     const k=x.t+'_'+x.pi;if(!best.has(k))best.set(k,{none:null,best:null,all:[]});const b=best.get(k);b.all.push(row);if(x.dec==null)b.none=row;if(!b.best||row.profit>b.best.profit)b.best=row;
@@ -3453,10 +3524,26 @@ $('#expBtn').onclick=()=>{
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='indyops-backup-'+new Date().toISOString().slice(0,10)+(withTok?'-with-logins':'')+'.json';
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);status('mentés letöltve');
 };
+// mentés ellenőrzése: típusok és kötelező mezők; ismeretlen mezőket eldob, a hibás projekteket nem veszi át
+function validateBackup(d){const err=[];const num=x=>typeof x==='number'&&isFinite(x);const out={app:d.app,at:d.at,withTokens:!!d.withTokens};
+  if(d.settings!=null&&(typeof d.settings!=='object'||Array.isArray(d.settings)))err.push(T('a beállítások nem objektum'));
+  out.settings=d.settings&&typeof d.settings==='object'&&!Array.isArray(d.settings)?d.settings:{};
+  if(d.projects!=null&&!Array.isArray(d.projects))err.push(T('a projektek nem lista'));
+  out.projects=[];for(const [i,p] of (Array.isArray(d.projects)?d.projects:[]).entries()){
+    if(!p||typeof p!=='object'||!num(p.id)||typeof p.name!=='string'||!Array.isArray(p.items)){err.push(T('{0}. projekt hibás',i+1));continue}
+    const items=p.items.filter(it=>it&&typeof it==='object'&&num(it.runs)&&it.runs>0&&(num(it.bpType)||num(it.invT1)));
+    if(items.length!==p.items.length)err.push(T('„{0}” projekt: {1} hibás tétel',p.name,p.items.length-items.length));
+    const src=p.src&&typeof p.src==='object'&&(p.src.mode==='all'||p.src.mode==='sel')?{mode:p.src.mode,locs:(p.src.locs||[]).filter(num),conts:(p.src.conts||[]).filter(num),excl:(p.src.excl||[]).filter(num)}:undefined;
+    out.projects.push(Object.assign({},p,{items,src,active:p.active!==false}))}
+  out.selp=num(d.selp)?d.selp:null;
+  out.chars=Array.isArray(d.chars)?d.chars.filter(c=>c&&num(c.id)&&typeof c.name==='string'):[];
+  if(Array.isArray(d.chars)&&out.chars.length!==d.chars.length)err.push(T('hibás karakter-bejegyzés'));
+  return {err,d:out}}
 $('#impFile').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;const rd=new FileReader();
   rd.onload=()=>{let d;try{d=JSON.parse(rd.result)}catch(x){alertBox('Ez nem egy IndyOps mentésfájl (nem olvasható JSON).');return}
     if(!d||(d.app!=='indyops'&&d.app!=='gyartopult')){alertBox('Ez nem egy IndyOps mentésfájl.');return}
+    const v=validateBackup(d);if(v.err.length){alertBox(T('A mentésfájl hibás, nem töltöttem vissza: {0}',v.err.slice(0,5).join('; ')));e.target.value='';return}d=v.d;
     const box=$('#impConfirm');box.hidden=false;
     box.innerHTML=`<p>Mentés dátuma: <b>${esc(new Date(d.at).toLocaleString(LOC()))}</b> · ${(d.projects||[]).length} projekt · ${(d.chars||[]).length} karakter${d.withTokens?' (bejelentkezésekkel)':' (bejelentkezések nélkül)'}.</p><p>A visszatöltés felülírja a mostani beállításokat és projekteket.${d.withTokens?' A karakterek bejelentkezései is visszaállnak.':' A karaktereket utána újra be kell jelentkeztetni, ha ebben a böngészőben még nincsenek.'}</p><div class="row"><button class="btn primary" id="impYes">Visszatöltés</button><button class="btn" id="impNo">Mégse</button></div>`;
     $('#impNo').onclick=()=>{box.hidden=true;e.target.value=''};

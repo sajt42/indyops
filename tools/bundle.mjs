@@ -16,6 +16,9 @@ html = html.replace(/<link rel="stylesheet" href="(css\/[^"?]+)(?:\?[^"]*)?">/g,
 html = html.replace(/<script src="((?:js|i18n)\/[^"?]+)(?:\?[^"]*)?"><\/script>/g, (_, src) =>
   `<script>\n/* ${src} */\n${read(src).replace(/<\/script/gi, '<\\/script')}</script>`);
 
+// the offline file has its scripts inline, so its CSP must allow inline scripts (still only the listed hosts can be contacted)
+html = html.replace("script-src 'self';", "script-src 'unsafe-inline';");
+
 mkdirSync(join(root, 'dist'), { recursive: true });
 writeFileSync(join(root, 'dist', 'indyops.html'), html);
 console.log(`dist/indyops.html written (${(html.length / 1024).toFixed(0)} KB)`);

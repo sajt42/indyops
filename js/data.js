@@ -71,6 +71,8 @@ function buyAt(t){const j=unitPrice(t),m=sell2(t);return buyM2On()&&m&&(!j||m<j)
 function buyPrice(t){return buyAt(t)===JITA_STATION?unitPrice(t):sell2(t)}
 
 /* ============ árak ============ */
+// sikertelen árletöltés: a korábbi jó ár megmarad (hibajelzéssel), és 5 perc múlva újrapróbálja; ha nem volt ár, „nincs ár” marad, nem 0
+function priceFail(old,now){const retry=now-25*60000;return old&&(old.s||old.b)?Object.assign({},old,{at:Math.min(old.at,retry),err:now}):{s:null,b:null,at:retry,err:now}}
 async function ensurePrices(typeIds){
   const now=Date.now();const m2=m2On()?Number(S.market2):null;const isStr=m2&&m2>1e12;const reg2=m2&&!isStr?await regionOf(m2):null;PRICES.p2=PRICES.p2||{};
   const stale=(x,loc)=>!x||now-x.at>30*60000||(loc!=null&&x.loc!==loc);
@@ -82,10 +84,10 @@ async function ensurePrices(typeIds){
   await Promise.all(need.map(async t=>{
     try{const o=await esi('/markets/'+JITA_REGION+'/orders/?type_id='+t+'&order_type=all',{paged:true});
       PRICES.p[t]=best(o,JITA_STATION);if(m2&&reg2===JITA_REGION)PRICES.p2[t]=best(o,m2);
-    }catch(e){PRICES.p[t]={s:null,b:null,at:now};log('Ár hiba '+t)}
+    }catch(e){PRICES.p[t]=priceFail(PRICES.p[t],now);log('Ár hiba '+t)}
   }).concat(need2.map(async t=>{
     try{const o=await esi('/markets/'+reg2+'/orders/?type_id='+t+'&order_type=all',{paged:true});PRICES.p2[t]=best(o,m2)}
-    catch(e){PRICES.p2[t]={s:null,b:null,at:now,loc:m2};log('Ár hiba ('+m2Short()+') '+t)}
+    catch(e){PRICES.p2[t]=Object.assign(priceFail(PRICES.p2[t]&&PRICES.p2[t].loc===m2?PRICES.p2[t]:null,now),{loc:m2});log('Ár hiba ('+m2Short()+') '+t)}
   })));
   store('prices',PRICES);
   try{await ensureOwners([JITA_STATION,m2])}catch(e){}

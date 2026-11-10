@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -20,7 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.11.0">
+<link rel="stylesheet" href="css/style.css?v=1.12.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -431,6 +432,7 @@
   <h3>Gyakori kérdések</h3>
   <dl class="helpdl">
     <dt>„Ismeretlen hely” látszik egy citadella helyett.</dt><dd>A struktúra nevét csak akkor adja ki az ESI, ha a karakterednek van dokkolási joga. Ha a struktúra megszűnt, a tárgyak asset safetyben lehetnek. Az IndyOps megpróbálja a nevet az EVE Ref nyilvános struktúralistájából kideríteni; ha ott sincs, a Beállítások „Ismeretlen helyek” kártyáján elnevezheted.</dd>
+    <dt>A profitnál „nem számolható” áll.</dt><dd>Valamelyik anyagnak vagy a terméknek nincs piaci ára (vagy épp nem sikerült letölteni). Ilyenkor nem számolunk 0 költséggel, hanem kiírjuk, melyik tétel hiányzik, és mellé egy becslést nélküle. Hálózati hibánál a korábbi jó ár megmarad, és pár perc múlva újrapróbálja.</dd>
     <dt>A BPC-n más run látszik, mint a játékban.</dt><dd>Az ESI a BPC runjait csak a job leadásakor csökkenti, és a blueprint-listát akár egy óráig tárolja. Az IndyOps ezért levonja azoknak a joboknak a runjait, amelyekről az ESI még nem tud, és csillaggal (*) jelzi; az ESI frissülése után a csillag eltűnik. A Blueprintek fül alján látod, mikori az ESI-adat.</dd>
     <dt>Az oldal tetején egy sáv adatfrissítést kér.</dt><dd>Egy új verzió új adatot olvas az ESI-ből. Nyomd meg a sávban a „Minden adat frissítése” gombot; a „Mi változott?” link a változásokat mutatja.</dd>
     <dt>Bejelentkeztem, de nincs adat.</dt><dd>Nyomd meg a „Minden adat frissítése” gombot. Ha egy karakterkártya új engedélyt kér, jelentkezz be újra azzal a karakterrel.</dd>
@@ -494,6 +496,7 @@
   <h3>FAQ</h3>
   <dl class="helpdl">
     <dt>I see "Unknown location" instead of a citadel.</dt><dd>ESI only returns a structure's name if your character has docking access. If the structure is gone, your items may be in asset safety. IndyOps tries to find the name in EVE Ref's public structure list; if it isn't there either, you can name it on the “Unknown locations” card in Settings.</dd>
+    <dt>Profit says “can't be calculated”.</dt><dd>A material or the product has no market price (or it couldn't be downloaded). Instead of counting it as free, IndyOps lists what's missing and shows an estimate without it. After a network error the last good price is kept and retried in a few minutes.</dd>
     <dt>A BPC shows different runs than the game.</dt><dd>ESI only lowers a BPC's runs when the job is delivered, and caches the blueprint list for up to an hour. IndyOps therefore subtracts the runs of jobs ESI doesn't know about yet and marks them with an asterisk (*); it disappears once ESI updates. The bottom of the Blueprints tab shows how old ESI's data is.</dd>
     <dt>A banner at the top asks me to refresh data.</dt><dd>A new version reads new data from ESI. Press “Refresh all data” in the banner; the “What changed?” link shows the changes.</dd>
     <dt>I logged in but there is no data.</dt><dd>Press "Refresh all data". If a character card asks for a new permission, log in again with that character.</dd>
@@ -557,6 +560,7 @@
   <h3>Häufige Fragen</h3>
   <dl class="helpdl">
     <dt>Statt einer Citadel steht „Unbekannter Ort“ da.</dt><dd>ESI liefert den Namen einer Struktur nur, wenn dein Charakter Andockrechte hat. Wenn die Struktur weg ist, liegen deine Sachen eventuell in Asset Safety. IndyOps versucht, den Namen in der öffentlichen Strukturliste von EVE Ref zu finden; steht er dort auch nicht, kannst du ihn auf der Karte „Unbekannte Orte“ in den Einstellungen benennen.</dd>
+    <dt>Beim Gewinn steht „nicht berechenbar“.</dt><dd>Ein Material oder das Produkt hat keinen Marktpreis (oder er konnte nicht geladen werden). Statt es als kostenlos zu zählen, listet IndyOps auf, was fehlt, und zeigt eine Schätzung ohne es. Nach einem Netzwerkfehler bleibt der letzte gute Preis erhalten und wird in ein paar Minuten erneut versucht.</dd>
     <dt>Eine BPC zeigt andere Runs als das Spiel.</dt><dd>ESI senkt die Runs einer BPC erst bei der Auslieferung des Jobs und speichert die Blueprint-Liste bis zu einer Stunde. IndyOps zieht daher die Runs von Jobs ab, die ESI noch nicht kennt, und markiert sie mit einem Sternchen (*); es verschwindet nach der ESI-Aktualisierung. Unten im Blueprints-Tab steht, wie alt die ESI-Daten sind.</dd>
     <dt>Oben bittet ein Balken um eine Datenaktualisierung.</dt><dd>Eine neue Version liest neue Daten aus ESI. Drücke im Balken „Alle Daten aktualisieren“; der Link „Was ist neu?“ zeigt die Änderungen.</dd>
     <dt>Ich bin angemeldet, sehe aber keine Daten.</dt><dd>Drücke „Alle Daten aktualisieren“. Wenn eine Charakterkarte eine neue Berechtigung verlangt, melde dich mit diesem Charakter erneut an.</dd>
@@ -582,15 +586,15 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.11.0"></script>
-<script src="i18n/de.js?v=1.11.0"></script>
-<script src="js/core.js?v=1.11.0"></script>
-<script src="js/esi.js?v=1.11.0"></script>
-<script src="js/data.js?v=1.11.0"></script>
-<script src="js/engine.js?v=1.11.0"></script>
-<script src="js/views.js?v=1.11.0"></script>
-<script src="js/tabs.js?v=1.11.0"></script>
-<script src="js/repro.js?v=1.11.0"></script>
-<script src="js/main.js?v=1.11.0"></script>
+<script src="i18n/en.js?v=1.12.0"></script>
+<script src="i18n/de.js?v=1.12.0"></script>
+<script src="js/core.js?v=1.12.0"></script>
+<script src="js/esi.js?v=1.12.0"></script>
+<script src="js/data.js?v=1.12.0"></script>
+<script src="js/engine.js?v=1.12.0"></script>
+<script src="js/views.js?v=1.12.0"></script>
+<script src="js/tabs.js?v=1.12.0"></script>
+<script src="js/repro.js?v=1.12.0"></script>
+<script src="js/main.js?v=1.12.0"></script>
 </body>
 </html>

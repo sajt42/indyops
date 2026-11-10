@@ -50,11 +50,15 @@ async function handleRedirect(){ // weben a CCP ide irányít vissza ?code=…&s
   if(!code)return;try{history.replaceState(null,'',APP.home)}catch(e){}
   await completeLogin(code,state);
 }
+// karakterenként egyszerre csak egy tokenfrissítés fut; a párhuzamos kérések ugyanarra várnak
+const TOKREF=new Map();
 async function accessToken(c){
   if(c.access&&c.exp>Date.now()+60000) return c.access;
-  const j=await tokenCall({grant_type:'refresh_token',refresh_token:c.refresh,client_id:c.cid||clientId()});
-  c.access=j.access_token;c.exp=Date.now()+j.expires_in*1000;c.scp=scpOf(j.access_token);if(j.refresh_token)c.refresh=j.refresh_token;
-  store('chars',CHARS);return c.access;
+  if(TOKREF.has(c.id))return TOKREF.get(c.id);
+  const p=(async()=>{const j=await tokenCall({grant_type:'refresh_token',refresh_token:c.refresh,client_id:c.cid||clientId()});
+    c.access=j.access_token;c.exp=Date.now()+j.expires_in*1000;c.scp=scpOf(j.access_token);if(j.refresh_token)c.refresh=j.refresh_token;
+    store('chars',CHARS);return c.access})();
+  TOKREF.set(c.id,p);try{return await p}finally{TOKREF.delete(c.id)}
 }
 
 /* ============ hálózat ============ */
@@ -70,7 +74,11 @@ async function esi(path,{char,method='GET',body,paged=false,meta=false}={}){
     const h={'Accept':'application/json'};if(body)h['Content-Type']='application/json';
     if(char)h.Authorization='Bearer '+await accessToken(char);
     for(let attempt=0;attempt<3;attempt++){
-      const r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined});
+      // időkorlát: egy beragadt kérés ne foglalja örökre a helyet; időtúllépésnél és hálózati hibánál újrapróbálja
+      let r;const ac=new AbortController();const to=setTimeout(()=>ac.abort(),30000);
+      try{r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined,signal:ac.signal})}
+      catch(e){clearTimeout(to);const msg=e.name==='AbortError'?'időtúllépés (30 s)':'hálózati hiba';if(attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}const er=new Error('ESI '+msg+' '+path);er.status=0;throw er}
+      clearTimeout(to);
       const rem=r.headers.get('x-esi-error-limit-remain'); if(rem!=null&&Number(rem)<20){log('ESI hibakeret alacsony ('+rem+'), várakozás…');await new Promise(z=>setTimeout(z,5000))}
       if(r.ok) return {data:await r.json(),pages:Number(r.headers.get('x-pages')||1),lm:Date.parse(r.headers.get('last-modified')||'')||null,exp:Date.parse(r.headers.get('expires')||'')||null};
       if(r.status>=500&&attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}

@@ -98,7 +98,7 @@ async function finishResult(R,firstBP){
   await resolveNames([...types]);await ensurePrices([...types]);
   await Promise.all([...types].map(t=>refGet('t',t).catch(()=>null)));
   await resolveNames(R.jobs.flatMap(j=>j.miss.map(m=>m[0])));
-  R.sys=firstBP?await sysFor(firstBP):null;
+  R.sys=firstBP?await sysFor(firstBP):null;await assignJobSys(R.jobs);await resolveNames([...new Set(R.jobs.map(j=>j.sys).filter(Boolean))]);
   try{await prepHaul(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
   return R;
 }
@@ -120,7 +120,7 @@ async function runPlan(){
 }
 function assignChars(jobs){ // ki csinálja: skill + idő + szabad slot alapján, LPT elosztás
   const cs=workChars();if(!cs.length)return;
-  const load={};cs.forEach(c=>load[c]={m:0,r:0,s:0});
+  const load={},cnt={};cs.forEach(c=>{load[c]={m:0,r:0,s:0};cnt[c]={m:0,r:0,s:0}});
   const free=(c,k)=>{const sl=slotsOf(c),bz=busyOf(c);return Math.max(1,sl[k]-bz[k])};
   const tFor=(j,c)=>{const o=j.who;j.who=c;const t=jobTime(j);j.who=o;return t};
   jobs.forEach(j=>{if(j.bp0)j.bp=j.bp0;else j.bp0=j.bp;j.who=null});
@@ -134,6 +134,8 @@ function assignChars(jobs){ // ki csinálja: skill + idő + szabad slot alapján
     const mine=own(best);if(mine&&mine!==j.bp&&!j.bp.virtual)j.bp=Object.assign({},mine);
     if(j.bp.virtual)j.bp=Object.assign({},j.bp,{cid:best});
     j.who=best;j.miss=missingSkills(best,rec);j.noone=noone;load[best][k]+=tFor(j,best);
+    // ha több jobot kap, mint ahány szabad slotja van, a többi egy futó job végére vár (ez becslés, nem ütemező)
+    cnt[best][k]++;const realFree=slotsOf(best)[k]-busyOf(best)[k];j.wait=cnt[best][k]>Math.max(0,realFree);
   }
 }
 function nodeCost(n,free){ // egy fa anyagköltsége: vásárlás + saját készlet
@@ -152,12 +154,13 @@ function haulList(R){ // mit honnan hova kell vinni
       walk(c)}};
   R.trees.forEach(x=>walk(x.tree));
   // érc forrás: mennyiség a pool bejegyzésből nem visszakövethető pontosan -> külön jelöljük
-  const sale=new Map();R.trees.forEach(x=>{const from=prodLocOf(x.tree);if(from!=null&&from!==JITA_STATION)sale.set(x.tree.t,(sale.get(x.tree.t)||0)+x.made)});
-  return {moves,sale,oreRoutes,from:R.trees[0]?prodLocOf(R.trees[0].tree):null};
+  // eladásra Jitába: indulási hely szerint csoportosítva (from -> típus -> db)
+  const sale=new Map();R.trees.forEach(x=>{const from=prodLocOf(x.tree);if(from==null||from===JITA_STATION)return;if(!sale.has(from))sale.set(from,new Map());const m=sale.get(from);m.set(x.tree.t,(m.get(x.tree.t)||0)+x.made)});
+  return {moves,sale,oreRoutes};
 }
 const volOf=t=>(REFC.t[t]&&REFC.t[t].vol)||0;
 /* ---- hajók és útvonalak a szállításhoz ---- */
-let SHIPC=load('shipc',{}),ROUTES=load('routes',{});
+let SHIPC=load('shipc',{}),ROUTES=load('routes2',{}); // {n: ugrás, hs: végig highsec-e (null: nem tudni), min: legalacsonyabb sec}
 async function getShipType(t){
   if(SHIPC[t]!==undefined)return SHIPC[t];
   const j=await limit(async()=>{const r=await fetch(REF+'/types/'+t);return r.ok?r.json():null});
@@ -182,35 +185,43 @@ async function ownShips(){ // a karakterek hangárjában lévő összerakott haj
 const JUMP_SEC={513:120,902:120,941:110,28:75,380:75,1202:45,463:60,543:70};
 function sysOfLoc(l){if(l===JITA_STATION)return 30000142;return LOCINFO[l]&&LOCINFO[l].system}
 async function ensureRoute(a,b){
-  if(a==null||b==null)return null;if(a===b)return 0;const k=a+'|'+b;if(ROUTES[k]!==undefined)return ROUTES[k];
-  let n=null;try{const r=await esi('/route/'+a+'/'+b+'/?flag=secure');n=r.length-1}catch(e){try{const r=await esi('/route/'+a+'/'+b+'/');n=r.length-1}catch(e2){n=null}}
-  ROUTES[k]=n;store('routes',ROUTES);return n;
+  if(a==null||b==null)return null;if(a===b)return {n:0,hs:SYSSEC[a]!=null?SYSSEC[a]>=0.45:null,min:SYSSEC[a]??null};const k=a+'|'+b;if(ROUTES[k]!==undefined)return ROUTES[k];
+  let r=null;try{r=await esi('/route/'+a+'/'+b+'/?flag=secure')}catch(e){}
+  if(!r){try{r=await esi('/route/'+a+'/'+b+'/')}catch(e){}}
+  let res=null;
+  if(Array.isArray(r)&&r.length){ // a biztonságot rendszerenként ellenőrizzük, nem a kérés módjából találgatjuk
+    const need=r.filter(id=>SYSSEC[id]==null);await Promise.all(need.map(async id=>{try{SYSSEC[id]=(await esi('/universe/systems/'+id+'/')).security_status}catch(e){}}));store('syssec',SYSSEC);
+    const known=r.every(id=>SYSSEC[id]!=null);const min=known?Math.min(...r.map(id=>SYSSEC[id])):null;
+    res={n:r.length-1,hs:known?min>=0.45:null,min};
+  }
+  ROUTES[k]=res;store('routes2',ROUTES);return res;
 }
 async function prepHaul(R){
   const H=haulList(R);const pairs=[];
   for(const k of H.moves.keys()){const [f,t]=k.split('|').map(Number);pairs.push([f,t])}
-  if(H.sale.size&&H.from!=null)pairs.push([H.from,JITA_STATION]);
+  for(const f of H.sale.keys())pairs.push([f,JITA_STATION]);
   for(const [f,t] of pairs){for(const l of [f,t])if(l!==JITA_STATION&&!LOCINFO[l])await resolveLoc(l)}
   const jumps={};for(const [f,t] of pairs)jumps[f+'|'+t]=await ensureRoute(sysOfLoc(f),sysOfLoc(t));
   R.haulCtx={jumps,ships:await ownShips()};
 }
 function shipAdvice(R,key,vol,maxUnit){
-  const ctx=R.haulCtx;if(!ctx||!vol)return '';const j=ctx.jumps[key];
+  const ctx=R.haulCtx;if(!ctx||!vol)return '';const rt=ctx.jumps[key];const j=rt?rt.n:null;
+  const safety=rt==null?'':rt.hs===true?T('highsec útvonal'):rt.hs===false?'⚠ '+T('az útvonal low- vagy nullsecen visz át (legalacsonyabb sec: {0})',fmt(rt.min,1)):T('az útvonal biztonsága nem ismert');
   const flyable=ctx.ships.filter(x=>x.canFly);const ships=flyable.filter(x=>x.cap>=(maxUnit||0));
-  if(!flyable.length)return `<tr><td colspan="3" class="small muted">${j!=null?j+' ugrás (highsec). ':''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</td></tr>`;
-  if(!ships.length)return `<tr><td colspan="3" class="small muted">${j!=null?j+' ugrás (highsec). ':''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</td></tr>`;
+  if(!flyable.length)return `<tr><td colspan="3" class="small muted">${j!=null?T('{0} ugrás',j)+' ('+safety+'). ':''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</td></tr>`;
+  if(!ships.length)return `<tr><td colspan="3" class="small muted">${j!=null?T('{0} ugrás',j)+' ('+safety+'). ':''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</td></tr>`;
   const opts=ships.map(x=>{const trips=Math.ceil(vol/x.cap);const per=JUMP_SEC[x.g]||60;const time=j==null?null:(j===0?trips*300:(2*trips-1)*j*per);return Object.assign({trips,time},x)});
   opts.sort((a,b)=>(a.time??a.trips*1e6)-(b.time??b.trips*1e6)||a.trips-b.trips);
   const seen=new Set();const best=opts.filter(o=>{const k=o.t+'|'+o.cid;if(seen.has(k))return false;seen.add(k);return true}).slice(0,3);
-  return `<tr><td colspan="3" class="small">${j==null?T('Útvonal nem ismert.')+' ':(j===0?T('Ugyanabban a rendszerben.')+' ':T('<b>{0} ugrás</b> (highsec útvonal).',j)+' ')}${best.map((o,i)=>`${i?'<br>':''}${esc(o.n)} <span class="muted">(${esc(charName(o.cid))}, ${esc(locName(o.l))}, ${T('raktér {0} m³',fmt(o.cap))})</span>: <b>${T('{0} forduló',o.trips)}</b>${o.time!=null?' · '+T('kb. {0}',dur(o.time)):''}`).join('')}</td></tr>`;
+  return `<tr><td colspan="3" class="small">${j==null?T('Útvonal nem ismert.')+' ':(j===0?T('Ugyanabban a rendszerben.')+' ':`<b>${T('{0} ugrás',j)}</b> (${rt.hs===false?'<span class="neg">'+safety+'</span>':safety}). `)}${best.map((o,i)=>`${i?'<br>':''}${esc(o.n)} <span class="muted">(${esc(charName(o.cid))}, ${esc(locName(o.l))}, ${T('raktér {0} m³',fmt(o.cap))})</span>: <b>${T('{0} forduló',o.trips)}</b>${o.time!=null?' · '+T('kb. {0}',dur(o.time)):''}`).join('')}</td></tr>`;
 }
 function renderHaul(R){
   const H=haulList(R);if(!H.moves.size&&!H.sale.size)return '<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>';
   let tot=0;let h='<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="grid2">';
   for(const [k,m] of H.moves){const [from,to]=k.split('|').map(Number);const rows=[...m].map(([t,q])=>({t,q,v:q*volOf(t)}));const sum=rows.reduce((s,r)=>s+(r.v||0),0);tot+=sum;
     h+=`<div class="tablewrap"><table><thead><tr><th colspan="3">${esc(from===JITA_STATION?T('Jita (vásárlás)'):locName(from))} → ${esc(locName(to))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.sort((a,b)=>(b.v||0)-(a.v||0)).map(r=>`<tr><td>${esc(NAMES[r.t]||r.t)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`).join('')}${H.oreRoutes.has(k)?'<tr><td colspan="3" class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</td></tr>':''}${shipAdvice(R,k,sum,Math.max(0,...rows.map(r=>volOf(r.t))))}</tbody></table></div>`}
-  if(H.sale.size){const rows=[...H.sale].map(([t,q])=>({t,q,v:q*volOf(t)}));const sum=rows.reduce((s,r)=>s+r.v,0);
-    h+=`<div class="tablewrap"><table><thead><tr><th colspan="3">${T('Eladásra: {0} → Jita',esc(locName(H.from)))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(NAMES[r.t]||r.t)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`).join('')}${shipAdvice(R,H.from+'|'+JITA_STATION,sum,Math.max(0,...rows.map(r=>volOf(r.t))))}</tbody></table></div>`}
+  for(const [from,m] of H.sale){const rows=[...m].map(([t,q])=>({t,q,v:q*volOf(t)}));const sum=rows.reduce((s,r)=>s+r.v,0);
+    h+=`<div class="tablewrap"><table><thead><tr><th colspan="3">${T('Eladásra: {0} → Jita',esc(locName(from)))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(NAMES[r.t]||r.t)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`).join('')}${shipAdvice(R,from+'|'+JITA_STATION,sum,Math.max(0,...rows.map(r=>volOf(r.t))))}</tbody></table></div>`}
   h+='</div>';if(tot)h+=`<p class="small muted" style="margin-top:6px">Odaszállítás összesen: <span class="mono">${fmt(tot)} m³</span></p>`;
   return h;
 }
@@ -222,7 +233,10 @@ function buildUnit(n,sys){ // gyártási egységár: részfa piaci áron + a cso
 function renderResult(el,R,rerun){
   assignChars(R.jobs);
   const free=$('#optStockFree').checked;const fee=salesTax()+brokerFee();
-  const rows=R.trees.map(x=>{const p=x.tree.t;const gross=x.made*(sell(p)||0);const jc=R.jobs.filter(j=>j.item===x.item).reduce((s,j)=>s+jobCost(j,R.sys),0);const mat=nodeCost(x.tree,free);const tm=R.jobs.filter(j=>j.item===x.item&&j.top).reduce((m,j)=>Math.max(m,jobTime(j)),0);return {x,p,net:gross*(1-fee),jc,mat,profit:gross*(1-fee)-jc-mat,tm}});
+  // ár nélküli tételek: ezekből a profit nem számolható (nem 0 költséggel számolunk)
+  const unkOf=(tree)=>{const u=new Set();const scan=n=>{if(n.buy>0&&!buyPrice(n.t))u.add(n.t);if(!free&&n.stock.some(x=>x.l!=='surplus'&&x.l!=='job'&&x.q>0)&&!unitPrice(n.t))u.add(n.t);n.ch.forEach(scan)};scan(tree);if(!sell(tree.t))u.add(tree.t);return u};
+  const unkAll=new Set();R.trees.forEach(x=>unkOf(x.tree).forEach(t=>unkAll.add(t)));
+  const rows=R.trees.map(x=>{const p=x.tree.t;const gross=x.made*(sell(p)||0);const jc=R.jobs.filter(j=>j.item===x.item).reduce((s,j)=>s+jobCost(j,R.sys),0);const mat=nodeCost(x.tree,free);const tm=R.jobs.filter(j=>j.item===x.item&&j.top).reduce((m,j)=>Math.max(m,jobTime(j)),0);return {x,p,net:gross*(1-fee),jc,mat,profit:gross*(1-fee)-jc-mat,tm,unk:unkOf(x.tree).size>0}});
   const buyCost=[...R.buyList].reduce((s,[t,q])=>s+q*buyPrice(t),0);
   const stockCost=free?0:[...R.usedList].reduce((s,[t,q])=>s+q*unitPrice(t),0);
   const jcT=R.jobs.reduce((s,j)=>s+jobCost(j,R.sys),0);
@@ -234,12 +248,13 @@ function renderResult(el,R,rerun){
     <div class="kpi"><div class="k">Saját készlet értéke</div><div class="v">${free?'ingyen':isk(stockCost)}</div></div>
     <div class="kpi"><div class="k">Job költség</div><div class="v">${isk(jcT)}</div></div>
     <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?(()=>{const g=R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0);const f2=m2Fee();return `<div class="small muted">${esc(m2Short())}: ${f2!=null?isk(g*(1-f2)):isk(g)+' '+T('(díjak nélkül)')}</div>`})():''}</div>
-    <div class="kpi"><div class="k">Profit</div><div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div></div>
-  </div>`;
-  h+=`<p class="small muted">${T('Gyártási rendszer: {0}',esc(NAMES[R.sys]||R.sys||T('ismeretlen')))}${ixm!=null?' · cost index '+fmt(ixm*100,2)+'%':''} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
+    <div class="kpi"><div class="k">Profit</div>${unkAll.size?`<div class="v">${T('nem számolható')}</div><div class="small muted">${T('becslés ár nélküli tételek nélkül: {0}',isk(profit))}</div>`:`<div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div>`}</div>
+  </div>${unkAll.size?`<div class="notice" style="margin:8px 0"><p class="small">${T('Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.',esc([...unkAll].map(t=>NAMES[t]||t).join(', ')))}</p></div>`:''}`;
+  const syss=[...new Set(R.jobs.map(j=>j.sys??R.sys).filter(Boolean))];
+  h+=`<p class="small muted">${syss.length>1?T('Gyártási rendszerek: {0}',syss.map(s=>esc(NAMES[s]||s)+((IDX.p[s]||{}).manufacturing!=null?' ('+fmt(IDX.p[s].manufacturing*100,2)+'%)':'')).join(', ')):T('Gyártási rendszer: {0}',esc(NAMES[syss[0]||R.sys]||syss[0]||R.sys||T('ismeretlen')))+(((IDX.p[syss[0]||R.sys]||{}).manufacturing)!=null?' · cost index '+fmt(IDX.p[syss[0]||R.sys].manufacturing*100,2)+'%':'')} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
   R.warn.forEach(w=>h+=`<div class="notice">${esc(warnText(w))}</div>`);
   // termékenként
-  h+=`<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi?'<th>Projekt</th>':''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On()?`<th class="num">${esc(m2Short())} sell / db</th>`:''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r=>`<tr>${multi?`<td>${esc(r.x.item.label||'')}</td>`:''}<td>${esc(NAMES[r.p]||r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On()?`<td class="num">${m2Cell(sell(r.p),sell2(r.p))}</td>`:''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.profit>=0?'pos':'neg'}">${isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
+  h+=`<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi?'<th>Projekt</th>':''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On()?`<th class="num">${esc(m2Short())} sell / db</th>`:''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r=>`<tr>${multi?`<td>${esc(r.x.item.label||'')}</td>`:''}<td>${esc(NAMES[r.p]||r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On()?`<td class="num">${m2Cell(sell(r.p),sell2(r.p))}</td>`:''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk?'':(r.profit>=0?'pos':'neg')}">${r.unk?'<span title="'+esc(T('Nincs ára valaminek ebben a tételben.'))+'">?</span>':isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
   if(multi)h+=`<p class="small muted" style="margin-top:4px">A tételenkénti anyagköltségben a másik tétel jobjából maradt felesleg ingyen számít, ezért a sorok összege kicsit eltérhet a fenti összesítéstől.</p>`;
   // bevásárlólista
   const bl=[...R.buyList].sort((a,b)=>b[1]*buyPrice(b[0])-a[1]*buyPrice(a[0]));const bm2=buyM2On();
@@ -247,7 +262,7 @@ function renderResult(el,R,rerun){
   ${bl.some(([t])=>!unitPrice(t))?'<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs Jita ára, ezért 0-val számít a költségekben.</p>':''}
   <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button></p></div>`;
   // jobok
-  h+=`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs.slice().reverse().map(j=>`<tr><td>${esc(NAMES[j.t]||j.t)}${j.act==='r'?' <span class="pill">reakció</span>':''}${j.act==='i'?` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance*100,1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>`:''}${j.act==='c'?' <span class="pill">copy</span>':''}${multi&&j.item&&j.item.label?`<div class="src">${esc(j.item.label)}</div>`:''}</td><td><b>${esc(charName(j.who??j.bp.cid))}</b> ${j.who!=null&&j.who!==j.bp.cid?`<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak',esc(charName(j.bp.cid)),esc(charName(j.who)))}</div>`:''}${j.miss.length?`<span class="pill bad">hiányzó skill</span><div class="src">${esc(j.miss.map(m=>(NAMES[m[0]]||m[0])+' '+m[2]+' → '+m[1]).join(', '))}</div>`:'<span class="pill ok">skill ok</span>'}</td><td class="small">${j.bp.virtual?T('inventált BPC'):(j.act==='i'?'T1 ':'')+(j.bp.r===-1?'BPO':'BPC')} ME${j.act==='m'?j.bp.me:(j.bp.virtual?j.bp.me:j.bp.me)} · ${esc(locName(j.bp.l))}${j.short?' <span class="pill bad">nincs elég run</span>':''}</td><td class="num">${j.act==='i'?fmt(Math.ceil(j.runs))+' kísérlet':fmt(j.runs)}</td><td class="num">${dur(jobTime(j))}</td><td class="num">${isk(jobCost(j,R.sys))}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+  h+=`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs.slice().reverse().map(j=>`<tr><td>${esc(NAMES[j.t]||j.t)}${j.act==='r'?' <span class="pill">reakció</span>':''}${j.act==='i'?` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance*100,1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>`:''}${j.act==='c'?' <span class="pill">copy</span>':''}${multi&&j.item&&j.item.label?`<div class="src">${esc(j.item.label)}</div>`:''}</td><td><b>${esc(charName(j.who??j.bp.cid))}</b> ${j.wait?`<span class="pill warn" title="${esc(T('Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.'))}">${T('nincs szabad slot')}</span> `:''}${j.who!=null&&j.who!==j.bp.cid?`<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak',esc(charName(j.bp.cid)),esc(charName(j.who)))}</div>`:''}${j.miss.length?`<span class="pill bad">hiányzó skill</span><div class="src">${esc(j.miss.map(m=>(NAMES[m[0]]||m[0])+' '+m[2]+' → '+m[1]).join(', '))}</div>`:'<span class="pill ok">skill ok</span>'}</td><td class="small">${j.bp.virtual?T('inventált BPC'):(j.act==='i'?'T1 ':'')+(j.bp.r===-1?'BPO':'BPC')} ME${j.act==='m'?j.bp.me:(j.bp.virtual?j.bp.me:j.bp.me)} · ${esc(locName(j.bp.l))}${j.short?' <span class="pill bad">nincs elég run</span>':''}</td><td class="num">${j.act==='i'?fmt(Math.ceil(j.runs))+' kísérlet':fmt(j.runs)}</td><td class="num">${dur(jobTime(j))}</td><td class="num">${isk(jobCost(j,R.sys))}</td></tr>`).join('')}</tbody></table></div></div></div>`;
   // karakterek
   const per=new Map();for(const j of R.jobs){const c=j.who??j.bp.cid;let x=per.get(c);if(!x){x={m:0,r:0,s:0,tm:0,tr:0,ts:0,miss:0,mx:0};per.set(c,x)}const jt=jobTime(j);x.mx=Math.max(x.mx,jt);const k=slotKey(j.act);x[k]++;x['t'+k]+=jt;if(j.miss.length)x.miss++}
   h+=`<h3>Karakterek terhelése</h3><p class="small muted">Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél a szabad slotok és a gyártási idő alapján a leghamarabb elkészül. Egyenlő esetben marad annál, akinél a BP most van, vagy akinél ugyanilyen BP is van.</p><div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Gyártó job</th><th class="num">Szabad gyártó slot</th><th class="num">Reakció job</th><th class="num">Szabad reakció slot</th><th class="num">Science job</th><th class="num">Szabad science slot</th><th class="num">Össz. idő</th><th class="num">Becsült átfutás</th><th>Megjegyzés</th></tr></thead><tbody>${[...per].map(([c,x])=>{const sl=slotsOf(c),bz=busyOf(c);const fm=Math.max(0,sl.m-bz.m),fr=Math.max(0,sl.r-bz.r),fs=Math.max(0,sl.s-bz.s);const wall=Math.max(x.mx,x.m?x.tm/Math.max(1,fm):0,x.r?x.tr/Math.max(1,fr):0,x.s?x.ts/Math.max(1,fs):0);const notes=[];if(x.miss)notes.push(T('{0} jobhoz egyik karakternek sincs meg a skill',x.miss));if(x.m>fm)notes.push(T('több gyártó job, mint szabad slot: sorban kell futtatni'));if(x.r>fr)notes.push(T('több reakció job, mint szabad slot'));if(x.s>fs)notes.push(T('több science job, mint szabad slot'));return `<tr><td><b>${esc(charName(c))}</b></td><td class="num">${x.m}</td><td class="num">${fm} / ${sl.m}</td><td class="num">${x.r}</td><td class="num">${fr} / ${sl.r}</td><td class="num">${x.s}</td><td class="num">${fs} / ${sl.s}</td><td class="num">${dur(x.tm+x.tr+x.ts)}</td><td class="num">${dur(wall)}</td><td class="small ${notes.length?'':'muted'}">${esc(notes.join('; ')||T('rendben'))}</td></tr>`}).join('')}</tbody></table></div>`;

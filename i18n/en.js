@@ -615,5 +615,22 @@ window.I18N.en={
  "Mi változott?": "What changed?",
  "Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.": "ESI still shows the state before the job was delivered ({0} more runs). Corrected here; the * disappears after ESI's next update.",
  "ESI állapot: {0}, legközelebb {1} után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.": "ESI snapshot: {0}, next update after {1}. *: ESI doesn't know about a job yet (still running, or delivered after ESI's snapshot), so the runs are corrected here. It disappears once ESI updates.",
- "hajók is": "ships too"
+ "hajók is": "ships too",
+ "Nincs ára valaminek ebben a tételben.": "Something in this item has no price.",
+ "nem számolható": "can't be calculated",
+ "becslés ár nélküli tételek nélkül: {0}": "estimate without the unpriced items: {0}",
+ "Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.": "These have no market price, so cost and profit aren't accurate: {0}. If it was a network error, recalculate in a few minutes.",
+ "highsec útvonal": "highsec route",
+ "az útvonal low- vagy nullsecen visz át (legalacsonyabb sec: {0})": "the route goes through low- or nullsec (lowest sec: {0})",
+ "az útvonal biztonsága nem ismert": "route safety unknown",
+ "{0} ugrás": "{0} jumps",
+ "Gyártási rendszerek: {0}": "Manufacturing systems: {0}",
+ "A mentésfájl hibás, nem töltöttem vissza: {0}": "The backup file is invalid, nothing restored: {0}",
+ "a beállítások nem objektum": "settings are not an object",
+ "a projektek nem lista": "projects are not a list",
+ "{0}. projekt hibás": "project {0} is invalid",
+ "„{0}” projekt: {1} hibás tétel": "project “{0}”: {1} invalid items",
+ "hibás karakter-bejegyzés": "invalid character entry",
+ "Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.": "No free slot; the suggestion assumes a later start and does not include the waiting time.",
+ "nincs szabad slot": "no free slot"
 };
