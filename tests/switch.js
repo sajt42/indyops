@@ -1,15 +1,52 @@
-const {JSDOM,VirtualConsole}=require('jsdom');const fs=require('fs');
-const html=fs.readFileSync('../dist/indyops.html','utf8').replace(/<link[^>]+>/g,'');
-const errs=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errs.push(e.message));
-const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://example.org/',virtualConsole:vc,beforeParse(w){w.localStorage.setItem('indyops.settings',JSON.stringify({lang:'hu'}))}});
-const w=dom.window,d=w.document;const tick=()=>new Promise(r=>setTimeout(r,40));
-(async()=>{await tick();
- const tabs=()=>[...d.querySelectorAll('#tabs button')].map(b=>b.textContent).join(', ');
- const probe=()=>[d.querySelector('#tab-settings h2').textContent,d.querySelector('#pNew').placeholder,d.querySelector('#status').textContent,d.documentElement.lang].join(' | ');
- console.log('HU :',tabs());console.log('    ',probe());
- const sel=d.querySelector('#langSel');sel.value='en';sel.dispatchEvent(new w.Event('change'));await tick();
- console.log('EN :',tabs());console.log('    ',probe());
- sel.value='de';sel.dispatchEvent(new w.Event('change'));await tick();console.log('DE :',tabs());console.log('    ',probe());sel.value='hu';sel.dispatchEvent(new w.Event('change'));await tick();
- console.log('HU2:',tabs());console.log('    ',probe());
- console.log('saved lang:',JSON.parse(w.localStorage.getItem('indyops.settings')).lang,'errors:',errs.length?errs:'none');
+const { JSDOM, VirtualConsole } = require('jsdom');
+const fs = require('fs');
+const html = fs.readFileSync('../dist/indyops.html', 'utf8').replace(/<link[^>]+>/g, '');
+const errs = [];
+const vc = new VirtualConsole();
+vc.on('jsdomError', e => errs.push(e.message));
+const dom = new JSDOM(html, {
+  runScripts: 'dangerously',
+  url: 'https://example.org/',
+  virtualConsole: vc,
+  beforeParse(w) {
+    w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
+  }
+});
+const w = dom.window,
+  d = w.document;
+const tick = () => new Promise(r => setTimeout(r, 40));
+(async () => {
+  await tick();
+  const tabs = () => [...d.querySelectorAll('#tabs button')].map(b => b.textContent).join(', ');
+  const probe = () =>
+    [
+      d.querySelector('#tab-settings h2').textContent,
+      d.querySelector('#pNew').placeholder,
+      d.querySelector('#status').textContent,
+      d.documentElement.lang
+    ].join(' | ');
+  console.log('HU :', tabs());
+  console.log('    ', probe());
+  const sel = d.querySelector('#langSel');
+  sel.value = 'en';
+  sel.dispatchEvent(new w.Event('change'));
+  await tick();
+  console.log('EN :', tabs());
+  console.log('    ', probe());
+  sel.value = 'de';
+  sel.dispatchEvent(new w.Event('change'));
+  await tick();
+  console.log('DE :', tabs());
+  console.log('    ', probe());
+  sel.value = 'hu';
+  sel.dispatchEvent(new w.Event('change'));
+  await tick();
+  console.log('HU2:', tabs());
+  console.log('    ', probe());
+  console.log(
+    'saved lang:',
+    JSON.parse(w.localStorage.getItem('indyops.settings')).lang,
+    'errors:',
+    errs.length ? errs : 'none'
+  );
 })();

@@ -1,0 +1,7 @@
+dist/
+tests/golden/
+tests/node_modules/
+*.md
+*.html
+*.css
+*.json

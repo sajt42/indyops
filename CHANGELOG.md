@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.5 – 2026-11-10
+
+- Code: the whole codebase is formatted with Prettier (one statement per line instead of long one-line functions) and all code comments are in English. No change in behavior: every test produces the same output.
+
 ## 1.12.4 – 2026-11-10
 
 - Tests: every scenario is now checked against a reviewed reference output (golden files), and errors printed by a scenario count as failures. This uncovered an invention scenario that never waited for its project result; fixed.

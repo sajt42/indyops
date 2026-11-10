@@ -6,17 +6,39 @@
 // Build first: node ../tools/bundle.mjs
 import { spawnSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
-const ALL = ['regress','help','repro','unk','projsrc','bpruns','run','ui','ui2','ui3','proj','prof','exp','inv','res','sales','mine','empty','switch','hosted'];
+const ALL = [
+  'regress',
+  'help',
+  'repro',
+  'unk',
+  'projsrc',
+  'bpruns',
+  'run',
+  'ui',
+  'ui2',
+  'ui3',
+  'proj',
+  'prof',
+  'exp',
+  'inv',
+  'res',
+  'sales',
+  'mine',
+  'empty',
+  'switch',
+  'hosted'
+];
 // optional subset: node run-all.mjs exp inv
 const tests = process.argv.length > 2 ? process.argv.slice(2) : ALL;
 // time-dependent parts are masked so the comparison is stable
-const norm = (s) => s
-  .replace(/\d{4}\. \d{2}\. \d{2}\.( \d{1,2}:\d{2}(:\d{2})?)?/g, '<DATE>')
-  .replace(/\b\d{1,2}:\d{2}(:\d{2})?\b/g, '<TIME>')
-  .replace(/\b1\d{12}\b/g, '<EPOCH>')
-  .replace(/len \d+/g, 'len <N>')
-  .replace(/\bv\d+\.\d+\.\d+\b(?<!v1\.0\.0)/g, 'v<VER>')
-  .replace(/\s+$/gm, '');
+const norm = s =>
+  s
+    .replace(/\d{4}\. \d{2}\. \d{2}\.( \d{1,2}:\d{2}(:\d{2})?)?/g, '<DATE>')
+    .replace(/\b\d{1,2}:\d{2}(:\d{2})?\b/g, '<TIME>')
+    .replace(/\b1\d{12}\b/g, '<EPOCH>')
+    .replace(/len \d+/g, 'len <N>')
+    .replace(/\bv\d+\.\d+\.\d+\b(?<!v1\.0\.0)/g, 'v<VER>')
+    .replace(/\s+$/gm, '');
 mkdirSync('golden', { recursive: true });
 let failed = 0;
 for (const t of tests) {
@@ -24,14 +46,22 @@ for (const t of tests) {
   const r = spawnSync('node', [t + '.js'], { encoding: 'utf8', timeout: 120000 });
   let out = (r.stdout || '') + (r.stderr ? '\n[stderr]\n' + r.stderr : '');
   if (r.status !== 0) out += '\nFAIL (exit ' + r.status + ')';
-  let bad = /FAIL|TypeError|ReferenceError|SyntaxError/.test(out), why = bad ? 'error' : '';
+  let bad = /FAIL|TypeError|ReferenceError|SyntaxError/.test(out),
+    why = bad ? 'error' : '';
   if (!bad && t !== 'regress') {
-    const g = 'golden/' + t + '.txt', n = norm(out);
+    const g = 'golden/' + t + '.txt',
+      n = norm(out);
     if (process.env.UPDATE_GOLDEN || !existsSync(g)) writeFileSync(g, n);
     else if (readFileSync(g, 'utf8') !== n) {
-      bad = true; why = 'output differs from ' + g;
-      const a = readFileSync(g, 'utf8').split('\n'), b = n.split('\n');
-      for (let i = 0; i < Math.max(a.length, b.length); i++) if (a[i] !== b[i]) { out = 'expected: ' + (a[i] ?? '') + '\nactual:   ' + (b[i] ?? ''); break; }
+      bad = true;
+      why = 'output differs from ' + g;
+      const a = readFileSync(g, 'utf8').split('\n'),
+        b = n.split('\n');
+      for (let i = 0; i < Math.max(a.length, b.length); i++)
+        if (a[i] !== b[i]) {
+          out = 'expected: ' + (a[i] ?? '') + '\nactual:   ' + (b[i] ?? '');
+          break;
+        }
     }
   }
   if (bad) failed++;
