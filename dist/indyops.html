@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Qh+UyfEe+GY9qWgsiP16ePUV0qiQiKZPetyrPXMMUl4=' 'sha256-yMLekRbtf+qj06A4Fp14fn0x+ZVAf1NL1Lyi0uZsx/0=' 'sha256-loOiaDwQkP3hNg6tA1V95rCGPjcFs2dK33w09XVwy/4=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-22gaW2Zr+XIcDaYwH++eb7V0/6Ur+bZluAzsnS6K0sA=' 'sha256-PkGZYp2u1zrJCuiJUp436M2b4f16LJtPYVjpeQvb7gA=' 'sha256-usHtTTyC6MACykjCVk4UjqRMfo6WZX1bK1ZPZP1mlJQ=' 'sha256-DMHYJvgGlAg8W6aA/vbYqfPabLELHy8d+IYlKWjAADM=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-z4Ym1CDPm9LwxRwBp/392bOxbF58GjvJDRnYpV+hU78='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-PUjPiTeUqA3posMelXWnE1tIx2LT7/ptgrabJBYWtXM=' 'sha256-h9ooF1fuhR8l22nO+kD+W6zv4h3FKNoFvbpwoMB/2XA=' 'sha256-Ya3WgNSSKEXPGOrcog70ABqopvMeTxEo5hg6Dv0wTRU=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-22gaW2Zr+XIcDaYwH++eb7V0/6Ur+bZluAzsnS6K0sA=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-rr/VpwPdEtGWOQnIv3MlwpERwjKKp9x4IKpF5sbXCRU=' 'sha256-A0lvB96CGsnu8xwGYol9pkAE68NoXxIk837g4J9uPCc=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-zo88KkfgoMybDL4SnFKUsxDjHPJhe2oKtUtlgUy1VwY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -442,6 +442,11 @@ th.sortable:hover{text-decoration:underline}
         <label>Gyártási rendszer (felülírás) <input id="sSystem" placeholder="üresen: a BP helye"></label>
         <label>Gyártási helyszín a szállításhoz <select id="sProdLoc"><option value="">automatikus: a BP helye</option></select></label>
       </div>
+      <div class="row" style="margin-top:8px">
+        <label class="inline"><input type="checkbox" id="sParallel"> Párhuzamos gyártás</label>
+        <label>Mód <select id="sParMode"><option value="material">kevesebb anyag</option><option value="speed">gyorsabb</option></select></label>
+      </div>
+      <p class="small muted" style="margin-top:6px">Ha egy tételhez több blueprinted van (több BPC, vagy több BPO, egy stackben is), a runok több jobra oszolhatnak, hogy egyszerre fussanak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás (alapidő). Kevesebb anyag: csak akkor bont, ha nem kell hozzá több anyag. Gyorsabb: annyi jobra bont, amennyire lehet; a többletanyagot a terv kiírja. A stackelt BPO-kat a játékban szét kell szedni.</p>
     </div>
     <div class="card">
       <h2>Eladás és reprocess</h2>
@@ -525,6 +530,7 @@ th.sortable:hover{text-decoration:underline}
   <h3>A fülek</h3>
   <dl class="helpdl">
     <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között. Ha a második piacon olcsóbb egy anyag, a bevásárlólista ott veszi meg (kikapcsolható a Beállításokban), és a szállítás is onnan számol.</dd>
+    <dt>Párhuzamos gyártás</dt><dd>Beállítások → Gyártás. Ha egy tételhez több blueprinted van (több BPC, több BPO vagy egy BPO-stack), a runok több, egyszerre futó jobra oszolhatnak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás alapidejű. „Kevesebb anyag” módban csak akkor bont, ha nem kell hozzá több anyag (az ME jobonként felfelé kerekít), „gyorsabb” módban annyira, amennyire lehet; a terv kiírja, mely tételek bomlottak szét és mennyi a többletanyag. A stackelt BPO-kat a játékban szét kell szedni.</dd>
     <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak. Projektenként (vagy tételenként) kiválaszthatod, honnan vehet nyersanyagot: állomások, struktúrák vagy konkrét konténerek. Egy konténert le is foglalhatsz egy projektnek („csak ez a projekt”), ahhoz más projekt nem nyúl. A listában a konténerek (📦) és a hajók rakterei (🚀) a saját neved mellett a típusukkal látszanak; a hajók elrejthetők.</dd>
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze. Ha van második piac, a profit runonként ott is látszik, az ottani díjakkal.</dd>
     <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
@@ -589,6 +595,7 @@ th.sortable:hover{text-decoration:underline}
   <h3>The tabs</h3>
   <dl class="helpdl">
     <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it. If a material is cheaper at the second market, the shopping list buys it there (can be switched off in Settings), and hauling starts from there.</dd>
+    <dt>Parallel manufacturing</dt><dd>Settings → Manufacturing. If you have more than one blueprint for an item (several BPCs, several BPOs or a stack of BPOs), the runs can be split into jobs that run at the same time. There are at most as many jobs as blueprints and free slots, and each job has at least one hour of base time. In "less material" mode it splits only when no extra material is needed (ME rounds up per job); in "more speed" mode as far as possible. The plan lists the items that were split and the extra material. Stacked BPOs have to be split in game.</dd>
     <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock. Per project (or per item) you can choose where materials may come from: stations, structures or specific containers. You can also reserve a container for one project (“this project only”) so no other project touches it. Containers (📦) and ship cargo holds (🚀) are listed with their type next to your name for them; ships can be hidden.</dd>
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together. With a second market, profit per run is shown there too, with that market's fees.</dd>
     <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
@@ -653,6 +660,7 @@ th.sortable:hover{text-decoration:underline}
   <h3>Die Reiter</h3>
   <dl class="helpdl">
     <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen. Ist ein Material am zweiten Markt billiger, kauft die Einkaufsliste dort (in den Einstellungen abschaltbar), und der Transport startet von dort.</dd>
+    <dt>Parallele Fertigung</dt><dd>Einstellungen → Fertigung. Hast du für einen Artikel mehrere Blueprints (mehrere BPCs, mehrere BPOs oder einen BPO-Stapel), können die Runs auf gleichzeitig laufende Jobs verteilt werden. Es gibt höchstens so viele Jobs wie Blueprints und freie Slots, und jeder Job hat mindestens eine Stunde Grundzeit. Im Modus „weniger Material“ wird nur geteilt, wenn kein Mehrmaterial nötig ist (ME rundet pro Job auf), im Modus „schneller“ so weit wie möglich. Der Plan zeigt, welche Artikel geteilt wurden und wie viel Mehrmaterial das kostet. Gestapelte BPOs müssen im Spiel getrennt werden.</dd>
     <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand. Pro Projekt (oder pro Position) kannst du wählen, woher Material kommen darf: Stationen, Strukturen oder bestimmte Container. Einen Container kannst du auch für ein Projekt reservieren („nur dieses Projekt“), dann greift kein anderes Projekt darauf zu. Container (📦) und Schiffsfrachträume (🚀) stehen mit ihrem Typ neben deinem Namen dafür; Schiffe lassen sich ausblenden.</dd>
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen. Mit einem zweiten Markt wird der Gewinn pro Run auch dort angezeigt, mit dessen Gebühren.</dd>
     <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
@@ -1456,7 +1464,21 @@ window.I18N.en = {
   'frakció: nincs, vagy nem ismert': 'faction: none, or not known',
   '3% − 0,3% × Broker Relations {0}': '3% − 0.3% × Broker Relations {0}',
   'A díj a nyers standinggel számol (Connections/Diplomacy nélkül).':
-    'The fee uses the raw standings (without Connections/Diplomacy).'
+    'The fee uses the raw standings (without Connections/Diplomacy).',
+  'Párhuzamos gyártás': 'Parallel manufacturing',
+  Mód: 'Mode',
+  'kevesebb anyag': 'less material',
+  gyorsabb: 'more speed',
+  'Ha egy tételhez több blueprinted van (több BPC, vagy több BPO, egy stackben is), a runok több jobra oszolhatnak, hogy egyszerre fussanak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás (alapidő). Kevesebb anyag: csak akkor bont, ha nem kell hozzá több anyag. Gyorsabb: annyi jobra bont, amennyire lehet; a többletanyagot a terv kiírja. A stackelt BPO-kat a játékban szét kell szedni.':
+    'If you have more than one blueprint for an item (several BPCs, or several BPOs, also in one stack), the runs can be split into jobs that run at the same time. There are at most as many jobs as blueprints and free slots, and a job takes at least one hour (base time). Less material: splits only when it needs no extra material. More speed: splits as far as possible; the plan shows the extra material. Stacked BPOs have to be split in game.',
+  'Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).':
+    'Parallel manufacturing ({0}): no item is worth splitting into more jobs (not enough blueprints, free slots or time, or it would need more material).',
+  '{0}: {1} → {2} job': '{0}: {1} → {2} jobs',
+  'Párhuzamos gyártás ({0}): {1}.': 'Parallel manufacturing ({0}): {1}.',
+  'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Extra material compared with one job after the other: {0} ISK.',
+  'Nem kell hozzá több anyag.': 'It needs no extra material.',
+  'Párhuzamos gyártás: a következő számolásnál lép életbe.':
+    'Parallel manufacturing: takes effect with the next calculation.'
 };
 </script>
 <script>
@@ -2216,7 +2238,20 @@ window.I18N.de = {
   'frakció: nincs, vagy nem ismert': 'Fraktion: keine oder nicht bekannt',
   '3% − 0,3% × Broker Relations {0}': '3 % − 0,3 % × Broker Relations {0}',
   'A díj a nyers standinggel számol (Connections/Diplomacy nélkül).':
-    'Die Gebühr rechnet mit den Roh-Standings (ohne Connections/Diplomacy).'
+    'Die Gebühr rechnet mit den Roh-Standings (ohne Connections/Diplomacy).',
+  'Párhuzamos gyártás': 'Parallele Fertigung',
+  Mód: 'Modus',
+  'kevesebb anyag': 'weniger Material',
+  gyorsabb: 'schneller',
+  'Ha egy tételhez több blueprinted van (több BPC, vagy több BPO, egy stackben is), a runok több jobra oszolhatnak, hogy egyszerre fussanak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás (alapidő). Kevesebb anyag: csak akkor bont, ha nem kell hozzá több anyag. Gyorsabb: annyi jobra bont, amennyire lehet; a többletanyagot a terv kiírja. A stackelt BPO-kat a játékban szét kell szedni.':
+    'Hast du für einen Artikel mehrere Blueprints (mehrere BPCs oder mehrere BPOs, auch in einem Stapel), können die Runs auf Jobs verteilt werden, die gleichzeitig laufen. Es gibt höchstens so viele Jobs wie Blueprints und freie Slots, und ein Job dauert mindestens eine Stunde (Grundzeit). Weniger Material: teilt nur, wenn kein Mehrmaterial nötig ist. Schneller: teilt so weit wie möglich; der Plan zeigt das Mehrmaterial. Gestapelte BPOs müssen im Spiel getrennt werden.',
+  'Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).':
+    'Parallele Fertigung ({0}): Kein Artikel lohnt sich aufzuteilen (zu wenige Blueprints, freie Slots oder Zeit, oder es bräuchte mehr Material).',
+  '{0}: {1} → {2} job': '{0}: {1} → {2} Jobs',
+  'Párhuzamos gyártás ({0}): {1}.': 'Parallele Fertigung ({0}): {1}.',
+  'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Mehrmaterial gegenüber einem Job nach dem anderen: {0} ISK.',
+  'Nem kell hozzá több anyag.': 'Es braucht kein zusätzliches Material.',
+  'Párhuzamos gyártás: a következő számolásnál lép életbe.': 'Parallele Fertigung: gilt ab der nächsten Berechnung.'
 };
 </script>
 <script>
@@ -2284,7 +2319,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.12.13',
+  version: '1.13.0',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -4009,7 +4044,7 @@ async function buildPool(opt) {
  * makeMulti(items, opt, shared) builds one tree per item. All items draw from the same stock pool and the same
  * blueprint runs; pass shared={pool,runsLeft} to share them between calls (projects calculated one after another).
  * Result: {trees:[{item,tree,made}], buyList: Map type->qty, usedList: Map type->qty taken from own stock,
- *          jobs: [job], warn: [{t,miss}|{txt}]}
+ *          jobs: [job], warn: [{t,miss}|{txt}], par: [{t, jobs, before, extra}] (parallel splits, see below)}
  * A tree node: {t, need, stock:[taken pool entries], build:{act,jobs:[{c,r,short}],made}|null, buy, ch:[nodes], jobsRef:[jobs]}
  */
 function planContext(opt, pool, runsLeft) {
@@ -4023,6 +4058,7 @@ function planContext(opt, pool, runsLeft) {
     usedList: new Map(),
     jobs: [],
     warn: [],
+    par: [], // parallel splits: {t, jobs, before, extra:[[type, qty]]}
     structME: Number(S.structME || 0) / 100
   };
 }
@@ -4081,22 +4117,115 @@ async function recipeOf(copies, depth) {
   return { meta, rec };
 }
 
-// spreads the needed runs over the copies in order (BPOs are unlimited, BPC runs are tracked in ctx.runsLeft);
-// runs that fit nowhere go on the first copy marked short, with a warning
-function allocateRuns(ctx, t, copies, runsNeed) {
+// Runs that a copy can still give: BPOs are unlimited, BPC runs are tracked in ctx.runsLeft.
+const runsAvail = (ctx, c) => (c.r === -1 ? Infinity : ctx.runsLeft.has(c.i) ? ctx.runsLeft.get(c.i) : c.r);
+
+// Default: fills the copies in order (best first), so a second copy is used only when the first runs out.
+function sequentialRuns(ctx, copies, runsNeed) {
   const jl = [];
   for (const c of copies) {
     if (runsNeed <= 0) break;
-    const avail = c.r === -1 ? Infinity : ctx.runsLeft.has(c.i) ? ctx.runsLeft.get(c.i) : c.r;
+    const avail = runsAvail(ctx, c);
     if (avail <= 0) continue;
     const r = Math.min(avail, runsNeed);
     runsNeed -= r;
-    if (c.r !== -1) ctx.runsLeft.set(c.i, avail - r);
     jl.push({ c, r });
   }
-  if (runsNeed > 0) {
-    ctx.warn.push({ t, miss: runsNeed });
-    jl.push({ c: copies[0], r: runsNeed, short: true });
+  return { jl, short: runsNeed };
+}
+
+/* ---- parallel manufacturing (Settings: parallel, parMode) ----
+ * Every blueprint item can run one job at a time. Items that can work at once: each BPO (a stack of N BPOs counts
+ * as N; the stack has to be split in game) and each BPC with runs left. The number of jobs is limited by
+ * - the items, - the free slots of the working characters who have the skills, - a job should take at least one hour
+ *   (base time), so small amounts are not cut into many tiny jobs.
+ * "speed" uses as many jobs as these allow; "material" (default) uses the most jobs that need no more material than
+ * the default allocation (ME is rounded up per job, and copies may have different ME).
+ */
+const PAR_MIN_JOB_SECONDS = 3600;
+function bpUnits(ctx, copies) {
+  const u = [];
+  for (const c of copies) {
+    const cap = runsAvail(ctx, c);
+    if (cap <= 0) continue;
+    const n = c.r === -1 && c.q > 1 ? c.q : 1;
+    for (let i = 0; i < n; i++) u.push({ c, cap });
+  }
+  return u;
+}
+function freeSlotsFor(act, rec) {
+  const k = slotKey(act);
+  let cs = workChars().filter(c => !missingSkills(c, rec).length);
+  if (!cs.length) cs = workChars();
+  return cs.reduce((s, c) => s + Math.max(0, slotsOf(c)[k] - busyOf(c)[k]), 0);
+}
+// runs over the first k units as evenly as their runs allow (more units are added if k cannot cover the need)
+function spreadRuns(units, k, runsNeed) {
+  const use = units.slice(0, k);
+  for (let i = k; i < units.length && use.reduce((s, x) => s + x.cap, 0) < runsNeed; i++) use.push(units[i]);
+  const r = use.map(() => 0);
+  let left = runsNeed;
+  let open = use.map((_, i) => i);
+  while (left > 0 && open.length) {
+    // an even share for every open unit; the remainder goes to the first (best) ones
+    const base = Math.floor(left / open.length);
+    let rest = left % open.length;
+    for (const i of open) {
+      const want = base + (rest > 0 ? 1 : 0);
+      if (rest > 0) rest--;
+      const add = Math.min(want, use[i].cap - r[i]);
+      r[i] += add;
+      left -= add;
+    }
+    open = open.filter(i => r[i] < use[i].cap);
+  }
+  return { jl: use.map((x, i) => ({ c: x.c, r: r[i] })).filter(x => x.r > 0), short: left };
+}
+function materialsOf(jl, rec, act, structME) {
+  const m = new Map();
+  for (const j of jl)
+    for (const [t, q] of rec.m) m.set(t, (m.get(t) || 0) + jobMaterialQty(q, j.r, act, j.c.me, structME));
+  return m;
+}
+function parallelRuns(ctx, copies, runsNeed, rec, act, seq) {
+  const units = bpUnits(ctx, copies);
+  const byTime = Math.floor(((rec.t || 0) * runsNeed) / PAR_MIN_JOB_SECONDS);
+  const kMax = Math.min(units.length, freeSlotsFor(act, rec), byTime, runsNeed);
+  if (kMax < 2) return null;
+  const base = materialsOf(seq.jl, rec, act, ctx.structME);
+  for (let k = kMax; k >= 2; k--) {
+    const p = spreadRuns(units, k, runsNeed);
+    if (p.jl.length <= seq.jl.length) return null;
+    if (S.parMode === 'speed') return p;
+    const mats = materialsOf(p.jl, rec, act, ctx.structME);
+    if ([...mats].every(([t, q]) => q <= (base.get(t) || 0))) return p;
+  }
+  return null;
+}
+
+// Spreads the needed runs over the copies; runs that fit nowhere go on the first copy marked short, with a warning.
+// With parallel manufacturing the split is recorded in ctx.par (extra material against the default allocation).
+function allocateRuns(ctx, t, copies, runsNeed, rec, act) {
+  const seq = sequentialRuns(ctx, copies, runsNeed);
+  let plan = seq;
+  if (S.parallel && rec) {
+    const p = parallelRuns(ctx, copies, runsNeed, rec, act, seq);
+    if (p) {
+      plan = p;
+      const base = materialsOf(seq.jl, rec, act, ctx.structME);
+      const extra = [...materialsOf(p.jl, rec, act, ctx.structME)]
+        .map(([m, q]) => [m, q - (base.get(m) || 0)])
+        .filter(([, q]) => q > 0);
+      ctx.par.push({ t, jobs: p.jl.length, before: seq.jl.length, extra });
+    }
+  }
+  const used = new Map();
+  for (const j of plan.jl) if (j.c.r !== -1) used.set(j.c, (used.get(j.c) || 0) + j.r);
+  for (const [c, r] of used) ctx.runsLeft.set(c.i, runsAvail(ctx, c) - r);
+  const jl = plan.jl.slice();
+  if (plan.short > 0) {
+    ctx.warn.push({ t, miss: plan.short });
+    jl.push({ c: copies[0], r: plan.short, short: true });
   }
   return jl;
 }
@@ -4131,7 +4260,7 @@ async function planNode(ctx, t, need, depth, forced, item) {
   }
   const { meta, rec } = recipe;
   const act = meta.act;
-  const jl = allocateRuns(ctx, t, copies, Math.ceil(need / meta.qty));
+  const jl = allocateRuns(ctx, t, copies, Math.ceil(need / meta.qty), rec, act);
   const made = jl.reduce((s, x) => s + x.r, 0) * meta.qty;
   n.build = { act, jobs: jl, made };
   const matNeed = new Map();
@@ -4245,7 +4374,7 @@ async function makeMulti(items, opt, shared) {
     if (it.inv) await addInvention(ctx, it, tree);
     trees.push({ item: it, tree, made: tree.made || 0 });
   }
-  return { trees, buyList: ctx.buyList, usedList: ctx.usedList, jobs: ctx.jobs, warn: ctx.warn };
+  return { trees, buyList: ctx.buyList, usedList: ctx.usedList, jobs: ctx.jobs, warn: ctx.warn, par: ctx.par };
 }
 const DECS = {
   34201: { n: 'Accelerant Decryptor', p: 1.2, me: 2, te: 10, runs: 1 },
@@ -4780,6 +4909,9 @@ function renderSettings() {
       })();
     sel.value = S.market2 || '';
     $('#sBuyM2').checked = S.buyM2 !== false;
+    $('#sParallel').checked = !!S.parallel;
+    $('#sParMode').value = S.parMode === 'speed' ? 'speed' : 'material';
+    $('#sParMode').disabled = !S.parallel;
     $('#sBuyM2').disabled = !S.market2;
     const mb = $('#sM2Broker');
     if (mb) {
@@ -4920,6 +5052,8 @@ function assignChars(jobs) {
     else j.bp0 = j.bp;
     j.who = null;
   });
+  // a blueprint item runs one job at a time: a job may move to another character's copy only if no other job uses it
+  const taken = new Set(jobs.map(j => j.bp.i).filter(i => i != null));
   const order = jobs.slice().sort((a, b) => tFor(b, b.bp.cid) - tFor(a, a.bp.cid));
   for (const j of order) {
     const rec = j.rs ? { rs: j.rs } : recOf(j.bp.t);
@@ -4932,7 +5066,9 @@ function assignChars(jobs) {
     const own = c => {
       if (j.bp.virtual) return j.bp;
       if (c === j.bp.cid) return j.bp;
-      return allBPs().find(b => b.cid === c && b.t === j.bp.t && b.me >= j.bp.me && (b.r === -1 || b.r >= j.runs));
+      return allBPs().find(
+        b => b.cid === c && b.t === j.bp.t && b.me >= j.bp.me && (b.r === -1 || b.r >= j.runs) && !taken.has(b.i)
+      );
     };
     for (const c of cand) {
       const v =
@@ -4943,7 +5079,10 @@ function assignChars(jobs) {
       }
     }
     const mine = own(best);
-    if (mine && mine !== j.bp && !j.bp.virtual) j.bp = Object.assign({}, mine);
+    if (mine && mine !== j.bp && !j.bp.virtual) {
+      j.bp = Object.assign({}, mine);
+      taken.add(mine.i);
+    }
     if (j.bp.virtual) j.bp = Object.assign({}, j.bp, { cid: best });
     j.who = best;
     j.miss = missingSkills(best, rec);
@@ -5305,6 +5444,29 @@ function resultSystems(R) {
     m2Hint()
   );
 }
+// parallel manufacturing: which items were split into more jobs, and the extra material against the default
+function resultParallel(R) {
+  if (!S.parallel) return '';
+  const par = R.par || [];
+  if (!par.length)
+    return `<div class="notice"><p class="small">${T('Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).', parModeName())}</p></div>`;
+  let extra = 0;
+  const byType = new Map();
+  for (const p of par) {
+    for (const [t, q] of p.extra) extra += q * buyPrice(t);
+    const o = byType.get(p.t) || { before: 0, jobs: 0 };
+    o.before += p.before;
+    o.jobs += p.jobs;
+    byType.set(p.t, o);
+  }
+  const list = [...byType].map(([t, o]) => T('{0}: {1} → {2} job', NAMES[t] || '#' + t, o.before, o.jobs)).join(', ');
+  return `<div class="notice"><p class="small">${esc(T('Párhuzamos gyártás ({0}): {1}.', parModeName(), list))} ${
+    extra > 0
+      ? esc(T('Többletanyag a sorban gyártáshoz képest: {0} ISK.', isk(extra)))
+      : esc(T('Nem kell hozzá több anyag.'))
+  }</p></div>`;
+}
+const parModeName = () => (S.parMode === 'speed' ? T('gyorsabb') : T('kevesebb anyag'));
 function resultProducts(R, rows, multi) {
   let h = `<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi ? '<th>Projekt</th>' : ''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On() ? `<th class="num">${esc(m2Short())} sell / db</th>` : ''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r => `<tr>${multi ? `<td>${esc(r.x.item.label || '')}</td>` : ''}<td>${esc(NAMES[r.p] || r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On() ? `<td class="num">${m2Cell(sell(r.p), sell2(r.p))}</td>` : ''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${r.unk ? '<span title="' + esc(T('Nincs ára valaminek ebben a tételben.')) + '">?</span>' : isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
   if (multi)
@@ -5385,6 +5547,7 @@ function renderResult(el, R, rerun) {
   let h = resultKpis(R, P, free, multi);
   h += resultSystems(R);
   R.warn.forEach(w => (h += `<div class="notice">${esc(warnText(w))}</div>`));
+  h += resultParallel(R);
   h += resultProducts(R, P.rows, multi);
   h += resultShopping(bl);
   h += resultJobs(R, multi);
@@ -5677,7 +5840,7 @@ async function calcProjects(list) {
     await indexBPProducts();
     const opt = Object.assign(getOpt(), { incoming: $('#pIncoming').checked });
     const shared = { pool: await buildPool(opt), runsLeft: new Map() };
-    const R = { trees: [], buyList: new Map(), usedList: new Map(), jobs: [], warn: [] };
+    const R = { trees: [], buyList: new Map(), usedList: new Map(), jobs: [], warn: [], par: [] };
     let firstBP = null;
     for (const p of list) {
       const items = [];
@@ -5714,6 +5877,7 @@ async function calcProjects(list) {
       R.trees.push(...r.trees);
       R.jobs.push(...r.jobs);
       R.warn.push(...r.warn);
+      R.par.push(...r.par);
       for (const [t, q] of r.buyList) R.buyList.set(t, (R.buyList.get(t) || 0) + q);
       for (const [t, q] of r.usedList) R.usedList.set(t, (R.usedList.get(t) || 0) + q);
     }
@@ -7478,6 +7642,17 @@ $('#sWallet').addEventListener('change', e => {
   saveS();
   renderChars();
 });
+$('#sParallel').addEventListener('change', e => {
+  S.parallel = e.target.checked;
+  saveS();
+  renderSettings();
+  status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
+});
+$('#sParMode').addEventListener('change', e => {
+  S.parMode = e.target.value === 'speed' ? 'speed' : 'material';
+  saveS();
+  status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
+});
 $('#sBuyM2').addEventListener('change', e => {
   S.buyM2 = e.target.checked;
   saveS();
@@ -7601,6 +7776,8 @@ const SET_SCHEMA = {
   workChars: 'numArrOrNull',
   wallet: 'bool',
   buyM2: 'bool',
+  parallel: 'bool',
+  parMode: 'str',
   srcShips: 'bool',
   buyOverride: 'mapBool',
   locNames: 'mapStr',

@@ -753,5 +753,18 @@ window.I18N.de = {
   'frakció: nincs, vagy nem ismert': 'Fraktion: keine oder nicht bekannt',
   '3% − 0,3% × Broker Relations {0}': '3 % − 0,3 % × Broker Relations {0}',
   'A díj a nyers standinggel számol (Connections/Diplomacy nélkül).':
-    'Die Gebühr rechnet mit den Roh-Standings (ohne Connections/Diplomacy).'
+    'Die Gebühr rechnet mit den Roh-Standings (ohne Connections/Diplomacy).',
+  'Párhuzamos gyártás': 'Parallele Fertigung',
+  Mód: 'Modus',
+  'kevesebb anyag': 'weniger Material',
+  gyorsabb: 'schneller',
+  'Ha egy tételhez több blueprinted van (több BPC, vagy több BPO, egy stackben is), a runok több jobra oszolhatnak, hogy egyszerre fussanak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás (alapidő). Kevesebb anyag: csak akkor bont, ha nem kell hozzá több anyag. Gyorsabb: annyi jobra bont, amennyire lehet; a többletanyagot a terv kiírja. A stackelt BPO-kat a játékban szét kell szedni.':
+    'Hast du für einen Artikel mehrere Blueprints (mehrere BPCs oder mehrere BPOs, auch in einem Stapel), können die Runs auf Jobs verteilt werden, die gleichzeitig laufen. Es gibt höchstens so viele Jobs wie Blueprints und freie Slots, und ein Job dauert mindestens eine Stunde (Grundzeit). Weniger Material: teilt nur, wenn kein Mehrmaterial nötig ist. Schneller: teilt so weit wie möglich; der Plan zeigt das Mehrmaterial. Gestapelte BPOs müssen im Spiel getrennt werden.',
+  'Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).':
+    'Parallele Fertigung ({0}): Kein Artikel lohnt sich aufzuteilen (zu wenige Blueprints, freie Slots oder Zeit, oder es bräuchte mehr Material).',
+  '{0}: {1} → {2} job': '{0}: {1} → {2} Jobs',
+  'Párhuzamos gyártás ({0}): {1}.': 'Parallele Fertigung ({0}): {1}.',
+  'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Mehrmaterial gegenüber einem Job nach dem anderen: {0} ISK.',
+  'Nem kell hozzá több anyag.': 'Es braucht kein zusätzliches Material.',
+  'Párhuzamos gyártás: a következő számolásnál lép életbe.': 'Parallele Fertigung: gilt ab der nächsten Berechnung.'
 };

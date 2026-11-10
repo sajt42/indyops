@@ -56,7 +56,7 @@ async function buildPool(opt) {
  * makeMulti(items, opt, shared) builds one tree per item. All items draw from the same stock pool and the same
  * blueprint runs; pass shared={pool,runsLeft} to share them between calls (projects calculated one after another).
  * Result: {trees:[{item,tree,made}], buyList: Map type->qty, usedList: Map type->qty taken from own stock,
- *          jobs: [job], warn: [{t,miss}|{txt}]}
+ *          jobs: [job], warn: [{t,miss}|{txt}], par: [{t, jobs, before, extra}] (parallel splits, see below)}
  * A tree node: {t, need, stock:[taken pool entries], build:{act,jobs:[{c,r,short}],made}|null, buy, ch:[nodes], jobsRef:[jobs]}
  */
 function planContext(opt, pool, runsLeft) {
@@ -70,6 +70,7 @@ function planContext(opt, pool, runsLeft) {
     usedList: new Map(),
     jobs: [],
     warn: [],
+    par: [], // parallel splits: {t, jobs, before, extra:[[type, qty]]}
     structME: Number(S.structME || 0) / 100
   };
 }
@@ -128,22 +129,115 @@ async function recipeOf(copies, depth) {
   return { meta, rec };
 }
 
-// spreads the needed runs over the copies in order (BPOs are unlimited, BPC runs are tracked in ctx.runsLeft);
-// runs that fit nowhere go on the first copy marked short, with a warning
-function allocateRuns(ctx, t, copies, runsNeed) {
+// Runs that a copy can still give: BPOs are unlimited, BPC runs are tracked in ctx.runsLeft.
+const runsAvail = (ctx, c) => (c.r === -1 ? Infinity : ctx.runsLeft.has(c.i) ? ctx.runsLeft.get(c.i) : c.r);
+
+// Default: fills the copies in order (best first), so a second copy is used only when the first runs out.
+function sequentialRuns(ctx, copies, runsNeed) {
   const jl = [];
   for (const c of copies) {
     if (runsNeed <= 0) break;
-    const avail = c.r === -1 ? Infinity : ctx.runsLeft.has(c.i) ? ctx.runsLeft.get(c.i) : c.r;
+    const avail = runsAvail(ctx, c);
     if (avail <= 0) continue;
     const r = Math.min(avail, runsNeed);
     runsNeed -= r;
-    if (c.r !== -1) ctx.runsLeft.set(c.i, avail - r);
     jl.push({ c, r });
   }
-  if (runsNeed > 0) {
-    ctx.warn.push({ t, miss: runsNeed });
-    jl.push({ c: copies[0], r: runsNeed, short: true });
+  return { jl, short: runsNeed };
+}
+
+/* ---- parallel manufacturing (Settings: parallel, parMode) ----
+ * Every blueprint item can run one job at a time. Items that can work at once: each BPO (a stack of N BPOs counts
+ * as N; the stack has to be split in game) and each BPC with runs left. The number of jobs is limited by
+ * - the items, - the free slots of the working characters who have the skills, - a job should take at least one hour
+ *   (base time), so small amounts are not cut into many tiny jobs.
+ * "speed" uses as many jobs as these allow; "material" (default) uses the most jobs that need no more material than
+ * the default allocation (ME is rounded up per job, and copies may have different ME).
+ */
+const PAR_MIN_JOB_SECONDS = 3600;
+function bpUnits(ctx, copies) {
+  const u = [];
+  for (const c of copies) {
+    const cap = runsAvail(ctx, c);
+    if (cap <= 0) continue;
+    const n = c.r === -1 && c.q > 1 ? c.q : 1;
+    for (let i = 0; i < n; i++) u.push({ c, cap });
+  }
+  return u;
+}
+function freeSlotsFor(act, rec) {
+  const k = slotKey(act);
+  let cs = workChars().filter(c => !missingSkills(c, rec).length);
+  if (!cs.length) cs = workChars();
+  return cs.reduce((s, c) => s + Math.max(0, slotsOf(c)[k] - busyOf(c)[k]), 0);
+}
+// runs over the first k units as evenly as their runs allow (more units are added if k cannot cover the need)
+function spreadRuns(units, k, runsNeed) {
+  const use = units.slice(0, k);
+  for (let i = k; i < units.length && use.reduce((s, x) => s + x.cap, 0) < runsNeed; i++) use.push(units[i]);
+  const r = use.map(() => 0);
+  let left = runsNeed;
+  let open = use.map((_, i) => i);
+  while (left > 0 && open.length) {
+    // an even share for every open unit; the remainder goes to the first (best) ones
+    const base = Math.floor(left / open.length);
+    let rest = left % open.length;
+    for (const i of open) {
+      const want = base + (rest > 0 ? 1 : 0);
+      if (rest > 0) rest--;
+      const add = Math.min(want, use[i].cap - r[i]);
+      r[i] += add;
+      left -= add;
+    }
+    open = open.filter(i => r[i] < use[i].cap);
+  }
+  return { jl: use.map((x, i) => ({ c: x.c, r: r[i] })).filter(x => x.r > 0), short: left };
+}
+function materialsOf(jl, rec, act, structME) {
+  const m = new Map();
+  for (const j of jl)
+    for (const [t, q] of rec.m) m.set(t, (m.get(t) || 0) + jobMaterialQty(q, j.r, act, j.c.me, structME));
+  return m;
+}
+function parallelRuns(ctx, copies, runsNeed, rec, act, seq) {
+  const units = bpUnits(ctx, copies);
+  const byTime = Math.floor(((rec.t || 0) * runsNeed) / PAR_MIN_JOB_SECONDS);
+  const kMax = Math.min(units.length, freeSlotsFor(act, rec), byTime, runsNeed);
+  if (kMax < 2) return null;
+  const base = materialsOf(seq.jl, rec, act, ctx.structME);
+  for (let k = kMax; k >= 2; k--) {
+    const p = spreadRuns(units, k, runsNeed);
+    if (p.jl.length <= seq.jl.length) return null;
+    if (S.parMode === 'speed') return p;
+    const mats = materialsOf(p.jl, rec, act, ctx.structME);
+    if ([...mats].every(([t, q]) => q <= (base.get(t) || 0))) return p;
+  }
+  return null;
+}
+
+// Spreads the needed runs over the copies; runs that fit nowhere go on the first copy marked short, with a warning.
+// With parallel manufacturing the split is recorded in ctx.par (extra material against the default allocation).
+function allocateRuns(ctx, t, copies, runsNeed, rec, act) {
+  const seq = sequentialRuns(ctx, copies, runsNeed);
+  let plan = seq;
+  if (S.parallel && rec) {
+    const p = parallelRuns(ctx, copies, runsNeed, rec, act, seq);
+    if (p) {
+      plan = p;
+      const base = materialsOf(seq.jl, rec, act, ctx.structME);
+      const extra = [...materialsOf(p.jl, rec, act, ctx.structME)]
+        .map(([m, q]) => [m, q - (base.get(m) || 0)])
+        .filter(([, q]) => q > 0);
+      ctx.par.push({ t, jobs: p.jl.length, before: seq.jl.length, extra });
+    }
+  }
+  const used = new Map();
+  for (const j of plan.jl) if (j.c.r !== -1) used.set(j.c, (used.get(j.c) || 0) + j.r);
+  for (const [c, r] of used) ctx.runsLeft.set(c.i, runsAvail(ctx, c) - r);
+  const jl = plan.jl.slice();
+  if (plan.short > 0) {
+    ctx.warn.push({ t, miss: plan.short });
+    jl.push({ c: copies[0], r: plan.short, short: true });
   }
   return jl;
 }
@@ -178,7 +272,7 @@ async function planNode(ctx, t, need, depth, forced, item) {
   }
   const { meta, rec } = recipe;
   const act = meta.act;
-  const jl = allocateRuns(ctx, t, copies, Math.ceil(need / meta.qty));
+  const jl = allocateRuns(ctx, t, copies, Math.ceil(need / meta.qty), rec, act);
   const made = jl.reduce((s, x) => s + x.r, 0) * meta.qty;
   n.build = { act, jobs: jl, made };
   const matNeed = new Map();
@@ -292,7 +386,7 @@ async function makeMulti(items, opt, shared) {
     if (it.inv) await addInvention(ctx, it, tree);
     trees.push({ item: it, tree, made: tree.made || 0 });
   }
-  return { trees, buyList: ctx.buyList, usedList: ctx.usedList, jobs: ctx.jobs, warn: ctx.warn };
+  return { trees, buyList: ctx.buyList, usedList: ctx.usedList, jobs: ctx.jobs, warn: ctx.warn, par: ctx.par };
 }
 const DECS = {
   34201: { n: 'Accelerant Decryptor', p: 1.2, me: 2, te: 10, runs: 1 },

@@ -334,6 +334,9 @@ function renderSettings() {
       })();
     sel.value = S.market2 || '';
     $('#sBuyM2').checked = S.buyM2 !== false;
+    $('#sParallel').checked = !!S.parallel;
+    $('#sParMode').value = S.parMode === 'speed' ? 'speed' : 'material';
+    $('#sParMode').disabled = !S.parallel;
     $('#sBuyM2').disabled = !S.market2;
     const mb = $('#sM2Broker');
     if (mb) {
@@ -474,6 +477,8 @@ function assignChars(jobs) {
     else j.bp0 = j.bp;
     j.who = null;
   });
+  // a blueprint item runs one job at a time: a job may move to another character's copy only if no other job uses it
+  const taken = new Set(jobs.map(j => j.bp.i).filter(i => i != null));
   const order = jobs.slice().sort((a, b) => tFor(b, b.bp.cid) - tFor(a, a.bp.cid));
   for (const j of order) {
     const rec = j.rs ? { rs: j.rs } : recOf(j.bp.t);
@@ -486,7 +491,9 @@ function assignChars(jobs) {
     const own = c => {
       if (j.bp.virtual) return j.bp;
       if (c === j.bp.cid) return j.bp;
-      return allBPs().find(b => b.cid === c && b.t === j.bp.t && b.me >= j.bp.me && (b.r === -1 || b.r >= j.runs));
+      return allBPs().find(
+        b => b.cid === c && b.t === j.bp.t && b.me >= j.bp.me && (b.r === -1 || b.r >= j.runs) && !taken.has(b.i)
+      );
     };
     for (const c of cand) {
       const v =
@@ -497,7 +504,10 @@ function assignChars(jobs) {
       }
     }
     const mine = own(best);
-    if (mine && mine !== j.bp && !j.bp.virtual) j.bp = Object.assign({}, mine);
+    if (mine && mine !== j.bp && !j.bp.virtual) {
+      j.bp = Object.assign({}, mine);
+      taken.add(mine.i);
+    }
     if (j.bp.virtual) j.bp = Object.assign({}, j.bp, { cid: best });
     j.who = best;
     j.miss = missingSkills(best, rec);
@@ -859,6 +869,29 @@ function resultSystems(R) {
     m2Hint()
   );
 }
+// parallel manufacturing: which items were split into more jobs, and the extra material against the default
+function resultParallel(R) {
+  if (!S.parallel) return '';
+  const par = R.par || [];
+  if (!par.length)
+    return `<div class="notice"><p class="small">${T('Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).', parModeName())}</p></div>`;
+  let extra = 0;
+  const byType = new Map();
+  for (const p of par) {
+    for (const [t, q] of p.extra) extra += q * buyPrice(t);
+    const o = byType.get(p.t) || { before: 0, jobs: 0 };
+    o.before += p.before;
+    o.jobs += p.jobs;
+    byType.set(p.t, o);
+  }
+  const list = [...byType].map(([t, o]) => T('{0}: {1} → {2} job', NAMES[t] || '#' + t, o.before, o.jobs)).join(', ');
+  return `<div class="notice"><p class="small">${esc(T('Párhuzamos gyártás ({0}): {1}.', parModeName(), list))} ${
+    extra > 0
+      ? esc(T('Többletanyag a sorban gyártáshoz képest: {0} ISK.', isk(extra)))
+      : esc(T('Nem kell hozzá több anyag.'))
+  }</p></div>`;
+}
+const parModeName = () => (S.parMode === 'speed' ? T('gyorsabb') : T('kevesebb anyag'));
 function resultProducts(R, rows, multi) {
   let h = `<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi ? '<th>Projekt</th>' : ''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On() ? `<th class="num">${esc(m2Short())} sell / db</th>` : ''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r => `<tr>${multi ? `<td>${esc(r.x.item.label || '')}</td>` : ''}<td>${esc(NAMES[r.p] || r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On() ? `<td class="num">${m2Cell(sell(r.p), sell2(r.p))}</td>` : ''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${r.unk ? '<span title="' + esc(T('Nincs ára valaminek ebben a tételben.')) + '">?</span>' : isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
   if (multi)
@@ -939,6 +972,7 @@ function renderResult(el, R, rerun) {
   let h = resultKpis(R, P, free, multi);
   h += resultSystems(R);
   R.warn.forEach(w => (h += `<div class="notice">${esc(warnText(w))}</div>`));
+  h += resultParallel(R);
   h += resultProducts(R, P.rows, multi);
   h += resultShopping(bl);
   h += resultJobs(R, multi);

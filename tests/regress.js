@@ -106,7 +106,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -655,6 +655,78 @@ const ok = (c, msg) => {
     ok(/Zzyzx/.test(sl.textContent), 'selling tab shows the new second market right after the change');
     ok(T.PROFM2 !== ss.market2, 'profit rows remember the market they were calculated with');
     ss.market2 = '';
+  }
+  // 23. parallel manufacturing: runs spread over several blueprints, limited by blueprints, slots and time
+  {
+    const opt = { useStock: false, buildOwn: false, incoming: false, ore: false };
+    const slots7 = { 3380: 5, 3387: 4, 24625: 2 }; // Industry V, Mass Production IV, Advanced Mass Production II
+    const bpc = (i, cid) => ({ i, t: 688, me: 10, te: 20, r: 4, q: -2, l: 60003760, cid });
+    const setup = (skills, bps) => {
+      T.setChars([
+        { id: 1, name: 'A', refresh: 'x', access: 'x', exp: Date.now() + 1e9 },
+        { id: 2, name: 'B', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }
+      ]);
+      T.setData({
+        1: { assets: [], bps: bps.filter(b => b.cid === 1), skills, jobs: [], at: Date.now() },
+        2: { assets: [], bps: bps.filter(b => b.cid === 2), skills, jobs: [], at: Date.now() }
+      });
+    };
+    const runsOf = R => R.jobs.filter(j => j.top).map(j => j.runs);
+    const three = [bpc(301, 1), bpc(302, 1), bpc(303, 1)];
+    setup(slots7, three);
+    const S0 = T.S;
+    S0.parallel = false;
+    let R = await T.makeMulti([{ copies: three, runs: 4 }], opt);
+    ok(JSON.stringify(runsOf(R)) === '[4]', 'parallel off: one job on the first copy (' + runsOf(R) + ')');
+    S0.parallel = true;
+    S0.parMode = 'speed';
+    R = await T.makeMulti([{ copies: three, runs: 4 }], opt);
+    ok(
+      JSON.stringify(runsOf(R)) === '[2,1,1]' && R.par.length === 1,
+      'speed: 4 runs over 3 copies (' + runsOf(R) + ')'
+    );
+    S0.parMode = 'material';
+    // with structure ME 1% some materials round up per job, so splitting would need more: no split
+    R = await T.makeMulti([{ copies: three, runs: 4 }], opt);
+    ok(
+      runsOf(R).length === 1 && R.par.length === 0,
+      'less material: no split when it would need more (' + runsOf(R) + ')'
+    );
+    // without structure ME every quantity divides exactly: the split costs nothing and is kept
+    const sme = S0.structME;
+    S0.structME = '';
+    R = await T.makeMulti([{ copies: three, runs: 4 }], opt);
+    // 2+1+1 would need one more unit of a 75-per-run material (67.5 rounds up per job), 2+2 needs none
+    ok(
+      JSON.stringify(runsOf(R)) === '[2,2]' && R.par[0].extra.length === 0,
+      'less material: the most jobs that need no extra material (' + runsOf(R) + ')'
+    );
+    S0.structME = sme;
+    S0.parMode = 'speed';
+    R = await T.makeMulti([{ copies: three, runs: 4 }], opt);
+    ok(R.par[0].extra.length > 0, 'speed: the extra material is reported');
+    await T.finishResult(R, three[0]);
+    const elp = d.createElement('div');
+    d.body.appendChild(elp);
+    T.renderResult(elp, R, () => {});
+    ok(/Párhuzamos gyártás \(gyorsabb\): .*1 → 3 job/.test(elp.textContent) && /Többletanyag/.test(elp.textContent), 'plan shows the split and the extra material');
+    const stack = [{ i: 310, t: 688, me: 10, te: 20, r: -1, q: 3, l: 60003760, cid: 1 }];
+    setup(slots7, stack);
+    S0.parMode = 'speed';
+    R = await T.makeMulti([{ copies: stack, runs: 6 }], opt);
+    ok(JSON.stringify(runsOf(R)) === '[2,2,2]', 'a stack of 3 BPOs runs 3 jobs (' + runsOf(R) + ')');
+    setup({}, three);
+    R = await T.makeMulti([{ copies: three, runs: 4 }], opt);
+    ok(runsOf(R).length === 1 && R.par.length === 0, 'one free slot: no split (' + runsOf(R) + ')');
+    // two jobs on two characters' copies must not both move onto the same blueprint
+    const two = [bpc(321, 1), bpc(322, 2)];
+    setup(slots7, two);
+    R = await T.makeMulti([{ copies: two, runs: 8 }], opt);
+    T.assignChars(R.jobs);
+    const ids = R.jobs.filter(j => j.top).map(j => j.bp.i);
+    ok(ids.length === 2 && new Set(ids).size === 2, 'jobs keep separate blueprints after assignment (' + ids + ')');
+    S0.parallel = false;
+    S0.parMode = 'material';
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

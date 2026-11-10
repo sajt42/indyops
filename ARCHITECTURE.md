@@ -85,6 +85,7 @@ showResult(el, R, rerun)             views.js    re-assigns characters, draws, r
 ```
 
 - `makeMulti` takes a shared stock pool (`buildPool`): hangars, optionally ore, and products of running jobs. A project's or item's material sources limit which pool entries it may take (`stockFilter`, `reservedMap`).
+- `allocateRuns` fills the copies one after the other by default. With parallel manufacturing (`S.parallel`, `S.parMode`) it spreads the runs over several blueprint items (`parallelRuns`), limited by the items, the free slots and a one-hour minimum per job; in "material" mode only when no material is added. Splits are listed in `R.par`. `assignChars` never moves two jobs onto the same blueprint item.
 - Surplus from a job goes back to the pool for later nodes and items. With `shared = {pool, runsLeft}`, several projects use one pool and one set of BPC runs.
 - `renderResult` does not change the plan. Anything that changes the assignment (working characters, settings) calls `LASTRENDER`, which goes through `showResult`.
 - Haul preparation uses a generation counter and an assignment signature (`haulSig`). Only the newest preparation that still matches the current assignment may publish `R.haulCtx`.

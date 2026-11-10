@@ -14,6 +14,7 @@ IndyOps is a free, browser-only **EVE Online industry calculator and manufacturi
 - **Full material trees**: down to raw materials wherever you own the BP, using the ME/TE of each individual copy. BPC runs are split across copies.
 - **Projects**: combine items ("3 Hurricane + 2 Maelstrom"); active projects share one stock pool in priority order. Output of running jobs counts as incoming stock. Each project (or item) can take materials only from chosen stations, structures or containers, and a container can be reserved for one project. Containers and ship cargo holds are shown with their type.
 - **Who builds what**: jobs are assigned by skills, job time and free slots, and the tool tells you when a BP has to be handed over.
+- **Parallel manufacturing** (optional): with several blueprints for one item, the runs can be split into jobs that run at the same time, either only when it needs no extra material or as far as blueprints and free slots allow.
 - **What pays?**: profit per run, margin, profit per build hour and daily market volume for every BP you own.
 - **Invention & T2**: chance from your skills, all 8 decryptors compared, invention cost per BPC; invention jobs, datacores and T1 copies included in projects.
 - **Research & copy**: time and cost of the next ME level, saving per run, payback, full ME10/TE20 time, copy time, science slots.

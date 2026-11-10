@@ -188,6 +188,17 @@ $('#sWallet').addEventListener('change', e => {
   saveS();
   renderChars();
 });
+$('#sParallel').addEventListener('change', e => {
+  S.parallel = e.target.checked;
+  saveS();
+  renderSettings();
+  status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
+});
+$('#sParMode').addEventListener('change', e => {
+  S.parMode = e.target.value === 'speed' ? 'speed' : 'material';
+  saveS();
+  status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
+});
 $('#sBuyM2').addEventListener('change', e => {
   S.buyM2 = e.target.checked;
   saveS();
@@ -311,6 +322,8 @@ const SET_SCHEMA = {
   workChars: 'numArrOrNull',
   wallet: 'bool',
   buyM2: 'bool',
+  parallel: 'bool',
+  parMode: 'str',
   srcShips: 'bool',
   buyOverride: 'mapBool',
   locNames: 'mapStr',

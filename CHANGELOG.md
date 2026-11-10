@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.13.0 – 2026-11-10
+
+- Parallel manufacturing (Settings → Manufacturing, off by default): with several blueprints for one item (BPCs, BPOs, or a stack of BPOs) the runs are split into jobs that run at the same time, up to the number of blueprints and free slots, with at least one hour of base time per job. Mode 'less material' splits only as far as no extra material is needed (ME rounds up per job); 'more speed' splits as far as possible. The plan lists the split items and the extra material in ISK.
+- Fix: two jobs could be assigned to the same blueprint when the planner moved a job to another character's copy.
+
 ## 1.12.13 – 2026-11-10
 
 - Selling: the in-game standing in the broker fee tooltip is rounded like the game's Standings window (1.12.10 cut it off, which showed 4.76 where the game shows 4.77). The fee itself was right.

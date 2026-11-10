@@ -21,7 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.12.13">
+<link rel="stylesheet" href="css/style.css?v=1.13.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -321,6 +321,11 @@
         <label>Gyártási rendszer (felülírás) <input id="sSystem" placeholder="üresen: a BP helye"></label>
         <label>Gyártási helyszín a szállításhoz <select id="sProdLoc"><option value="">automatikus: a BP helye</option></select></label>
       </div>
+      <div class="row" style="margin-top:8px">
+        <label class="inline"><input type="checkbox" id="sParallel"> Párhuzamos gyártás</label>
+        <label>Mód <select id="sParMode"><option value="material">kevesebb anyag</option><option value="speed">gyorsabb</option></select></label>
+      </div>
+      <p class="small muted" style="margin-top:6px">Ha egy tételhez több blueprinted van (több BPC, vagy több BPO, egy stackben is), a runok több jobra oszolhatnak, hogy egyszerre fussanak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás (alapidő). Kevesebb anyag: csak akkor bont, ha nem kell hozzá több anyag. Gyorsabb: annyi jobra bont, amennyire lehet; a többletanyagot a terv kiírja. A stackelt BPO-kat a játékban szét kell szedni.</p>
     </div>
     <div class="card">
       <h2>Eladás és reprocess</h2>
@@ -404,6 +409,7 @@
   <h3>A fülek</h3>
   <dl class="helpdl">
     <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között. Ha a második piacon olcsóbb egy anyag, a bevásárlólista ott veszi meg (kikapcsolható a Beállításokban), és a szállítás is onnan számol.</dd>
+    <dt>Párhuzamos gyártás</dt><dd>Beállítások → Gyártás. Ha egy tételhez több blueprinted van (több BPC, több BPO vagy egy BPO-stack), a runok több, egyszerre futó jobra oszolhatnak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás alapidejű. „Kevesebb anyag” módban csak akkor bont, ha nem kell hozzá több anyag (az ME jobonként felfelé kerekít), „gyorsabb” módban annyira, amennyire lehet; a terv kiírja, mely tételek bomlottak szét és mennyi a többletanyag. A stackelt BPO-kat a játékban szét kell szedni.</dd>
     <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak. Projektenként (vagy tételenként) kiválaszthatod, honnan vehet nyersanyagot: állomások, struktúrák vagy konkrét konténerek. Egy konténert le is foglalhatsz egy projektnek („csak ez a projekt”), ahhoz más projekt nem nyúl. A listában a konténerek (📦) és a hajók rakterei (🚀) a saját neved mellett a típusukkal látszanak; a hajók elrejthetők.</dd>
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze. Ha van második piac, a profit runonként ott is látszik, az ottani díjakkal.</dd>
     <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
@@ -468,6 +474,7 @@
   <h3>The tabs</h3>
   <dl class="helpdl">
     <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it. If a material is cheaper at the second market, the shopping list buys it there (can be switched off in Settings), and hauling starts from there.</dd>
+    <dt>Parallel manufacturing</dt><dd>Settings → Manufacturing. If you have more than one blueprint for an item (several BPCs, several BPOs or a stack of BPOs), the runs can be split into jobs that run at the same time. There are at most as many jobs as blueprints and free slots, and each job has at least one hour of base time. In "less material" mode it splits only when no extra material is needed (ME rounds up per job); in "more speed" mode as far as possible. The plan lists the items that were split and the extra material. Stacked BPOs have to be split in game.</dd>
     <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock. Per project (or per item) you can choose where materials may come from: stations, structures or specific containers. You can also reserve a container for one project (“this project only”) so no other project touches it. Containers (📦) and ship cargo holds (🚀) are listed with their type next to your name for them; ships can be hidden.</dd>
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together. With a second market, profit per run is shown there too, with that market's fees.</dd>
     <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
@@ -532,6 +539,7 @@
   <h3>Die Reiter</h3>
   <dl class="helpdl">
     <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen. Ist ein Material am zweiten Markt billiger, kauft die Einkaufsliste dort (in den Einstellungen abschaltbar), und der Transport startet von dort.</dd>
+    <dt>Parallele Fertigung</dt><dd>Einstellungen → Fertigung. Hast du für einen Artikel mehrere Blueprints (mehrere BPCs, mehrere BPOs oder einen BPO-Stapel), können die Runs auf gleichzeitig laufende Jobs verteilt werden. Es gibt höchstens so viele Jobs wie Blueprints und freie Slots, und jeder Job hat mindestens eine Stunde Grundzeit. Im Modus „weniger Material“ wird nur geteilt, wenn kein Mehrmaterial nötig ist (ME rundet pro Job auf), im Modus „schneller“ so weit wie möglich. Der Plan zeigt, welche Artikel geteilt wurden und wie viel Mehrmaterial das kostet. Gestapelte BPOs müssen im Spiel getrennt werden.</dd>
     <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand. Pro Projekt (oder pro Position) kannst du wählen, woher Material kommen darf: Stationen, Strukturen oder bestimmte Container. Einen Container kannst du auch für ein Projekt reservieren („nur dieses Projekt“), dann greift kein anderes Projekt darauf zu. Container (📦) und Schiffsfrachträume (🚀) stehen mit ihrem Typ neben deinem Namen dafür; Schiffe lassen sich ausblenden.</dd>
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen. Mit einem zweiten Markt wird der Gewinn pro Run auch dort angezeigt, mit dessen Gebühren.</dd>
     <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
@@ -586,15 +594,15 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.12.13"></script>
-<script src="i18n/de.js?v=1.12.13"></script>
-<script src="js/core.js?v=1.12.13"></script>
-<script src="js/esi.js?v=1.12.13"></script>
-<script src="js/data.js?v=1.12.13"></script>
-<script src="js/engine.js?v=1.12.13"></script>
-<script src="js/views.js?v=1.12.13"></script>
-<script src="js/tabs.js?v=1.12.13"></script>
-<script src="js/repro.js?v=1.12.13"></script>
-<script src="js/main.js?v=1.12.13"></script>
+<script src="i18n/en.js?v=1.13.0"></script>
+<script src="i18n/de.js?v=1.13.0"></script>
+<script src="js/core.js?v=1.13.0"></script>
+<script src="js/esi.js?v=1.13.0"></script>
+<script src="js/data.js?v=1.13.0"></script>
+<script src="js/engine.js?v=1.13.0"></script>
+<script src="js/views.js?v=1.13.0"></script>
+<script src="js/tabs.js?v=1.13.0"></script>
+<script src="js/repro.js?v=1.13.0"></script>
+<script src="js/main.js?v=1.13.0"></script>
 </body>
 </html>

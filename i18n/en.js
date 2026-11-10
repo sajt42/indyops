@@ -745,5 +745,19 @@ window.I18N.en = {
   'frakció: nincs, vagy nem ismert': 'faction: none, or not known',
   '3% − 0,3% × Broker Relations {0}': '3% − 0.3% × Broker Relations {0}',
   'A díj a nyers standinggel számol (Connections/Diplomacy nélkül).':
-    'The fee uses the raw standings (without Connections/Diplomacy).'
+    'The fee uses the raw standings (without Connections/Diplomacy).',
+  'Párhuzamos gyártás': 'Parallel manufacturing',
+  Mód: 'Mode',
+  'kevesebb anyag': 'less material',
+  gyorsabb: 'more speed',
+  'Ha egy tételhez több blueprinted van (több BPC, vagy több BPO, egy stackben is), a runok több jobra oszolhatnak, hogy egyszerre fussanak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás (alapidő). Kevesebb anyag: csak akkor bont, ha nem kell hozzá több anyag. Gyorsabb: annyi jobra bont, amennyire lehet; a többletanyagot a terv kiírja. A stackelt BPO-kat a játékban szét kell szedni.':
+    'If you have more than one blueprint for an item (several BPCs, or several BPOs, also in one stack), the runs can be split into jobs that run at the same time. There are at most as many jobs as blueprints and free slots, and a job takes at least one hour (base time). Less material: splits only when it needs no extra material. More speed: splits as far as possible; the plan shows the extra material. Stacked BPOs have to be split in game.',
+  'Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).':
+    'Parallel manufacturing ({0}): no item is worth splitting into more jobs (not enough blueprints, free slots or time, or it would need more material).',
+  '{0}: {1} → {2} job': '{0}: {1} → {2} jobs',
+  'Párhuzamos gyártás ({0}): {1}.': 'Parallel manufacturing ({0}): {1}.',
+  'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Extra material compared with one job after the other: {0} ISK.',
+  'Nem kell hozzá több anyag.': 'It needs no extra material.',
+  'Párhuzamos gyártás: a következő számolásnál lép életbe.':
+    'Parallel manufacturing: takes effect with the next calculation.'
 };

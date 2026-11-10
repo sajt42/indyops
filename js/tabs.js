@@ -221,7 +221,7 @@ async function calcProjects(list) {
     await indexBPProducts();
     const opt = Object.assign(getOpt(), { incoming: $('#pIncoming').checked });
     const shared = { pool: await buildPool(opt), runsLeft: new Map() };
-    const R = { trees: [], buyList: new Map(), usedList: new Map(), jobs: [], warn: [] };
+    const R = { trees: [], buyList: new Map(), usedList: new Map(), jobs: [], warn: [], par: [] };
     let firstBP = null;
     for (const p of list) {
       const items = [];
@@ -258,6 +258,7 @@ async function calcProjects(list) {
       R.trees.push(...r.trees);
       R.jobs.push(...r.jobs);
       R.warn.push(...r.warn);
+      R.par.push(...r.par);
       for (const [t, q] of r.buyList) R.buyList.set(t, (R.buyList.get(t) || 0) + q);
       for (const [t, q] of r.usedList) R.usedList.set(t, (R.usedList.get(t) || 0) + q);
     }
