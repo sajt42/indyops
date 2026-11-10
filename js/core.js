@@ -14,7 +14,7 @@ const SK={industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,repr
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.5.1',built:'2026-11-09',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.5.2',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele

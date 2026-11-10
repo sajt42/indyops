@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.2 – 2026-11-10
+
+- Favicon: an orange hex nut on a dark tile (original artwork, no CCP logos), embedded so it also works in the offline file
+
 ## 1.5.1 – 2026-11-09
 
 - Reprocess: separate columns per market (Jita and the second market) for “as is” and “reprocessed”; the verdict says which market is better; summary table per market
