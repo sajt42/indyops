@@ -1,0 +1,6 @@
+CHAR CARDS: Pilot A13 tárgy · 4 BP · frissítve <DATE>Új engedély kell ehhez a karakterhez: esi-clones.read_implants.v1 esi-markets.structure_markets.v1 esi-characters.read_standings.v1. Előbb add  || Pilot B0 tárgy · 2 BP · frissítve <DATE>Új engedély kell ehhez a karakterhez: esi-characters.read_blueprints.v1 esi-skills.read_skills.v1 esi-industry.read_character_jobs.v1 esi-univer
+KPI: Aktív order2 | Megelőztek2 | Eladó orderek értéke310,0 M | Vételi orderek értéke15,0 M
+ORDERS: Pilot A4,20%2,10%6,30%javasolt
+        Pilot B7,50%3,00%10,50%
+HIST: RavenPilot Aeladás155,0 M152,3 Malá ígértek152 200 000,002 / 3Test Station I<DATE> / TritaniumPilot Avétel3,003,43túlígértek3,445 000 000 / 5 000 000Test Station I<DATE>
+scopeList: esi-assets.read_assets.v1 esi-characters.read_blueprints.v1 esi-skills.read_skills.v1 esi-industry.read_character_jobs.v1 esi-universe.read_structures.v1 esi-markets.read_character_orders.v1 esi-clones.read_implants.v1 esi-markets.structure_markets.v1 esi-characters.read_standings.v1 esi-wallet.read_character_wallet.v1

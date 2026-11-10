@@ -1,0 +1,4 @@
+errors: none
+setup visible: true | tabs: Karakterek, Tervező, Projektek, Mit érdemes?, Invention, Kutatás & copy, Eladás, Vásárlás nélkül, Blueprintek, Készlet, Bányászat, Reprocess, Beállítások, Súgó
+sales empty:
+errors after: none

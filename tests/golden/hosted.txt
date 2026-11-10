@@ -1,0 +1,9 @@
+token request: grant_type=authorization_code&code=CODE123&client_id=b02779a9ea1c427bb46c9d70a697a4c7&code_verifier=VER
+chars: [{"id":777,"name":"Pilot A","refresh":"R","access":"x.eyJzdWIiOiJDSEFSQUNURVI6RVZFOjc3NyIsIm5hbWUiOiJQaWxvdCBBIiwic2NwIjpbImVzaS1hc3NldHMucmVhZF9hc3NldHMudjEiXX0.y","exp":<EPOCH>,"scp":["esi-assets.read_assets.v1"],"cid":"b02779a9ea1c427bb46c9d70a697a4c7"}]
+url after: https://sajt42.github.io/indyops/
+migrated settings: {"lang":"en","structME":1} | projects: [{"id":1,"name":"Old project","active":true,"items":[]}]
+setup box hidden (built-in client id): true | cidNote visible: true
+bug link: https://github.com/sajt42/indyops/issues/new?title=%5Bbug%5D+&body=**W ... len <N>
+body has version: false | lang: en | bug label: Report a bug
+footer: IndyOps v<VER> · by SajT (“Temporary solution since a while.”) · MIT license · Help · Source code and bug reports on GitHub · Recipe data: EVE Ref · Game data: ESI IndyOps is a fan-made tool, not affiliated with or endorsed by CCP hf. It c
+errors: none

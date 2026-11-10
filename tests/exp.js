@@ -22,6 +22,9 @@ const T=w.__t,d=w.document;
   const inp=d.querySelector('#impFile');Object.defineProperty(inp,'files',{value:[file]});inp.dispatchEvent(new w.Event('change'));
   await new Promise(r=>setTimeout(r,100));
   console.log('confirm:',d.querySelector('#impConfirm').textContent.replace(/\s+/g,' ').slice(0,160));
+  w.localStorage.removeItem('indyops.projects');
   d.querySelector('#impYes').click();
+  {const lp=JSON.parse(w.localStorage.getItem('indyops.projects')||'[]'),lc=JSON.parse(w.localStorage.getItem('indyops.chars')||'[]');
+   console.log(lp.length===1&&lp[0].name==='Orca rendelés'&&lc.length===1&&lc[0].refresh==='SECRET'?'persisted: ok':'FAIL: restore not persisted to localStorage')}
   console.log('after import: projects=',T.PROJ.length,T.PROJ[0].name,'chars=',T.CHARS.length,T.CHARS[0].name,'pList=',d.querySelector('#pList').textContent.replace(/\s+/g,' ').trim());
   })().catch(e=>console.error('FAIL',e));

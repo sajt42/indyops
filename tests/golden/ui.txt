@@ -1,0 +1,8 @@
+copy options: BPC 8 run · ME10 TE20 · Pilot A · Test Station I
+KPIs: Termék2 × Raven | Vásárolni kell29,0 M | Saját készlet értéke221,7 M | Job költség15,7 M | Eladás (Jita sell, díjak után)285,4 M | Profitnem számolhatóbecslés ár nélküli tételek nélkül: 19,0 M
+buy rows: Raven2152,3 M285,4 M250,6 M15,7 M?5ó 37p
+JOBS: Tritanium7 603 9103,8129,0 M / 2312324nincs ár– / 2463324nincs ár– / 574571708nincs ár– / 2401180nincs ár– / 57456900nincs ár–
+LOAD: Core Temperature RegulatorPilot B skill okBPO ME10 · Test Station I22ó 25p0,00 / Auto-Integrity Preservation SealPilot B skill okBPO ME10 · Test Station I901n 0ó 28p0,00 / RavenPilot A skill okBPC ME10 · Test Station I25ó 37p15,7 M
+tree rows: 18
+bp rows: 6 stock rows: 10
+canbuild: Auto-Integrity Preservation SealBPO · ME10 · Pilot A02312 (4 hiányzik) / Core Temperature RegulatorBPO · ME10 · Pilot B02401 (90 hiányzik) / Life Support Backup UnitBPO · ME10 · Pilot A02319 (8 hiányzik) / RavenBPC 8 run · ME10 · Pilot A0Tritanium (2 923 910 hiányzik)

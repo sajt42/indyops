@@ -64,13 +64,15 @@ js/repro.js         reprocess calculator (stock, skills, location yield)
 js/main.js          event wiring, backup/restore, bug report, start-up
 i18n/en.js, de.js   translations (keys are the Hungarian source strings)
 tools/bundle.mjs    builds the single-file dist/indyops.html
-tests/              headless tests (jsdom) against dist/indyops.html; regress.js has assertion-based regression checks
+tests/              headless tests (jsdom) against dist/indyops.html
 ```
 
 ```
 node tools/bundle.mjs          # rebuild dist/indyops.html
 cd tests && npm install && npm test
 ```
+
+`tests/regress.js` holds assertion-based checks. Every other scenario in `tests/` is a characterization test: its output (with dates and times masked) must match `tests/golden/<name>.txt`, so any change in what the app shows is caught. After an intended change, review the reported difference and refresh the reference with `UPDATE_GOLDEN=1 node run-all.mjs <name>`.
 
 **Versioning:** every change that goes to `main` gets a new version ([semver](https://semver.org): fix → patch, feature → minor, breaking → major), a CHANGELOG entry and a git tag. The version is shown in the header and footer and included in bug reports, so `vX.Y.Z` in a report points straight at the tag.
 

@@ -17,13 +17,13 @@ if (!['patch', 'minor', 'major'].includes(kind) || !notes.length) {
 
 // 1. version in js/core.js
 let core = readFileSync(p('js/core.js'), 'utf8');
-const m = core.match(/version:'(\d+)\.(\d+)\.(\d+)'/);
+const m = core.match(/version:\s*'(\d+)\.(\d+)\.(\d+)'/);
 if (!m) throw new Error('version not found in js/core.js');
 let [maj, min, pat] = m.slice(1).map(Number);
 if (kind === 'major') { maj++; min = 0; pat = 0; } else if (kind === 'minor') { min++; pat = 0; } else pat++;
 const ver = `${maj}.${min}.${pat}`;
 const date = new Date().toISOString().slice(0, 10);
-core = core.replace(m[0], `version:'${ver}'`).replace(/built:'[^']*'/, `built:'${date}'`);
+core = core.replace(m[0], `version: '${ver}'`).replace(/built:\s*'[^']*'/, `built: '${date}'`);
 writeFileSync(p('js/core.js'), core);
 
 // 2. cache busting in index.html

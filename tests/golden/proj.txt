@@ -1,0 +1,8 @@
+TITLE: Raven A + Raven B
+KPIs: Termékek2 tétel | Vásárolni kell146,9 M | Saját készlet értéke354,4 M | Job költség31,4 M | Eladás (Jita sell, díjak után)570,8 M | Profitnem számolhatóbecslés ár nélküli tételek nélkül: 38,1 M
+PRODUCTS: Raven ARaven2152,3 M285,4 M250,6 M15,7 M?5ó 37p / Raven BRaven2152,3 M285,4 M250,6 M15,7 M?5ó 37p
+BUY: Tritanium16 963 9103,8164,6 M / Pyerite3 159 21315,8750,1 M / Isogen123 97422027,2 M / Mexallon86 03056,694,9 M / 2401360nincs ár– / 574561800nincs ár– / 574572608nincs ár– / 2312324nincs ár– / 2463324nincs ár–
+JOBS: Core Temperature RegulatorRaven BPilot B skill okBPO ME10 · Test Station I22ó 25p0,00 / Auto-Integrity Preservation SealRaven BPilot B skill okBPO ME10 · Test Station I901n 0ó 28p0,00 / RavenRaven BPilot A skill okBPC ME10 · Test Station I25ó 37p15,7 M / Core Temperature RegulatorRaven APilot B skill okBPO ME10 · Test Station I22ó 25p0,00 / RavenRaven APilot A skill okBPC ME10 · Test Station I25ó 37p15,7 M
+SOURCES: Test Station I | futó job (Pilot B)
+pList: Raven A · 1 tétel▲▼Raven B · 1 tétel▲▼
+pEdit rows: 0

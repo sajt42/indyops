@@ -79,9 +79,9 @@ async function calcProjects(list){
     }
     if(!R.trees.length){out.innerHTML='<div class="card muted">Nincs számolható tétel. Adj hozzá tételeket a projekthez.</div>';return}
     await finishResult(R,firstBP);R.title=list.map(p=>p.name).join(' + ');
-    LASTPLAN=R;LASTRENDER=()=>renderResult(out,R,()=>calcProjects(list));
+    LASTPLAN=R;
     out.innerHTML='';const head=document.createElement('h2');head.textContent=R.title;head.style.marginTop='8px';
-    const body=document.createElement('div');out.append(head,body);renderResult(body,R,()=>calcProjects(list));LASTRENDER=()=>renderResult(body,R,()=>calcProjects(list));
+    const body=document.createElement('div');out.append(head,body);LASTRENDER=()=>showResult(body,R,()=>calcProjects(list));LASTRENDER();
     renderMineNeed();
   }catch(e){out.innerHTML='<div class="notice err"><p>'+esc(e.message)+'</p></div>';log(e.stack||e.message)}
 }

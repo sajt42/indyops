@@ -1,0 +1,18 @@
+INV: 28710Jita 1,75 BRaven BlueprintBPC 8 run · Pilot AAugmentation Decryptor18,0%100 / 627,1 M13,74 B1,37 B1,36 B40+ projekt
+pList: Invention · 1 tétel▲▼
+pEdit: T2 BPC inventionAugmentation DecryptorT1: Raven Blueprint · BPC 8 runprojekt szerintsaját források✕
+PROJ KPIs: TermékInvention | Vásárolni kell2,15 B | Saját készlet értéke444,1 M | Job költség78,6 M | Eladás (Jita sell, díjak után)16,40 B | Profit13,72 B
+PROJ JOBS: 28711 inventionesély 18,0% · 10 run/BPC · ME0 TE6Pilot A skill okT1 BPC ME10 · Test Station I6 kísérlet11n 17ó 36p0,00
+     Life Support Backup UnitPilot A skill okBPO ME10 · Test Station I911n 1ó 37p0,00
+     Core Temperature RegulatorPilot B skill okBPO ME10 · Test Station I1012ó 5p0,00
+     Auto-Integrity Preservation SealPilot A skill okBPO ME10 · Test Station I4505n 6ó 43p0,00
+     RavenPilot A skill okBPC ME10 · Test Station I nincs elég run25ó 37p15,7 M
+     RavenPilot A skill okBPC ME10 · Test Station I822ó 31p62,9 M
+     28710Pilot B hiányzó skill3398 0 → 1, 11452 0 → 1, Caldari Starship Engineering 0 → 1inventált BPC ME0 · Test Station I1026n 15ó 12p0,00
+LOAD: Pilot B210 / 1001 / 101 / 127n 3ó 17p26n 15ó 12p1 jobhoz egyik karakternek sincs meg a skill / Pilot A46 / 701 / 116 / 619n 6ó 6p11n 17ó 36prendben
+TREE top: 28710 10–10–259,6 M / 1,75 B
+     28711 invention 18,0% esély · 6 kísérlet · Augmentation Decryptor1–1–29,3 M / –
+     20411 192––19260,0 k
+     25887 192––19280,0 k
+     34203 6––6400,0 k
+     Raven gyártom10–10–139,8 M / 152,3 M

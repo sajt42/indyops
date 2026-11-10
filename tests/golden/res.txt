@@ -1,0 +1,3 @@
+SLOTS: Science slotok (kutatás, copy, invention): Pilot A: 6 / 6 szabad · Pilot B: 1 / 1 szabad. Skillek: ME kutatás Pilot B (szint 0), TE kutatás Pilot B (szint 0), copy Pilot B (szint 5).
+RES: Core Temperature Regulator BlueprintPilot A · Test Station I8 / 1863n 13ó 45p0,0041,0 k–214n 16ó 25p0,00151n 2ó 40p0,0051p401n 10ó 0p
+ALL rows: 5

@@ -1,0 +1,6 @@
+intro visible (no chars): true | Üdv az IndyOpsban!
+footer link opens help: true | visible: hu: Mi az IndyOps?
+en → tab label: Help | help: en: What is IndyOps? | intro: Welcome to IndyOps! | link: What is this and how does it work?
+de → tab label: Hilfe | help: de: Was ist IndyOps? | intro: Willkommen bei IndyOps! | link: Was ist das und wie funktioniert es?
+hu → tab label: Súgó | help: hu: Mi az IndyOps? | intro: Üdv az IndyOpsban! | link: Mi ez és hogyan működik?
+errors: none

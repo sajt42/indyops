@@ -1,0 +1,6 @@
+before: Ismeretlen hely #<EPOCH> | Ismeretlen hely #<EPOCH>
+stock note: 2 helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod). Elnevezés a Beállításokban
+everef found: 1 calls: 1 | Perimeter - Public Hall sys 30000144
+table: 10000000000102 féle tárgy: Tritanium, Ravenkinél: Pilot A · hangár: Hangar ×1, AssetSafety ×1 · Asset safety: a tárgyak egy megszűnt vagy elérhetetlen struktúrából kerültek ki; a játékban az Assets ablak „Asset Safety” részén látszanak, onnan kivehetők. · ESI hely-típus: item | card hidden: false
+named: Isinokka - Malac kuckó | note: "" | saved: {"<EPOCH>":"Isinokka - Malac kuckó"}
+second auto call skipped: 0 calls: 1

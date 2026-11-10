@@ -19,7 +19,7 @@ jobs:
           declare -A last
           # a version is final once a newer version exists; the current one is tagged at HEAD
           for c in $(git rev-list --reverse HEAD); do
-            v=$(git show "$c:js/core.js" 2>/dev/null | grep -oP "version:'\K[0-9]+\.[0-9]+\.[0-9]+" | head -1)
+            v=$(git show "$c:js/core.js" 2>/dev/null | grep -oP "version:\s*'\K[0-9]+\.[0-9]+\.[0-9]+" | head -1)
             [ -n "$v" ] && last[$v]=$c
           done
           for v in "${!last[@]}"; do

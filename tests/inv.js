@@ -52,7 +52,7 @@ const T=w.__t;
   out.querySelector('[data-invadd]').click();
   console.log('pList:',d.querySelector('#pList').textContent.replace(/\s+/g,' ').trim());
   console.log('pEdit:',d.querySelector('#pEdit tbody').textContent.replace(/\s+/g,' ').trim());
-  d.querySelector('#pCalc').click();await new Promise(r=>setTimeout(r,1500));
+  d.querySelector('#pCalc').click();for(let i=0;i<300&&/Számolás/.test(d.querySelector('#pOut').textContent);i++)await new Promise(r=>setTimeout(r,100));
   const po=d.querySelector('#pOut');const tabs=[...po.querySelectorAll('table')];
   console.log('PROJ KPIs:',[...po.querySelectorAll('.kpi')].map(k=>k.textContent.replace(/\s+/g,' ').trim()).join(' | '));
   console.log('PROJ JOBS:',[...tabs[2].querySelectorAll('tbody tr')].map(r=>r.textContent.replace(/\s+/g,' ').trim()).join('\n     '));

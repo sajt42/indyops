@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.4 – 2026-11-10
+
+- Tests: every scenario is now checked against a reviewed reference output (golden files), and errors printed by a scenario count as failures. This uncovered an invention scenario that never waited for its project result; fixed.
+- Tests: restoring a backup is checked to be saved in the browser storage.
+- Code: drawing a plan no longer changes it. Character assignment and haul preparation run before drawing (showResult/refreshHaul); renderResult only renders.
+
 ## 1.12.3 – 2026-11-10
 
 - Hauling: a route preparation is published only if it still matches the current assignment (switching A → B → back to A no longer lets B's result in)

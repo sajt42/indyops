@@ -20,7 +20,7 @@ w.fetch=async(u,o)=>{u=String(u);if(hang){const h=hang(u,o);if(h)return h}const 
   throw new Error('unmocked '+u)};
 const code=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
 w.localStorage.setItem('indyops.settings',JSON.stringify({lang:'hu'}));
-w.eval(code+`;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+w.eval(code+`;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC};`);
 const T=w.__t,d=w.document;let fails=0,checks=0;
 const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
@@ -145,5 +145,18 @@ const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
    const canon=x=>Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().filter(k=>x[k]!==undefined).map(k=>[k,canon(x[k])])):x;const same=(a,b)=>JSON.stringify(canon(a))===JSON.stringify(canon(b));
    ok(same(rt.d.settings,exp),'all supported settings survive the round trip unchanged');
    ok(same(rt.d.projects,JSON.parse(JSON.stringify(T.PROJ))),'projects survive the round trip unchanged');}
+  // 19. renderResult only draws: it must not change the plan
+  {const before=JSON.stringify(R.jobs.map(j=>[j.who,j.bp&&j.bp.i,j.wait,j.noone,j.miss]))+'|'+R.haulSig+'|'+R.haulPending;
+   const el2=d.createElement('div');d.body.appendChild(el2);T.renderResult(el2,R,()=>{});
+   ok(JSON.stringify(R.jobs.map(j=>[j.who,j.bp&&j.bp.i,j.wait,j.noone,j.miss]))+'|'+R.haulSig+'|'+R.haulPending===before,'renderResult does not mutate the plan');}
+
+  // 20. refreshHaul: no work while the signature is unchanged, one run per new signature, redraw only when fresh
+  {route=(a,b)=>({delay:20,path:[a,b]});
+   const RR={trees:[tree(60000006)],jobs:[]};ok(await T.refreshHaul(RR)===true&&!!RR.haulSig,'first refresh publishes');
+   ok(await T.refreshHaul(RR)===false,'unchanged assignment is not prepared again');
+   RR.trees=[tree(60000007)];const p1=T.refreshHaul(RR),p2=T.refreshHaul(RR);const [r1,r2]=await Promise.all([p1,p2]);
+   ok(r1===true&&r2===false&&RR.haulPending==null,'one preparation per new assignment ('+r1+','+r2+')');
+   const el3=d.createElement('div');d.body.appendChild(el3);RR.trees=[tree(60000006)];RR.buyList=new Map();RR.usedList=new Map();RR.warn=[];
+   let ok3=true;try{T.showResult(el3,{...R},()=>{})}catch(e){ok3=false;console.log(e.stack)}ok(ok3,'showResult draws a full plan');}
   console.log(`regress: ${checks-fails}/${checks} checks passed`);
 })().catch(e=>console.error('FAIL',e));

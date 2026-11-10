@@ -1,0 +1,6 @@
+export no-token: chars= [{"id":1,"name":"Pilot A"}] projects= 1
+warn visible: true
+export token: has refresh= true
+confirm: Mentés dátuma: <DATE> · 1 projekt · 1 karakter (bejelentkezésekkel).A visszatöltés felülírja a mostani beállításokat és projekteket. A karaktere
+persisted: ok
+after import: projects= 1 Orca rendelés chars= 1 Pilot A pList= Orca rendelés · 1 tétel▲▼

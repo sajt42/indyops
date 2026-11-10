@@ -117,7 +117,7 @@ async function runPlan(){
     const copies=[bp].concat(copiesOf(bp.t).filter(c=>c.i!==bp.i));
     const R=await makeMulti([{copies,runs,label:''}],getOpt());
     await finishResult(R,bp);R.title=fmt(R.trees[0].made)+' × '+(NAMES[R.trees[0].tree.t]||'');
-    LASTPLAN=R;LASTRENDER=()=>renderResult($('#planOut'),R,runPlan);LASTRENDER();renderMineNeed();
+    LASTPLAN=R;LASTRENDER=()=>showResult($('#planOut'),R,runPlan);LASTRENDER();renderMineNeed();
   }catch(e){$('#planOut').innerHTML='<div class="notice err"><p>'+esc(e.message)+'</p></div>';log(e.stack||e.message)}
 }
 function assignChars(jobs){ // ki csinálja: skill + idő + szabad slot alapján, LPT elosztás
@@ -242,11 +242,25 @@ function buildUnit(n,sys){ // gyártási egységár: részfa piaci áron + a cso
   const mat=n.ch.reduce((s,c)=>s+nodeCost(c,false),0);const jc=n.jobsRef.reduce((s,j)=>s+jobCost(j,sys),0);
   return (mat+jc)/n.build.made;
 }
-function renderResult(el,R,rerun){
+// Shows a plan: recomputes the character assignment (work characters or slots may have changed), draws it,
+// and if the assignment changed since the haul context was prepared, prepares it again and redraws.
+function showResult(el,R,rerun){
   assignChars(R.jobs);
-  // ha a kiosztás változott (pl. más karakterek dolgoznak), a szállítási útvonalakat újra előkészíti, majd újrarajzol
-  // a jelzés (haulSig) csak sikeres előkészítés után frissül; ugyanarra a kiosztásra egyszerre csak egy előkészítés fut
-  {const sig=haulSig(R);if(R.haulSig!==sig&&R.haulPending!==sig){R.haulPending=sig;assignJobSys(R.jobs).then(()=>prepHaul(R)).then(fresh=>{if(R.haulPending===sig)R.haulPending=null;if(fresh&&R.haulSig===sig&&el.isConnected)renderResult(el,R,rerun)}).catch(e=>{if(R.haulPending===sig)R.haulPending=null;log('Szállítás előkészítés: '+e.message)})}}
+  renderResult(el,R,rerun);
+  refreshHaul(R).then(fresh=>{if(fresh&&el.isConnected)renderResult(el,R,rerun)});
+}
+// Re-prepares the haul context when the assignment signature changed. Resolves true only when a new context was published
+// for the current assignment; one preparation runs per signature, and only a successful one updates R.haulSig.
+async function refreshHaul(R){
+  const sig=haulSig(R);
+  if(R.haulSig===sig||R.haulPending===sig)return false;
+  R.haulPending=sig;
+  try{await assignJobSys(R.jobs);const fresh=await prepHaul(R);return fresh&&R.haulSig===sig}
+  catch(e){log('Szállítás előkészítés: '+e.message);return false}
+  finally{if(R.haulPending===sig)R.haulPending=null}
+}
+// Pure rendering of a finished plan (finishResult or showResult has already assigned characters and prepared hauling).
+function renderResult(el,R,rerun){
   const free=$('#optStockFree').checked;const fee=salesTax()+brokerFee();
   // ár nélküli tételek: ezekből a profit nem számolható (nem 0 költséggel számolunk)
   const unkOf=(tree)=>{const u=new Set();const scan=n=>{if(n.buy>0&&!buyPrice(n.t))u.add(n.t);if(!free&&n.stock.some(x=>x.l!=='surplus'&&x.l!=='job'&&x.q>0)&&!unitPrice(n.t))u.add(n.t);n.ch.forEach(scan)};scan(tree);if(!sell(tree.t))u.add(tree.t);return u};

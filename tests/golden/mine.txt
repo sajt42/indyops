@@ -1,0 +1,4 @@
+ORES: Veldspar II-Grade100 00010 000Pilot B · 69,6%Tritanium 292 215 / Veldspar50 0005000Pilot B · 69,6%Tritanium 139 150
+MIN: Tritanium431 3651,6 M / Összesen1,6 M
+PERCHAR: Feldolgozó skillPilot APilot B / Simple Ore Processing67,1%69,6%
+yieldInfo: Legjobb hozam (Simple ore): 69,6% · Pilot B

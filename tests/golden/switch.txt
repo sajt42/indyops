@@ -1,0 +1,9 @@
+HU : Karakterek, Tervező, Projektek, Mit érdemes?, Invention, Kutatás & copy, Eladás, Vásárlás nélkül, Blueprintek, Készlet, Bányászat, Reprocess, Beállítások, Súgó
+     Gyártás | pl. Orca rendelés | kész | hu
+EN : Characters, Planner, Projects, What pays?, Invention, Research & copy, Selling, No-buy builds, Blueprints, Stock, Mining, Reprocess, Settings, Help
+     Manufacturing | e.g. Orca order | ready | en
+DE : Charaktere, Planer, Projekte, Was lohnt sich?, Invention, Forschung & Kopie, Verkauf, Ohne Einkauf, Blueprints, Bestand, Mining, Reprocess, Einstellungen, Hilfe
+     Produktion | z. B. Orca-Auftrag | bereit | de
+HU2: Karakterek, Tervező, Projektek, Mit érdemes?, Invention, Kutatás & copy, Eladás, Vásárlás nélkül, Blueprintek, Készlet, Bányászat, Reprocess, Beállítások, Súgó
+     Gyártás | pl. Orca rendelés | kész | hu
+saved lang: hu errors: none
