@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.3 – 2026-11-10
+
+- Link previews (Discord, forums, social): title, description and a preview image
+- Search: better page description and keywords; README intro
+
 ## 1.5.2 – 2026-11-10
 
 - Favicon: an orange hex nut on a dark tile (original artwork, no CCP logos), embedded so it also works in the offline file

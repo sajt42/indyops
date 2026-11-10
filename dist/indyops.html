@@ -3,7 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="IndyOps – EVE Online industry planner: full material trees, invention, research, hauling and selling, straight from your characters via ESI. Runs entirely in your browser.">
+<meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
+<meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
+<link rel="canonical" href="https://sajt42.github.io/indyops/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IndyOps">
+<meta property="og:title" content="IndyOps – industry planner for EVE Online">
+<meta property="og:description" content="Less spreadsheet, more ISK. Manufacturing, invention, research, reprocessing, hauling and selling, straight from your characters via ESI. Free, runs in your browser.">
+<meta property="og:url" content="https://sajt42.github.io/indyops/">
+<meta property="og:image" content="https://sajt42.github.io/indyops/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#12171b">
 <title>IndyOps</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1843,7 +1855,7 @@ const SK={industry:3380,advInd:3388,accounting:16622,broker:3446,repro:3385,repr
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.5.2',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.5.3',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele

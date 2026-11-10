@@ -2,7 +2,7 @@
 
 **Less spreadsheet, more ISK.**
 
-IndyOps reads your characters' assets, blueprints, skills and jobs through ESI and turns them into a production plan: what to build, what you already have, what to buy, which character should build it, and where to haul it.
+IndyOps is a free, browser-only **EVE Online industry calculator and manufacturing planner**. It reads your characters' assets, blueprints, skills and jobs through ESI and turns them into a production plan: what to build, what you already have, what to buy, which character should build it, and where to haul it.
 
 **Open it:** https://sajt42.github.io/indyops/ · new here? Open the **Help** tab in the app.
 
