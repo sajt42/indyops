@@ -120,10 +120,10 @@ function effStd(cid, from) {
   const sk = r >= 0 ? lvlOf(cid, SK.connections) : lvlOf(cid, SK.diplomacy);
   return r + (10 - r) * 0.04 * sk;
 }
-// NPC corp -> faction id (0: the corp has no faction). Only answers are cached; a failed lookup is retried later.
-// v2: earlier versions also cached failures as 0, so those entries are dropped once.
+// NPC corp -> faction id (0: the corp has no faction), from EVE Ref. Only answers are cached; a failed lookup is
+// retried later. v3: earlier versions asked ESI, which gives no faction for NPC corps, and stored 0 for every corp.
 let CORPFAC = load('corpfac', {});
-if (!CORPFAC.v2) CORPFAC = { v2: 1 };
+if (!CORPFAC.v3) CORPFAC = { v3: 1 };
 function stationOwner(l) {
   const i = LOCINFO[l];
   if (!i || i.owner == null) return null;
@@ -147,8 +147,7 @@ async function ensureOwners(locs) {
     if (i.owner == null) continue;
     if (CORPFAC[i.owner] === undefined) {
       try {
-        const c = await esi('/corporations/' + i.owner + '/');
-        CORPFAC[i.owner] = c.faction_id ?? 0;
+        CORPFAC[i.owner] = await npcCorpFaction(i.owner);
         store('corpfac', CORPFAC);
       } catch (e) {
         log('Corp frakciója nem ismert (' + i.owner + '): ' + e.message);
@@ -245,7 +244,7 @@ function sellerHtml() {
   const tot2 = x => (x.b2 == null ? null : x.tax + x.b2);
   return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => `<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num" title="${esc(brokerExplain(x.cid, JITA_STATION))}">${fmt(x.broker * 100, 2)}%</td>${m2 ? `<td class="num" title="${esc(brokerExplain(x.cid, m2l))}">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? `<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? '<span class="pill ok">javasolt</span>' : ''}</td></tr>`).join('')}</tbody></table></div>
   ${isStr ? `<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %', esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l) ?? ''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>` : ''}
-  <p class="small muted" style="margin-top:4px">${noStd ? T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.') : T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p></div>`;
+  <p class="small muted" style="margin-top:4px">${noStd ? T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.') : T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonos corpja és frakciója felé vett nyers standingből jönnek (a Connections és a Diplomacy a broker fee-be nem számít bele). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p></div>`;
 }
 document.addEventListener('change', e => {
   const t = e.target;

@@ -73,7 +73,8 @@ w.fetch = async (u, o) => {
       reprocessing_stations_take: 0.05,
       services: ['market']
     });
-  if (u.includes('/corporations/')) return J({ faction_id: 500001 });
+  // station owner corp -> faction comes from EVE Ref (ESI's /corporations/ has no faction for NPC corps)
+  if (u.includes('everef.net/npc_corporations/')) return J({ faction_id: 500001 });
   if (u.includes('/universe/stations/'))
     return J({
       name: 'Test Station I',

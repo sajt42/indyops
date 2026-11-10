@@ -296,6 +296,16 @@ async function esi(path, { char, method = 'GET', body, paged = false, meta = fal
   }
   return meta ? { data: all, lm: first.lm, exp: first.exp } : all;
 }
+// faction of an NPC corp from EVE Ref (ESI's /corporations/ does not give it for NPC corps); 0: no faction
+async function npcCorpFaction(id) {
+  return refLimit(async () => {
+    const r = await fetchT(REF + '/npc_corporations/' + id);
+    if (r.status === 404) return 0;
+    if (!r.ok) throw new Error('EVE Ref ' + r.status + ' /npc_corporations/' + id);
+    const j = await r.json();
+    return j.faction_id || 0;
+  });
+}
 async function refGet(kind, id) {
   // kind 't' types, 'b' blueprints
   const c = REFC[kind][id];

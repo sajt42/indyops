@@ -40,7 +40,7 @@ All state is global (`let` at the top level of a file). Persisted entries are st
 | `REFC` | EVE Ref cache: `t` types, `b` blueprints | `ref` | `refGet`, cache reset in `main.js` |
 | `PRICES` | type → `{s, b, at, err, retry}` Jita prices | `prices` | `ensurePrices`, cache reset in `main.js` |
 | `ADJ`, `IDX` | adjusted prices; system → activity cost index | `adj`, `idx2` | `data.js` |
-| `ORES`, `CORPFAC`, `SYSSEC`, `HIST`, `ROUTES`, `SHIPC` | ore types, NPC corp → faction, system security, market history, routes, ship capacities | own keys | the module that declares them |
+| `ORES`, `CORPFAC`, `SYSSEC`, `HIST`, `ROUTES`, `SHIPC` | ore types, NPC corp → faction (from EVE Ref), system security, market history, routes, ship capacities | own keys | the module that declares them |
 | `PROJ`, `SELP` | projects and the selected project | `projects`, `selp` | `tabs.js`, restore |
 | `BPPROD` | blueprint type → `{prod, qty, act}` index of recipes | – | `indexBPProducts` (`engine.js`), reset in `main.js` |
 | `LASTPLAN`, `LASTRENDER` | the plan on screen and a function that redraws it | – | `runPlan` (`views.js`), `calcProjects` (`tabs.js`) |

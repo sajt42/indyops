@@ -18,6 +18,7 @@ let prices = {
 };
 let failPrice = new Set(),
   tokenCalls = 0,
+  corpCalls = 0,
   route = null,
   sec = {};
 const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.org/' });
@@ -51,6 +52,16 @@ w.fetch = async (u, o) => {
       refresh_token: 'r2'
     });
   }
+  if (u.includes('/corporations/')) corpCalls++;
+  if ((m = u.match(/everef\.net\/npc_corporations\/(\d+)/)))
+    return m[1] === '1000041' ? J({ corporation_id: 1000041, faction_id: 500001 }) : J({ corporation_id: +m[1] });
+  if ((m = u.match(/universe\/stations\/(6000777\d)/)))
+    return J({
+      name: 'Owner Test Station',
+      system_id: 30001,
+      owner: m[1] === '60007771' ? 1000041 : 1000099,
+      services: []
+    });
   if ((m = u.match(/everef\.net\/blueprints\/(\d+)/)))
     return fx.B[m[1]] ? J(fx.B[m[1]]) : { ok: false, status: 404, headers: { get: () => null } };
   if ((m = u.match(/everef\.net\/types\/(\d+)/)))
@@ -95,7 +106,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -559,7 +570,16 @@ const ok = (c, msg) => {
   //     Adjusted standings would give 1.18%.
   {
     T.setChars([{ id: 7, name: 'Broker', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
-    T.setData({ 7: { assets: [], bps: [], skills: { 3446: 5, 3359: 5 }, jobs: [], std: { 500001: 3.4625, 1000035: 8.27 }, at: Date.now() } });
+    T.setData({
+      7: {
+        assets: [],
+        bps: [],
+        skills: { 3446: 5, 3359: 5 },
+        jobs: [],
+        std: { 500001: 3.4625, 1000035: 8.27 },
+        at: Date.now()
+      }
+    });
     T.LI[60009999] = { name: 'Zzyzx Test Station', system: 30001, owner: 1000035 };
     T.CORPFAC[1000035] = 500001;
     T.names[500001] = 'Test Faction';
@@ -567,21 +587,69 @@ const ok = (c, msg) => {
     const savedBroker = T.S.broker;
     T.S.broker = '';
     const got = T.brokerFeeOf(7, 60009999);
-    ok(Math.abs(got * 100 - 1.2309) < 0.001, 'broker fee matches the in-game value 1.2309% (' + (got * 100).toFixed(4) + '%)');
+    ok(
+      Math.abs(got * 100 - 1.2309) < 0.001,
+      'broker fee matches the in-game value 1.2309% (' + (got * 100).toFixed(4) + '%)'
+    );
     const ex = T.brokerExplain(7, 60009999);
-    ok(/Test Faction standing 3,46/.test(ex) && /Test Corp standing 8,27/.test(ex) && /4,77/.test(ex) && /8,61/.test(ex) && /= 1,23%/.test(ex), 'tooltip names the faction and corp with raw and in-game values: ' + ex);
-    ok(T.brokerFeeOf(7, 60009998) === 0.015 && /standing nélkül/.test(T.brokerExplain(7, 60009998)), 'unknown owner: no standing reduction, said in the tooltip');
+    ok(
+      /Test Faction standing 3,46/.test(ex) &&
+        /Test Corp standing 8,27/.test(ex) &&
+        /4,77/.test(ex) &&
+        /8,61/.test(ex) &&
+        /= 1,23%/.test(ex),
+      'tooltip names the faction and corp with raw and in-game values: ' + ex
+    );
+    ok(
+      T.brokerFeeOf(7, 60009998) === 0.015 && /standing nélkül/.test(T.brokerExplain(7, 60009998)),
+      'unknown owner: no standing reduction, said in the tooltip'
+    );
     T.CORPFAC[1000035] = 0;
-    ok(Math.abs(T.brokerFeeOf(7, 60009999) - (0.015 - 0.0002 * 8.27)) < 1e-12 && /nincs, vagy nem ismert/.test(T.brokerExplain(7, 60009999)), 'corp without faction: only the corp standing counts');
+    ok(
+      Math.abs(T.brokerFeeOf(7, 60009999) - (0.015 - 0.0002 * 8.27)) < 1e-12 &&
+        /nincs, vagy nem ismert/.test(T.brokerExplain(7, 60009999)),
+      'corp without faction: only the corp standing counts'
+    );
     T.CORPFAC[1000035] = 500001;
     T.S.broker = savedBroker;
+  }
+
+  // 22a. station owner faction comes from EVE Ref (ESI gives none for NPC corps); a corp without faction is 0
+  {
+    await T.ensureOwners([60007771, 60007772]);
+    const a = T.stationOwner(60007771),
+      b = T.stationOwner(60007772);
+    ok(
+      a && a.corp === 1000041 && a.fac === 500001,
+      'faction of the station owner corp from EVE Ref (' + JSON.stringify(a) + ')'
+    );
+    ok(b && b.fac === 0, 'corp without faction stored as 0 (' + JSON.stringify(b) + ')');
+    ok(corpCalls === 0, 'no ESI /corporations/ call for the faction');
   }
 
   // 22. changing the second market redraws the selling tab and blanks stale profit columns
   {
     const ss = T.S;
     ss.market2 = 60009999;
-    T.setSales([{ o: { t: 34, cid: 7, buy: false, p: 4, rem: 1, tot: 1, l: 60003760, exp: Date.now() + 1e9, iss: new Date().toISOString(), dur: 90 }, best: null, state: 'egyedül', sugg: null }]);
+    T.setSales([
+      {
+        o: {
+          t: 34,
+          cid: 7,
+          buy: false,
+          p: 4,
+          rem: 1,
+          tot: 1,
+          l: 60003760,
+          exp: Date.now() + 1e9,
+          iss: new Date().toISOString(),
+          dur: 90
+        },
+        best: null,
+        state: 'egyedül',
+        sugg: null
+      }
+    ]);
     await T.refreshMarket2();
     const sl = d.querySelector('#slOut') || d.querySelector('#tab-sales');
     ok(/Zzyzx/.test(sl.textContent), 'selling tab shows the new second market right after the change');

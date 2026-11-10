@@ -669,8 +669,8 @@ window.I18N.de = {
   'adó {0}%': 'Steuer {0} %',
   'A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.':
     'Die Gebühren kommen aus den Skills (Accounting, Broker Relations). Melde dich mit deinen Charakteren erneut an, damit Standings zählen; bis dahin kann die echte Broker Fee etwas niedriger sein.',
-  'A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.':
-    'Die Gebühren kommen aus den Skills (Accounting, Broker Relations) und dem Standing zum Stationsbesitzer (Connections und Diplomacy eingerechnet). In Spielerstrukturen legt der Besitzer die Broker Fee fest.',
+  'A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonos corpja és frakciója felé vett nyers standingből jönnek (a Connections és a Diplomacy a broker fee-be nem számít bele). Játékos-struktúrában a broker fee-t a tulaj állítja.':
+    'Die Gebühren kommen aus den Skills (Accounting, Broker Relations) und dem Roh-Standing zu Corp und Fraktion des Stationsbesitzers (Connections und Diplomacy zählen bei der Broker Fee nicht). In Spielerstrukturen legt der Besitzer die Broker Fee fest.',
   Nyersanyag: 'Material',
   'projekt szerint': 'wie Projekt',
   'saját források': 'eigene Quellen',

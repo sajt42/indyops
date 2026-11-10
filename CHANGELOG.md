@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.12 – 2026-11-10
+
+- Fix: the faction of a station owner corp now comes from EVE Ref. ESI's corporation data has no faction for NPC corps (checked: Spacelane Patrol, Caldari Navy), so every corp was stored as 'no faction' and the faction standing never counted in the broker fee; 1.12.10 and 1.12.11 did not fix this. The stored values are reloaded once.
+- Selling: the note under the seller table says that the broker fee uses the raw standings towards the owner's corp and faction.
+- Tests: a regression check for the faction lookup (fails on 1.12.11); the reprocess scenario mocks the EVE Ref endpoint instead of the ESI one.
+
 ## 1.12.11 – 2026-11-10
 
 - Fix: the station owners of Jita and the second market (corp and faction, needed for the broker fee) are loaded at start-up. Before, after 1.12.10 reset the faction cache, the seller table showed 'faction not known' until prices were loaded.
