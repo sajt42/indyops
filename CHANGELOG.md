@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1 – 2026-11-10
+
+- Pager layout: page size selector on one line
+
 ## 1.9.0 – 2026-11-10
 
 - Long lists are paged (25/50/100/250/500/all) instead of cut off: Reprocess, Stock, Blueprints, What pays?, Invention, Research
