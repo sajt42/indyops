@@ -20,7 +20,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.10.5">
+<link rel="stylesheet" href="css/style.css?v=1.10.6">
 </head>
 <body>
 <header><div class="hwrap">
@@ -403,7 +403,7 @@
   <h3>A fülek</h3>
   <dl class="helpdl">
     <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között. Ha a második piacon olcsóbb egy anyag, a bevásárlólista ott veszi meg (kikapcsolható a Beállításokban), és a szállítás is onnan számol.</dd>
-    <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak. Projektenként (vagy tételenként) kiválaszthatod, honnan vehet nyersanyagot: állomások, struktúrák vagy konkrét konténerek. Egy konténert le is foglalhatsz egy projektnek („csak ez a projekt”), ahhoz más projekt nem nyúl.</dd>
+    <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak. Projektenként (vagy tételenként) kiválaszthatod, honnan vehet nyersanyagot: állomások, struktúrák vagy konkrét konténerek. Egy konténert le is foglalhatsz egy projektnek („csak ez a projekt”), ahhoz más projekt nem nyúl. A listában a konténerek (📦) és a hajók rakterei (🚀) a saját neved mellett a típusukkal látszanak; a hajók elrejthetők.</dd>
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze. Ha van második piac, a profit runonként ott is látszik, az ottani díjakkal.</dd>
     <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
     <dt>Kutatás &amp; copy</dt><dd>BPO-nként a következő ME szint ideje és költsége, mennyit spórol runonként, mikor térül meg, plusz a copy ideje és a science slotjaid.</dd>
@@ -412,7 +412,7 @@
     <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind), és a fejlécre kattintva rendezhetők.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Reprocess</dt><dd>Végignézi a készletet, és kilistázza, mi reprocesszálható belőle (érc, ice, modulok, loot): mennyi anyag jön ki, melyik karakterrel a legjobb a hozam, és egyben eladva vagy szétszedve ér-e többet. Helyszínenként számol: NPC állomásnál az állomás saját hozamával, alapadójával és azzal, hogy van-e ott reprocessing (az ESI-ből), az adót karakterenként a standinggel csökkentve; Upwell struktúránál (Athanor, Tatara) a riggel, a rendszer biztonságával és az adóval, amit neked kell megadni. Az implantot az aktív klónból olvassa. Az értékeket Jita és a második piac szerint is mutatja. Kijelölhetsz egyenként vagy mindet, és összesíti, mennyit fed le a legutóbbi terv hiányából.</dd>
-    <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac, kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
+    <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac (és hogy ott vásároljon-e, ha olcsóbb), kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
   </dl>
 
   <h3>Hogyan számol?</h3>
@@ -431,6 +431,8 @@
   <h3>Gyakori kérdések</h3>
   <dl class="helpdl">
     <dt>„Ismeretlen hely” látszik egy citadella helyett.</dt><dd>A struktúra nevét csak akkor adja ki az ESI, ha a karakterednek van dokkolási joga. Ha a struktúra megszűnt, a tárgyak asset safetyben lehetnek. Az IndyOps megpróbálja a nevet az EVE Ref nyilvános struktúralistájából kideríteni; ha ott sincs, a Beállítások „Ismeretlen helyek” kártyáján elnevezheted.</dd>
+    <dt>A BPC-n más run látszik, mint a játékban.</dt><dd>Az ESI a BPC runjait csak a job leadásakor csökkenti, és a blueprint-listát akár egy óráig tárolja. Az IndyOps ezért levonja azoknak a joboknak a runjait, amelyekről az ESI még nem tud, és csillaggal (*) jelzi; az ESI frissülése után a csillag eltűnik. A Blueprintek fül alján látod, mikori az ESI-adat.</dd>
+    <dt>Az oldal tetején egy sáv adatfrissítést kér.</dt><dd>Egy új verzió új adatot olvas az ESI-ből. Nyomd meg a sávban a „Minden adat frissítése” gombot; a „Mi változott?” link a változásokat mutatja.</dd>
     <dt>Bejelentkeztem, de nincs adat.</dt><dd>Nyomd meg a „Minden adat frissítése” gombot. Ha egy karakterkártya új engedélyt kér, jelentkezz be újra azzal a karakterrel.</dd>
     <dt>Kicsit más számot mutat, mint a játék.</dt><dd>Nézd meg a Beállításokban a struktúra-bónuszokat és az adót, a Reprocess fülön a struktúrák rigjét és adóját. Standing, implant és új engedély után jelentkezz be újra, és frissíts. A cost index óránként változik, a piaci árak fél óránként frissülnek.</dd>
     <dt>Másik gépen is használnám.</dt><dd>Beállítások → Mentés fájlba, és a másik gépen Visszatöltés fájlból. A bejelentkezéseket csak akkor mentsd, ha a fájlt biztonságos helyen tartod.</dd>
@@ -464,7 +466,7 @@
   <h3>The tabs</h3>
   <dl class="helpdl">
     <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it. If a material is cheaper at the second market, the shopping list buys it there (can be switched off in Settings), and hauling starts from there.</dd>
-    <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock. Per project (or per item) you can choose where materials may come from: stations, structures or specific containers. You can also reserve a container for one project (“this project only”) so no other project touches it.</dd>
+    <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock. Per project (or per item) you can choose where materials may come from: stations, structures or specific containers. You can also reserve a container for one project (“this project only”) so no other project touches it. Containers (📦) and ship cargo holds (🚀) are listed with their type next to your name for them; ships can be hidden.</dd>
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together. With a second market, profit per run is shown there too, with that market's fees.</dd>
     <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
     <dt>Research &amp; copy</dt><dd>Per BPO: time and cost of the next ME level, how much it saves per run, when it pays off, plus copy time and your science slots.</dd>
@@ -473,7 +475,7 @@
     <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all) and can be sorted by clicking the header.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
     <dt>Reprocess</dt><dd>Goes through your stock and lists what can be reprocessed (ore, ice, modules, loot): how much comes out, which character gets the best yield, and whether it's worth more sold as is or broken down. Each location counts separately: for NPC stations, the station's own yield, base tax and whether it offers reprocessing (from ESI), with the tax lowered per character by standing; for Upwell structures (Athanor, Tatara), rig, system security and tax, which you set yourself. The implant is read from your active clone. Values are shown for Jita and the second market. Select items one by one or all at once, and it sums up how much of your latest plan's shortfall they cover.</dd>
-    <dt>Settings</dt><dd>Structure bonuses, taxes, second market, who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
+    <dt>Settings</dt><dd>Structure bonuses, taxes, second market (and whether to buy there when cheaper), who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
   </dl>
 
   <h3>How does it calculate?</h3>
@@ -492,6 +494,8 @@
   <h3>FAQ</h3>
   <dl class="helpdl">
     <dt>I see "Unknown location" instead of a citadel.</dt><dd>ESI only returns a structure's name if your character has docking access. If the structure is gone, your items may be in asset safety. IndyOps tries to find the name in EVE Ref's public structure list; if it isn't there either, you can name it on the “Unknown locations” card in Settings.</dd>
+    <dt>A BPC shows different runs than the game.</dt><dd>ESI only lowers a BPC's runs when the job is delivered, and caches the blueprint list for up to an hour. IndyOps therefore subtracts the runs of jobs ESI doesn't know about yet and marks them with an asterisk (*); it disappears once ESI updates. The bottom of the Blueprints tab shows how old ESI's data is.</dd>
+    <dt>A banner at the top asks me to refresh data.</dt><dd>A new version reads new data from ESI. Press “Refresh all data” in the banner; the “What changed?” link shows the changes.</dd>
     <dt>I logged in but there is no data.</dt><dd>Press "Refresh all data". If a character card asks for a new permission, log in again with that character.</dd>
     <dt>The numbers differ a bit from the game.</dt><dd>Check structure bonuses and taxes in Settings, and structure rigs and tax on the Reprocess tab. For standings, implants and new permissions, log in again and refresh. Cost indices change hourly and market prices refresh every half hour.</dd>
     <dt>I want to use it on another computer.</dt><dd>Settings → Save to file, then Restore from file on the other computer. Only include logins if you keep the file somewhere safe.</dd>
@@ -525,7 +529,7 @@
   <h3>Die Reiter</h3>
   <dl class="helpdl">
     <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen. Ist ein Material am zweiten Markt billiger, kauft die Einkaufsliste dort (in den Einstellungen abschaltbar), und der Transport startet von dort.</dd>
-    <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand. Pro Projekt (oder pro Position) kannst du wählen, woher Material kommen darf: Stationen, Strukturen oder bestimmte Container. Einen Container kannst du auch für ein Projekt reservieren („nur dieses Projekt“), dann greift kein anderes Projekt darauf zu.</dd>
+    <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand. Pro Projekt (oder pro Position) kannst du wählen, woher Material kommen darf: Stationen, Strukturen oder bestimmte Container. Einen Container kannst du auch für ein Projekt reservieren („nur dieses Projekt“), dann greift kein anderes Projekt darauf zu. Container (📦) und Schiffsfrachträume (🚀) stehen mit ihrem Typ neben deinem Namen dafür; Schiffe lassen sich ausblenden.</dd>
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen. Mit einem zweiten Markt wird der Gewinn pro Run auch dort angezeigt, mit dessen Gebühren.</dd>
     <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
     <dt>Forschung &amp; Kopie</dt><dd>Pro BPO: Zeit und Kosten der nächsten ME-Stufe, Ersparnis pro Run, wann es sich lohnt, dazu Kopierzeit und deine Science-Slots.</dd>
@@ -534,7 +538,7 @@
     <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle) und per Klick auf die Kopfzeile sortierbar.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
     <dt>Reprocess</dt><dd>Geht deinen Bestand durch und listet auf, was sich reprocessen lässt (Erz, Eis, Module, Loot): wie viel herauskommt, welcher Charakter die beste Ausbeute hat und ob es am Stück oder zerlegt mehr wert ist. Jeder Ort zählt einzeln: bei NPC-Stationen mit eigener Ausbeute, Grundsteuer und ob es dort Reprocessing gibt (aus ESI), die Steuer pro Charakter um das Standing gesenkt; bei Upwell-Strukturen (Athanor, Tatara) mit Rig, Systemsicherheit und Steuer, die du selbst einstellst. Das Implantat wird aus dem aktiven Klon gelesen. Werte werden für Jita und den zweiten Markt angezeigt. Wähle einzeln oder alles aus, dann wird zusammengefasst, wie viel vom Bedarf deines letzten Plans gedeckt ist.</dd>
-    <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt, wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
+    <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt (und ob dort gekauft wird, wenn billiger), wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
   </dl>
 
   <h3>Wie wird gerechnet?</h3>
@@ -553,6 +557,8 @@
   <h3>Häufige Fragen</h3>
   <dl class="helpdl">
     <dt>Statt einer Citadel steht „Unbekannter Ort“ da.</dt><dd>ESI liefert den Namen einer Struktur nur, wenn dein Charakter Andockrechte hat. Wenn die Struktur weg ist, liegen deine Sachen eventuell in Asset Safety. IndyOps versucht, den Namen in der öffentlichen Strukturliste von EVE Ref zu finden; steht er dort auch nicht, kannst du ihn auf der Karte „Unbekannte Orte“ in den Einstellungen benennen.</dd>
+    <dt>Eine BPC zeigt andere Runs als das Spiel.</dt><dd>ESI senkt die Runs einer BPC erst bei der Auslieferung des Jobs und speichert die Blueprint-Liste bis zu einer Stunde. IndyOps zieht daher die Runs von Jobs ab, die ESI noch nicht kennt, und markiert sie mit einem Sternchen (*); es verschwindet nach der ESI-Aktualisierung. Unten im Blueprints-Tab steht, wie alt die ESI-Daten sind.</dd>
+    <dt>Oben bittet ein Balken um eine Datenaktualisierung.</dt><dd>Eine neue Version liest neue Daten aus ESI. Drücke im Balken „Alle Daten aktualisieren“; der Link „Was ist neu?“ zeigt die Änderungen.</dd>
     <dt>Ich bin angemeldet, sehe aber keine Daten.</dt><dd>Drücke „Alle Daten aktualisieren“. Wenn eine Charakterkarte eine neue Berechtigung verlangt, melde dich mit diesem Charakter erneut an.</dd>
     <dt>Die Zahlen weichen leicht vom Spiel ab.</dt><dd>Prüfe Strukturboni und Steuern in den Einstellungen sowie Rigs und Steuer von Strukturen im Reprocess-Tab. Für Standings, Implantate und neue Berechtigungen melde dich erneut an und aktualisiere. Kostenindizes ändern sich stündlich, Marktpreise werden alle 30 Minuten aktualisiert.</dd>
     <dt>Ich möchte es auf einem anderen Rechner nutzen.</dt><dd>Einstellungen → In Datei sichern, dann auf dem anderen Rechner Aus Datei wiederherstellen. Anmeldungen nur mitsichern, wenn du die Datei sicher aufbewahrst.</dd>
@@ -576,15 +582,15 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.10.5"></script>
-<script src="i18n/de.js?v=1.10.5"></script>
-<script src="js/core.js?v=1.10.5"></script>
-<script src="js/esi.js?v=1.10.5"></script>
-<script src="js/data.js?v=1.10.5"></script>
-<script src="js/engine.js?v=1.10.5"></script>
-<script src="js/views.js?v=1.10.5"></script>
-<script src="js/tabs.js?v=1.10.5"></script>
-<script src="js/repro.js?v=1.10.5"></script>
-<script src="js/main.js?v=1.10.5"></script>
+<script src="i18n/en.js?v=1.10.6"></script>
+<script src="i18n/de.js?v=1.10.6"></script>
+<script src="js/core.js?v=1.10.6"></script>
+<script src="js/esi.js?v=1.10.6"></script>
+<script src="js/data.js?v=1.10.6"></script>
+<script src="js/engine.js?v=1.10.6"></script>
+<script src="js/views.js?v=1.10.6"></script>
+<script src="js/tabs.js?v=1.10.6"></script>
+<script src="js/repro.js?v=1.10.6"></script>
+<script src="js/main.js?v=1.10.6"></script>
 </body>
 </html>

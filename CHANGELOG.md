@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.6 – 2026-11-10
+
+- Help: FAQ on BPC runs marked * and on the refresh banner; ships in project sources; buying at the second market in Settings. README brought up to date
+
 ## 1.10.5 – 2026-11-10
 
 - Project sources: containers and ships show their type next to your name (e.g. “sün (Vargur)”), ships get 🚀 and are listed after containers; a “ships too” switch hides ship cargo holds; needs one data refresh
