@@ -4,6 +4,7 @@ const html = fs.readFileSync(process.env.HTML || '../dist/indyops.html', 'utf8')
 const errs = [];
 const vc = new VirtualConsole();
 vc.on('jsdomError', e => errs.push(e.message));
+vc.on('warn', (...a) => console.error(...a));
 const b64 = o =>
   Buffer.from(JSON.stringify(o)).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
 const jwt = 'x.' + b64({ sub: 'CHARACTER:EVE:777', name: 'Pilot A', scp: ['esi-assets.read_assets.v1'] }) + '.y';
@@ -13,6 +14,7 @@ const dom = new JSDOM(html, {
   url: 'https://sajt42.github.io/indyops/?code=CODE123&state=ST1',
   virtualConsole: vc,
   beforeParse(w) {
+    w.__htmlCheck = true;
     // data under the old tool name (Gyártópult) + a login in progress
     w.localStorage.setItem('gyp.settings', JSON.stringify({ lang: 'en', structME: 1 }));
     w.localStorage.setItem('gyp.projects', JSON.stringify([{ id: 1, name: 'Old project', active: true, items: [] }]));

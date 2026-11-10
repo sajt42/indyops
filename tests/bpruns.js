@@ -4,6 +4,7 @@ const fs = require('fs');
 const html = fs.readFileSync('../dist/indyops.html', 'utf8').replace(/<link[^>]+>/g, '');
 const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.org/' });
 const w = dom.window;
+w.__htmlCheck = true;
 const LM = 'Tue, 10 Nov 2026 07:00:00 GMT',
   EXP = 'Tue, 10 Nov 2026 08:00:00 GMT';
 w.fetch = async (u, o) => {

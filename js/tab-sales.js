@@ -16,14 +16,13 @@ async function runSales() {
   }
   const noScope = CHARS.filter(c => c.scp && !hasScope(c, 'esi-markets.read_character_orders.v1'));
   if (!orders.length) {
-    out.innerHTML =
-      sellerHtml() +
-      m2Hint() +
-      `<div class="card muted">${noScope.length ? T('Nincs aktív market ordered, vagy ezeknél a karaktereknél még nincs meg az új engedély: {0}. Lásd a Karakterek fület.', esc(noScope.map(c => c.name).join(', '))) : T('Nincs aktív market ordered. Ha most adtad hozzá az engedélyt, frissítsd a karaktereket.')}</div>` +
-      salesHistory();
+    setHtml(
+      out,
+      html`${html`${sellerHtml()}${m2Hint()}`}<div class="card muted">${noScope.length ? T('Nincs aktív market ordered, vagy ezeknél a karaktereknél még nincs meg az új engedély: {0}. Lásd a Karakterek fület.', noScope.map(c => c.name).join(', ')) : T('Nincs aktív market ordered. Ha most adtad hozzá az engedélyt, frissítsd a karaktereket.')}</div>${salesHistory()}`
+    );
     return;
   }
-  out.innerHTML = '<div class="card muted">Piaci árak lekérése…</div>';
+  setHtml(out, html`<div class="card muted">Piaci árak lekérése…</div>`);
   if (S.wallet) {
     const tt = new Set();
     for (const c of CHARS) {
@@ -112,19 +111,18 @@ function renderSales() {
   const beaten = rows.filter(r => r.state === 'alá ígértek' || r.state === 'túlígértek').length;
   const sellVal = rows.filter(r => !r.o.buy).reduce((s, r) => s + r.o.p * r.o.rem, 0),
     buyVal = rows.filter(r => r.o.buy).reduce((s, r) => s + r.o.p * r.o.rem, 0);
-  out.innerHTML =
-    sellerHtml() +
-    m2Hint() +
-    `<div class="kpis"><div class="kpi"><div class="k">Aktív order</div><div class="v">${rows.length}</div></div><div class="kpi"><div class="k">Megelőztek</div><div class="v ${beaten ? 'neg' : 'pos'}">${beaten}</div></div><div class="kpi"><div class="k">Eladó orderek értéke</div><div class="v">${isk(sellVal)}</div></div><div class="kpi"><div class="k">Vételi orderek értéke</div><div class="v">${isk(buyVal)}</div></div></div>
-  <div class="tablewrap"><table><thead><tr>${sortTh('sl', 'name', T('Tárgy'))}${sortTh('sl', 'char', T('Karakter'))}${sortTh('sl', 'type', T('Típus'))}${sortTh('sl', 'p', T('Ár'), 1)}${sortTh('sl', 'best', T('Legjobb másik'), 1)}${sortTh('sl', 'state', T('Állapot'))}<th class="num">Javasolt ár</th>${sortTh('sl', 'rem', T('Maradt / összes'), 1)}${sortTh('sl', 'loc', T('Hely'))}${sortTh('sl', 'exp', T('Lejár'), 1)}</tr></thead><tbody>${rows
-    .map(r => {
+  setHtml(
+    out,
+    html`${html`${sellerHtml()}${m2Hint()}`}<div class="kpis"><div class="kpi"><div class="k">Aktív order</div><div class="v">${rows.length}</div></div><div class="kpi"><div class="k">Megelőztek</div><div class="v ${beaten ? 'neg' : 'pos'}">${beaten}</div></div><div class="kpi"><div class="k">Eladó orderek értéke</div><div class="v">${isk(sellVal)}</div></div><div class="kpi"><div class="k">Vételi orderek értéke</div><div class="v">${isk(buyVal)}</div></div></div>
+  <div class="tablewrap"><table><thead><tr>${sortTh('sl', 'name', T('Tárgy'))}${sortTh('sl', 'char', T('Karakter'))}${sortTh('sl', 'type', T('Típus'))}${sortTh('sl', 'p', T('Ár'), 1)}${sortTh('sl', 'best', T('Legjobb másik'), 1)}${sortTh('sl', 'state', T('Állapot'))}<th class="num">Javasolt ár</th>${sortTh('sl', 'rem', T('Maradt / összes'), 1)}${sortTh('sl', 'loc', T('Hely'))}${sortTh('sl', 'exp', T('Lejár'), 1)}</tr></thead><tbody>${rows.map(
+    r => {
       const exp = new Date(new Date(r.o.iss).getTime() + r.o.dur * 86400000);
       const pill = r.state === 'legjobb' ? 'ok' : r.state === 'egyedül' ? '' : r.state === 'ismeretlen' ? '' : 'bad';
-      return `<tr><td>${esc(NAMES[r.o.t] || r.o.t)}</td><td>${esc(charName(r.o.cid))}</td><td>${r.o.buy ? 'vétel' : 'eladás'}</td><td class="num">${isk(r.o.p)}</td><td class="num">${r.best == null ? '–' : isk(r.best)}</td><td><span class="pill ${pill}">${r.state}</span></td><td class="num">${r.sugg != null ? `<button class="btn mini" data-copyprice="${r.sugg}" title="Ár másolása">${fmt(r.sugg, 2)}</button>` : '–'}</td><td class="num">${fmt(r.o.rem)} / ${fmt(r.o.tot)}</td><td class="small">${esc(locName(r.o.l))}</td><td class="num small">${exp.toLocaleDateString(LOC())}</td></tr>`;
-    })
-    .join('')}</tbody></table></div>
-  <p class="small muted" style="margin-top:6px">A „Legjobb másik” ugyanazon az állomáson lévő, nem a te karaktereidhez tartozó orderek közül a legjobb ár. A javasolt ár egy ártickkel jobb (4 értékes jegy), a gombbal vágólapra másolhatod. Az orderek a karakterek frissítésekor töltődnek le, a piaci árak minden „Ellenőrzés” gombnyomáskor.</p>` +
-    salesHistory();
+      return html`<tr><td>${NAMES[r.o.t] || r.o.t}</td><td>${charName(r.o.cid)}</td><td>${r.o.buy ? 'vétel' : 'eladás'}</td><td class="num">${isk(r.o.p)}</td><td class="num">${r.best == null ? '–' : isk(r.best)}</td><td><span class="pill ${pill}">${r.state}</span></td><td class="num">${r.sugg != null ? html`<button class="btn mini" data-copyprice="${r.sugg}" title="Ár másolása">${fmt(r.sugg, 2)}</button>` : '–'}</td><td class="num">${fmt(r.o.rem)} / ${fmt(r.o.tot)}</td><td class="small">${locName(r.o.l)}</td><td class="num small">${exp.toLocaleDateString(LOC())}</td></tr>`;
+    }
+  )}</tbody></table></div>
+  <p class="small muted" style="margin-top:6px">A „Legjobb másik” ugyanazon az állomáson lévő, nem a te karaktereidhez tartozó orderek közül a legjobb ár. A javasolt ár egy ártickkel jobb (4 értékes jegy), a gombbal vágólapra másolhatod. Az orderek a karakterek frissítésekor töltődnek le, a piaci árak minden „Ellenőrzés” gombnyomáskor.</p>${salesHistory()}`
+  );
   out.querySelectorAll('[data-copyprice]').forEach(b =>
     b.addEventListener('click', () => {
       const v = String(Number(b.dataset.copyprice).toFixed(2));
@@ -138,14 +136,14 @@ function renderSales() {
 
 function salesHistory() {
   if (!S.wallet)
-    return '<h3>Eladások az elmúlt 30 napban</h3><p class="small muted">A wallet-tranzakciók olvasása ki van kapcsolva. A Beállításokban bekapcsolhatod, ha szeretnéd látni a ténylegesen eladott tételeket.</p>';
+    return html`<h3>Eladások az elmúlt 30 napban</h3><p class="small muted">A wallet-tranzakciók olvasása ki van kapcsolva. A Beállításokban bekapcsolhatod, ha szeretnéd látni a ténylegesen eladott tételeket.</p>`;
   const tx = [];
   for (const c of CHARS) {
     const d = DATA[c.id];
     if (d && d.tx) d.tx.forEach(x => tx.push(Object.assign({ cid: c.id }, x)));
   }
   if (!tx.length)
-    return '<h3>Eladások az elmúlt 30 napban</h3><p class="small muted">Nincs tranzakció, vagy még nincs meg a wallet-engedély. Ha most kapcsoltad be, add hozzá az engedélyt az alkalmazásodhoz, jelentkezz be újra, és frissíts.</p>';
+    return html`<h3>Eladások az elmúlt 30 napban</h3><p class="small muted">Nincs tranzakció, vagy még nincs meg a wallet-engedély. Ha most kapcsoltad be, add hozzá az engedélyt az alkalmazásodhoz, jelentkezz be újra, és frissíts.</p>`;
   const g = new Map();
   for (const x of tx) {
     let r = g.get(x.t);
@@ -163,5 +161,13 @@ function salesHistory() {
   }
   const rows = [...g.values()].filter(r => r.sq).sort((a, b) => b.sv - a.sv);
   const tot = rows.reduce((s, r) => s + r.sv, 0);
-  return `<h3>Eladások az elmúlt 30 napban</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Eladva (db)</th><th class="num">Bevétel</th><th class="num">Átlagár</th><th class="num">Mai Jita sell</th>${m2On() ? `<th class="num">${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${rows.map(r => `<tr><td>${esc(NAMES[r.t] || r.t)}</td><td class="num">${fmt(r.sq)}</td><td class="num">${isk(r.sv)}</td><td class="num">${isk(r.sv / r.sq)}</td><td class="num">${isk(sell(r.t))}</td>${m2On() ? `<td class="num">${m2Cell(sell(r.t), sell2(r.t))}</td>` : ''}</tr>`).join('') || '<tr><td colspan="6" class="muted">Nem adtál el semmit.</td></tr>'}<tr><td><b>Összesen</b></td><td></td><td class="num"><b>${isk(tot)}</b></td><td></td><td></td>${m2On() ? '<td></td>' : ''}</tr></tbody></table></div><p class="small muted" style="margin-top:6px">A bevétel bruttó, az eladási adó és a broker díj nélkül.</p>`;
+  return html`<h3>Eladások az elmúlt 30 napban</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Eladva (db)</th><th class="num">Bevétel</th><th class="num">Átlagár</th><th class="num">Mai Jita sell</th>${m2On() ? html`<th class="num">${m2Short()} sell</th>` : ''}</tr></thead><tbody>${
+    hjoin(
+      rows.map(
+        r =>
+          html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.sq)}</td><td class="num">${isk(r.sv)}</td><td class="num">${isk(r.sv / r.sq)}</td><td class="num">${isk(sell(r.t))}</td>${m2On() ? html`<td class="num">${m2Cell(sell(r.t), sell2(r.t))}</td>` : ''}</tr>`
+      ),
+      ''
+    ) || html`<tr><td colspan="6" class="muted">Nem adtál el semmit.</td></tr>`
+  }<tr><td><b>Összesen</b></td><td></td><td class="num"><b>${isk(tot)}</b></td><td></td><td></td>${m2On() ? html`<td></td>` : ''}</tr></tbody></table></div><p class="small muted" style="margin-top:6px">A bevétel bruttó, az eladási adó és a broker díj nélkül.</p>`;
 }

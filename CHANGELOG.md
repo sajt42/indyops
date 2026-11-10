@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.13.2 – 2026-11-10
+
+- Security: every view builds its markup with the html`` template tag, which escapes every value by default, and sets it only through setHtml/appendHtml. A string that was not converted is shown as text instead of being run as markup. The rendered pages are identical to 1.13.1 in all 21 test scenarios.
+- Tests: lint.js fails on any other way of setting HTML; in tests setHtml also warns when markup ends up as visible text (which caught several conversion mistakes before release).
+
 ## 1.13.1 – 2026-11-10
 
 - Security: new test (tests/xss.js) that gives every name coming from outside an HTML payload and draws every tab. It found one hole: the clues for unknown locations showed character names and hangar flags without escaping. Fixed.

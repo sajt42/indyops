@@ -61,7 +61,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.13.1',
+  version: '1.13.2',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -91,9 +91,20 @@ let LANG = (() => {
 })();
 const LOC = () => LANGS[LANG].loc;
 const DICT = () => (window.I18N && window.I18N[LANG]) || {};
+// T(text, ...args): translated text with {0}, {1}… filled in. It returns a plain string, except when the text itself is
+// markup (written in this code base, e.g. '<b>{0} ugrás</b>') or an argument is an html`` template: then it returns
+// an html`` result in which the text and the plain arguments are escaped.
 function T(hu, ...a) {
   const tr = LANG === 'hu' ? hu : (DICT()[hu] ?? hu);
-  return a.length ? tr.replace(/\{(\d+)\}/g, (m, i) => a[i] ?? '') : tr;
+  if (!a.length) return /<[a-z]/i.test(hu) ? raw(tr) : tr;
+  const markup = /<[a-z]/i.test(hu);
+  if (markup || a.some(x => x instanceof SafeHtml)) {
+    const parts = tr.split(/\{(\d+)\}/);
+    let out = '';
+    parts.forEach((p, i) => (out += i % 2 ? htmlPart(a[p] ?? '') : markup ? p : esc(p)));
+    return new SafeHtml(out);
+  }
+  return tr.replace(/\{(\d+)\}/g, (m, i) => a[i] ?? '');
 }
 const NUMRE = /\d+(?:[   .,]\d+)*/g;
 function trString(src) {
@@ -215,8 +226,9 @@ const esc = s =>
 /* ---- HTML templates that escape by default ----
  * html`<td>${name}</td>` escapes every interpolated value. Exceptions, which are passed through as they are:
  * - another html`` result (SafeHtml), - an array (each element by the same rules), - null, undefined and false (nothing).
- * raw(s) marks markup written in this code base (never data) as safe. setHtml(el, h) is the only way to set innerHTML:
- * a plain string is shown as text (and logged), so a view that was not converted cannot inject markup.
+ * raw(s) marks markup written in this code base (never data) as safe; hjoin(list, sep) joins a list.
+ * setHtml(el, h) (and appendHtml) is the only way to set innerHTML: a plain string is shown as text (and logged), so a view that was
+ * not converted cannot inject markup.
  */
 class SafeHtml {
   constructor(s) {
@@ -234,9 +246,30 @@ function html(strings, ...vals) {
   return new SafeHtml(out);
 }
 const raw = s => new SafeHtml(String(s ?? ''));
+// joins a list into one template; the separator follows the same rules as a value
+// (an empty list gives '', so `hjoin(list) || '–'` works)
+const hjoin = (list, sep) => (list.length ? new SafeHtml(list.map(htmlPart).join(htmlPart(sep))) : '');
+// tests only (window.__htmlCheck): markup that ended up as visible text means a template was turned into a string
+const TAGTEXT =
+  /<\/?(div|span|td|tr|th|table|thead|tbody|label|input|p|b|i|a|details|summary|option|select|button|h[1-6]|ul|li|br|small|code)[\s>\/]/;
+function htmlCheck(el) {
+  const tw = document.createTreeWalker(el, 4);
+  for (let n = tw.nextNode(); n; n = tw.nextNode())
+    if (TAGTEXT.test(n.nodeValue)) console.warn('setHtml: markup shown as text: ' + n.nodeValue.trim().slice(0, 120));
+}
+// appends a template at the end of el (same rules as setHtml)
+function appendHtml(el, h) {
+  if (!el) return;
+  const box = document.createElement('div');
+  setHtml(box, h);
+  el.append(...box.childNodes);
+}
 function setHtml(el, h) {
   if (!el) return;
-  if (h instanceof SafeHtml) el.innerHTML = h.s;
+  if (h instanceof SafeHtml) {
+    el.innerHTML = h.s;
+    if (globalThis.__htmlCheck) htmlCheck(el);
+  } else if (h === '' || h == null) el.innerHTML = '';
   else {
     console.warn('setHtml: plain string shown as text');
     el.textContent = String(h ?? '');

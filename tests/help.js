@@ -4,11 +4,13 @@ const html = fs.readFileSync('../dist/indyops.html', 'utf8').replace(/<link[^>]+
 const errs = [];
 const vc = new VirtualConsole();
 vc.on('jsdomError', e => errs.push(e.message));
+vc.on('warn', (...a) => console.error(...a));
 const dom = new JSDOM(html, {
   runScripts: 'dangerously',
   url: 'https://example.org/',
   virtualConsole: vc,
   beforeParse(w) {
+    w.__htmlCheck = true;
     w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
   }
 });

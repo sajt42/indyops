@@ -46,6 +46,7 @@ const prices = {
 };
 const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.org/' });
 const w = dom.window;
+w.__htmlCheck = true;
 w.fetch = async (u, o) => {
   u = String(u);
   const J = (d, h = {}) => ({

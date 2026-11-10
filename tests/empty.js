@@ -13,6 +13,7 @@ const dom = new JSDOM(html, {
   }
 });
 const w = dom.window;
+w.__htmlCheck = true;
 const d = w.document;
 setTimeout(() => {
   console.log('errors:', errs.length ? errs : 'none');

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-PUjPiTeUqA3posMelXWnE1tIx2LT7/ptgrabJBYWtXM=' 'sha256-h9ooF1fuhR8l22nO+kD+W6zv4h3FKNoFvbpwoMB/2XA=' 'sha256-95JND+gmYbvFwAwV6P8MUkjSmmpEJ0WHuiKw/8wXzCY=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-kVRthuHI/noDXT04OoYIZr4IvGfNo3tLpaAjj35NssI=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-rr/VpwPdEtGWOQnIv3MlwpERwjKKp9x4IKpF5sbXCRU=' 'sha256-gN2jHYXRCMfND7EI3nXvYtAAlVoXrmhgpMnDnBlbRSE=' 'sha256-RJi9JuqPzmqb4a6/dQenTs3vaZhbzb/TDhA8T4JNDDM=' 'sha256-99e+O3z8EmWZFS+dLhkKcOB5W6f8Z/OccWJP5uOtT7U=' 'sha256-XbkBwETIQCIIlhJjFDgKhGrUgkc7Fhzmu7JBlODOY/g=' 'sha256-OhlsJpjBE9HUmgD1UPS61kE2IR0lDE5MshAKDXmPlUI=' 'sha256-MEXUB7JbWpqtMYwhOQ5Pf5wZs+tBgjDtq9NP58IZpVY=' 'sha256-sIuHhyUXlNdtjx6OehWEJsw1TtyvUqzWMQfhjkluxVY=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-zo88KkfgoMybDL4SnFKUsxDjHPJhe2oKtUtlgUy1VwY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-PUjPiTeUqA3posMelXWnE1tIx2LT7/ptgrabJBYWtXM=' 'sha256-h9ooF1fuhR8l22nO+kD+W6zv4h3FKNoFvbpwoMB/2XA=' 'sha256-OiHSUKbJyY8yS1lLohJWU5KT2o2NfI/76lYedAHXI0A=' 'sha256-PQUvEl0IpMApPduaFzy93aRKzM2+dJG6ET3tMZGRDrM=' 'sha256-I4tIIdtEeatTvC6/xZdbiR9Vp7gpDeCusj9JZ8PrVQc=' 'sha256-f2MHWOpgxcOSXmrAUt2IfYT4EzLJj3YaqbkhgWyzLiY=' 'sha256-P97r3PgEIqS3UY+7DuJUId6kFDBYwm/LNgTSpcTa7t4=' 'sha256-kuiR8Z8hMSyabeTWTTmpj56GO1uIk4lme0mzRe7bo3s=' 'sha256-4qLiTUzRUw2u4GyKrzoNMpJyOapcZUyWakbU6s9jKYI=' 'sha256-wEq9slmsWTfR/Ikua9Cfm7kitmRWTMBtXa5Lwh74K0A=' 'sha256-6XNvpSbZosPp1O6vh1oTalX6qfpaZHAKoiZlTL8h508=' 'sha256-Q7FQ8XfiG79/F57yuIV8fLYcQ6TnPAP0S0jPn6UxuEU=' 'sha256-yHES6LSH9jxy18zYee4i2Ywj0gMZqmjCMBKvzjafIbo=' 'sha256-+ZNA0mOq8w6HIluNWMeD+G0oFewefBGvWefDzcPQc2o=' 'sha256-rJ1kS3T2LrCYuP7LuXo1gr050/UesJZh76W3ztJptF0=' 'sha256-sRyZ1UJfYwuT6bE99v4U+jYj7L2ZO0Fkq0zzlPIWkrE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -2319,7 +2319,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.13.1',
+  version: '1.13.2',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -2349,9 +2349,20 @@ let LANG = (() => {
 })();
 const LOC = () => LANGS[LANG].loc;
 const DICT = () => (window.I18N && window.I18N[LANG]) || {};
+// T(text, ...args): translated text with {0}, {1}… filled in. It returns a plain string, except when the text itself is
+// markup (written in this code base, e.g. '<b>{0} ugrás</b>') or an argument is an html`` template: then it returns
+// an html`` result in which the text and the plain arguments are escaped.
 function T(hu, ...a) {
   const tr = LANG === 'hu' ? hu : (DICT()[hu] ?? hu);
-  return a.length ? tr.replace(/\{(\d+)\}/g, (m, i) => a[i] ?? '') : tr;
+  if (!a.length) return /<[a-z]/i.test(hu) ? raw(tr) : tr;
+  const markup = /<[a-z]/i.test(hu);
+  if (markup || a.some(x => x instanceof SafeHtml)) {
+    const parts = tr.split(/\{(\d+)\}/);
+    let out = '';
+    parts.forEach((p, i) => (out += i % 2 ? htmlPart(a[p] ?? '') : markup ? p : esc(p)));
+    return new SafeHtml(out);
+  }
+  return tr.replace(/\{(\d+)\}/g, (m, i) => a[i] ?? '');
 }
 const NUMRE = /\d+(?:[   .,]\d+)*/g;
 function trString(src) {
@@ -2473,8 +2484,9 @@ const esc = s =>
 /* ---- HTML templates that escape by default ----
  * html`<td>${name}</td>` escapes every interpolated value. Exceptions, which are passed through as they are:
  * - another html`` result (SafeHtml), - an array (each element by the same rules), - null, undefined and false (nothing).
- * raw(s) marks markup written in this code base (never data) as safe. setHtml(el, h) is the only way to set innerHTML:
- * a plain string is shown as text (and logged), so a view that was not converted cannot inject markup.
+ * raw(s) marks markup written in this code base (never data) as safe; hjoin(list, sep) joins a list.
+ * setHtml(el, h) (and appendHtml) is the only way to set innerHTML: a plain string is shown as text (and logged), so a view that was
+ * not converted cannot inject markup.
  */
 class SafeHtml {
   constructor(s) {
@@ -2492,9 +2504,30 @@ function html(strings, ...vals) {
   return new SafeHtml(out);
 }
 const raw = s => new SafeHtml(String(s ?? ''));
+// joins a list into one template; the separator follows the same rules as a value
+// (an empty list gives '', so `hjoin(list) || '–'` works)
+const hjoin = (list, sep) => (list.length ? new SafeHtml(list.map(htmlPart).join(htmlPart(sep))) : '');
+// tests only (window.__htmlCheck): markup that ended up as visible text means a template was turned into a string
+const TAGTEXT =
+  /<\/?(div|span|td|tr|th|table|thead|tbody|label|input|p|b|i|a|details|summary|option|select|button|h[1-6]|ul|li|br|small|code)[\s>\/]/;
+function htmlCheck(el) {
+  const tw = document.createTreeWalker(el, 4);
+  for (let n = tw.nextNode(); n; n = tw.nextNode())
+    if (TAGTEXT.test(n.nodeValue)) console.warn('setHtml: markup shown as text: ' + n.nodeValue.trim().slice(0, 120));
+}
+// appends a template at the end of el (same rules as setHtml)
+function appendHtml(el, h) {
+  if (!el) return;
+  const box = document.createElement('div');
+  setHtml(box, h);
+  el.append(...box.childNodes);
+}
 function setHtml(el, h) {
   if (!el) return;
-  if (h instanceof SafeHtml) el.innerHTML = h.s;
+  if (h instanceof SafeHtml) {
+    el.innerHTML = h.s;
+    if (globalThis.__htmlCheck) htmlCheck(el);
+  } else if (h === '' || h == null) el.innerHTML = '';
   else {
     console.warn('setHtml: plain string shown as text');
     el.textContent = String(h ?? '');
@@ -3531,8 +3564,8 @@ function sellerHtml() {
   const isStr = m2 && locKind(m2l) === 'struct';
   const noStd = workChars().some(id => !hasStd(id));
   const tot2 = x => (x.b2 == null ? null : x.tax + x.b2);
-  return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => `<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num" title="${esc(brokerExplain(x.cid, JITA_STATION))}">${fmt(x.broker * 100, 2)}%</td>${m2 ? `<td class="num" title="${esc(brokerExplain(x.cid, m2l))}">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? `<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? '<span class="pill ok">javasolt</span>' : ''}</td></tr>`).join('')}</tbody></table></div>
-  ${isStr ? `<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %', esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l) ?? ''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>` : ''}
+  return html`<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? html`<th class="num">Broker fee<div class="small muted" data-noi18n>${m2Short()}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? html`<th class="num">Összesen<div class="small muted" data-noi18n>${m2Short()}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => html`<tr><td>${charName(x.cid)}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num" title="${brokerExplain(x.cid, JITA_STATION)}">${fmt(x.broker * 100, 2)}%</td>${m2 ? html`<td class="num" title="${brokerExplain(x.cid, m2l)}">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? html`<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? html`<span class="pill ok">javasolt</span>` : ''}</td></tr>`)}</tbody></table></div>
+  ${isStr ? html`<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %', m2Short())} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l) ?? ''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>` : ''}
   <p class="small muted" style="margin-top:4px">${noStd ? T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.') : T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonos corpja és frakciója felé vett nyers standingből jönnek (a Connections és a Diplomacy a broker fee-be nem számít bele). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p></div>`;
 }
 document.addEventListener('change', e => {
@@ -3549,7 +3582,7 @@ document.addEventListener('change', e => {
 function redrawSellerBoxes() {
   document.querySelectorAll('.sellerbox').forEach(b => {
     const w = document.createElement('div');
-    w.innerHTML = sellerHtml();
+    setHtml(w, sellerHtml());
     if (w.firstElementChild) b.replaceWith(w.firstElementChild);
   });
 }
@@ -3564,7 +3597,7 @@ async function loadMarketOwners() {
 function m2Hint() {
   return m2On()
     ? ''
-    : `<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`;
+    : html`<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`;
 }
 
 /* ============ second market ============ */
@@ -3782,7 +3815,7 @@ function m2Cell(jita, v, buying) {
   if (v == null || !v) return '–';
   const better = jita ? (buying ? v < jita : v > jita) : false;
   const d = jita ? (v / jita - 1) * 100 : null;
-  return `<span class="${better ? 'pos' : ''}">${isk(v)}</span>${d != null ? `<div class="small muted">${d > 0 ? '+' : ''}${fmt(d, 1)}%</div>` : ''}`;
+  return html`<span class="${better ? 'pos' : ''}">${isk(v)}</span>${d != null ? html`<div class="small muted">${d > 0 ? '+' : ''}${fmt(d, 1)}%</div>` : ''}`;
 }
 // whole market of a player structure in one go (esi-markets.structure_markets.v1, needs docking rights), cached for 30 minutes
 const STRBOOKS = {},
@@ -3921,7 +3954,7 @@ function locClues(l) {
   if (tx) c.push(T('{0} tranzakció történt itt', tx));
   if (lt === 'other') c.push(T('egyéb hely (pl. asset safety vagy deliveries)'));
   // plain text parts (names come from ESI and from players): escaped as one string
-  return c.length ? html`<div class="src">${c.join(' · ')}</div>` : '';
+  return c.length ? html`<div class="src">${hjoin(c, ' · ')}</div>` : '';
 }
 function renderUnknownLocs() {
   const el = document.getElementById('unkLocs');
@@ -3932,28 +3965,34 @@ function renderUnknownLocs() {
   const nn = ls.filter(l => !(S.locNames && S.locNames[l])).length;
   const note = document.getElementById('unkNote');
   if (note)
-    note.innerHTML = nn
-      ? `<div class="notice"><p class="small">${T('{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).', nn)} <a href="#" data-goto="settings">${T('Elnevezés a Beállításokban')}</a></p></div>`
-      : '';
+    setHtml(
+      note,
+      nn
+        ? html`<div class="notice"><p class="small">${T('{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).', nn)} <a href="#" data-goto="settings">${T('Elnevezés a Beállításokban')}</a></p></div>`
+        : ''
+    );
   if (!ls.length) {
-    el.innerHTML = '';
+    setHtml(el, '');
     return;
   }
-  el.innerHTML = `<div class="tablewrap"><table><thead><tr><th>Azonosító</th><th>Mi van ott</th><th>Név</th></tr></thead><tbody>${ls
-    .map(l => {
-      const items = new Map();
-      for (const [cid, d] of Object.entries(DATA)) {
-        if (!CHARS.find(c => c.id == cid)) continue;
-        for (const a of d.assets) if (a.l === l) items.set(a.t, (items.get(a.t) || 0) + a.q);
-        for (const b of d.bps) if (b.l === l) items.set(b.t, (items.get(b.t) || 0) + 1);
+  setHtml(
+    el,
+    html`<div class="tablewrap"><table><thead><tr><th>Azonosító</th><th>Mi van ott</th><th>Név</th></tr></thead><tbody>${ls.map(
+      l => {
+        const items = new Map();
+        for (const [cid, d] of Object.entries(DATA)) {
+          if (!CHARS.find(c => c.id == cid)) continue;
+          for (const a of d.assets) if (a.l === l) items.set(a.t, (items.get(a.t) || 0) + a.q);
+          for (const b of d.bps) if (b.l === l) items.set(b.t, (items.get(b.t) || 0) + 1);
+        }
+        const top = [...items.keys()]
+          .slice(0, 5)
+          .map(t => NAMES[t] || t)
+          .join(', ');
+        return html`<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy', fmt(items.size))}${top ? ': ' + top + (items.size > 5 ? ' …' : '') : ''}${locClues(l)}</td><td><input data-locname="${l}" value="${(S.locNames && S.locNames[l]) || ''}" placeholder="${T('pl. a játék Assets ablakából')}" style="width:100%"></td></tr>`;
       }
-      const top = [...items.keys()]
-        .slice(0, 5)
-        .map(t => esc(NAMES[t] || t))
-        .join(', ');
-      return `<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy', fmt(items.size))}${top ? ': ' + top + (items.size > 5 ? ' …' : '') : ''}${locClues(l)}</td><td><input data-locname="${l}" value="${esc((S.locNames && S.locNames[l]) || '')}" placeholder="${esc(T('pl. a játék Assets ablakából'))}" style="width:100%"></td></tr>`;
-    })
-    .join('')}</tbody></table></div>`;
+    )}</tbody></table></div>`
+  );
 }
 
 /* ============ containers and project material sources ============ */
@@ -4632,10 +4671,10 @@ function pageOf(key, rows, sig, render) {
 function pagerHtml(key, total, pages, s, a, b) {
   if (total <= 25) return '';
   const sizes = [25, 50, 100, 250, 500, 0];
-  return `<div class="pager" data-noi18n><button class="btn mini" data-pg="${key}|first" ${s.p ? '' : 'disabled'} aria-label="${esc(T('Első oldal'))}">«</button><button class="btn mini" data-pg="${key}|prev" ${s.p ? '' : 'disabled'} aria-label="${esc(T('Előző oldal'))}">‹</button>
+  return html`<div class="pager" data-noi18n><button class="btn mini" data-pg="${key}|first" ${s.p ? '' : 'disabled'} aria-label="${T('Első oldal')}">«</button><button class="btn mini" data-pg="${key}|prev" ${s.p ? '' : 'disabled'} aria-label="${T('Előző oldal')}">‹</button>
   <span class="small">${fmt(a + 1)}–${fmt(b)} / ${fmt(total)}</span>
-  <button class="btn mini" data-pg="${key}|next" ${s.p < pages - 1 ? '' : 'disabled'} aria-label="${esc(T('Következő oldal'))}">›</button><button class="btn mini" data-pg="${key}|last" ${s.p < pages - 1 ? '' : 'disabled'} aria-label="${esc(T('Utolsó oldal'))}">»</button>
-  <label class="small">${esc(T('Soronként'))} <select data-pgn="${key}">${sizes.map(z => `<option value="${z}" ${s.n === z ? 'selected' : ''}>${z || esc(T('mind'))}</option>`).join('')}</select></label></div>`;
+  <button class="btn mini" data-pg="${key}|next" ${s.p < pages - 1 ? '' : 'disabled'} aria-label="${T('Következő oldal')}">›</button><button class="btn mini" data-pg="${key}|last" ${s.p < pages - 1 ? '' : 'disabled'} aria-label="${T('Utolsó oldal')}">»</button>
+  <label class="small">${T('Soronként')} <select data-pgn="${key}">${sizes.map(z => html`<option value="${z}" ${s.n === z ? 'selected' : ''}>${z || T('mind')}</option>`)}</select></label></div>`;
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-pg]');
@@ -4663,7 +4702,7 @@ document.addEventListener('change', e => {
 function sortTh(key, f, label, num, dflt) {
   const s = SRT[key] || (SRT[key] = dflt || { f, d: num ? -1 : 1 });
   const on = s.f === f;
-  return `<th class="${num ? 'num ' : ''}sortable" data-srt="${key}|${f}|${num ? 1 : 0}" aria-sort="${on ? (s.d > 0 ? 'ascending' : 'descending') : 'none'}">${label}${on ? (s.d > 0 ? ' ▲' : ' ▼') : ''}</th>`;
+  return html`<th class="${num ? 'num ' : ''}sortable" data-srt="${key}|${f}|${num ? 1 : 0}" aria-sort="${on ? (s.d > 0 ? 'ascending' : 'descending') : 'none'}">${label}${on ? (s.d > 0 ? ' ▲' : ' ▼') : ''}</th>`;
 }
 function sortRows(key, rows, get) {
   const s = SRT[key];
@@ -4693,9 +4732,12 @@ function renderDataNote() {
   const el = document.getElementById('dvNote');
   if (!el) return;
   const old = CHARS.filter(c => DATA[c.id] && (DATA[c.id].dv || 1) < APP.dataVersion);
-  el.innerHTML = old.length
-    ? `<div class="notice" style="margin:12px 0"><p>${T('Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.', APP.version, esc(old.map(c => c.name).join(', ')))} <button class="btn primary" id="dvRefresh">${T('Minden adat frissítése')}</button> <a href="https://github.com/${APP.repo}/blob/main/CHANGELOG.md" target="_blank" rel="noopener">${T('Mi változott?')}</a></p></div>`
-    : '';
+  setHtml(
+    el,
+    old.length
+      ? html`<div class="notice" style="margin:12px 0"><p>${T('Az IndyOps frissült (v{0}). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait: {1}.', APP.version, old.map(c => c.name).join(', '))} <button class="btn primary" id="dvRefresh">${T('Minden adat frissítése')}</button> <a href="https://github.com/${APP.repo}/blob/main/CHANGELOG.md" target="_blank" rel="noopener">${T('Mi változott?')}</a></p></div>`
+      : ''
+  );
   const b = document.getElementById('dvRefresh');
   if (b)
     b.onclick = async () => {
@@ -4718,7 +4760,7 @@ function renderAll() {
 function alertBox(msg) {
   const d = document.createElement('div');
   d.className = 'notice err';
-  d.innerHTML = '<p>' + esc(msg) + '</p>';
+  setHtml(d, html`<p>${msg}</p>`);
   const host = document.querySelector('section:not([hidden])') || document.body;
   host.prepend(d);
   setTimeout(() => d.remove(), 12000);
@@ -4732,16 +4774,22 @@ function renderChars() {
   $('#cbUrl').textContent = callbackUrl();
   $('#scopeList').textContent = scopesNeeded().join(' ');
   $('#noChars').hidden = CHARS.length > 0;
-  $('#charList').innerHTML = CHARS.map(c => {
-    const d = DATA[c.id];
-    return `<div class="card char"><img alt="" src="https://images.evetech.net/characters/${c.id}/portrait?size=64"><div style="flex:1;min-width:0"><div class="nm">${esc(c.name)}</div><div class="small muted">${d ? T('{0} tárgy · {1} BP · frissítve {2}', fmt(d.assets.length), fmt(d.bps.length), new Date(d.at).toLocaleString(LOC())) : T('még nincs letöltve')}</div>${(() => {
-      if (!c.scp) return '';
-      const miss = scopesNeeded().filter(x => !c.scp.includes(x));
-      return miss.length
-        ? `<div class="notice" style="margin:6px 0 0"><p class="small">${HOSTED ? `${T('Új funkciókhoz új engedély kell ehhez a karakterhez. Nyomd meg az „Újra bejelentkezés” gombot.')} <code>${esc(miss.join(' '))}</code>` : `Új engedély kell ehhez a karakterhez: <code>${esc(miss.join(' '))}</code>. Előbb add hozzá az alkalmazásodhoz a developers.eveonline.com-on, aztán jelentkezz be újra ezzel a karakterrel.`}</p></div>`
-        : '';
-    })()}<div class="row" style="margin-top:6px"><button class="btn" data-ref="${c.id}">Frissítés</button><button class="btn" data-relog="${c.id}">Újra bejelentkezés</button><button class="btn" data-del="${c.id}">Eltávolítás</button></div></div></div>`;
-  }).join('');
+  setHtml(
+    $('#charList'),
+    hjoin(
+      CHARS.map(c => {
+        const d = DATA[c.id];
+        return html`<div class="card char"><img alt="" src="https://images.evetech.net/characters/${c.id}/portrait?size=64"><div style="flex:1;min-width:0"><div class="nm">${c.name}</div><div class="small muted">${d ? T('{0} tárgy · {1} BP · frissítve {2}', fmt(d.assets.length), fmt(d.bps.length), new Date(d.at).toLocaleString(LOC())) : T('még nincs letöltve')}</div>${(() => {
+          if (!c.scp) return '';
+          const miss = scopesNeeded().filter(x => !c.scp.includes(x));
+          return miss.length
+            ? html`<div class="notice" style="margin:6px 0 0"><p class="small">${HOSTED ? html`${T('Új funkciókhoz új engedély kell ehhez a karakterhez. Nyomd meg az „Újra bejelentkezés” gombot.')} <code>${hjoin(miss, ' ')}</code>` : html`Új engedély kell ehhez a karakterhez: <code>${hjoin(miss, ' ')}</code>. Előbb add hozzá az alkalmazásodhoz a developers.eveonline.com-on, aztán jelentkezz be újra ezzel a karakterrel.`}</p></div>`
+            : '';
+        })()}<div class="row" style="margin-top:6px"><button class="btn" data-ref="${c.id}">Frissítés</button><button class="btn" data-relog="${c.id}">Újra bejelentkezés</button><button class="btn" data-del="${c.id}">Eltávolítás</button></div></div></div>`;
+      }),
+      ''
+    )
+  );
 }
 function renderJobs() {
   const rows = [];
@@ -4759,14 +4807,18 @@ function renderJobs() {
     for (const j of d.jobs) rows.push({ cid, j });
   }
   rows.sort((a, b) => a.j.end.localeCompare(b.j.end));
-  $('#jobsTable tbody').innerHTML = rows.length
-    ? rows
-        .map(
-          ({ cid, j }) =>
-            `<tr><td>${esc(charName(cid))}</td><td>${acts[j.act] || j.act}</td><td>${esc(NAMES[j.bp] || j.bp)}</td><td class="num">${j.runs}</td><td>${esc(locName(j.loc))}</td><td class="mono">${new Date(j.end) < new Date() ? '<span class="pill ok">kész, átvehető</span>' : new Date(j.end).toLocaleString(LOC())}</td></tr>`
+  setHtml(
+    $('#jobsTable tbody'),
+    rows.length
+      ? hjoin(
+          rows.map(
+            ({ cid, j }) =>
+              html`<tr><td>${charName(cid)}</td><td>${acts[j.act] || j.act}</td><td>${NAMES[j.bp] || j.bp}</td><td class="num">${j.runs}</td><td>${locName(j.loc)}</td><td class="mono">${new Date(j.end) < new Date() ? html`<span class="pill ok">kész, átvehető</span>` : new Date(j.end).toLocaleString(LOC())}</td></tr>`
+          ),
+          ''
         )
-        .join('')
-    : '<tr><td colspan="6" class="muted">Nincs futó job.</td></tr>';
+      : html`<tr><td colspan="6" class="muted">Nincs futó job.</td></tr>`
+  );
 }
 let bpSort = { k: 'name', d: 1 };
 function renderBPs() {
@@ -4795,17 +4847,20 @@ function renderBPs() {
     return (typeof va === 'number' ? va - vb : String(va).localeCompare(String(vb), 'hu')) * bpSort.d;
   });
   const pg = pageOf('bp', list, [f, kind, nm, bpSort.k, bpSort.d].join('|'), renderBPs);
-  $('#bpPg1').innerHTML = pg.html;
-  $('#bpPg2').innerHTML = pg.html;
-  $('#bpTable tbody').innerHTML =
-    pg.rows
-      .map(x => {
+  setHtml($('#bpPg1'), pg.html);
+  setHtml($('#bpPg2'), pg.html);
+  setHtml(
+    $('#bpTable tbody'),
+    hjoin(
+      pg.rows.map(x => {
         const j = inJob(x.b.i);
         const max = x.b.r === -1 && x.me >= 10 && x.te >= 20;
-        return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r === -1 ? 'bpo' : 'bpc'}">${x.b.r === -1 ? 'BPO' : 'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r === -1 ? '∞' : x.b.r}${x.b.adj ? `<span title="${esc(T('Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.', x.b.adj))}">*</span>` : ''}${x.b.r === 0 ? ' <span class="pill warn">' + esc(T('elfogyott')) + '</span>' : ''}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j ? '<span class="pill warn">jobban</span> ' : ''}${x.b.r === -1 ? (max ? '<span class="pill ok">max</span>' : '<span class="pill warn">kutatható</span>') : ''}</td></tr>`;
-      })
-      .join('') ||
-    '<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
+        return html`<tr><td>${x.name}</td><td><span class="pill ${x.b.r === -1 ? 'bpo' : 'bpc'}">${x.b.r === -1 ? 'BPO' : 'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r === -1 ? '∞' : x.b.r}${x.b.adj ? html`<span title="${T('Az ESI még a job leadása előtti állapotot mutatja ({0} runnal többet). Ezt itt már javítottam; az ESI következő frissítése után a * eltűnik.', x.b.adj)}">*</span>` : ''}${x.b.r === 0 ? html` <span class="pill warn">${T('elfogyott')}</span>` : ''}</td><td>${x.char}</td><td class="small">${x.loc}</td><td>${j ? html`<span class="pill warn">jobban</span> ` : ''}${x.b.r === -1 ? (max ? html`<span class="pill ok">max</span>` : html`<span class="pill warn">kutatható</span>`) : ''}</td></tr>`;
+      }),
+      ''
+    ) ||
+      html`<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>`
+  );
   const ats = Object.values(DATA)
       .map(d => d.bpAt)
       .filter(Boolean),
@@ -4850,41 +4905,54 @@ function renderStock() {
   }
   if (!SRT.st) SRT.st = { f: 'name', d: 1 };
   sortRows('st', rows, (r, f) => (f === 'name' ? r.name : f === 'tot' ? r.tot : r.a.length));
-  $('#stHead').innerHTML =
-    sortTh('st', 'name', T('Tárgy')) + sortTh('st', 'tot', T('Összesen'), 1) + sortTh('st', 'where', T('Hol'), 1);
+  setHtml(
+    $('#stHead'),
+    html`${sortTh('st', 'name', T('Tárgy'))}${sortTh('st', 'tot', T('Összesen'), 1)}${sortTh('st', 'where', T('Hol'), 1)}`
+  );
   const pg = pageOf('st', rows, [f, lf, only].join('|'), renderStock);
   const shown = pg.rows;
-  $('#stPg1').innerHTML = pg.html;
-  $('#stPg2').innerHTML = pg.html;
-  $('#stTable tbody').innerHTML =
-    shown
-      .map(
+  setHtml($('#stPg1'), pg.html);
+  setHtml($('#stPg2'), pg.html);
+  setHtml(
+    $('#stTable tbody'),
+    hjoin(
+      shown.map(
         r =>
-          `<tr><td>${esc(r.name)}</td><td class="num">${fmt(r.tot)}</td><td class="small">${r.a.map(x => esc(charName(x.cid)) + ' · ' + esc(locName(x.l)) + ': <span class="mono">' + fmt(x.q) + '</span>').join('<br>')}</td></tr>`
-      )
-      .join('') || '<tr><td colspan="3" class="muted">Nincs adat.</td></tr>';
+          html`<tr><td>${r.name}</td><td class="num">${fmt(r.tot)}</td><td class="small">${hjoin(
+            r.a.map(x => html`${charName(x.cid)} · ${locName(x.l)}: <span class="mono">${fmt(x.q)}</span>`),
+            html`<br>`
+          )}</td></tr>`
+      ),
+      ''
+    ) || html`<tr><td colspan="3" class="muted">Nincs adat.</td></tr>`
+  );
   $('#stCount').textContent = T('{0} tételtípus', fmt(rows.length));
   const sel = $('#stLoc'),
     cur = sel.value;
-  sel.innerHTML =
-    '<option value="">minden hely</option>' +
-    allLocs()
+  setHtml(
+    sel,
+    html`<option value="">minden hely</option>${allLocs()
       .sort((a, b) => locName(a).localeCompare(locName(b)))
-      .map(l => `<option value="${l}">${esc(locName(l))}</option>`)
-      .join('');
+      .map(l => html`<option value="${l}">${locName(l)}</option>`)}`
+  );
   sel.value = cur;
 }
 function renderLocList() {
   const ls = allLocs();
   if (!ls.length) return;
   const sel = planLocs();
-  $('#locList').innerHTML = ls
-    .sort((a, b) => locName(a).localeCompare(locName(b)))
-    .map(
-      l =>
-        `<label class="inline"><input type="checkbox" data-loc="${l}" ${sel.has(l) ? 'checked' : ''}> ${esc(locName(l))}</label>`
+  setHtml(
+    $('#locList'),
+    hjoin(
+      ls
+        .sort((a, b) => locName(a).localeCompare(locName(b)))
+        .map(
+          l =>
+            html`<label class="inline"><input type="checkbox" data-loc="${l}" ${sel.has(l) ? 'checked' : ''}> ${locName(l)}</label>`
+        ),
+      ''
     )
-    .join('');
+  );
 }
 function renderSettings() {
   $('#sStructME').value = S.structME;
@@ -4903,12 +4971,12 @@ function renderSettings() {
   $('#sBroker').placeholder = fmt(brokerFee() * 100, 2);
   {
     const sel = $('#sProdLoc');
-    sel.innerHTML =
-      '<option value="">automatikus: a BP helye</option>' +
-      allLocs()
+    setHtml(
+      sel,
+      html`<option value="">automatikus: a BP helye</option>${allLocs()
         .sort((a, b) => locName(a).localeCompare(locName(b)))
-        .map(l => `<option value="${l}">${esc(locName(l))}</option>`)
-        .join('');
+        .map(l => html`<option value="${l}">${locName(l)}</option>`)}`
+    );
     sel.value = S.prodLoc || '';
   }
   {
@@ -4917,31 +4985,21 @@ function renderSettings() {
     const own = allLocs()
       .filter(l => locKind(l) === 'npc' && l !== JITA_STATION && !hubs.some(h => h[0] === l))
       .sort((a, b) => locName(a).localeCompare(locName(b)));
-    sel.innerHTML =
-      '<option value="">nincs</option><optgroup label="' +
-      esc(T('Kereskedelmi központok')) +
-      '">' +
-      hubs.map(h => `<option value="${h[0]}">${esc(h[2])}</option>`).join('') +
-      '</optgroup>' +
-      (own.length
-        ? '<optgroup label="' +
-          esc(T('Állomások, ahol van cuccod')) +
-          '">' +
-          own.map(l => `<option value="${l}">${esc(locName(l))}</option>`).join('') +
-          '</optgroup>'
-        : '') +
-      (() => {
+    setHtml(
+      sel,
+      html`<option value="">nincs</option><optgroup label="${T('Kereskedelmi központok')}">${hubs.map(h => html`<option value="${h[0]}">${h[2]}</option>`)}</optgroup>${
+        own.length
+          ? html`<optgroup label="${T('Állomások, ahol van cuccod')}">${own.map(l => html`<option value="${l}">${locName(l)}</option>`)}</optgroup>`
+          : ''
+      }${(() => {
         const st = allLocs()
           .filter(l => locKind(l) === 'struct')
           .sort((a, b) => locName(a).localeCompare(locName(b)));
         return st.length
-          ? '<optgroup label="' +
-              esc(T('Struktúrák, ahol van cuccod')) +
-              '">' +
-              st.map(l => `<option value="${l}">${esc(locName(l))}</option>`).join('') +
-              '</optgroup>'
+          ? html`<optgroup label="${T('Struktúrák, ahol van cuccod')}">${st.map(l => html`<option value="${l}">${locName(l)}</option>`)}</optgroup>`
           : '';
-      })();
+      })()}`
+    );
     sel.value = S.market2 || '';
     $('#sBuyM2').checked = S.buyM2 !== false;
     $('#sParallel').checked = !!S.parallel;
@@ -4951,23 +5009,29 @@ function renderSettings() {
     const mb = $('#sM2Broker');
     if (mb) {
       const l = Number(S.market2);
-      mb.innerHTML =
+      setHtml(
+        mb,
         S.market2 && locKind(l) === 'struct'
-          ? `<label class="small">${T('{0} broker fee (a tulaj állítja), %', esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${l}" value="${structBrokerOf(l) ?? ''}" placeholder="?"></label> <span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span>`
-          : '';
+          ? html`<label class="small">${T('{0} broker fee (a tulaj állítja), %', m2Short())} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${l}" value="${structBrokerOf(l) ?? ''}" placeholder="?"></label> <span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span>`
+          : ''
+      );
     }
   }
   {
     const w = workChars();
     const cs = CHARS.filter(c => DATA[c.id]);
-    $('#sWorkChars').innerHTML = cs.length
-      ? cs
-          .map(
-            c =>
-              `<label class="inline"><input type="checkbox" data-wc="${c.id}" ${w.includes(c.id) ? 'checked' : ''}> ${esc(c.name)}</label>`
+    setHtml(
+      $('#sWorkChars'),
+      cs.length
+        ? hjoin(
+            cs.map(
+              c =>
+                html`<label class="inline"><input type="checkbox" data-wc="${c.id}" ${w.includes(c.id) ? 'checked' : ''}> ${c.name}</label>`
+            ),
+            ''
           )
-          .join('')
-      : '<span class="muted small">' + esc(T('Még nincs karakter.')) + '</span>';
+        : html`<span class="muted small">${T('Még nincs karakter.')}</span>`
+    );
   }
 }
 function renderPlanOptions() {
@@ -4978,7 +5042,13 @@ function renderPlanOptions() {
         .filter(Boolean)
     )
   ].sort((a, b) => a.localeCompare(b, 'hu'));
-  $('#bpOptions').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+  setHtml(
+    $('#bpOptions'),
+    hjoin(
+      names.map(n => html`<option value="${n}">`),
+      ''
+    )
+  );
   updateCopySelect();
 }
 function updateCopySelect() {
@@ -4986,13 +5056,16 @@ function updateCopySelect() {
   const list = allBPs()
     .filter(b => NAMES[b.t] === n)
     .sort((a, b) => (b.r === -1) - (a.r === -1) || b.me - a.me);
-  $('#planCopy').innerHTML =
-    list
-      .map(b => {
+  setHtml(
+    $('#planCopy'),
+    hjoin(
+      list.map(b => {
         const j = inJob(b.i);
-        return `<option value="${b.i}">${b.r === -1 ? 'BPO' : 'BPC ' + b.r + ' run'} · ME${b.me} TE${b.te} · ${esc(charName(b.cid))} · ${esc(locName(b.l))}${j ? ' · ' + T('jobban') : ''}</option>`;
-      })
-      .join('') || '<option value="">nincs ilyen saját BP</option>';
+        return html`<option value="${b.i}">${b.r === -1 ? 'BPO' : 'BPC ' + b.r + ' run'} · ME${b.me} TE${b.te} · ${charName(b.cid)} · ${locName(b.l)}${j ? ' · ' + T('jobban') : ''}</option>`;
+      }),
+      ''
+    ) || html`<option value="">nincs ilyen saját BP</option>`
+  );
 }
 
 /* ---- plan display ---- */
@@ -5038,11 +5111,11 @@ async function runPlan() {
     return;
   }
   const runs = Math.max(1, Number($('#planRuns').value) || 1);
-  $('#planOut').innerHTML = '<div class="card muted">Számolás…</div>';
+  setHtml($('#planOut'), html`<div class="card muted">Számolás…</div>`);
   try {
     await indexBPProducts();
     if (!BPPROD[bp.t]) {
-      $('#planOut').innerHTML = '<div class="card">Ennek a blueprintnek nincs gyártási vagy reakció receptje.</div>';
+      setHtml($('#planOut'), html`<div class="card">Ennek a blueprintnek nincs gyártási vagy reakció receptje.</div>`);
       return;
     }
     await prefetchTree(BPPROD[bp.t].prod);
@@ -5056,7 +5129,7 @@ async function runPlan() {
     LASTRENDER();
     renderMineNeed();
   } catch (e) {
-    $('#planOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#planOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     log(e.stack || e.message);
   }
 }
@@ -5325,9 +5398,9 @@ function shipAdvice(R, key, vol, maxUnit) {
   const flyable = ctx.ships.filter(x => x.canFly);
   const ships = flyable.filter(x => x.cap >= (maxUnit || 0));
   if (!flyable.length)
-    return `<tr><td colspan="3" class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</td></tr>`;
+    return html`<tr><td colspan="3" class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</td></tr>`;
   if (!ships.length)
-    return `<tr><td colspan="3" class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</td></tr>`;
+    return html`<tr><td colspan="3" class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</td></tr>`;
   const opts = ships.map(x => {
     const trips = Math.ceil(vol / x.cap);
     const per = JUMP_SEC[x.g] || 60;
@@ -5344,38 +5417,34 @@ function shipAdvice(R, key, vol, maxUnit) {
       return true;
     })
     .slice(0, 3);
-  return `<tr><td colspan="3" class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : `<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? '<span class="neg">' + safety + '</span>' : safety}). `}${best.map((o, i) => `${i ? '<br>' : ''}${esc(o.n)} <span class="muted">(${esc(charName(o.cid))}, ${esc(locName(o.l))}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`).join('')}</td></tr>`;
+  return html`<tr><td colspan="3" class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : html`<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? html`<span class="neg">${safety}</span>` : safety}). `}${best.map((o, i) => html`${i ? html`<br>` : ''}${o.n} <span class="muted">(${charName(o.cid)}, ${locName(o.l)}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`)}</td></tr>`;
 }
 function renderHaul(R) {
   const H = haulList(R);
   if (!H.moves.size && !H.sale.size)
-    return '<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>';
+    return html`<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>`;
   let tot = 0;
-  let h =
-    '<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="grid2">';
+  let h = html`<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="grid2">`;
   for (const [k, m] of H.moves) {
     const [from, to] = k.split('|').map(Number);
     const rows = [...m].map(([t, q]) => ({ t, q, v: q * volOf(t) }));
     const sum = rows.reduce((s, r) => s + (r.v || 0), 0);
     tot += sum;
-    h += `<div class="tablewrap"><table><thead><tr><th colspan="3">${esc(from === JITA_STATION ? T('Jita (vásárlás)') : locName(from))} → ${esc(locName(to))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows
+    h = html`${h}<div class="tablewrap"><table><thead><tr><th colspan="3">${from === JITA_STATION ? T('Jita (vásárlás)') : locName(from)} → ${locName(to)} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows
       .sort((a, b) => (b.v || 0) - (a.v || 0))
       .map(
         r =>
-          `<tr><td>${esc(NAMES[r.t] || r.t)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`
-      )
-      .join(
-        ''
-      )}${H.oreRoutes.has(k) ? '<tr><td colspan="3" class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</td></tr>' : ''}${shipAdvice(R, k, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</tbody></table></div>`;
+          html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`
+      )}${H.oreRoutes.has(k) ? html`<tr><td colspan="3" class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</td></tr>` : ''}${shipAdvice(R, k, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</tbody></table></div>`;
   }
   for (const [from, m] of H.sale) {
     const rows = [...m].map(([t, q]) => ({ t, q, v: q * volOf(t) }));
     const sum = rows.reduce((s, r) => s + r.v, 0);
-    h += `<div class="tablewrap"><table><thead><tr><th colspan="3">${T('Eladásra: {0} → Jita', esc(locName(from)))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(NAMES[r.t] || r.t)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`).join('')}${shipAdvice(R, from + '|' + JITA_STATION, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</tbody></table></div>`;
+    h = html`${h}<div class="tablewrap"><table><thead><tr><th colspan="3">${T('Eladásra: {0} → Jita', locName(from))} · <span class="mono">${fmt(sum)} m³</span></th></tr></thead><tbody>${rows.map(r => html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`)}${shipAdvice(R, from + '|' + JITA_STATION, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</tbody></table></div>`;
   }
-  h += '</div>';
+  h = html`${h}</div>`;
   if (tot)
-    h += `<p class="small muted" style="margin-top:6px">Odaszállítás összesen: <span class="mono">${fmt(tot)} m³</span></p>`;
+    h = html`${h}<p class="small muted" style="margin-top:6px">Odaszállítás összesen: <span class="mono">${fmt(tot)} m³</span></p>`;
   return h;
 }
 function buildUnit(n, sys) {
@@ -5454,8 +5523,8 @@ function planTotals(R, free, fee) {
 }
 function resultKpis(R, P, free, multi) {
   const { unkAll, buyCost, stockCost, jcT, net, profit } = P;
-  return `<div class="kpis">
-    <div class="kpi"><div class="k">${multi ? 'Termékek' : 'Termék'}</div><div class="v" style="font-size:16px">${multi ? R.trees.length + ' tétel' : esc(R.title || '')}</div></div>
+  return html`<div class="kpis">
+    <div class="kpi"><div class="k">${multi ? 'Termékek' : 'Termék'}</div><div class="v" style="font-size:16px">${multi ? R.trees.length + ' tétel' : R.title || ''}</div></div>
     <div class="kpi"><div class="k">Vásárolni kell</div><div class="v">${isk(buyCost)}</div></div>
     <div class="kpi"><div class="k">Saját készlet értéke</div><div class="v">${free ? 'ingyen' : isk(stockCost)}</div></div>
     <div class="kpi"><div class="k">Job költség</div><div class="v">${isk(jcT)}</div></div>
@@ -5464,27 +5533,24 @@ function resultKpis(R, P, free, multi) {
         ? (() => {
             const g = R.trees.reduce((s, x) => s + x.made * (sell2(x.tree.t) || 0), 0);
             const f2 = m2Fee();
-            return `<div class="small muted">${esc(m2Short())}: ${f2 != null ? isk(g * (1 - f2)) : isk(g) + ' ' + T('(díjak nélkül)')}</div>`;
+            return html`<div class="small muted">${m2Short()}: ${f2 != null ? isk(g * (1 - f2)) : isk(g) + ' ' + T('(díjak nélkül)')}</div>`;
           })()
         : ''
     }</div>
-    <div class="kpi"><div class="k">Profit</div>${unkAll.size ? `<div class="v">${T('nem számolható')}</div><div class="small muted">${T('becslés ár nélküli tételek nélkül: {0}', isk(profit))}</div>` : `<div class="v ${profit >= 0 ? 'pos' : 'neg'}">${isk(profit)}</div>`}</div>
-  </div>${unkAll.size ? `<div class="notice" style="margin:8px 0"><p class="small">${T('Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.', esc([...unkAll].map(t => NAMES[t] || t).join(', ')))}</p></div>` : ''}`;
+    <div class="kpi"><div class="k">Profit</div>${unkAll.size ? html`<div class="v">${T('nem számolható')}</div><div class="small muted">${T('becslés ár nélküli tételek nélkül: {0}', isk(profit))}</div>` : html`<div class="v ${profit >= 0 ? 'pos' : 'neg'}">${isk(profit)}</div>`}</div>
+  </div>${unkAll.size ? html`<div class="notice" style="margin:8px 0"><p class="small">${T('Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.', [...unkAll].map(t => NAMES[t] || t).join(', '))}</p></div>` : ''}`;
 }
 // production systems with their cost index, and the selling fees used
 function resultSystems(R) {
   const syss = [...new Set(R.jobs.map(j => jobSysOf(j, R.sys)).filter(Boolean))];
-  return (
-    `<p class="small muted">${syss.length > 1 ? T('Gyártási rendszerek: {0}', syss.map(s => esc(NAMES[s] || s) + ((IDX.p[s] || {}).manufacturing != null ? ' (' + fmt(IDX.p[s].manufacturing * 100, 2) + '%)' : '')).join(', ')) : T('Gyártási rendszer: {0}', esc(NAMES[syss[0] || R.sys] || syss[0] || R.sys || T('ismeretlen'))) + ((IDX.p[syss[0] || R.sys] || {}).manufacturing != null ? ' · cost index ' + fmt(IDX.p[syss[0] || R.sys].manufacturing * 100, 2) + '%' : '')} · sales tax ${fmt(salesTax() * 100, 2)}% · broker ${fmt(brokerFee() * 100, 2)}%${bestSeller() ? ' · ' + T('eladó: {0}', esc(charName(bestSeller().cid))) : ''}</p>` +
-    m2Hint()
-  );
+  return html`<p class="small muted">${syss.length > 1 ? T('Gyártási rendszerek: {0}', syss.map(s => (NAMES[s] || s) + ((IDX.p[s] || {}).manufacturing != null ? ' (' + fmt(IDX.p[s].manufacturing * 100, 2) + '%)' : '')).join(', ')) : T('Gyártási rendszer: {0}', NAMES[syss[0] || R.sys] || syss[0] || R.sys || T('ismeretlen')) + ((IDX.p[syss[0] || R.sys] || {}).manufacturing != null ? ' · cost index ' + fmt(IDX.p[syss[0] || R.sys].manufacturing * 100, 2) + '%' : '')} · sales tax ${fmt(salesTax() * 100, 2)}% · broker ${fmt(brokerFee() * 100, 2)}%${bestSeller() ? ' · ' + T('eladó: {0}', charName(bestSeller().cid)) : ''}</p>${m2Hint()}`;
 }
 // parallel manufacturing: which items were split into more jobs, and the extra material against the default
 function resultParallel(R) {
   if (!S.parallel) return '';
   const par = R.par || [];
   if (!par.length)
-    return `<div class="notice"><p class="small">${T('Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).', parModeName())}</p></div>`;
+    return html`<div class="notice"><p class="small">${T('Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).', parModeName())}</p></div>`;
   let extra = 0;
   const byType = new Map();
   for (const p of par) {
@@ -5495,35 +5561,47 @@ function resultParallel(R) {
     byType.set(p.t, o);
   }
   const list = [...byType].map(([t, o]) => T('{0}: {1} → {2} job', NAMES[t] || '#' + t, o.before, o.jobs)).join(', ');
-  return `<div class="notice"><p class="small">${esc(T('Párhuzamos gyártás ({0}): {1}.', parModeName(), list))} ${
-    extra > 0
-      ? esc(T('Többletanyag a sorban gyártáshoz képest: {0} ISK.', isk(extra)))
-      : esc(T('Nem kell hozzá több anyag.'))
+  return html`<div class="notice"><p class="small">${T('Párhuzamos gyártás ({0}): {1}.', parModeName(), list)} ${
+    extra > 0 ? T('Többletanyag a sorban gyártáshoz képest: {0} ISK.', isk(extra)) : T('Nem kell hozzá több anyag.')
   }</p></div>`;
 }
 const parModeName = () => (S.parMode === 'speed' ? T('gyorsabb') : T('kevesebb anyag'));
 function resultProducts(R, rows, multi) {
-  let h = `<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi ? '<th>Projekt</th>' : ''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On() ? `<th class="num">${esc(m2Short())} sell / db</th>` : ''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r => `<tr>${multi ? `<td>${esc(r.x.item.label || '')}</td>` : ''}<td>${esc(NAMES[r.p] || r.p)}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On() ? `<td class="num">${m2Cell(sell(r.p), sell2(r.p))}</td>` : ''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${r.unk ? '<span title="' + esc(T('Nincs ára valaminek ebben a tételben.')) + '">?</span>' : isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`).join('')}</tbody></table></div>`;
+  let h = html`<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi ? html`<th>Projekt</th>` : ''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On() ? html`<th class="num">${m2Short()} sell / db</th>` : ''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r => html`<tr>${multi ? html`<td>${r.x.item.label || ''}</td>` : ''}<td>${NAMES[r.p] || r.p}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On() ? html`<td class="num">${m2Cell(sell(r.p), sell2(r.p))}</td>` : ''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${r.unk ? html`<span title="${T('Nincs ára valaminek ebben a tételben.')}">?</span>` : isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`)}</tbody></table></div>`;
   if (multi)
-    h += `<p class="small muted" style="margin-top:4px">A tételenkénti anyagköltségben a másik tétel jobjából maradt felesleg ingyen számít, ezért a sorok összege kicsit eltérhet a fenti összesítéstől.</p>`;
+    h = html`${h}<p class="small muted" style="margin-top:4px">A tételenkénti anyagköltségben a másik tétel jobjából maradt felesleg ingyen számít, ezért a sorok összege kicsit eltérhet a fenti összesítéstől.</p>`;
   return h;
 }
 // shopping list (bl: what to buy, most expensive first); its closing </div> comes after the jobs table (grid2)
 function resultShopping(bl) {
   const bm2 = buyM2On();
-  return `<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th>${m2On() ? `<th class="num">${esc(m2Short())} sell</th>` : ''}${bm2 ? '<th>Hol veszed</th>' : ''}<th class="num">Összesen</th></tr></thead><tbody>${bl.map(([t, q]) => `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : '<span class="pill warn">nincs ár</span>'}</td>${m2On() ? `<td class="num">${m2Cell(unitPrice(t), sell2(t), true)}</td>` : ''}${bm2 ? `<td class="small" data-noi18n>${buyAt(t) === JITA_STATION ? 'Jita' : esc(m2Short())}</td>` : ''}<td class="num">${buyPrice(t) ? isk(q * buyPrice(t)) : '–'}</td></tr>`).join('') || '<tr><td colspan="6" class="pos">Semmit nem kell venni, minden megvan.</td></tr>'}</tbody></table></div>
-  ${bl.some(([t]) => !unitPrice(t)) ? '<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs Jita ára, ezért 0-val számít a költségekben.</p>' : ''}
+  return html`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th>${m2On() ? html`<th class="num">${m2Short()} sell</th>` : ''}${bm2 ? html`<th>Hol veszed</th>` : ''}<th class="num">Összesen</th></tr></thead><tbody>${
+    hjoin(
+      bl.map(
+        ([t, q]) =>
+          html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : html`<span class="pill warn">nincs ár</span>`}</td>${m2On() ? html`<td class="num">${m2Cell(unitPrice(t), sell2(t), true)}</td>` : ''}${bm2 ? html`<td class="small" data-noi18n>${buyAt(t) === JITA_STATION ? 'Jita' : m2Short()}</td>` : ''}<td class="num">${buyPrice(t) ? isk(q * buyPrice(t)) : '–'}</td></tr>`
+      ),
+      ''
+    ) || html`<tr><td colspan="6" class="pos">Semmit nem kell venni, minden megvan.</td></tr>`
+  }</tbody></table></div>
+  ${bl.some(([t]) => !unitPrice(t)) ? html`<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs Jita ára, ezért 0-val számít a költségekben.</p>` : ''}
   <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button></p></div>`;
 }
 function resultJobs(R, multi) {
-  return `<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs
+  return html`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs
     .slice()
     .reverse()
     .map(
       j =>
-        `<tr><td>${esc(NAMES[j.t] || j.t)}${j.act === 'r' ? ' <span class="pill">reakció</span>' : ''}${j.act === 'i' ? ` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance * 100, 1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>` : ''}${j.act === 'c' ? ' <span class="pill">copy</span>' : ''}${multi && j.item && j.item.label ? `<div class="src">${esc(j.item.label)}</div>` : ''}</td><td><b>${esc(charName(j.who ?? j.bp.cid))}</b> ${j.wait ? `<span class="pill warn" title="${esc(T('Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.'))}">${T('nincs szabad slot')}</span> ` : ''}${j.who != null && j.who !== j.bp.cid ? `<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak', esc(charName(j.bp.cid)), esc(charName(j.who)))}</div>` : ''}${j.miss.length ? `<span class="pill bad">hiányzó skill</span><div class="src">${esc(j.miss.map(m => (NAMES[m[0]] || m[0]) + ' ' + m[2] + ' → ' + m[1]).join(', '))}</div>` : '<span class="pill ok">skill ok</span>'}</td><td class="small">${j.bp.virtual ? T('inventált BPC') : (j.act === 'i' ? 'T1 ' : '') + (j.bp.r === -1 ? 'BPO' : 'BPC')} ME${j.act === 'm' ? j.bp.me : j.bp.virtual ? j.bp.me : j.bp.me} · ${esc(locName(j.bp.l))}${j.short ? ' <span class="pill bad">nincs elég run</span>' : ''}</td><td class="num">${j.act === 'i' ? fmt(Math.ceil(j.runs)) + ' kísérlet' : fmt(j.runs)}</td><td class="num">${dur(jobTime(j))}</td><td class="num">${isk(jobCost(j, R.sys))}</td></tr>`
-    )
-    .join('')}</tbody></table></div></div></div>`;
+        html`<tr><td>${NAMES[j.t] || j.t}${j.act === 'r' ? html` <span class="pill">reakció</span>` : ''}${j.act === 'i' ? html` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance * 100, 1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>` : ''}${j.act === 'c' ? html` <span class="pill">copy</span>` : ''}${multi && j.item && j.item.label ? html`<div class="src">${j.item.label}</div>` : ''}</td><td><b>${charName(j.who ?? j.bp.cid)}</b> ${j.wait ? html`<span class="pill warn" title="${T('Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.')}">${T('nincs szabad slot')}</span> ` : ''}${j.who != null && j.who !== j.bp.cid ? html`<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak', charName(j.bp.cid), charName(j.who))}</div>` : ''}${
+          j.miss.length
+            ? html`<span class="pill bad">hiányzó skill</span><div class="src">${hjoin(
+                j.miss.map(m => (NAMES[m[0]] || m[0]) + ' ' + m[2] + ' → ' + m[1]),
+                ', '
+              )}</div>`
+            : html`<span class="pill ok">skill ok</span>`
+        }</td><td class="small">${j.bp.virtual ? T('inventált BPC') : (j.act === 'i' ? 'T1 ' : '') + (j.bp.r === -1 ? 'BPO' : 'BPC')} ME${j.act === 'm' ? j.bp.me : j.bp.virtual ? j.bp.me : j.bp.me} · ${locName(j.bp.l)}${j.short ? html` <span class="pill bad">nincs elég run</span>` : ''}</td><td class="num">${j.act === 'i' ? fmt(Math.ceil(j.runs)) + ' kísérlet' : fmt(j.runs)}</td><td class="num">${dur(jobTime(j))}</td><td class="num">${isk(jobCost(j, R.sys))}</td></tr>`
+    )}</tbody></table></div></div></div>`;
 }
 // load per character: jobs per activity against free slots, total time and an estimated wall-clock time
 function resultCharLoad(R) {
@@ -5542,34 +5620,32 @@ function resultCharLoad(R) {
     x['t' + k] += jt;
     if (j.miss.length) x.miss++;
   }
-  return `<h3>Karakterek terhelése</h3><p class="small muted">Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél a szabad slotok és a gyártási idő alapján a leghamarabb elkészül. Egyenlő esetben marad annál, akinél a BP most van, vagy akinél ugyanilyen BP is van.</p><div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Gyártó job</th><th class="num">Szabad gyártó slot</th><th class="num">Reakció job</th><th class="num">Szabad reakció slot</th><th class="num">Science job</th><th class="num">Szabad science slot</th><th class="num">Össz. idő</th><th class="num">Becsült átfutás</th><th>Megjegyzés</th></tr></thead><tbody>${[
+  return html`<h3>Karakterek terhelése</h3><p class="small muted">Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél a szabad slotok és a gyártási idő alapján a leghamarabb elkészül. Egyenlő esetben marad annál, akinél a BP most van, vagy akinél ugyanilyen BP is van.</p><div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Gyártó job</th><th class="num">Szabad gyártó slot</th><th class="num">Reakció job</th><th class="num">Szabad reakció slot</th><th class="num">Science job</th><th class="num">Szabad science slot</th><th class="num">Össz. idő</th><th class="num">Becsült átfutás</th><th>Megjegyzés</th></tr></thead><tbody>${[
     ...per
-  ]
-    .map(([c, x]) => {
-      const sl = slotsOf(c),
-        bz = busyOf(c);
-      const fm = Math.max(0, sl.m - bz.m),
-        fr = Math.max(0, sl.r - bz.r),
-        fs = Math.max(0, sl.s - bz.s);
-      const wall = Math.max(
-        x.mx,
-        x.m ? x.tm / Math.max(1, fm) : 0,
-        x.r ? x.tr / Math.max(1, fr) : 0,
-        x.s ? x.ts / Math.max(1, fs) : 0
-      );
-      const notes = [];
-      if (x.miss) notes.push(T('{0} jobhoz egyik karakternek sincs meg a skill', x.miss));
-      if (x.m > fm) notes.push(T('több gyártó job, mint szabad slot: sorban kell futtatni'));
-      if (x.r > fr) notes.push(T('több reakció job, mint szabad slot'));
-      if (x.s > fs) notes.push(T('több science job, mint szabad slot'));
-      return `<tr><td><b>${esc(charName(c))}</b></td><td class="num">${x.m}</td><td class="num">${fm} / ${sl.m}</td><td class="num">${x.r}</td><td class="num">${fr} / ${sl.r}</td><td class="num">${x.s}</td><td class="num">${fs} / ${sl.s}</td><td class="num">${dur(x.tm + x.tr + x.ts)}</td><td class="num">${dur(wall)}</td><td class="small ${notes.length ? '' : 'muted'}">${esc(notes.join('; ') || T('rendben'))}</td></tr>`;
-    })
-    .join('')}</tbody></table></div>`;
+  ].map(([c, x]) => {
+    const sl = slotsOf(c),
+      bz = busyOf(c);
+    const fm = Math.max(0, sl.m - bz.m),
+      fr = Math.max(0, sl.r - bz.r),
+      fs = Math.max(0, sl.s - bz.s);
+    const wall = Math.max(
+      x.mx,
+      x.m ? x.tm / Math.max(1, fm) : 0,
+      x.r ? x.tr / Math.max(1, fr) : 0,
+      x.s ? x.ts / Math.max(1, fs) : 0
+    );
+    const notes = [];
+    if (x.miss) notes.push(T('{0} jobhoz egyik karakternek sincs meg a skill', x.miss));
+    if (x.m > fm) notes.push(T('több gyártó job, mint szabad slot: sorban kell futtatni'));
+    if (x.r > fr) notes.push(T('több reakció job, mint szabad slot'));
+    if (x.s > fs) notes.push(T('több science job, mint szabad slot'));
+    return html`<tr><td><b>${charName(c)}</b></td><td class="num">${x.m}</td><td class="num">${fm} / ${sl.m}</td><td class="num">${x.r}</td><td class="num">${fr} / ${sl.r}</td><td class="num">${x.s}</td><td class="num">${fs} / ${sl.s}</td><td class="num">${dur(x.tm + x.tr + x.ts)}</td><td class="num">${dur(wall)}</td><td class="small ${notes.length ? '' : 'muted'}">${notes.join('; ') || T('rendben')}</td></tr>`;
+  })}</tbody></table></div>`;
 }
 function resultTrees(R, multi) {
-  let h = `<h3>Anyagfa</h3><p class="small muted">Komponens sorára kattintva: gyártom ↔ veszem. A „Gyártva / Jita” oszlop egy darab árát mutatja: saját gyártásban (anyag piaci áron + job) és megvéve. A zöld az olcsóbb. A „Honnan” oszlopban a hely is látszik.</p>`;
+  let h = html`<h3>Anyagfa</h3><p class="small muted">Komponens sorára kattintva: gyártom ↔ veszem. A „Gyártva / Jita” oszlop egy darab árát mutatja: saját gyártásban (anyag piaci áron + job) és megvéve. A zöld az olcsóbb. A „Honnan” oszlopban a hely is látszik.</p>`;
   R.trees.forEach(x => {
-    h += `<details ${multi ? '' : 'open'} style="margin-bottom:8px"><summary>${esc((x.item.label ? x.item.label + ' · ' : '') + fmt(x.made) + ' × ' + (NAMES[x.tree.t] || x.tree.t))}</summary><div class="tablewrap" style="margin-top:6px"><table class="tree"><thead><tr><th>Tárgy</th><th class="num">Kell</th><th class="num">Készletből</th><th class="num">Gyártom</th><th class="num">Veszem</th><th class="num">Gyártva / Jita (db)${m2On() ? '<span data-noi18n> · ' + esc(m2Short()) + '</span>' : ''}</th><th>Honnan</th></tr></thead><tbody>${treeRows(x.tree, 0, R.sys)}</tbody></table></div></details>`;
+    h = html`${h}<details ${multi ? '' : 'open'} style="margin-bottom:8px"><summary>${(x.item.label ? x.item.label + ' · ' : '') + fmt(x.made) + ' × ' + (NAMES[x.tree.t] || x.tree.t)}</summary><div class="tablewrap" style="margin-top:6px"><table class="tree"><thead><tr><th>Tárgy</th><th class="num">Kell</th><th class="num">Készletből</th><th class="num">Gyártom</th><th class="num">Veszem</th><th class="num">Gyártva / Jita (db)${m2On() ? html`<span data-noi18n> · ${m2Short()}</span>` : ''}</th><th>Honnan</th></tr></thead><tbody>${treeRows(x.tree, 0, R.sys)}</tbody></table></div></details>`;
   });
   return h;
 }
@@ -5580,16 +5656,16 @@ function renderResult(el, R, rerun) {
   const multi = R.trees.length > 1;
   const bl = [...R.buyList].sort((a, b) => b[1] * buyPrice(b[0]) - a[1] * buyPrice(a[0]));
   let h = resultKpis(R, P, free, multi);
-  h += resultSystems(R);
-  R.warn.forEach(w => (h += `<div class="notice">${esc(warnText(w))}</div>`));
-  h += resultParallel(R);
-  h += resultProducts(R, P.rows, multi);
-  h += resultShopping(bl);
-  h += resultJobs(R, multi);
-  h += resultCharLoad(R);
-  h += renderHaul(R);
-  h += resultTrees(R, multi);
-  el.innerHTML = h;
+  h = html`${h}${resultSystems(R)}`;
+  R.warn.forEach(w => (h = html`${h}<div class="notice">${warnText(w)}</div>`));
+  h = html`${h}${resultParallel(R)}`;
+  h = html`${h}${resultProducts(R, P.rows, multi)}`;
+  h = html`${h}${resultShopping(bl)}`;
+  h = html`${h}${resultJobs(R, multi)}`;
+  h = html`${h}${resultCharLoad(R)}`;
+  h = html`${h}${renderHaul(R)}`;
+  h = html`${h}${resultTrees(R, multi)}`;
+  setHtml(el, h);
   const cb = el.querySelector('[data-copybuy]');
   cb &&
     cb.addEventListener('click', () => {
@@ -5611,8 +5687,8 @@ function renderResult(el, R, rerun) {
 }
 function bbCell(n, d, sys) {
   const up = unitPrice(n.t);
-  const m2 = m2On() && sell2(n.t) ? `<div class="small muted">${esc(m2Short())} ${isk(sell2(n.t))}</div>` : '';
-  return bbCell0(n, d, sys, up) + m2;
+  const m2 = m2On() && sell2(n.t) ? html`<div class="small muted">${m2Short()} ${isk(sell2(n.t))}</div>` : '';
+  return html`${bbCell0(n, d, sys, up)}${m2}`;
 }
 function bbCell0(n, d, sys, up) {
   if (!n.build) return up ? isk(up) : '–';
@@ -5620,7 +5696,7 @@ function bbCell0(n, d, sys, up) {
   if (ub == null) return '–';
   if (!up) return isk(ub) + ' / –';
   const cheaper = ub <= up;
-  return `<span class="${cheaper ? 'pos' : ''}">${isk(ub)}</span> / <span class="${cheaper ? '' : 'pos'}">${isk(up)}</span>`;
+  return html`<span class="${cheaper ? 'pos' : ''}">${isk(ub)}</span> / <span class="${cheaper ? '' : 'pos'}">${isk(up)}</span>`;
 }
 function treeRows(n, d, sys) {
   const st = n.stock.reduce((s, x) => s + x.q, 0);
@@ -5632,21 +5708,18 @@ function treeRows(n, d, sys) {
         ? T('futó job ({0})', charName(x.cid))
         : locName(x.l) + (x.c != null ? ' · ' + contLabel(x.c) : '') + (x.ore ? ' ' + T('(ércből)') : '')
   );
-  const where = src
-    .filter((v, i, a) => a.indexOf(v) === i)
-    .map(esc)
-    .join(', ');
+  const where = src.filter((v, i, a) => a.indexOf(v) === i).join(', ');
   const mark = n.inv
-    ? `<span class="pill">invention</span> <span class="src">${T('{0}% esély · {1} kísérlet', fmt(n.inv.chance * 100, 1), n.inv.attempts % 1 ? T('átlag {0}', fmt(n.inv.attempts, 2)) : fmt(n.inv.attempts))}${n.inv.dec ? ' · ' + esc(DECS[n.inv.dec].n) : ''}</span>`
+    ? html`<span class="pill">invention</span> <span class="src">${T('{0}% esély · {1} kísérlet', fmt(n.inv.chance * 100, 1), n.inv.attempts % 1 ? T('átlag {0}', fmt(n.inv.attempts, 2)) : fmt(n.inv.attempts))}${n.inv.dec ? ' · ' + DECS[n.inv.dec].n : ''}</span>`
     : canToggle
       ? S.buyOverride[n.t]
-        ? '<span class="pill warn">veszem</span>'
+        ? html`<span class="pill warn">veszem</span>`
         : n.build
-          ? '<span class="pill ok">gyártom</span>'
+          ? html`<span class="pill ok">gyártom</span>`
           : ''
       : '';
-  let h = `<tr ${canToggle ? `data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"` : ''}><td class="name" style="padding-left:${10 + d * 18}px">${esc(NAMES[n.t] || n.t)} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st ? fmt(st) : '–'}</td><td class="num">${n.build ? fmt(n.build.made) : '–'}</td><td class="num">${n.buy ? fmt(n.buy) : '–'}</td><td class="num small">${bbCell(n, d, sys)}</td><td class="src">${where}</td></tr>`;
-  n.ch.forEach(c => (h += treeRows(c, d + 1, sys)));
+  let h = html`<tr ${canToggle ? html`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"` : ''}><td class="name" style="padding-left:${10 + d * 18}px">${NAMES[n.t] || n.t} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st ? fmt(st) : '–'}</td><td class="num">${n.build ? fmt(n.build.made) : '–'}</td><td class="num">${n.buy ? fmt(n.buy) : '–'}</td><td class="num small">${bbCell(n, d, sys)}</td><td class="src">${where}</td></tr>`;
+  n.ch.forEach(c => (h = html`${h}${treeRows(c, d + 1, sys)}`));
   return h;
 }
 </script>
@@ -5666,36 +5739,46 @@ function bpTypeByName(n) {
   return b ? b.t : null;
 }
 function renderProjects() {
-  $('#pList').innerHTML = PROJ.length
-    ? PROJ.map(
-        (p, i) =>
-          `<div class="prow ${p.id === SELP ? 'sel' : ''}" data-pid="${p.id}"><label class="inline" title="Aktív: beleszámít az összesített tervbe"><input type="checkbox" data-pact="${p.id}" ${p.active ? 'checked' : ''}></label><button class="plink" data-psel="${p.id}">${esc(p.name)}<span class="small muted"> · ${p.items.length} tétel${p.src && p.src.mode === 'sel' ? ' · 📦' : ''}</span></button><span class="pord"><button class="btn mini" data-pup="${i}" ${i === 0 ? 'disabled' : ''} aria-label="Feljebb">▲</button><button class="btn mini" data-pdown="${i}" ${i === PROJ.length - 1 ? 'disabled' : ''} aria-label="Lejjebb">▼</button></span></div>`
-      ).join('')
-    : '<p class="small muted">Még nincs projekt. Adj egy nevet, pl. „Orca rendelés”, és hozd létre.</p>';
+  setHtml(
+    $('#pList'),
+    PROJ.length
+      ? hjoin(
+          PROJ.map(
+            (p, i) =>
+              html`<div class="prow ${p.id === SELP ? 'sel' : ''}" data-pid="${p.id}"><label class="inline" title="Aktív: beleszámít az összesített tervbe"><input type="checkbox" data-pact="${p.id}" ${p.active ? 'checked' : ''}></label><button class="plink" data-psel="${p.id}">${p.name}<span class="small muted"> · ${p.items.length} tétel${p.src && p.src.mode === 'sel' ? ' · 📦' : ''}</span></button><span class="pord"><button class="btn mini" data-pup="${i}" ${i === 0 ? 'disabled' : ''} aria-label="Feljebb">▲</button><button class="btn mini" data-pdown="${i}" ${i === PROJ.length - 1 ? 'disabled' : ''} aria-label="Lejjebb">▼</button></span></div>`
+          ),
+          ''
+        )
+      : html`<p class="small muted">Még nincs projekt. Adj egy nevet, pl. „Orca rendelés”, és hozd létre.</p>`
+  );
   const p = PROJ.find(x => x.id === SELP);
   const ed = $('#pEdit');
   if (!p) {
-    ed.innerHTML = '<h2>Projekt</h2><p class="muted">Válassz vagy hozz létre egy projektet a bal oldalon.</p>';
+    setHtml(ed, html`<h2>Projekt</h2><p class="muted">Válassz vagy hozz létre egy projektet a bal oldalon.</p>`);
     return;
   }
-  ed.innerHTML = `<div class="row" style="justify-content:space-between"><label style="flex:1;min-width:200px">Projekt neve<input id="pName" value="${esc(p.name)}"></label><button class="btn" id="pDel">Projekt törlése</button></div>
-  <div id="pDelConfirm" class="notice err" hidden><p>${T('Biztosan törlöd a(z) „{0}” projektet?', esc(p.name))}</p><div class="row"><button class="btn primary" id="pDelYes">Igen, törlöm</button><button class="btn" id="pDelNo">Mégse</button></div></div>
+  setHtml(
+    ed,
+    html`<div class="row" style="justify-content:space-between"><label style="flex:1;min-width:200px">Projekt neve<input id="pName" value="${p.name}"></label><button class="btn" id="pDel">Projekt törlése</button></div>
+  <div id="pDelConfirm" class="notice err" hidden><p>${T('Biztosan törlöd a(z) „{0}” projektet?', p.name)}</p><div class="row"><button class="btn primary" id="pDelYes">Igen, törlöm</button><button class="btn" id="pDelNo">Mégse</button></div></div>
   <h3>Tételek</h3><div class="tablewrap"><table><thead><tr><th>Blueprint</th><th class="num">Run</th><th>Saját példányok</th><th>Nyersanyag</th><th></th></tr></thead><tbody>${
-    p.items
-      .map((it, i) => {
+    hjoin(
+      p.items.map((it, i) => {
         if (it.invT1) {
           const c1 = copiesOf(it.invT1);
-          return `<tr><td>${esc(NAMES[it.t2] || 'T2 BPC')} <span class="pill">invention</span><div class="src">${esc(it.dec ? DECS[it.dec].n : 'decryptor nélkül')}</div></td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${c1.length ? 'T1: ' + esc(NAMES[it.invT1] || it.invT1) + ' · ' + (c1[0].r === -1 ? 'BPO' : 'BPC ' + c1[0].r + ' run') : '<span class="pill bad">nincs T1 BP</span>'}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
+          return html`<tr><td>${NAMES[it.t2] || 'T2 BPC'} <span class="pill">invention</span><div class="src">${it.dec ? DECS[it.dec].n : 'decryptor nélkül'}</div></td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${c1.length ? 'T1: ' + (NAMES[it.invT1] || it.invT1) + ' · ' + (c1[0].r === -1 ? 'BPO' : 'BPC ' + c1[0].r + ' run') : html`<span class="pill bad">nincs T1 BP</span>`}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
         }
         const cp = copiesOf(it.bpType);
         const runs = cp.reduce((s, c) => (c.r === -1 ? Infinity : s + c.r), 0);
-        return `<tr><td>${esc(NAMES[it.bpType] || it.bpType)}</td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${cp.length ? cp.length + ' db · legjobb: ' + (cp[0].r === -1 ? 'BPO' : 'BPC') + ' ME' + cp[0].me + (runs !== Infinity ? ' · összesen ' + runs + ' run' + (runs < it.runs ? ' <span class="pill bad">kevés</span>' : '') : '') : '<span class="pill bad">nincs saját példány</span>'}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
-      })
-      .join('') || '<tr><td colspan="5" class="muted">Még nincs tétel.</td></tr>'
+        return html`<tr><td>${NAMES[it.bpType] || it.bpType}</td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${cp.length ? cp.length + ' db · legjobb: ' + (cp[0].r === -1 ? 'BPO' : 'BPC') + ' ME' + cp[0].me + (runs !== Infinity ? ' · összesen ' + runs + ' run' + (runs < it.runs ? html` <span class="pill bad">kevés</span>` : '') : '') : html`<span class="pill bad">nincs saját példány</span>`}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
+      }),
+      ''
+    ) || html`<tr><td colspan="5" class="muted">Még nincs tétel.</td></tr>`
   }</tbody></table></div>
   ${projSrcHtml(p)}
   <div class="row" style="margin-top:10px"><label style="flex:1;min-width:220px">Új tétel (saját BP)<input id="pItemName" list="bpOptions" placeholder="pl. Hurricane Blueprint"></label><label>Run<input type="number" id="pItemRuns" min="1" value="1"></label><button class="btn" id="pItemAdd">Hozzáadás</button></div>
-  <div class="row" style="margin-top:14px"><button class="btn primary" id="pCalc">Ennek a projektnek a számolása</button></div>`;
+  <div class="row" style="margin-top:14px"><button class="btn primary" id="pCalc">Ennek a projektnek a számolása</button></div>`
+  );
   $('#pName').addEventListener('change', e => {
     p.name = e.target.value.trim() || p.name;
     saveP();
@@ -5738,17 +5821,17 @@ function renderProjects() {
 /* ---- project material sources ---- */
 function itemSrcSel(it, i) {
   const sel = it.src && it.src.mode === 'sel';
-  return `<select data-isrc="${i}"><option value="">${T('projekt szerint')}</option><option value="sel" ${sel ? 'selected' : ''}>${T('saját források')}</option></select>`;
+  return html`<select data-isrc="${i}"><option value="">${T('projekt szerint')}</option><option value="sel" ${sel ? 'selected' : ''}>${T('saját források')}</option></select>`;
 }
 function itemSrcRow(it, i, p) {
   if (!(it.src && it.src.mode === 'sel')) return '';
-  return `<tr class="srcrow"><td colspan="5">${srcEditor(it.src, 'i' + i, false, p.id)}</td></tr>`;
+  return html`<tr class="srcrow"><td colspan="5">${srcEditor(it.src, 'i' + i, false, p.id)}</td></tr>`;
 }
 function projSrcHtml(p) {
   const s = p.src || { mode: 'all' };
   const sel = s.mode === 'sel';
-  return `<h3>Nyersanyag-források</h3><div class="row"><label class="inline"><input type="radio" name="psrcm" value="all" ${sel ? '' : 'checked'}> Mindenhonnan (a Beállításokban kijelölt helyekről)</label><label class="inline"><input type="radio" name="psrcm" value="sel" ${sel ? 'checked' : ''}> Kiválasztott forrásokból</label></div>
-  ${sel ? srcEditor(s, 'p', true, p.id) : '<p class="small muted">A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.</p>'}`;
+  return html`<h3>Nyersanyag-források</h3><div class="row"><label class="inline"><input type="radio" name="psrcm" value="all" ${sel ? '' : 'checked'}> Mindenhonnan (a Beállításokban kijelölt helyekről)</label><label class="inline"><input type="radio" name="psrcm" value="sel" ${sel ? 'checked' : ''}> Kiválasztott forrásokból</label></div>
+  ${sel ? srcEditor(s, 'p', true, p.id) : html`<p class="small muted">A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.</p>`}`;
 }
 function srcEditor(spec, key, withExcl, pid) {
   const all = allConts();
@@ -5784,26 +5867,27 @@ function srcEditor(spec, key, withExcl, pid) {
   };
   const contRow = (c, d) => {
     const other = resv.has(c.id) && resv.get(c.id) !== pid;
-    return (
-      `<div class="srcc" style="padding-left:${22 + d * 18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id) ? 'checked' : ''}> ${esc(contLabel(c.id, all))}</label> <span class="small muted">${esc(charName(c.cid))} · ${T('{0} féle tárgy', fmt((ckinds.get(c.id) || new Set()).size))}</span>${withExcl ? ` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id) ? 'checked' : ''}> ${T('csak ez a projekt')}</label>` : ''}${other ? ` <span class="pill warn">${T('foglalja: {0}', esc(pname(resv.get(c.id))))}</span>` : ''}</div>` +
-      [...all.values()]
-        .filter(x => x.pc === c.id && byLoc.get(c.l) && byLoc.get(c.l).includes(x))
-        .map(x => contRow(x, d + 1))
-        .join('')
-    );
+    return html`<div class="srcc" style="padding-left:${22 + d * 18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id) ? 'checked' : ''}> ${contLabel(c.id, all)}</label> <span class="small muted">${charName(c.cid)} · ${T('{0} féle tárgy', fmt((ckinds.get(c.id) || new Set()).size))}</span>${withExcl ? html` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id) ? 'checked' : ''}> ${T('csak ez a projekt')}</label>` : ''}${other ? html` <span class="pill warn">${T('foglalja: {0}', pname(resv.get(c.id)))}</span>` : ''}</div>${[
+      ...all.values()
+    ]
+      .filter(x => x.pc === c.id && byLoc.get(c.l) && byLoc.get(c.l).includes(x))
+      .map(x => contRow(x, d + 1))}`;
   };
   const locs = [...kinds.keys()].sort((a, b) => locName(a).localeCompare(locName(b)));
   const nL = selL.size,
     nC = selC.size;
-  return `<div class="srcbox"><p class="small"><label class="inline" style="float:right"><input type="checkbox" data-srcships ${showShips ? 'checked' : ''}> ${T('hajók is')}</label>${T('Kiválasztva: {0} helyszín, {1} konténer.', nL, nC)} ${withExcl && ex.size ? T('Foglalt doboz: {0}.', ex.size) : ''}${nL + nC ? '' : ` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
-  ${hasCont ? '' : `<p class="small muted">${T('A konténerek listájához frissítsd egyszer a karaktereket.')}</p>`}
-  ${locs
-    .map(l => {
-      const cs = (byLoc.get(l) || []).filter(c => c.pc == null || !all.has(c.pc) || all.get(c.pc).l !== l);
-      const open = [...(byLoc.get(l) || [])].some(c => selC.has(c.id) || ex.has(c.id));
-      return `<details data-dl="${key}|${l}" ${open || SRCOPEN.has(key + '|' + l) ? 'open' : ''}><summary><input type="checkbox" data-sloc="${key}|${l}" ${selL.has(l) ? 'checked' : ''} aria-label="${esc(locName(l))}"> ${esc(locName(l))} <span class="small muted">${T('{0} féle tárgy', fmt(kinds.get(l).size))}${byLoc.get(l) ? ' · ' + T('{0} konténer', byLoc.get(l).length) : ''}</span></summary>${cs.map(c => contRow(c, 0)).join('') || `<div class="srcc small muted" style="padding-left:22px">${T('nincs konténer')}</div>`}</details>`;
-    })
-    .join('')}
+  return html`<div class="srcbox"><p class="small"><label class="inline" style="float:right"><input type="checkbox" data-srcships ${showShips ? 'checked' : ''}> ${T('hajók is')}</label>${T('Kiválasztva: {0} helyszín, {1} konténer.', nL, nC)} ${withExcl && ex.size ? T('Foglalt doboz: {0}.', ex.size) : ''}${nL + nC ? '' : html` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
+  ${hasCont ? '' : html`<p class="small muted">${T('A konténerek listájához frissítsd egyszer a karaktereket.')}</p>`}
+  ${locs.map(l => {
+    const cs = (byLoc.get(l) || []).filter(c => c.pc == null || !all.has(c.pc) || all.get(c.pc).l !== l);
+    const open = [...(byLoc.get(l) || [])].some(c => selC.has(c.id) || ex.has(c.id));
+    return html`<details data-dl="${key}|${l}" ${open || SRCOPEN.has(key + '|' + l) ? 'open' : ''}><summary><input type="checkbox" data-sloc="${key}|${l}" ${selL.has(l) ? 'checked' : ''} aria-label="${locName(l)}"> ${locName(l)} <span class="small muted">${T('{0} féle tárgy', fmt(kinds.get(l).size))}${byLoc.get(l) ? ' · ' + T('{0} konténer', byLoc.get(l).length) : ''}</span></summary>${
+      hjoin(
+        cs.map(c => contRow(c, 0)),
+        ''
+      ) || html`<div class="srcc small muted" style="padding-left:22px">${T('nincs konténer')}</div>`
+    }</details>`;
+  })}
   <p class="small muted" style="margin-top:6px">${T('A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.')}${withExcl ? ' ' + T('„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.') : ''}</p></div>`;
 }
 let SRCOPEN = new Set();
@@ -5870,7 +5954,7 @@ document.getElementById('pEdit').addEventListener('change', srcChange);
 
 async function calcProjects(list) {
   const out = $('#pOut');
-  out.innerHTML = '<div class="card muted">Számolás…</div>';
+  setHtml(out, html`<div class="card muted">Számolás…</div>`);
   try {
     await indexBPProducts();
     const opt = Object.assign(getOpt(), { incoming: $('#pIncoming').checked });
@@ -5917,13 +6001,13 @@ async function calcProjects(list) {
       for (const [t, q] of r.usedList) R.usedList.set(t, (R.usedList.get(t) || 0) + q);
     }
     if (!R.trees.length) {
-      out.innerHTML = '<div class="card muted">Nincs számolható tétel. Adj hozzá tételeket a projekthez.</div>';
+      setHtml(out, html`<div class="card muted">Nincs számolható tétel. Adj hozzá tételeket a projekthez.</div>`);
       return;
     }
     await finishResult(R, firstBP);
     R.title = list.map(p => p.name).join(' + ');
     LASTPLAN = R;
-    out.innerHTML = '';
+    setHtml(out, '');
     const head = document.createElement('h2');
     head.textContent = R.title;
     head.style.marginTop = '8px';
@@ -5933,7 +6017,7 @@ async function calcProjects(list) {
     LASTRENDER();
     renderMineNeed();
   } catch (e) {
-    out.innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml(out, html`<div class="notice err"><p>${e.message}</p></div>`);
     log(e.stack || e.message);
   }
 }
@@ -5967,7 +6051,7 @@ let PROFROWS = [],
   profSort = { k: 'pph', d: -1 };
 async function runProfit() {
   const out = $('#prOut');
-  out.innerHTML = '<div class="card muted">Receptek betöltése…</div>';
+  setHtml(out, html`<div class="card muted">Receptek betöltése…</div>`);
   await indexBPProducts();
   const cat = $('#prCat').value;
   const byProd = new Map();
@@ -6064,7 +6148,7 @@ async function runProfit() {
 function renderProfit() {
   const out = $('#prOut');
   if (!PROFROWS.length) {
-    out.innerHTML = '<div class="card muted">Nincs eredmény. Előbb frissítsd a karakterek adatait.</div>';
+    setHtml(out, html`<div class="card muted">Nincs eredmény. Előbb frissítsd a karakterek adatait.</div>`);
     return;
   }
   const onlyPos = $('#prOnlyPos').checked,
@@ -6083,15 +6167,24 @@ function renderProfit() {
   const pg = pageOf('prof', rows, [onlyPos, minVol, profSort.k, profSort.d].join('|'), renderProfit);
   rows = pg.rows;
   const th = (key, label, num) =>
-    `<th class="sortable${num ? ' num' : ''}" data-psort="${key}">${label}${profSort.k === key ? '<span> ' + (profSort.d > 0 ? '▲' : '▼') + '</span>' : ''}</th>`;
-  out.innerHTML =
-    (m2stale
-      ? `<div class="notice"><p class="small">${T('A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.', esc(m2Short()))}</p></div>`
-      : '') +
-    pg.html +
-    `<div class="tablewrap"><table><thead><tr>${th('name', 'Termék')}<th>Legjobb saját BP</th>${th('price', 'Jita sell', 1)}${m2On() ? th('price2', esc(m2Short()) + ' sell', 1) : ''}${th('perRun', 'Profit / run', 1)}${m2On() ? th('perRun2', T('Profit / run') + ' · ' + esc(m2Short()), 1) : ''}${th('margin', 'Margó', 1)}${th('pph', 'Profit / gyártási óra', 1)}${th('vol', 'Napi forgalom', 1)}${th('pot', 'Maradék runok értéke', 1)}<th></th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r.name)}${r.noMarket ? ' <span class="pill warn">nincs Jita ár</span>' : ''}${r.warn ? ' <span class="pill bad">kevés run</span>' : ''}${r.unsure ? `<div class="src">${T('Nincs Jita ára: {0}. A profit emiatt túl magas lehet.', esc(r.noPrice.map(t => NAMES[t] || t).join(', ')))}</div>` : ''}</td><td class="small">${r.best.r === -1 ? 'BPO' : 'BPC ' + r.runsLeft + ' run'} · ME${r.best.me} · ${esc(charName(r.best.cid))}</td><td class="num">${isk(r.price)}</td>${m2On() ? `<td class="num">${m2Cell(r.price, r.price2)}</td>` : ''}<td class="num ${r.unsure ? '' : r.perRun >= 0 ? 'pos' : 'neg'}">${r.unsure ? '? ' : ''}${isk(r.perRun)}</td>${m2On() ? `<td class="num ${r.perRun2 == null || r.unsure ? '' : r.perRun2 >= 0 ? 'pos' : 'neg'}">${r.perRun2 == null ? '?' : (r.unsure ? '? ' : '') + isk(r.perRun2)}</td>` : ''}<td class="num">${r.margin == null ? '–' : fmt(r.margin * 100, 1) + '%'}</td><td class="num ${r.pph >= 0 ? 'pos' : 'neg'}">${isk(r.pph)}</td><td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}${r.vol && r.daysToSell > 1 ? ' <span class="pill warn" title="Egy run termékének eladása több napi forgalom">lassú</span>' : ''}</td><td class="num">${r.pot == null ? '∞ (BPO)' : isk(r.pot)}</td><td><button class="btn mini" data-addproj="${r.best.t}">+ projekt</button></td></tr>`).join('') || '<tr><td colspan="9" class="muted">A szűrőknek egy tétel sem felel meg.</td></tr>'}</tbody></table></div>${pg.html}
-  <p class="small muted" style="margin-top:6px">Minden anyag piaci áron számít, a saját készlet is, mert azt el is adhatnád. Profit / gyártási óra: a run összes jobjának idejére vetítve (komponensekkel együtt), a BP-t tartó karakter skilljeivel. Napi forgalom: The Forge régió, az utolsó 30 nap átlaga. A „+ projekt” gomb a kiválasztott projekthez ad 1 runt (ha nincs kiválasztott, újat hoz létre).</p>` +
-    m2Hint();
+    html`<th class="sortable${num ? ' num' : ''}" data-psort="${key}">${label}${profSort.k === key ? html`<span> ${profSort.d > 0 ? '▲' : '▼'}</span>` : ''}</th>`;
+  setHtml(
+    out,
+    html`${
+      (m2stale
+        ? html`<div class="notice"><p class="small">${T('A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.', m2Short())}</p></div>`
+        : '') + pg.html
+    }<div class="tablewrap"><table><thead><tr>${th('name', 'Termék')}<th>Legjobb saját BP</th>${th('price', 'Jita sell', 1)}${m2On() ? th('price2', m2Short() + ' sell', 1) : ''}${th('perRun', 'Profit / run', 1)}${m2On() ? th('perRun2', T('Profit / run') + ' · ' + m2Short(), 1) : ''}${th('margin', 'Margó', 1)}${th('pph', 'Profit / gyártási óra', 1)}${th('vol', 'Napi forgalom', 1)}${th('pot', 'Maradék runok értéke', 1)}<th></th></tr></thead><tbody>${
+      hjoin(
+        rows.map(
+          r =>
+            html`<tr><td>${r.name}${r.noMarket ? html` <span class="pill warn">nincs Jita ár</span>` : ''}${r.warn ? html` <span class="pill bad">kevés run</span>` : ''}${r.unsure ? html`<div class="src">${T('Nincs Jita ára: {0}. A profit emiatt túl magas lehet.', r.noPrice.map(t => NAMES[t] || t).join(', '))}</div>` : ''}</td><td class="small">${r.best.r === -1 ? 'BPO' : 'BPC ' + r.runsLeft + ' run'} · ME${r.best.me} · ${charName(r.best.cid)}</td><td class="num">${isk(r.price)}</td>${m2On() ? html`<td class="num">${m2Cell(r.price, r.price2)}</td>` : ''}<td class="num ${r.unsure ? '' : r.perRun >= 0 ? 'pos' : 'neg'}">${r.unsure ? '? ' : ''}${isk(r.perRun)}</td>${m2On() ? html`<td class="num ${r.perRun2 == null || r.unsure ? '' : r.perRun2 >= 0 ? 'pos' : 'neg'}">${r.perRun2 == null ? '?' : (r.unsure ? '? ' : '') + isk(r.perRun2)}</td>` : ''}<td class="num">${r.margin == null ? '–' : fmt(r.margin * 100, 1) + '%'}</td><td class="num ${r.pph >= 0 ? 'pos' : 'neg'}">${isk(r.pph)}</td><td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}${r.vol && r.daysToSell > 1 ? html` <span class="pill warn" title="Egy run termékének eladása több napi forgalom">lassú</span>` : ''}</td><td class="num">${r.pot == null ? '∞ (BPO)' : isk(r.pot)}</td><td><button class="btn mini" data-addproj="${r.best.t}">+ projekt</button></td></tr>`
+        ),
+        ''
+      ) || html`<tr><td colspan="9" class="muted">A szűrőknek egy tétel sem felel meg.</td></tr>`
+    }</tbody></table></div>${pg.html}
+  <p class="small muted" style="margin-top:6px">Minden anyag piaci áron számít, a saját készlet is, mert azt el is adhatnád. Profit / gyártási óra: a run összes jobjának idejére vetítve (komponensekkel együtt), a BP-t tartó karakter skilljeivel. Napi forgalom: The Forge régió, az utolsó 30 nap átlaga. A „+ projekt” gomb a kiválasztott projekthez ad 1 runt (ha nincs kiválasztott, újat hoz létre).</p>${m2Hint()}`
+  );
   out.querySelectorAll('[data-psort]').forEach(th =>
     th.addEventListener('click', () => {
       const k = th.dataset.psort;
@@ -6138,9 +6231,10 @@ function fillCatSelect(sel, prodTypes) {
     39: 'Infrastruktúra'
   };
   const cur = sel.value;
-  sel.innerHTML =
-    '<option value="">mind</option>' +
-    [...cats].map(c => `<option value="${c}">${names[c] || 'Kategória ' + c}</option>`).join('');
+  setHtml(
+    sel,
+    html`<option value="">mind</option>${[...cats].map(c => html`<option value="${c}">${names[c] || 'Kategória ' + c}</option>`)}`
+  );
   sel.value = cur;
 }
 </script>
@@ -6153,7 +6247,7 @@ let INVROWS = [],
   INVSKIP = [];
 async function runInvention() {
   const out = $('#ivOut');
-  out.innerHTML = '<div class="card muted">Receptek betöltése…</div>';
+  setHtml(out, html`<div class="card muted">Receptek betöltése…</div>`);
   await indexBPProducts();
   const t1s = [...new Set(allBPs().map(b => b.t))];
   await Promise.all(t1s.map(t => refGet('b', t)));
@@ -6162,7 +6256,7 @@ async function runInvention() {
     return b && b.i && b.i.p && b.i.p.length;
   });
   if (!cands.length) {
-    out.innerHTML = '<div class="card muted">Egyik saját blueprintedből sem lehet inventálni.</div>';
+    setHtml(out, html`<div class="card muted">Egyik saját blueprintedből sem lehet inventálni.</div>`);
     return;
   }
   const decOpts = [null, ...Object.keys(DECS).map(Number)];
@@ -6247,10 +6341,10 @@ async function runInvention() {
 function renderInvention() {
   const out = $('#ivOut');
   const skipHtml = INVSKIP.length
-    ? `<details style="margin-top:10px"><summary>${INVSKIP.length} tételt kihagytam</summary><ul class="small muted">${INVSKIP.map(x => '<li>' + esc(x) + '</li>').join('')}</ul></details>`
+    ? html`<details style="margin-top:10px"><summary>${INVSKIP.length} tételt kihagytam</summary><ul class="small muted">${INVSKIP.map(x => html`<li>${x}</li>`)}</ul></details>`
     : '';
   if (!INVROWS.length) {
-    out.innerHTML = '<div class="card muted">Nincs számolható invention.</div>' + skipHtml;
+    setHtml(out, html`<div class="card muted">Nincs számolható invention.</div>${skipHtml}`);
     return;
   }
   if (!SRT.inv) SRT.inv = { f: 'profit', d: -1 };
@@ -6273,18 +6367,18 @@ function renderInvention() {
   };
   const pg = pageOf('inv', sortRows('inv', INVROWS.slice(), ig), String(INVROWS.length), renderInvention);
   const rows = pg.rows;
-  out.innerHTML =
-    `${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('inv', 'name', T('T2 termék'))}${sortTh('inv', 't1', T('T1 BP'))}${sortTh('inv', 'dec', T('Legjobb decryptor'))}${sortTh('inv', 'chance', T('Esély'), 1)}${sortTh('inv', 'runs', T('Run / BPC'), 1)}${sortTh('inv', 'me', T('ME / TE'), 1)}${sortTh('inv', 'cost', T('Invention költség / BPC'), 1)}${sortTh('inv', 'profit', T('Profit / BPC'), 1)}${sortTh('inv', 'perRun', T('Profit / run'), 1)}${sortTh('inv', 'none', T('Decryptor nélkül / BPC'), 1)}${sortTh('inv', 'vol', T('Napi forgalom'), 1)}<th></th></tr></thead><tbody>${rows
-      .map(g => {
+  setHtml(
+    out,
+    html`${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('inv', 'name', T('T2 termék'))}${sortTh('inv', 't1', T('T1 BP'))}${sortTh('inv', 'dec', T('Legjobb decryptor'))}${sortTh('inv', 'chance', T('Esély'), 1)}${sortTh('inv', 'runs', T('Run / BPC'), 1)}${sortTh('inv', 'me', T('ME / TE'), 1)}${sortTh('inv', 'cost', T('Invention költség / BPC'), 1)}${sortTh('inv', 'profit', T('Profit / BPC'), 1)}${sortTh('inv', 'perRun', T('Profit / run'), 1)}${sortTh('inv', 'none', T('Decryptor nélkül / BPC'), 1)}${sortTh('inv', 'vol', T('Napi forgalom'), 1)}<th></th></tr></thead><tbody>${rows.map(
+      g => {
         const r = g.best;
         if (!r) return '';
         const unsure = r.noPrice.length > 0;
-        return `<tr><td>${esc(NAMES[r.prod] || r.prod)}${r.price ? `<div class="src">Jita ${isk(r.price)}${m2On() && sell2(r.prod) ? ' · ' + esc(m2Short()) + ' ' + isk(sell2(r.prod)) : ''}</div>` : ''}${r.price ? '' : ' <span class="pill warn">nincs Jita ár</span>'}${unsure ? `<div class="src">${T('Nincs Jita ára: {0}', esc(r.noPrice.map(t => NAMES[t] || t).join(', ')))}</div>` : ''}</td><td class="small">${esc(NAMES[r.t1] || r.t1)}<br>${r.copy.r === -1 ? 'BPO' : 'BPC ' + r.copy.r + ' run'} · ${esc(charName(r.copy.cid))}</td><td class="small">${r.dec ? esc(DECS[r.dec].n) : 'nincs'}</td><td class="num">${fmt(r.info.chance * 100, 1)}%</td><td class="num">${fmt(r.info.runsPer)}</td><td class="num">${r.info.me} / ${r.info.te}</td><td class="num">${isk(r.invCost)}</td><td class="num ${unsure ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${unsure ? '? ' : ''}${isk(r.profit)}</td><td class="num">${isk(r.perRun)}</td><td class="num">${g.none ? isk(g.none.profit) : '–'}</td><td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}</td><td><button class="btn mini" data-invadd="${r.t1}" data-invdec="${r.dec || ''}" data-invt2="${r.t2}" data-invruns="${r.info.runsPer}" data-invpi="${r.info.pi || 0}">+ projekt</button></td></tr>`;
-      })
-      .join('')}</tbody></table></div>${pg.html}
-  <p class="small muted" style="margin-top:6px">Az esélyt a legjobb skillű karaktered skilljeivel számolja (két science skill és az encryption skill). Az invention költsége átlagos értékre van számolva: datacore-ok, decryptor, invention job és T1 copy job, osztva az eséllyel. A T2 gyártás anyagköltsége a teljes anyagfával, piaci áron számít. A „+ projekt” egy BPC-nyi runt ad a kiválasztott projekthez a legjobb decryptorral.</p>` +
-    m2Hint() +
-    skipHtml;
+        return html`<tr><td>${NAMES[r.prod] || r.prod}${r.price ? html`<div class="src">Jita ${isk(r.price)}${m2On() && sell2(r.prod) ? ' · ' + m2Short() + ' ' + isk(sell2(r.prod)) : ''}</div>` : ''}${r.price ? '' : html` <span class="pill warn">nincs Jita ár</span>`}${unsure ? html`<div class="src">${T('Nincs Jita ára: {0}', r.noPrice.map(t => NAMES[t] || t).join(', '))}</div>` : ''}</td><td class="small">${NAMES[r.t1] || r.t1}<br>${r.copy.r === -1 ? 'BPO' : 'BPC ' + r.copy.r + ' run'} · ${charName(r.copy.cid)}</td><td class="small">${r.dec ? DECS[r.dec].n : 'nincs'}</td><td class="num">${fmt(r.info.chance * 100, 1)}%</td><td class="num">${fmt(r.info.runsPer)}</td><td class="num">${r.info.me} / ${r.info.te}</td><td class="num">${isk(r.invCost)}</td><td class="num ${unsure ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${unsure ? '? ' : ''}${isk(r.profit)}</td><td class="num">${isk(r.perRun)}</td><td class="num">${g.none ? isk(g.none.profit) : '–'}</td><td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}</td><td><button class="btn mini" data-invadd="${r.t1}" data-invdec="${r.dec || ''}" data-invt2="${r.t2}" data-invruns="${r.info.runsPer}" data-invpi="${r.info.pi || 0}">+ projekt</button></td></tr>`;
+      }
+    )}</tbody></table></div>${pg.html}
+  <p class="small muted" style="margin-top:6px">Az esélyt a legjobb skillű karaktered skilljeivel számolja (két science skill és az encryption skill). Az invention költsége átlagos értékre van számolva: datacore-ok, decryptor, invention job és T1 copy job, osztva az eséllyel. A T2 gyártás anyagköltsége a teljes anyagfával, piaci áron számít. A „+ projekt” egy BPC-nyi runt ad a kiválasztott projekthez a legjobb decryptorral.</p>${m2Hint()}${skipHtml}`
+  );
   out.querySelectorAll('[data-invadd]').forEach(b =>
     b.addEventListener('click', () => {
       let p = PROJ.find(x => x.id === SELP);
@@ -6335,7 +6429,7 @@ function resMod(kind) {
 let RESROWS = [];
 async function runResearch() {
   const out = $('#rsOut');
-  out.innerHTML = '<div class="card muted">Receptek betöltése…</div>';
+  setHtml(out, html`<div class="card muted">Receptek betöltése…</div>`);
   await indexBPProducts();
   const bpos = allBPs().filter(b => b.r === -1);
   const types = [...new Set(bpos.map(b => b.t))];
@@ -6440,18 +6534,31 @@ function renderResearch(mME, mTE, mCP) {
   const pg = pageOf('res', rows, [f, nm, RESROWS.length].join('|'), renderResearch);
   rows = pg.rows;
   // research slots per character
-  const slots = workChars()
-    .map(id => CHARS.find(c => c.id === id))
-    .map(c => {
-      const sl = slotsOf(c.id),
-        bz = busyOf(c.id);
-      return T('{0}: {1} szabad', esc(c.name), `<span class="mono">${Math.max(0, sl.s - bz.s)} / ${sl.s}</span>`);
-    })
-    .join(' · ');
-  const sk = x => (x.who != null ? T('{0} (szint {1})', esc(charName(x.who)), x.l) : '–');
-  out.innerHTML = `<p class="small muted">${T('Science slotok (kutatás, copy, invention): {0}. Skillek: ME kutatás {1}, TE kutatás {2}, copy {3}.', slots || '–', sk(mME || resMod('me')), sk(mTE || resMod('te')), sk(mCP || resMod('cp')))}</p>
-  ${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('res', 'name', T('BPO'))}${sortTh('res', 'me', T('ME / TE'), 1)}${sortTh('res', 'next', T('Következő ME szint'), 1)}${sortTh('res', 'cost', T('Költsége'), 1)}${sortTh('res', 'saving', T('Megtakarítás / run'), 1)}${sortTh('res', 'payback', T('Megtérül'), 1)}${sortTh('res', 'meT', T('ME → 10'), 1)}${sortTh('res', 'teT', T('TE → 20'), 1)}${sortTh('res', 'cp', T('Copy idő / run'), 1)}${sortTh('res', 'lim', T('Max run / BPC'), 1)}<th>Állapot</th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r.name)}<div class="src">${esc(charName(r.bp.cid))} · ${esc(locName(r.bp.l))}</div></td><td class="num">${r.me} / ${r.te}</td><td class="num">${r.isReac ? '–' : r.nextME ? dur(r.nextME.t) : '<span class="pill ok">max</span>'}</td><td class="num">${r.nextME && !r.isReac ? isk(r.nextME.c) : '–'}</td><td class="num">${r.isReac ? '–' : r.nextME ? isk(r.saving) : '–'}</td><td class="num">${r.payback != null && !r.isReac ? fmt(Math.ceil(r.payback)) + ' run' : '–'}</td><td class="num">${r.isReac ? '–' : r.me < 10 ? dur(r.meT) + '<div class="src">' + isk(r.meC) + '</div>' : '–'}</td><td class="num">${r.te < 20 ? dur(r.teT) + '<div class="src">' + isk(r.teC) + '</div>' : '–'}</td><td class="num">${dur(r.cpRun)}</td><td class="num">${fmt(r.lim)}<div class="src">${dur(r.cpRun * r.lim)}</div></td><td>${r.job ? '<span class="pill warn">jobban</span>' : ''}${r.isReac ? '<span class="pill">reakció</span>' : ''}</td></tr>`).join('') || '<tr><td colspan="11" class="muted">Nincs találat.</td></tr>'}</tbody></table></div>${pg.html}
-  <p class="small muted" style="margin-top:6px">Megtakarítás / run: a következő ME szint 1%-a az alapanyagok mai Jita-értékéből. Megtérül: hány gyártott run után hozza vissza a következő ME szint kutatási költségét. A kutatás költsége: EIV × 2% × szintszorzó × a BP helyének research cost indexe, plusz adók. A copy ideje egy runra szól; a „Max run / BPC” alatt egy teljes BPC másolási ideje látszik. Reakció formulát nem lehet ME-re kutatni.</p>`;
+  const slots = hjoin(
+    workChars()
+      .map(id => CHARS.find(c => c.id === id))
+      .map(c => {
+        const sl = slotsOf(c.id),
+          bz = busyOf(c.id);
+        return T('{0}: {1} szabad', c.name, html`<span class="mono">${Math.max(0, sl.s - bz.s)} / ${sl.s}</span>`);
+      }),
+    ' · '
+  );
+  const sk = x => (x.who != null ? T('{0} (szint {1})', charName(x.who), x.l) : '–');
+  setHtml(
+    out,
+    html`<p class="small muted">${T('Science slotok (kutatás, copy, invention): {0}. Skillek: ME kutatás {1}, TE kutatás {2}, copy {3}.', slots || '–', sk(mME || resMod('me')), sk(mTE || resMod('te')), sk(mCP || resMod('cp')))}</p>
+  ${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('res', 'name', T('BPO'))}${sortTh('res', 'me', T('ME / TE'), 1)}${sortTh('res', 'next', T('Következő ME szint'), 1)}${sortTh('res', 'cost', T('Költsége'), 1)}${sortTh('res', 'saving', T('Megtakarítás / run'), 1)}${sortTh('res', 'payback', T('Megtérül'), 1)}${sortTh('res', 'meT', T('ME → 10'), 1)}${sortTh('res', 'teT', T('TE → 20'), 1)}${sortTh('res', 'cp', T('Copy idő / run'), 1)}${sortTh('res', 'lim', T('Max run / BPC'), 1)}<th>Állapot</th></tr></thead><tbody>${
+    hjoin(
+      rows.map(
+        r =>
+          html`<tr><td>${r.name}<div class="src">${charName(r.bp.cid)} · ${locName(r.bp.l)}</div></td><td class="num">${r.me} / ${r.te}</td><td class="num">${r.isReac ? '–' : r.nextME ? dur(r.nextME.t) : html`<span class="pill ok">max</span>`}</td><td class="num">${r.nextME && !r.isReac ? isk(r.nextME.c) : '–'}</td><td class="num">${r.isReac ? '–' : r.nextME ? isk(r.saving) : '–'}</td><td class="num">${r.payback != null && !r.isReac ? fmt(Math.ceil(r.payback)) + ' run' : '–'}</td><td class="num">${r.isReac ? '–' : r.me < 10 ? html`${dur(r.meT)}<div class="src">${isk(r.meC)}</div>` : '–'}</td><td class="num">${r.te < 20 ? html`${dur(r.teT)}<div class="src">${isk(r.teC)}</div>` : '–'}</td><td class="num">${dur(r.cpRun)}</td><td class="num">${fmt(r.lim)}<div class="src">${dur(r.cpRun * r.lim)}</div></td><td>${r.job ? html`<span class="pill warn">jobban</span>` : ''}${r.isReac ? html`<span class="pill">reakció</span>` : ''}</td></tr>`
+      ),
+      ''
+    ) || html`<tr><td colspan="11" class="muted">Nincs találat.</td></tr>`
+  }</tbody></table></div>${pg.html}
+  <p class="small muted" style="margin-top:6px">Megtakarítás / run: a következő ME szint 1%-a az alapanyagok mai Jita-értékéből. Megtérül: hány gyártott run után hozza vissza a következő ME szint kutatási költségét. A kutatás költsége: EIV × 2% × szintszorzó × a BP helyének research cost indexe, plusz adók. A copy ideje egy runra szól; a „Max run / BPC” alatt egy teljes BPC másolási ideje látszik. Reakció formulát nem lehet ME-re kutatni.</p>`
+  );
 }
 </script>
 <script>
@@ -6474,14 +6581,13 @@ async function runSales() {
   }
   const noScope = CHARS.filter(c => c.scp && !hasScope(c, 'esi-markets.read_character_orders.v1'));
   if (!orders.length) {
-    out.innerHTML =
-      sellerHtml() +
-      m2Hint() +
-      `<div class="card muted">${noScope.length ? T('Nincs aktív market ordered, vagy ezeknél a karaktereknél még nincs meg az új engedély: {0}. Lásd a Karakterek fület.', esc(noScope.map(c => c.name).join(', '))) : T('Nincs aktív market ordered. Ha most adtad hozzá az engedélyt, frissítsd a karaktereket.')}</div>` +
-      salesHistory();
+    setHtml(
+      out,
+      html`${html`${sellerHtml()}${m2Hint()}`}<div class="card muted">${noScope.length ? T('Nincs aktív market ordered, vagy ezeknél a karaktereknél még nincs meg az új engedély: {0}. Lásd a Karakterek fület.', noScope.map(c => c.name).join(', ')) : T('Nincs aktív market ordered. Ha most adtad hozzá az engedélyt, frissítsd a karaktereket.')}</div>${salesHistory()}`
+    );
     return;
   }
-  out.innerHTML = '<div class="card muted">Piaci árak lekérése…</div>';
+  setHtml(out, html`<div class="card muted">Piaci árak lekérése…</div>`);
   if (S.wallet) {
     const tt = new Set();
     for (const c of CHARS) {
@@ -6570,19 +6676,18 @@ function renderSales() {
   const beaten = rows.filter(r => r.state === 'alá ígértek' || r.state === 'túlígértek').length;
   const sellVal = rows.filter(r => !r.o.buy).reduce((s, r) => s + r.o.p * r.o.rem, 0),
     buyVal = rows.filter(r => r.o.buy).reduce((s, r) => s + r.o.p * r.o.rem, 0);
-  out.innerHTML =
-    sellerHtml() +
-    m2Hint() +
-    `<div class="kpis"><div class="kpi"><div class="k">Aktív order</div><div class="v">${rows.length}</div></div><div class="kpi"><div class="k">Megelőztek</div><div class="v ${beaten ? 'neg' : 'pos'}">${beaten}</div></div><div class="kpi"><div class="k">Eladó orderek értéke</div><div class="v">${isk(sellVal)}</div></div><div class="kpi"><div class="k">Vételi orderek értéke</div><div class="v">${isk(buyVal)}</div></div></div>
-  <div class="tablewrap"><table><thead><tr>${sortTh('sl', 'name', T('Tárgy'))}${sortTh('sl', 'char', T('Karakter'))}${sortTh('sl', 'type', T('Típus'))}${sortTh('sl', 'p', T('Ár'), 1)}${sortTh('sl', 'best', T('Legjobb másik'), 1)}${sortTh('sl', 'state', T('Állapot'))}<th class="num">Javasolt ár</th>${sortTh('sl', 'rem', T('Maradt / összes'), 1)}${sortTh('sl', 'loc', T('Hely'))}${sortTh('sl', 'exp', T('Lejár'), 1)}</tr></thead><tbody>${rows
-    .map(r => {
+  setHtml(
+    out,
+    html`${html`${sellerHtml()}${m2Hint()}`}<div class="kpis"><div class="kpi"><div class="k">Aktív order</div><div class="v">${rows.length}</div></div><div class="kpi"><div class="k">Megelőztek</div><div class="v ${beaten ? 'neg' : 'pos'}">${beaten}</div></div><div class="kpi"><div class="k">Eladó orderek értéke</div><div class="v">${isk(sellVal)}</div></div><div class="kpi"><div class="k">Vételi orderek értéke</div><div class="v">${isk(buyVal)}</div></div></div>
+  <div class="tablewrap"><table><thead><tr>${sortTh('sl', 'name', T('Tárgy'))}${sortTh('sl', 'char', T('Karakter'))}${sortTh('sl', 'type', T('Típus'))}${sortTh('sl', 'p', T('Ár'), 1)}${sortTh('sl', 'best', T('Legjobb másik'), 1)}${sortTh('sl', 'state', T('Állapot'))}<th class="num">Javasolt ár</th>${sortTh('sl', 'rem', T('Maradt / összes'), 1)}${sortTh('sl', 'loc', T('Hely'))}${sortTh('sl', 'exp', T('Lejár'), 1)}</tr></thead><tbody>${rows.map(
+    r => {
       const exp = new Date(new Date(r.o.iss).getTime() + r.o.dur * 86400000);
       const pill = r.state === 'legjobb' ? 'ok' : r.state === 'egyedül' ? '' : r.state === 'ismeretlen' ? '' : 'bad';
-      return `<tr><td>${esc(NAMES[r.o.t] || r.o.t)}</td><td>${esc(charName(r.o.cid))}</td><td>${r.o.buy ? 'vétel' : 'eladás'}</td><td class="num">${isk(r.o.p)}</td><td class="num">${r.best == null ? '–' : isk(r.best)}</td><td><span class="pill ${pill}">${r.state}</span></td><td class="num">${r.sugg != null ? `<button class="btn mini" data-copyprice="${r.sugg}" title="Ár másolása">${fmt(r.sugg, 2)}</button>` : '–'}</td><td class="num">${fmt(r.o.rem)} / ${fmt(r.o.tot)}</td><td class="small">${esc(locName(r.o.l))}</td><td class="num small">${exp.toLocaleDateString(LOC())}</td></tr>`;
-    })
-    .join('')}</tbody></table></div>
-  <p class="small muted" style="margin-top:6px">A „Legjobb másik” ugyanazon az állomáson lévő, nem a te karaktereidhez tartozó orderek közül a legjobb ár. A javasolt ár egy ártickkel jobb (4 értékes jegy), a gombbal vágólapra másolhatod. Az orderek a karakterek frissítésekor töltődnek le, a piaci árak minden „Ellenőrzés” gombnyomáskor.</p>` +
-    salesHistory();
+      return html`<tr><td>${NAMES[r.o.t] || r.o.t}</td><td>${charName(r.o.cid)}</td><td>${r.o.buy ? 'vétel' : 'eladás'}</td><td class="num">${isk(r.o.p)}</td><td class="num">${r.best == null ? '–' : isk(r.best)}</td><td><span class="pill ${pill}">${r.state}</span></td><td class="num">${r.sugg != null ? html`<button class="btn mini" data-copyprice="${r.sugg}" title="Ár másolása">${fmt(r.sugg, 2)}</button>` : '–'}</td><td class="num">${fmt(r.o.rem)} / ${fmt(r.o.tot)}</td><td class="small">${locName(r.o.l)}</td><td class="num small">${exp.toLocaleDateString(LOC())}</td></tr>`;
+    }
+  )}</tbody></table></div>
+  <p class="small muted" style="margin-top:6px">A „Legjobb másik” ugyanazon az állomáson lévő, nem a te karaktereidhez tartozó orderek közül a legjobb ár. A javasolt ár egy ártickkel jobb (4 értékes jegy), a gombbal vágólapra másolhatod. Az orderek a karakterek frissítésekor töltődnek le, a piaci árak minden „Ellenőrzés” gombnyomáskor.</p>${salesHistory()}`
+  );
   out.querySelectorAll('[data-copyprice]').forEach(b =>
     b.addEventListener('click', () => {
       const v = String(Number(b.dataset.copyprice).toFixed(2));
@@ -6596,14 +6701,14 @@ function renderSales() {
 
 function salesHistory() {
   if (!S.wallet)
-    return '<h3>Eladások az elmúlt 30 napban</h3><p class="small muted">A wallet-tranzakciók olvasása ki van kapcsolva. A Beállításokban bekapcsolhatod, ha szeretnéd látni a ténylegesen eladott tételeket.</p>';
+    return html`<h3>Eladások az elmúlt 30 napban</h3><p class="small muted">A wallet-tranzakciók olvasása ki van kapcsolva. A Beállításokban bekapcsolhatod, ha szeretnéd látni a ténylegesen eladott tételeket.</p>`;
   const tx = [];
   for (const c of CHARS) {
     const d = DATA[c.id];
     if (d && d.tx) d.tx.forEach(x => tx.push(Object.assign({ cid: c.id }, x)));
   }
   if (!tx.length)
-    return '<h3>Eladások az elmúlt 30 napban</h3><p class="small muted">Nincs tranzakció, vagy még nincs meg a wallet-engedély. Ha most kapcsoltad be, add hozzá az engedélyt az alkalmazásodhoz, jelentkezz be újra, és frissíts.</p>';
+    return html`<h3>Eladások az elmúlt 30 napban</h3><p class="small muted">Nincs tranzakció, vagy még nincs meg a wallet-engedély. Ha most kapcsoltad be, add hozzá az engedélyt az alkalmazásodhoz, jelentkezz be újra, és frissíts.</p>`;
   const g = new Map();
   for (const x of tx) {
     let r = g.get(x.t);
@@ -6621,7 +6726,15 @@ function salesHistory() {
   }
   const rows = [...g.values()].filter(r => r.sq).sort((a, b) => b.sv - a.sv);
   const tot = rows.reduce((s, r) => s + r.sv, 0);
-  return `<h3>Eladások az elmúlt 30 napban</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Eladva (db)</th><th class="num">Bevétel</th><th class="num">Átlagár</th><th class="num">Mai Jita sell</th>${m2On() ? `<th class="num">${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${rows.map(r => `<tr><td>${esc(NAMES[r.t] || r.t)}</td><td class="num">${fmt(r.sq)}</td><td class="num">${isk(r.sv)}</td><td class="num">${isk(r.sv / r.sq)}</td><td class="num">${isk(sell(r.t))}</td>${m2On() ? `<td class="num">${m2Cell(sell(r.t), sell2(r.t))}</td>` : ''}</tr>`).join('') || '<tr><td colspan="6" class="muted">Nem adtál el semmit.</td></tr>'}<tr><td><b>Összesen</b></td><td></td><td class="num"><b>${isk(tot)}</b></td><td></td><td></td>${m2On() ? '<td></td>' : ''}</tr></tbody></table></div><p class="small muted" style="margin-top:6px">A bevétel bruttó, az eladási adó és a broker díj nélkül.</p>`;
+  return html`<h3>Eladások az elmúlt 30 napban</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Eladva (db)</th><th class="num">Bevétel</th><th class="num">Átlagár</th><th class="num">Mai Jita sell</th>${m2On() ? html`<th class="num">${m2Short()} sell</th>` : ''}</tr></thead><tbody>${
+    hjoin(
+      rows.map(
+        r =>
+          html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.sq)}</td><td class="num">${isk(r.sv)}</td><td class="num">${isk(r.sv / r.sq)}</td><td class="num">${isk(sell(r.t))}</td>${m2On() ? html`<td class="num">${m2Cell(sell(r.t), sell2(r.t))}</td>` : ''}</tr>`
+      ),
+      ''
+    ) || html`<tr><td colspan="6" class="muted">Nem adtál el semmit.</td></tr>`
+  }<tr><td><b>Összesen</b></td><td></td><td class="num"><b>${isk(tot)}</b></td><td></td><td></td>${m2On() ? html`<td></td>` : ''}</tr></tbody></table></div><p class="small muted" style="margin-top:6px">A bevétel bruttó, az eladási adó és a broker díj nélkül.</p>`;
 }
 </script>
 <script>
@@ -6631,7 +6744,7 @@ function salesHistory() {
 /* ---- builds without buying ---- */
 async function runCanBuild() {
   const out = $('#cbOut');
-  out.innerHTML = '<div class="card muted">Receptek betöltése…</div>';
+  setHtml(out, html`<div class="card muted">Receptek betöltése…</div>`);
   await indexBPProducts();
   const cat = $('#cbCat').value;
   const byProd = new Map();
@@ -6704,7 +6817,10 @@ function renderCanBuild() {
     ];
   const pg = pageOf('cb', sortRows('cb', CBROWS.slice(), cg), String(CBROWS.length), renderCanBuild);
   const res = pg.rows;
-  out.innerHTML = `${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('cb', 'name', T('Termék'))}${sortTh('cb', 'bp', T('Legjobb saját BP'), 1)}${sortTh('cb', 'lo', T('Legyártható run'), 1)}${sortTh('cb', 'lim', T('Szűk keresztmetszet a következő runhoz'))}</tr></thead><tbody>${res.map(r => `<tr><td>${esc(NAMES[r.p] || r.p)}</td><td class="small">${r.bp.r === -1 ? 'BPO' : 'BPC ' + r.bp.r + ' run'} · ME${r.bp.me} · ${esc(charName(r.bp.cid))}</td><td class="num ${r.lo ? 'pos' : ''}">${fmt(r.lo)}</td><td class="small muted">${esc(r.limiter)}</td></tr>`).join('')}</tbody></table></div>${pg.html}`;
+  setHtml(
+    out,
+    html`${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('cb', 'name', T('Termék'))}${sortTh('cb', 'bp', T('Legjobb saját BP'), 1)}${sortTh('cb', 'lo', T('Legyártható run'), 1)}${sortTh('cb', 'lim', T('Szűk keresztmetszet a következő runhoz'))}</tr></thead><tbody>${res.map(r => html`<tr><td>${NAMES[r.p] || r.p}</td><td class="small">${r.bp.r === -1 ? 'BPO' : 'BPC ' + r.bp.r + ' run'} · ME${r.bp.me} · ${charName(r.bp.cid)}</td><td class="num ${r.lo ? 'pos' : ''}">${fmt(r.lo)}</td><td class="small muted">${r.limiter}</td></tr>`)}</tbody></table></div>${pg.html}`
+  );
   status('kész');
 }
 function fillCats(prodTypes) {
@@ -6728,9 +6844,10 @@ function fillCats(prodTypes) {
   };
   const sel = $('#cbCat'),
     cur = sel.value;
-  sel.innerHTML =
-    '<option value="">mind</option>' +
-    [...cats].map(c => `<option value="${c}">${names[c] || 'Kategória ' + c}</option>`).join('');
+  setHtml(
+    sel,
+    html`<option value="">mind</option>${[...cats].map(c => html`<option value="${c}">${names[c] || 'Kategória ' + c}</option>`)}`
+  );
   sel.value = cur;
 }
 </script>
@@ -6789,24 +6906,35 @@ async function runScan() {
   await ensurePrices([...minerals.keys()]);
   LASTSCAN = { minerals, rows };
   const tot = [...minerals].reduce((s, [m, v]) => s + v * unitPrice(m), 0);
-  $('#scanOut').innerHTML =
-    `<div class="grid2"><div><h3>Ércek</h3><div class="tablewrap"><table><thead><tr><th>Érc</th><th class="num">Egység</th><th class="num">m³</th><th>Ki reprocesszálja</th><th>Termék</th></tr></thead><tbody>${rows.map(r => (r.miss ? `<tr><td>${esc(r.name)}</td><td class="num">${fmt(r.q)}</td><td colspan="3" class="muted">ismeretlen név</td></tr>` : `<tr><td>${esc(r.name)}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.m3)}</td><td class="small">${r.who != null ? esc(charName(r.who)) + ' · ' : ''}<span class="mono">${fmt(r.y * 100, 1)}%</span></td><td class="small">${r.mins.map(([m, v]) => esc(NAMES[m] || m) + ' ' + fmt(v)).join(', ')}</td></tr>`)).join('')}</tbody></table></div></div>
-  <div><h3>Ásványok összesen</h3><div class="tablewrap"><table><thead><tr><th>Ásvány</th><th class="num">Mennyiség</th><th class="num">Érték (Jita sell)</th>${m2On() ? `<th class="num">${esc(m2Short())}</th>` : ''}</tr></thead><tbody>${[...minerals].map(([m, v]) => `<tr><td>${esc(NAMES[m] || m)}</td><td class="num">${fmt(v)}</td><td class="num">${isk(v * unitPrice(m))}</td>${m2On() ? `<td class="num">${m2Cell(unitPrice(m), sell2(m))}</td>` : ''}</tr>`).join('')}<tr><td><b>Összesen</b></td><td></td><td class="num"><b>${isk(tot)}</b></td>${m2On() ? `<td class="num"><b>${isk([...minerals].reduce((s, [m, v]) => s + v * (sell2(m) || 0), 0))}</b></td>` : ''}</tr></tbody></table></div>${m2Hint()}</div></div>`;
+  setHtml(
+    $('#scanOut'),
+    html`<div class="grid2"><div><h3>Ércek</h3><div class="tablewrap"><table><thead><tr><th>Érc</th><th class="num">Egység</th><th class="num">m³</th><th>Ki reprocesszálja</th><th>Termék</th></tr></thead><tbody>${rows.map(
+      r =>
+        r.miss
+          ? html`<tr><td>${r.name}</td><td class="num">${fmt(r.q)}</td><td colspan="3" class="muted">ismeretlen név</td></tr>`
+          : html`<tr><td>${r.name}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.m3)}</td><td class="small">${r.who != null ? charName(r.who) + ' · ' : ''}<span class="mono">${fmt(r.y * 100, 1)}%</span></td><td class="small">${hjoin(
+              r.mins.map(([m, v]) => (NAMES[m] || m) + ' ' + fmt(v)),
+              ', '
+            )}</td></tr>`
+    )}</tbody></table></div></div>
+  <div><h3>Ásványok összesen</h3><div class="tablewrap"><table><thead><tr><th>Ásvány</th><th class="num">Mennyiség</th><th class="num">Érték (Jita sell)</th>${m2On() ? html`<th class="num">${m2Short()}</th>` : ''}</tr></thead><tbody>${[...minerals].map(([m, v]) => html`<tr><td>${NAMES[m] || m}</td><td class="num">${fmt(v)}</td><td class="num">${isk(v * unitPrice(m))}</td>${m2On() ? html`<td class="num">${m2Cell(unitPrice(m), sell2(m))}</td>` : ''}</tr>`)}<tr><td><b>Összesen</b></td><td></td><td class="num"><b>${isk(tot)}</b></td>${m2On() ? html`<td class="num"><b>${isk([...minerals].reduce((s, [m, v]) => s + v * (sell2(m) || 0), 0))}</b></td>` : ''}</tr></tbody></table></div>${m2Hint()}</div></div>`
+  );
   // yield per character and per processing skill
   const groups = [...new Set(rows.filter(r => !r.miss).map(r => r.rs || 0))];
   const cs = workChars().map(id => CHARS.find(c => c.id === id));
   if (cs.length > 1 && groups.length) {
-    $('#scanOut').insertAdjacentHTML(
-      'beforeend',
-      `<h3>Reprocess hozam karakterenként</h3><div class="tablewrap"><table><thead><tr><th>Feldolgozó skill</th>${cs.map(c => `<th class="num">${esc(c.name)}</th>`).join('')}</tr></thead><tbody>${groups
-        .map(g => {
+    appendHtml(
+      $('#scanOut'),
+      html`<h3>Reprocess hozam karakterenként</h3><div class="tablewrap"><table><thead><tr><th>Feldolgozó skill</th>${cs.map(c => html`<th class="num">${c.name}</th>`)}</tr></thead><tbody>${groups.map(
+        g => {
           const ys = cs.map(c => oreYieldFor(c.id, g || null));
           const mx = Math.max(...ys);
-          return `<tr><td>${esc(g ? NAMES[g] || g : 'nincs külön skill')}</td>${ys.map(y => `<td class="num ${y === mx ? 'pos' : ''}">${fmt(y * 100, 1)}%</td>`).join('')}</tr>`;
-        })
-        .join(
-          ''
-        )}</tbody></table></div><p class="small muted" style="margin-top:6px">Alaphozam ${fmt(Number(S.yieldBase), 1)}% (Beállítások), Reprocessing, Reprocessing Efficiency és az érchez tartozó feldolgozó skill. A zöld a jobb. Minden fajtát a jobb hozamú karakterrel számol.</p>`
+          return html`<tr><td>${g ? NAMES[g] || g : 'nincs külön skill'}</td>${hjoin(
+            ys.map(y => html`<td class="num ${y === mx ? 'pos' : ''}">${fmt(y * 100, 1)}%</td>`),
+            ''
+          )}</tr>`;
+        }
+      )}</tbody></table></div><p class="small muted" style="margin-top:6px">Alaphozam ${fmt(Number(S.yieldBase), 1)}% (Beállítások), Reprocessing, Reprocessing Efficiency és az érchez tartozó feldolgozó skill. A zöld a jobb. Minden fajtát a jobb hozamú karakterrel számol.</p>`
     );
   }
   renderMineNeed();
@@ -6824,18 +6952,18 @@ function renderMineNeed() {
   const prodSet = new Set([34, 35, 36, 37, 38, 39, 40, 11399].concat(LASTSCAN ? [...LASTSCAN.minerals.keys()] : []));
   const need = [...LASTPLAN.buyList].filter(([t]) => prodSet.has(t));
   if (!need.length) {
-    el.innerHTML = T(
-      'A legutóbbi tervhez ({0}) nem kell ásványt vagy reprocess-terméket venni.',
-      esc(LASTPLAN.title || '')
-    );
+    setHtml(el, T('A legutóbbi tervhez ({0}) nem kell ásványt vagy reprocess-terméket venni.', LASTPLAN.title || ''));
     return;
   }
-  el.innerHTML = `<p>Terv: <b>${esc(LASTPLAN.title || '')}</b></p><div class="tablewrap"><table><thead><tr><th>Termék</th><th class="num">Hiány</th><th class="num">A beltből</th><th class="num">Fedezet</th></tr></thead><tbody>${need
-    .map(([t, q]) => {
-      const b = LASTSCAN ? LASTSCAN.minerals.get(t) || 0 : null;
-      return `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${b == null ? '–' : fmt(b)}</td><td class="num">${b == null ? '–' : `<span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span>`}</td></tr>`;
-    })
-    .join('')}</tbody></table></div>`;
+  setHtml(
+    el,
+    html`<p>Terv: <b>${LASTPLAN.title || ''}</b></p><div class="tablewrap"><table><thead><tr><th>Termék</th><th class="num">Hiány</th><th class="num">A beltből</th><th class="num">Fedezet</th></tr></thead><tbody>${need.map(
+      ([t, q]) => {
+        const b = LASTSCAN ? LASTSCAN.minerals.get(t) || 0 : null;
+        return html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${b == null ? '–' : fmt(b)}</td><td class="num">${b == null ? '–' : html`<span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span>`}</td></tr>`;
+      }
+    )}</tbody></table></div>`
+  );
 }
 </script>
 <script>
@@ -7192,29 +7320,31 @@ function renderRepro() {
   if (!box) return;
   renderRepChars();
   if (!REP.rows) {
-    box.innerHTML =
-      '<p class="muted">Nyomd meg a „Készlet beolvasása” gombot. A tool végignézi a készletet, és kilistázza, mi reprocesszálható belőle.</p>';
-    $('#repLocs').innerHTML = '';
-    $('#repSum').innerHTML = '';
+    setHtml(
+      box,
+      html`<p class="muted">Nyomd meg a „Készlet beolvasása” gombot. A tool végignézi a készletet, és kilistázza, mi reprocesszálható belőle.</p>`
+    );
+    setHtml($('#repLocs'), '');
+    setHtml($('#repSum'), '');
     return;
   }
   // filters
   const locs = [...new Set(REP.rows.map(r => r.l))].sort((a, b) => locName(a).localeCompare(locName(b)));
   const ls = $('#repLoc'),
     cur = ls.value;
-  ls.innerHTML =
-    '<option value="">minden helyszín</option>' +
-    locs.map(l => `<option value="${l}">${esc(locName(l))}</option>`).join('');
+  setHtml(
+    ls,
+    html`<option value="">minden helyszín</option>${locs.map(l => html`<option value="${l}">${locName(l)}</option>`)}`
+  );
   ls.value = locs.map(String).includes(cur) ? cur : '';
   {
     const os = $('#repOwn'),
       cur2 = os.value;
     const cs = CHARS.filter(c => DATA[c.id]);
-    os.innerHTML =
-      '<option value="">' +
-      esc(T('minden karakter')) +
-      '</option>' +
-      cs.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    setHtml(
+      os,
+      html`<option value="">${T('minden karakter')}</option>${cs.map(c => html`<option value="${c.id}">${c.name}</option>`)}`
+    );
     os.value = cs.some(c => String(c.id) === cur2) ? cur2 : '';
   }
   renderRepLocs(locs);
@@ -7246,36 +7376,38 @@ function renderRepro() {
   const shown = pg.rows;
   REP.filtered = rows;
   const allOn = shown.length && shown.every(x => REP.sel.has(repKey(x.r)));
-  box.innerHTML = !rows.length
-    ? '<p class="muted">Nincs a szűrésnek megfelelő reprocesszálható tétel.</p>'
-    : `<div class="row" style="margin-bottom:6px"><button class="btn mini" id="repSelFilt">${T('Mind a(z) {0} szűrt tétel kijelölése', fmt(rows.length))}</button><button class="btn mini" id="repClear2">${T('Kijelölés törlése')}</button><span class="small muted">${T('{0} kijelölve', fmt(REP.sel.size))}</span></div>${pg.html}<div class="tablewrap"><table><thead><tr><th><input type="checkbox" id="repAll" ${allOn ? 'checked' : ''} aria-label="Mind kijelölése"></th>${sortTh('rep', 'name', T('Tárgy'))}${sortTh('rep', 'loc', T('Helyszín'))}${sortTh('rep', 'q', T('Db'), 1)}${sortTh('rep', 'y', T('Ki · hozam'), 1)}<th>Mi jön ki belőle</th>${sortTh('rep', 'inV', T('Egyben') + ' · Jita', 1)}${sortTh('rep', 'outV', T('Szétszedve') + ' · Jita', 1)}${m2On() ? `${sortTh('rep', 'in2', T('Egyben') + ' · ' + esc(m2Short()), 1)}${sortTh('rep', 'out2', T('Szétszedve') + ' · ' + esc(m2Short()), 1)}` : ''}${sortTh('rep', 'gain', T('Jobb'), 1)}</tr></thead><tbody>${shown
-        .map(x => {
-          const r = x.r,
-            k = repKey(r);
-          const who = x.pick
-            ? `${esc(charName(x.pick.cid))} · <span class="mono">${fmt(x.pick.y.y * 100, 1)}%</span>${r.own.has(x.pick.cid) ? '' : ` <span class="pill warn" title="${T('A tárgy másik karakternél van, át kell adni.')}">⇄</span>`}`
-            : '<span class="muted">itt nem lehet</span>';
-          const top =
-            x.out
-              .slice()
-              .sort((a, b) => b[1] * repPrice(b[0]).v - a[1] * repPrice(a[0]).v)
-              .slice(0, 4)
-              .map(([m, q]) => esc(NAMES[m] || m) + ' ' + fmt(q))
-              .join(', ') + (x.out.length > 4 ? ' …' : '');
-          const bi = Math.max(x.inV, x.in2 || 0),
-            bo = Math.max(x.outV, x.out2 || 0);
-          const where = (v, j, m) => (m2On() && m > j ? esc(m2Short()) : 'Jita');
-          const verdict =
-            !x.pick || (!bi && !bo)
-              ? ''
-              : bo > bi
-                ? `<span class="pill ok">reprocess</span><div class="small muted" data-noi18n>${where(bo, x.outV, x.out2)}</div>`
-                : `<span class="pill warn">eladás</span><div class="small muted" data-noi18n>${where(bi, x.inV, x.in2)}</div>`;
-          return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k) ? 'checked' : ''}></td><td>${esc(NAMES[r.t] || r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest ? `<div class="small muted">${T('{0} marad', fmt(x.rest))}</div>` : ''}</td><td class="small">${who}</td><td class="small">${top || '–'}</td><td class="num">${x.inV ? (repPrice(r.t).a ? '~' : '') + isk(x.inV) : '–'}</td><td class="num">${x.outV ? (x.out.some(([m]) => repPrice(m).a) ? '~' : '') + isk(x.outV) : '–'}</td>${m2On() ? `<td class="num">${x.in2 ? isk(x.in2) : '–'}</td><td class="num">${x.out2 ? isk(x.out2) : '–'}</td>` : ''}<td>${verdict}</td></tr>`;
-        })
-        .join('')}</tbody></table></div>${pg.html}
-  <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.</p>` +
-      m2Hint();
+  setHtml(
+    box,
+    !rows.length
+      ? html`<p class="muted">Nincs a szűrésnek megfelelő reprocesszálható tétel.</p>`
+      : html`<div class="row" style="margin-bottom:6px"><button class="btn mini" id="repSelFilt">${T('Mind a(z) {0} szűrt tétel kijelölése', fmt(rows.length))}</button><button class="btn mini" id="repClear2">${T('Kijelölés törlése')}</button><span class="small muted">${T('{0} kijelölve', fmt(REP.sel.size))}</span></div>${pg.html}<div class="tablewrap"><table><thead><tr><th><input type="checkbox" id="repAll" ${allOn ? 'checked' : ''} aria-label="Mind kijelölése"></th>${sortTh('rep', 'name', T('Tárgy'))}${sortTh('rep', 'loc', T('Helyszín'))}${sortTh('rep', 'q', T('Db'), 1)}${sortTh('rep', 'y', T('Ki · hozam'), 1)}<th>Mi jön ki belőle</th>${sortTh('rep', 'inV', T('Egyben') + ' · Jita', 1)}${sortTh('rep', 'outV', T('Szétszedve') + ' · Jita', 1)}${m2On() ? html`${sortTh('rep', 'in2', T('Egyben') + ' · ' + m2Short(), 1)}${sortTh('rep', 'out2', T('Szétszedve') + ' · ' + m2Short(), 1)}` : ''}${sortTh('rep', 'gain', T('Jobb'), 1)}</tr></thead><tbody>${shown.map(
+          x => {
+            const r = x.r,
+              k = repKey(r);
+            const who = x.pick
+              ? html`${charName(x.pick.cid)} · <span class="mono">${fmt(x.pick.y.y * 100, 1)}%</span>${r.own.has(x.pick.cid) ? '' : html` <span class="pill warn" title="${T('A tárgy másik karakternél van, át kell adni.')}">⇄</span>`}`
+              : html`<span class="muted">itt nem lehet</span>`;
+            const top =
+              x.out
+                .slice()
+                .sort((a, b) => b[1] * repPrice(b[0]).v - a[1] * repPrice(a[0]).v)
+                .slice(0, 4)
+                .map(([m, q]) => (NAMES[m] || m) + ' ' + fmt(q))
+                .join(', ') + (x.out.length > 4 ? ' …' : '');
+            const bi = Math.max(x.inV, x.in2 || 0),
+              bo = Math.max(x.outV, x.out2 || 0);
+            const where = (v, j, m) => (m2On() && m > j ? m2Short() : 'Jita');
+            const verdict =
+              !x.pick || (!bi && !bo)
+                ? ''
+                : bo > bi
+                  ? html`<span class="pill ok">reprocess</span><div class="small muted" data-noi18n>${where(bo, x.outV, x.out2)}</div>`
+                  : html`<span class="pill warn">eladás</span><div class="small muted" data-noi18n>${where(bi, x.inV, x.in2)}</div>`;
+            return html`<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k) ? 'checked' : ''}></td><td>${NAMES[r.t] || r.t}</td><td class="small">${locName(r.l)}</td><td class="num">${fmt(r.q)}${x.rest ? html`<div class="small muted">${T('{0} marad', fmt(x.rest))}</div>` : ''}</td><td class="small">${who}</td><td class="small">${top || '–'}</td><td class="num">${x.inV ? (repPrice(r.t).a ? '~' : '') + isk(x.inV) : '–'}</td><td class="num">${x.outV ? (x.out.some(([m]) => repPrice(m).a) ? '~' : '') + isk(x.outV) : '–'}</td>${m2On() ? html`<td class="num">${x.in2 ? isk(x.in2) : '–'}</td><td class="num">${x.out2 ? isk(x.out2) : '–'}</td>` : ''}<td>${verdict}</td></tr>`;
+          }
+        )}</tbody></table></div>${pg.html}
+  <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.</p>${m2Hint()}`
+  );
   renderRepSum();
 }
 function renderRepChars() {
@@ -7283,7 +7415,7 @@ function renderRepChars() {
   if (!el) return;
   const cs = workChars().map(id => CHARS.find(c => c.id === id));
   if (!cs.length) {
-    el.innerHTML = '<p class="muted">Még nincs karakter.</p>';
+    setHtml(el, html`<p class="muted">Még nincs karakter.</p>`);
     return;
   }
   const cfg = repCfg();
@@ -7293,20 +7425,26 @@ function renderRepChars() {
     [2, 'RX-802 (2%)'],
     [4, 'RX-804 (4%)']
   ];
-  el.innerHTML = `<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs
-    .map(
+  setHtml(
+    el,
+    html`<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs.map(
       c =>
-        `<tr><td>${esc(c.name)}</td><td class="num">${lvlOf(c.id, SK.repro)}</td><td class="num">${lvlOf(c.id, SK.reproEff)}</td><td class="num">${lvlOf(c.id, SCRAP)}</td><td>${(() => {
+        html`<tr><td>${c.name}</td><td class="num">${lvlOf(c.id, SK.repro)}</td><td class="num">${lvlOf(c.id, SK.reproEff)}</td><td class="num">${lvlOf(c.id, SCRAP)}</td><td>${(() => {
           const man = cfg.imp[c.id];
           const isMan = man != null && man !== '' && man !== 'auto';
           const a = impAuto(c.id);
           const an = a == null ? T('nem ismert') : (imps.find(x => x[0] === a) || [0, a + '%'])[1];
-          return `<select data-imp="${c.id}"><option value="auto" ${isMan ? '' : 'selected'}>${esc(T('ESI szerint: {0}', an))}</option>${imps.map(([v, n]) => `<option value="${v}" ${isMan && Number(man) === v ? 'selected' : ''}>${n}</option>`).join('')}</select>${a == null ? `<div class="small muted">${T('Jelentkezz be újra, hogy az implant automatikus legyen.')}</div>` : ''}`;
+          return html`<select data-imp="${c.id}"><option value="auto" ${isMan ? '' : 'selected'}>${T('ESI szerint: {0}', an)}</option>${hjoin(
+            imps.map(
+              ([v, n]) => html`<option value="${v}" ${isMan && Number(man) === v ? 'selected' : ''}>${n}</option>`
+            ),
+            ''
+          )}</select>${a == null ? html`<div class="small muted">${T('Jelentkezz be újra, hogy az implant automatikus legyen.')}</div>` : ''}`;
         })()}</td></tr>`
-    )
-    .join('')}</tbody></table></div>
-  <div class="row" style="margin-top:8px"><label>Ki reprocesszál <select id="repWho"><option value="">a legjobb hozamú karakter</option>${cs.map(c => `<option value="${c.id}" ${String(cfg.char) === String(c.id) ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label></div>
-  <p class="small muted" style="margin-top:6px">Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.</p>`;
+    )}</tbody></table></div>
+  <div class="row" style="margin-top:8px"><label>Ki reprocesszál <select id="repWho"><option value="">a legjobb hozamú karakter</option>${cs.map(c => html`<option value="${c.id}" ${String(cfg.char) === String(c.id) ? 'selected' : ''}>${c.name}</option>`)}</select></label></div>
+  <p class="small muted" style="margin-top:6px">Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.</p>`
+  );
 }
 function renderRepLocs(locs) {
   const el = $('#repLocs');
@@ -7321,42 +7459,46 @@ function renderRepLocs(locs) {
             ? NAMES[L.st] || 'Upwell'
             : 'Upwell'
           : T('űrben – itt nem lehet');
-  el.innerHTML = `<div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Típus</th><th class="num">Sec</th><th>Rig</th><th class="num">Adó %</th><th class="num">Alap %</th><th class="num">Érc hozam</th><th class="num">Loot hozam</th></tr></thead><tbody>${locs
-    .map(l => {
-      const L = locStats(l);
-      const c = repCfg().loc[l] || {};
-      const best = ti => {
-        let b = null;
-        for (const cid of cs) {
-          const y = repYield(cid, l, ti);
-          if (y && (!b || y.y > b.y)) b = { y: y.y, cid, tax: y.tax };
-        }
-        return b;
-      };
-      const yo = best({ rs: -1, c: 25, tm: [] }),
-        yl = best({ rs: null, c: 7, tm: [] });
-      const show = b =>
-        b
-          ? `<span class="mono">${fmt(b.y * 100, 1)}%</span><div class="small muted">${cs.length > 1 ? esc(charName(b.cid)) + ' · ' : ''}${T('adó {0}%', fmt(b.tax, 2))}</div>`
-          : '–';
-      return `<tr><td>${esc(locName(l))}</td><td class="small">${esc(kindName(L))}</td><td class="num">${L.sec != null ? fmt(L.sec, 2) : '–'}</td>
+  setHtml(
+    el,
+    html`<div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Típus</th><th class="num">Sec</th><th>Rig</th><th class="num">Adó %</th><th class="num">Alap %</th><th class="num">Érc hozam</th><th class="num">Loot hozam</th></tr></thead><tbody>${locs.map(
+      l => {
+        const L = locStats(l);
+        const c = repCfg().loc[l] || {};
+        const best = ti => {
+          let b = null;
+          for (const cid of cs) {
+            const y = repYield(cid, l, ti);
+            if (y && (!b || y.y > b.y)) b = { y: y.y, cid, tax: y.tax };
+          }
+          return b;
+        };
+        const yo = best({ rs: -1, c: 25, tm: [] }),
+          yl = best({ rs: null, c: 7, tm: [] });
+        const show = b =>
+          b
+            ? html`<span class="mono">${fmt(b.y * 100, 1)}%</span><div class="small muted">${cs.length > 1 ? charName(b.cid) + ' · ' : ''}${T('adó {0}%', fmt(b.tax, 2))}</div>`
+            : '–';
+        return html`<tr><td>${locName(l)}</td><td class="small">${kindName(L)}</td><td class="num">${L.sec != null ? fmt(L.sec, 2) : '–'}</td>
     <td>${
       L.k === 'struct'
-        ? `<select data-rig="${l}">${[
-            [0, 'nincs'],
-            [1, 'T1'],
-            [3, 'T2']
-          ]
-            .map(([v, n]) => `<option value="${v}" ${L.rig === v ? 'selected' : ''}>${n}</option>`)
-            .join('')}</select>`
-        : '<span class="muted">–</span>'
+        ? html`<select data-rig="${l}">${hjoin(
+            [
+              [0, 'nincs'],
+              [1, 'T1'],
+              [3, 'T2']
+            ].map(([v, n]) => html`<option value="${v}" ${L.rig === v ? 'selected' : ''}>${n}</option>`),
+            ''
+          )}</select>`
+        : html`<span class="muted">–</span>`
     }</td>
-    <td class="num">${L.k === 'none' || L.k === 'nosvc' ? '–' : `<input type="number" step="0.1" min="0" max="100" style="width:70px" data-tax="${l}" value="${c.tax != null && c.tax !== '' ? c.tax : ''}" placeholder="${fmt(L.taxAuto, 1)}">`}</td>
-    <td class="num">${L.k === 'npc' ? `<input type="number" step="1" min="0" max="100" style="width:60px" data-base="${l}" value="${c.base != null && c.base !== '' ? c.base : ''}" placeholder="${fmt(L.baseAuto, 0)}">` : L.k === 'struct' ? '50' : '–'}</td>
+    <td class="num">${L.k === 'none' || L.k === 'nosvc' ? '–' : html`<input type="number" step="0.1" min="0" max="100" style="width:70px" data-tax="${l}" value="${c.tax != null && c.tax !== '' ? c.tax : ''}" placeholder="${fmt(L.taxAuto, 1)}">`}</td>
+    <td class="num">${L.k === 'npc' ? html`<input type="number" step="1" min="0" max="100" style="width:60px" data-base="${l}" value="${c.base != null && c.base !== '' ? c.base : ''}" placeholder="${fmt(L.baseAuto, 0)}">` : L.k === 'struct' ? '50' : '–'}</td>
     <td class="num">${show(yo)}</td><td class="num">${show(yl)}</td></tr>`;
-    })
-    .join('')}</tbody></table></div>
-  <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`;
+      }
+    )}</tbody></table></div>
+  <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`
+  );
 }
 // Sums the selected rows: materials out, values in and out (Jita and the second market; a: some value is
 // approximate), rows that cannot be reprocessed where they are (none), and who reprocesses where (steps).
@@ -7397,54 +7539,59 @@ function repCoverHtml(mats) {
   if (typeof LASTPLAN === 'undefined' || !LASTPLAN) return '';
   const need = [...LASTPLAN.buyList].filter(([t]) => mats.has(t));
   return need.length
-    ? `<h3>${T('A „{0}” terv hiányából', esc(LASTPLAN.title || ''))}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need
-        .map(([t, q]) => {
+    ? html`<h3>${T('A „{0}” terv hiányából', LASTPLAN.title || '')}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need.map(
+        ([t, q]) => {
           const b = mats.get(t) || 0;
-          return `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span></td></tr>`;
-        })
-        .join('')}</tbody></table></div>`
-    : `<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.', esc(LASTPLAN.title || ''))}</p>`;
+          return html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span></td></tr>`;
+        }
+      )}</tbody></table></div>`
+    : html`<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.', LASTPLAN.title || '')}</p>`;
 }
 // materials that come out, most valuable first
 function repOutHtml(Q) {
   const { mats, outV, out2, a } = Q;
   const ml = [...mats].sort((x, y) => y[1] * repPrice(y[0]).v - x[1] * repPrice(x[0]).v);
-  return `<h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num" data-noi18n>Jita sell</th>${m2On() ? `<th class="num" data-noi18n>${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${ml
-    .map(([m, q]) => {
+  return html`<h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num" data-noi18n>Jita sell</th>${m2On() ? html`<th class="num" data-noi18n>${m2Short()} sell</th>` : ''}</tr></thead><tbody>${ml.map(
+    ([m, q]) => {
       const p = repPrice(m);
-      return `<tr><td>${esc(NAMES[m] || m)}</td><td class="num">${fmt(q)}</td><td class="num">${p.a ? '~' : ''}${isk(q * p.v)}</td>${m2On() ? `<td class="num">${sell2(m) ? isk(q * sell2(m)) : '–'}</td>` : ''}</tr>`;
-    })
-    .join('')}
-  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a ? '~' : ''}${isk(outV)}</b></td>${m2On() ? `<td class="num"><b>${isk(out2)}</b></td>` : ''}</tr></tbody></table></div>`;
+      return html`<tr><td>${NAMES[m] || m}</td><td class="num">${fmt(q)}</td><td class="num">${p.a ? '~' : ''}${isk(q * p.v)}</td>${m2On() ? html`<td class="num">${sell2(m) ? isk(q * sell2(m)) : '–'}</td>` : ''}</tr>`;
+    }
+  )}
+  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a ? '~' : ''}${isk(outV)}</b></td>${m2On() ? html`<td class="num"><b>${isk(out2)}</b></td>` : ''}</tr></tbody></table></div>`;
 }
 // selling the items as they are vs. reprocessing them, per market (gross values)
 function repCompareHtml(Q) {
   const { inV, outV, in2, out2, a } = Q;
   const mk = [['Jita', inV, outV, a]].concat(m2On() ? [[m2Short(), in2, out2, false]] : []);
-  return `<h3>Eladás vagy reprocess</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Piac</th><th class="num">Egyben eladva</th><th class="num">Szétszedve</th><th>Jobb</th></tr></thead><tbody>${mk.map(([n, i, o, ap]) => `<tr><td data-noi18n>${esc(n)}</td><td class="num">${ap ? '~' : ''}${i ? isk(i) : '–'}</td><td class="num">${ap ? '~' : ''}${o ? isk(o) : '–'}</td><td>${!i && !o ? '' : o > i ? `<span class="pill ok">${T('reprocess +{0}', isk(o - i))}</span>` : `<span class="pill warn">${T('eladás +{0}', isk(i - o))}</span>`}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.</p>`;
+  return html`<h3>Eladás vagy reprocess</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Piac</th><th class="num">Egyben eladva</th><th class="num">Szétszedve</th><th>Jobb</th></tr></thead><tbody>${mk.map(([n, i, o, ap]) => html`<tr><td data-noi18n>${n}</td><td class="num">${ap ? '~' : ''}${i ? isk(i) : '–'}</td><td class="num">${ap ? '~' : ''}${o ? isk(o) : '–'}</td><td>${!i && !o ? '' : o > i ? html`<span class="pill ok">${T('reprocess +{0}', isk(o - i))}</span>` : html`<span class="pill warn">${T('eladás +{0}', isk(i - o))}</span>`}</td></tr>`)}</tbody></table></div><p class="small muted" style="margin-top:4px">Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.</p>`;
 }
 function repWhereHtml(Q) {
   const { steps } = Q;
-  return `<h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s => `<tr><td>${esc(locName(s.l))}</td><td>${esc(charName(s.cid))}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size ? T('Át kell adni tőle: {0}', [...s.from].map(charName).join(', ')) : ''}</td></tr>`).join('')}</tbody></table></div>`;
+  return html`<h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s => html`<tr><td>${locName(s.l)}</td><td>${charName(s.cid)}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size ? T('Át kell adni tőle: {0}', [...s.from].map(charName).join(', ')) : ''}</td></tr>`)}</tbody></table></div>`;
 }
 function renderRepSum() {
   const el = $('#repSum');
   const sel = (REP.rows || []).filter(r => REP.sel.has(repKey(r)));
   if (!sel.length) {
-    el.innerHTML =
-      '<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>';
+    setHtml(
+      el,
+      html`<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>`
+    );
     return;
   }
   const Q = repSummary(sel);
-  el.innerHTML = `<div class="row"><b>${T('{0} tétel kijelölve', fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On() ? T('Jita és {0} árak a kijelöltekre', esc(m2Short())) : T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
+  setHtml(
+    el,
+    html`<div class="row"><b>${T('{0} tétel kijelölve', fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On() ? T('Jita és {0} árak a kijelöltekre', m2Short()) : T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
   <div class="grid2" style="margin-top:10px"><div>
   ${repOutHtml(Q)}
   ${repCompareHtml(Q)}
   ${sellerHtml()}
-  ${Q.none ? `<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).', Q.none)}</p>` : ''}
+  ${Q.none ? html`<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).', Q.none)}</p>` : ''}
   </div><div>
   ${repWhereHtml(Q)}
-  ${repCoverHtml(Q.mats)}</div></div>`;
+  ${repCoverHtml(Q.mats)}</div></div>`
+  );
 }
 // events
 (function () {
@@ -7625,19 +7772,19 @@ $('#pAll').onclick = () => {
 };
 $('#prGo').onclick = () =>
   runProfit().catch(e => {
-    $('#prOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#prOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     status('kész');
   });
 ['#prOnlyPos', '#prMinVol'].forEach(x => $(x).addEventListener('input', () => PROFROWS.length && renderProfit()));
 $('#ivGo').onclick = () =>
   runInvention().catch(e => {
-    $('#ivOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#ivOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     log(e.stack || e.message);
     status('kész');
   });
 $('#rsGo').onclick = () =>
   runResearch().catch(e => {
-    $('#rsOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#rsOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     log(e.stack || e.message);
     status('kész');
   });
@@ -7647,13 +7794,13 @@ $('#slGo').onclick = async () => {
     await ensurePrices([...new Set(CHARS.flatMap(c => ((DATA[c.id] || {}).tx || []).map(x => x.t)))]);
     await runSales();
   } catch (e) {
-    $('#slOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#slOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     status('kész');
   }
 };
 $('#cbGo').onclick = () =>
   runCanBuild().catch(e => {
-    $('#cbOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#cbOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     status('kész');
   });
 $('#scanGo').onclick = () => runScan().catch(e => alertBox(e.message));
@@ -7983,7 +8130,10 @@ $('#impFile').addEventListener('change', e => {
     d = v.d;
     const box = $('#impConfirm');
     box.hidden = false;
-    box.innerHTML = `<p>Mentés dátuma: <b>${esc(new Date(d.at).toLocaleString(LOC()))}</b> · ${(d.projects || []).length} projekt · ${(d.chars || []).length} karakter${d.withTokens ? ' (bejelentkezésekkel)' : ' (bejelentkezések nélkül)'}.</p><p>A visszatöltés felülírja a mostani beállításokat és projekteket.${d.withTokens ? ' A karakterek bejelentkezései is visszaállnak.' : ' A karaktereket utána újra be kell jelentkeztetni, ha ebben a böngészőben még nincsenek.'}</p><div class="row"><button class="btn primary" id="impYes">Visszatöltés</button><button class="btn" id="impNo">Mégse</button></div>`;
+    setHtml(
+      box,
+      html`<p>Mentés dátuma: <b>${new Date(d.at).toLocaleString(LOC())}</b> · ${(d.projects || []).length} projekt · ${(d.chars || []).length} karakter${d.withTokens ? ' (bejelentkezésekkel)' : ' (bejelentkezések nélkül)'}.</p><p>A visszatöltés felülírja a mostani beállításokat és projekteket.${d.withTokens ? ' A karakterek bejelentkezései is visszaállnak.' : ' A karaktereket utána újra be kell jelentkeztetni, ha ebben a böngészőben még nincsenek.'}</p><div class="row"><button class="btn primary" id="impYes">Visszatöltés</button><button class="btn" id="impNo">Mégse</button></div>`
+    );
     $('#impNo').onclick = () => {
       box.hidden = true;
       e.target.value = '';
@@ -8010,9 +8160,15 @@ $('#impFile').addEventListener('change', e => {
   rd.readAsText(f);
 });
 
-$('#langSel').innerHTML = Object.entries(LANGS)
-  .map(([k, v]) => `<option value="${k}" ${k === LANG ? 'selected' : ''}>${v.name}</option>`)
-  .join('');
+setHtml(
+  $('#langSel'),
+  hjoin(
+    Object.entries(LANGS).map(
+      ([k, v]) => html`<option value="${k}" ${k === LANG ? 'selected' : ''}>${v.name}</option>`
+    ),
+    ''
+  )
+);
 $('#langSel').addEventListener('change', e => setLang(e.target.value));
 $('#appVer').textContent = 'v' + APP.version;
 $('#hdrVer').textContent = 'v' + APP.version;

@@ -99,7 +99,8 @@ showResult(el, R, rerun)             views.js    re-assigns characters, draws, r
 
 ### Rendering and translation
 
-- Views build HTML strings and set `innerHTML`. Every value from ESI or the user goes through `esc()`.
+- Views build markup with the `html` template tag (`core.js`), which escapes every interpolated value. Nested `html` templates, arrays of them (`hjoin` with a separator) and `raw()` markup pass through unchanged. `T()` returns an `html` result when its text is markup written in the code or an argument is one; otherwise a plain string.
+- Markup reaches the page only through `setHtml(el, h)` / `appendHtml(el, h)`. A plain string given to them is shown as text, so a view that builds a string by mistake cannot inject markup. `tests/lint.js` fails on any other way of setting HTML, and in tests (`window.__htmlCheck`) `setHtml` warns when markup ends up as visible text.
 - Long lists use the shared pager and sortable headers (`pageOf`, `pagerHtml`, `sortTh`, `sortRows`).
 - UI strings in the code are the Hungarian source texts. A `MutationObserver` (`startI18n`) translates every text node and the `placeholder`/`title`/`aria-label` attributes using the dictionaries. Lookup is first by the exact text, then with numbers replaced by `#`. `T('… {0}', x)` is used where a string is assembled from parts. Elements marked `data-noi18n` are left alone.
 

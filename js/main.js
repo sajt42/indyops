@@ -112,19 +112,19 @@ $('#pAll').onclick = () => {
 };
 $('#prGo').onclick = () =>
   runProfit().catch(e => {
-    $('#prOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#prOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     status('kész');
   });
 ['#prOnlyPos', '#prMinVol'].forEach(x => $(x).addEventListener('input', () => PROFROWS.length && renderProfit()));
 $('#ivGo').onclick = () =>
   runInvention().catch(e => {
-    $('#ivOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#ivOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     log(e.stack || e.message);
     status('kész');
   });
 $('#rsGo').onclick = () =>
   runResearch().catch(e => {
-    $('#rsOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#rsOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     log(e.stack || e.message);
     status('kész');
   });
@@ -134,13 +134,13 @@ $('#slGo').onclick = async () => {
     await ensurePrices([...new Set(CHARS.flatMap(c => ((DATA[c.id] || {}).tx || []).map(x => x.t)))]);
     await runSales();
   } catch (e) {
-    $('#slOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#slOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     status('kész');
   }
 };
 $('#cbGo').onclick = () =>
   runCanBuild().catch(e => {
-    $('#cbOut').innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml($('#cbOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
     status('kész');
   });
 $('#scanGo').onclick = () => runScan().catch(e => alertBox(e.message));
@@ -470,7 +470,10 @@ $('#impFile').addEventListener('change', e => {
     d = v.d;
     const box = $('#impConfirm');
     box.hidden = false;
-    box.innerHTML = `<p>Mentés dátuma: <b>${esc(new Date(d.at).toLocaleString(LOC()))}</b> · ${(d.projects || []).length} projekt · ${(d.chars || []).length} karakter${d.withTokens ? ' (bejelentkezésekkel)' : ' (bejelentkezések nélkül)'}.</p><p>A visszatöltés felülírja a mostani beállításokat és projekteket.${d.withTokens ? ' A karakterek bejelentkezései is visszaállnak.' : ' A karaktereket utána újra be kell jelentkeztetni, ha ebben a böngészőben még nincsenek.'}</p><div class="row"><button class="btn primary" id="impYes">Visszatöltés</button><button class="btn" id="impNo">Mégse</button></div>`;
+    setHtml(
+      box,
+      html`<p>Mentés dátuma: <b>${new Date(d.at).toLocaleString(LOC())}</b> · ${(d.projects || []).length} projekt · ${(d.chars || []).length} karakter${d.withTokens ? ' (bejelentkezésekkel)' : ' (bejelentkezések nélkül)'}.</p><p>A visszatöltés felülírja a mostani beállításokat és projekteket.${d.withTokens ? ' A karakterek bejelentkezései is visszaállnak.' : ' A karaktereket utána újra be kell jelentkeztetni, ha ebben a böngészőben még nincsenek.'}</p><div class="row"><button class="btn primary" id="impYes">Visszatöltés</button><button class="btn" id="impNo">Mégse</button></div>`
+    );
     $('#impNo').onclick = () => {
       box.hidden = true;
       e.target.value = '';
@@ -497,9 +500,15 @@ $('#impFile').addEventListener('change', e => {
   rd.readAsText(f);
 });
 
-$('#langSel').innerHTML = Object.entries(LANGS)
-  .map(([k, v]) => `<option value="${k}" ${k === LANG ? 'selected' : ''}>${v.name}</option>`)
-  .join('');
+setHtml(
+  $('#langSel'),
+  hjoin(
+    Object.entries(LANGS).map(
+      ([k, v]) => html`<option value="${k}" ${k === LANG ? 'selected' : ''}>${v.name}</option>`
+    ),
+    ''
+  )
+);
 $('#langSel').addEventListener('change', e => setLang(e.target.value));
 $('#appVer').textContent = 'v' + APP.version;
 $('#hdrVer').textContent = 'v' + APP.version;

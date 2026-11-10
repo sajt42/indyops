@@ -3,7 +3,7 @@
 /* ---- builds without buying ---- */
 async function runCanBuild() {
   const out = $('#cbOut');
-  out.innerHTML = '<div class="card muted">Receptek betöltése…</div>';
+  setHtml(out, html`<div class="card muted">Receptek betöltése…</div>`);
   await indexBPProducts();
   const cat = $('#cbCat').value;
   const byProd = new Map();
@@ -76,7 +76,10 @@ function renderCanBuild() {
     ];
   const pg = pageOf('cb', sortRows('cb', CBROWS.slice(), cg), String(CBROWS.length), renderCanBuild);
   const res = pg.rows;
-  out.innerHTML = `${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('cb', 'name', T('Termék'))}${sortTh('cb', 'bp', T('Legjobb saját BP'), 1)}${sortTh('cb', 'lo', T('Legyártható run'), 1)}${sortTh('cb', 'lim', T('Szűk keresztmetszet a következő runhoz'))}</tr></thead><tbody>${res.map(r => `<tr><td>${esc(NAMES[r.p] || r.p)}</td><td class="small">${r.bp.r === -1 ? 'BPO' : 'BPC ' + r.bp.r + ' run'} · ME${r.bp.me} · ${esc(charName(r.bp.cid))}</td><td class="num ${r.lo ? 'pos' : ''}">${fmt(r.lo)}</td><td class="small muted">${esc(r.limiter)}</td></tr>`).join('')}</tbody></table></div>${pg.html}`;
+  setHtml(
+    out,
+    html`${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('cb', 'name', T('Termék'))}${sortTh('cb', 'bp', T('Legjobb saját BP'), 1)}${sortTh('cb', 'lo', T('Legyártható run'), 1)}${sortTh('cb', 'lim', T('Szűk keresztmetszet a következő runhoz'))}</tr></thead><tbody>${res.map(r => html`<tr><td>${NAMES[r.p] || r.p}</td><td class="small">${r.bp.r === -1 ? 'BPO' : 'BPC ' + r.bp.r + ' run'} · ME${r.bp.me} · ${charName(r.bp.cid)}</td><td class="num ${r.lo ? 'pos' : ''}">${fmt(r.lo)}</td><td class="small muted">${r.limiter}</td></tr>`)}</tbody></table></div>${pg.html}`
+  );
   status('kész');
 }
 function fillCats(prodTypes) {
@@ -100,8 +103,9 @@ function fillCats(prodTypes) {
   };
   const sel = $('#cbCat'),
     cur = sel.value;
-  sel.innerHTML =
-    '<option value="">mind</option>' +
-    [...cats].map(c => `<option value="${c}">${names[c] || 'Kategória ' + c}</option>`).join('');
+  setHtml(
+    sel,
+    html`<option value="">mind</option>${[...cats].map(c => html`<option value="${c}">${names[c] || 'Kategória ' + c}</option>`)}`
+  );
   sel.value = cur;
 }

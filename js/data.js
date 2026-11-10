@@ -242,8 +242,8 @@ function sellerHtml() {
   const isStr = m2 && locKind(m2l) === 'struct';
   const noStd = workChars().some(id => !hasStd(id));
   const tot2 = x => (x.b2 == null ? null : x.tax + x.b2);
-  return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? `<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => `<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num" title="${esc(brokerExplain(x.cid, JITA_STATION))}">${fmt(x.broker * 100, 2)}%</td>${m2 ? `<td class="num" title="${esc(brokerExplain(x.cid, m2l))}">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? `<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? '<span class="pill ok">javasolt</span>' : ''}</td></tr>`).join('')}</tbody></table></div>
-  ${isStr ? `<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %', esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l) ?? ''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>` : ''}
+  return html`<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2 ? html`<th class="num">Broker fee<div class="small muted" data-noi18n>${m2Short()}</div></th>` : ''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2 ? html`<th class="num">Összesen<div class="small muted" data-noi18n>${m2Short()}</div></th>` : ''}<th></th></tr></thead><tbody>${ss.map((x, i) => html`<tr><td>${charName(x.cid)}</td><td class="num">${fmt(x.tax * 100, 2)}%</td><td class="num" title="${brokerExplain(x.cid, JITA_STATION)}">${fmt(x.broker * 100, 2)}%</td>${m2 ? html`<td class="num" title="${brokerExplain(x.cid, m2l)}">${x.b2 != null ? fmt(x.b2 * 100, 2) + '%' : '?'}</td>` : ''}<td class="num"><b>${fmt(x.fee * 100, 2)}%</b></td>${m2 ? html`<td class="num"><b>${tot2(x) != null ? fmt(tot2(x) * 100, 2) + '%' : '?'}</b></td>` : ''}<td>${i === 0 ? html`<span class="pill ok">javasolt</span>` : ''}</td></tr>`)}</tbody></table></div>
+  ${isStr ? html`<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %', m2Short())} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l) ?? ''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>` : ''}
   <p class="small muted" style="margin-top:4px">${noStd ? T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.') : T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonos corpja és frakciója felé vett nyers standingből jönnek (a Connections és a Diplomacy a broker fee-be nem számít bele). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p></div>`;
 }
 document.addEventListener('change', e => {
@@ -260,7 +260,7 @@ document.addEventListener('change', e => {
 function redrawSellerBoxes() {
   document.querySelectorAll('.sellerbox').forEach(b => {
     const w = document.createElement('div');
-    w.innerHTML = sellerHtml();
+    setHtml(w, sellerHtml());
     if (w.firstElementChild) b.replaceWith(w.firstElementChild);
   });
 }
@@ -275,7 +275,7 @@ async function loadMarketOwners() {
 function m2Hint() {
   return m2On()
     ? ''
-    : `<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`;
+    : html`<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`;
 }
 
 /* ============ second market ============ */
@@ -493,7 +493,7 @@ function m2Cell(jita, v, buying) {
   if (v == null || !v) return '–';
   const better = jita ? (buying ? v < jita : v > jita) : false;
   const d = jita ? (v / jita - 1) * 100 : null;
-  return `<span class="${better ? 'pos' : ''}">${isk(v)}</span>${d != null ? `<div class="small muted">${d > 0 ? '+' : ''}${fmt(d, 1)}%</div>` : ''}`;
+  return html`<span class="${better ? 'pos' : ''}">${isk(v)}</span>${d != null ? html`<div class="small muted">${d > 0 ? '+' : ''}${fmt(d, 1)}%</div>` : ''}`;
 }
 // whole market of a player structure in one go (esi-markets.structure_markets.v1, needs docking rights), cached for 30 minutes
 const STRBOOKS = {},
@@ -632,7 +632,7 @@ function locClues(l) {
   if (tx) c.push(T('{0} tranzakció történt itt', tx));
   if (lt === 'other') c.push(T('egyéb hely (pl. asset safety vagy deliveries)'));
   // plain text parts (names come from ESI and from players): escaped as one string
-  return c.length ? html`<div class="src">${c.join(' · ')}</div>` : '';
+  return c.length ? html`<div class="src">${hjoin(c, ' · ')}</div>` : '';
 }
 function renderUnknownLocs() {
   const el = document.getElementById('unkLocs');
@@ -643,28 +643,34 @@ function renderUnknownLocs() {
   const nn = ls.filter(l => !(S.locNames && S.locNames[l])).length;
   const note = document.getElementById('unkNote');
   if (note)
-    note.innerHTML = nn
-      ? `<div class="notice"><p class="small">${T('{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).', nn)} <a href="#" data-goto="settings">${T('Elnevezés a Beállításokban')}</a></p></div>`
-      : '';
+    setHtml(
+      note,
+      nn
+        ? html`<div class="notice"><p class="small">${T('{0} helynek nem ismert a neve (játékos-struktúra, ahol nincs dokkolási jogod).', nn)} <a href="#" data-goto="settings">${T('Elnevezés a Beállításokban')}</a></p></div>`
+        : ''
+    );
   if (!ls.length) {
-    el.innerHTML = '';
+    setHtml(el, '');
     return;
   }
-  el.innerHTML = `<div class="tablewrap"><table><thead><tr><th>Azonosító</th><th>Mi van ott</th><th>Név</th></tr></thead><tbody>${ls
-    .map(l => {
-      const items = new Map();
-      for (const [cid, d] of Object.entries(DATA)) {
-        if (!CHARS.find(c => c.id == cid)) continue;
-        for (const a of d.assets) if (a.l === l) items.set(a.t, (items.get(a.t) || 0) + a.q);
-        for (const b of d.bps) if (b.l === l) items.set(b.t, (items.get(b.t) || 0) + 1);
+  setHtml(
+    el,
+    html`<div class="tablewrap"><table><thead><tr><th>Azonosító</th><th>Mi van ott</th><th>Név</th></tr></thead><tbody>${ls.map(
+      l => {
+        const items = new Map();
+        for (const [cid, d] of Object.entries(DATA)) {
+          if (!CHARS.find(c => c.id == cid)) continue;
+          for (const a of d.assets) if (a.l === l) items.set(a.t, (items.get(a.t) || 0) + a.q);
+          for (const b of d.bps) if (b.l === l) items.set(b.t, (items.get(b.t) || 0) + 1);
+        }
+        const top = [...items.keys()]
+          .slice(0, 5)
+          .map(t => NAMES[t] || t)
+          .join(', ');
+        return html`<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy', fmt(items.size))}${top ? ': ' + top + (items.size > 5 ? ' …' : '') : ''}${locClues(l)}</td><td><input data-locname="${l}" value="${(S.locNames && S.locNames[l]) || ''}" placeholder="${T('pl. a játék Assets ablakából')}" style="width:100%"></td></tr>`;
       }
-      const top = [...items.keys()]
-        .slice(0, 5)
-        .map(t => esc(NAMES[t] || t))
-        .join(', ');
-      return `<tr><td class="mono small">${l}</td><td class="small">${T('{0} féle tárgy', fmt(items.size))}${top ? ': ' + top + (items.size > 5 ? ' …' : '') : ''}${locClues(l)}</td><td><input data-locname="${l}" value="${esc((S.locNames && S.locNames[l]) || '')}" placeholder="${esc(T('pl. a játék Assets ablakából'))}" style="width:100%"></td></tr>`;
-    })
-    .join('')}</tbody></table></div>`;
+    )}</tbody></table></div>`
+  );
 }
 
 /* ============ containers and project material sources ============ */

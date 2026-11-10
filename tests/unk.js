@@ -4,6 +4,7 @@ const fs = require('fs');
 const html = fs.readFileSync('../dist/indyops.html', 'utf8').replace(/<link[^>]+>/g, '');
 const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.org/' });
 const w = dom.window;
+w.__htmlCheck = true;
 let evCalls = 0;
 w.fetch = async u => {
   u = String(u);

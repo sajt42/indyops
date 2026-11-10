@@ -350,29 +350,31 @@ function renderRepro() {
   if (!box) return;
   renderRepChars();
   if (!REP.rows) {
-    box.innerHTML =
-      '<p class="muted">Nyomd meg a „Készlet beolvasása” gombot. A tool végignézi a készletet, és kilistázza, mi reprocesszálható belőle.</p>';
-    $('#repLocs').innerHTML = '';
-    $('#repSum').innerHTML = '';
+    setHtml(
+      box,
+      html`<p class="muted">Nyomd meg a „Készlet beolvasása” gombot. A tool végignézi a készletet, és kilistázza, mi reprocesszálható belőle.</p>`
+    );
+    setHtml($('#repLocs'), '');
+    setHtml($('#repSum'), '');
     return;
   }
   // filters
   const locs = [...new Set(REP.rows.map(r => r.l))].sort((a, b) => locName(a).localeCompare(locName(b)));
   const ls = $('#repLoc'),
     cur = ls.value;
-  ls.innerHTML =
-    '<option value="">minden helyszín</option>' +
-    locs.map(l => `<option value="${l}">${esc(locName(l))}</option>`).join('');
+  setHtml(
+    ls,
+    html`<option value="">minden helyszín</option>${locs.map(l => html`<option value="${l}">${locName(l)}</option>`)}`
+  );
   ls.value = locs.map(String).includes(cur) ? cur : '';
   {
     const os = $('#repOwn'),
       cur2 = os.value;
     const cs = CHARS.filter(c => DATA[c.id]);
-    os.innerHTML =
-      '<option value="">' +
-      esc(T('minden karakter')) +
-      '</option>' +
-      cs.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    setHtml(
+      os,
+      html`<option value="">${T('minden karakter')}</option>${cs.map(c => html`<option value="${c.id}">${c.name}</option>`)}`
+    );
     os.value = cs.some(c => String(c.id) === cur2) ? cur2 : '';
   }
   renderRepLocs(locs);
@@ -404,36 +406,38 @@ function renderRepro() {
   const shown = pg.rows;
   REP.filtered = rows;
   const allOn = shown.length && shown.every(x => REP.sel.has(repKey(x.r)));
-  box.innerHTML = !rows.length
-    ? '<p class="muted">Nincs a szűrésnek megfelelő reprocesszálható tétel.</p>'
-    : `<div class="row" style="margin-bottom:6px"><button class="btn mini" id="repSelFilt">${T('Mind a(z) {0} szűrt tétel kijelölése', fmt(rows.length))}</button><button class="btn mini" id="repClear2">${T('Kijelölés törlése')}</button><span class="small muted">${T('{0} kijelölve', fmt(REP.sel.size))}</span></div>${pg.html}<div class="tablewrap"><table><thead><tr><th><input type="checkbox" id="repAll" ${allOn ? 'checked' : ''} aria-label="Mind kijelölése"></th>${sortTh('rep', 'name', T('Tárgy'))}${sortTh('rep', 'loc', T('Helyszín'))}${sortTh('rep', 'q', T('Db'), 1)}${sortTh('rep', 'y', T('Ki · hozam'), 1)}<th>Mi jön ki belőle</th>${sortTh('rep', 'inV', T('Egyben') + ' · Jita', 1)}${sortTh('rep', 'outV', T('Szétszedve') + ' · Jita', 1)}${m2On() ? `${sortTh('rep', 'in2', T('Egyben') + ' · ' + esc(m2Short()), 1)}${sortTh('rep', 'out2', T('Szétszedve') + ' · ' + esc(m2Short()), 1)}` : ''}${sortTh('rep', 'gain', T('Jobb'), 1)}</tr></thead><tbody>${shown
-        .map(x => {
-          const r = x.r,
-            k = repKey(r);
-          const who = x.pick
-            ? `${esc(charName(x.pick.cid))} · <span class="mono">${fmt(x.pick.y.y * 100, 1)}%</span>${r.own.has(x.pick.cid) ? '' : ` <span class="pill warn" title="${T('A tárgy másik karakternél van, át kell adni.')}">⇄</span>`}`
-            : '<span class="muted">itt nem lehet</span>';
-          const top =
-            x.out
-              .slice()
-              .sort((a, b) => b[1] * repPrice(b[0]).v - a[1] * repPrice(a[0]).v)
-              .slice(0, 4)
-              .map(([m, q]) => esc(NAMES[m] || m) + ' ' + fmt(q))
-              .join(', ') + (x.out.length > 4 ? ' …' : '');
-          const bi = Math.max(x.inV, x.in2 || 0),
-            bo = Math.max(x.outV, x.out2 || 0);
-          const where = (v, j, m) => (m2On() && m > j ? esc(m2Short()) : 'Jita');
-          const verdict =
-            !x.pick || (!bi && !bo)
-              ? ''
-              : bo > bi
-                ? `<span class="pill ok">reprocess</span><div class="small muted" data-noi18n>${where(bo, x.outV, x.out2)}</div>`
-                : `<span class="pill warn">eladás</span><div class="small muted" data-noi18n>${where(bi, x.inV, x.in2)}</div>`;
-          return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k) ? 'checked' : ''}></td><td>${esc(NAMES[r.t] || r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest ? `<div class="small muted">${T('{0} marad', fmt(x.rest))}</div>` : ''}</td><td class="small">${who}</td><td class="small">${top || '–'}</td><td class="num">${x.inV ? (repPrice(r.t).a ? '~' : '') + isk(x.inV) : '–'}</td><td class="num">${x.outV ? (x.out.some(([m]) => repPrice(m).a) ? '~' : '') + isk(x.outV) : '–'}</td>${m2On() ? `<td class="num">${x.in2 ? isk(x.in2) : '–'}</td><td class="num">${x.out2 ? isk(x.out2) : '–'}</td>` : ''}<td>${verdict}</td></tr>`;
-        })
-        .join('')}</tbody></table></div>${pg.html}
-  <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.</p>` +
-      m2Hint();
+  setHtml(
+    box,
+    !rows.length
+      ? html`<p class="muted">Nincs a szűrésnek megfelelő reprocesszálható tétel.</p>`
+      : html`<div class="row" style="margin-bottom:6px"><button class="btn mini" id="repSelFilt">${T('Mind a(z) {0} szűrt tétel kijelölése', fmt(rows.length))}</button><button class="btn mini" id="repClear2">${T('Kijelölés törlése')}</button><span class="small muted">${T('{0} kijelölve', fmt(REP.sel.size))}</span></div>${pg.html}<div class="tablewrap"><table><thead><tr><th><input type="checkbox" id="repAll" ${allOn ? 'checked' : ''} aria-label="Mind kijelölése"></th>${sortTh('rep', 'name', T('Tárgy'))}${sortTh('rep', 'loc', T('Helyszín'))}${sortTh('rep', 'q', T('Db'), 1)}${sortTh('rep', 'y', T('Ki · hozam'), 1)}<th>Mi jön ki belőle</th>${sortTh('rep', 'inV', T('Egyben') + ' · Jita', 1)}${sortTh('rep', 'outV', T('Szétszedve') + ' · Jita', 1)}${m2On() ? html`${sortTh('rep', 'in2', T('Egyben') + ' · ' + m2Short(), 1)}${sortTh('rep', 'out2', T('Szétszedve') + ' · ' + m2Short(), 1)}` : ''}${sortTh('rep', 'gain', T('Jobb'), 1)}</tr></thead><tbody>${shown.map(
+          x => {
+            const r = x.r,
+              k = repKey(r);
+            const who = x.pick
+              ? html`${charName(x.pick.cid)} · <span class="mono">${fmt(x.pick.y.y * 100, 1)}%</span>${r.own.has(x.pick.cid) ? '' : html` <span class="pill warn" title="${T('A tárgy másik karakternél van, át kell adni.')}">⇄</span>`}`
+              : html`<span class="muted">itt nem lehet</span>`;
+            const top =
+              x.out
+                .slice()
+                .sort((a, b) => b[1] * repPrice(b[0]).v - a[1] * repPrice(a[0]).v)
+                .slice(0, 4)
+                .map(([m, q]) => (NAMES[m] || m) + ' ' + fmt(q))
+                .join(', ') + (x.out.length > 4 ? ' …' : '');
+            const bi = Math.max(x.inV, x.in2 || 0),
+              bo = Math.max(x.outV, x.out2 || 0);
+            const where = (v, j, m) => (m2On() && m > j ? m2Short() : 'Jita');
+            const verdict =
+              !x.pick || (!bi && !bo)
+                ? ''
+                : bo > bi
+                  ? html`<span class="pill ok">reprocess</span><div class="small muted" data-noi18n>${where(bo, x.outV, x.out2)}</div>`
+                  : html`<span class="pill warn">eladás</span><div class="small muted" data-noi18n>${where(bi, x.inV, x.in2)}</div>`;
+            return html`<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k) ? 'checked' : ''}></td><td>${NAMES[r.t] || r.t}</td><td class="small">${locName(r.l)}</td><td class="num">${fmt(r.q)}${x.rest ? html`<div class="small muted">${T('{0} marad', fmt(x.rest))}</div>` : ''}</td><td class="small">${who}</td><td class="small">${top || '–'}</td><td class="num">${x.inV ? (repPrice(r.t).a ? '~' : '') + isk(x.inV) : '–'}</td><td class="num">${x.outV ? (x.out.some(([m]) => repPrice(m).a) ? '~' : '') + isk(x.outV) : '–'}</td>${m2On() ? html`<td class="num">${x.in2 ? isk(x.in2) : '–'}</td><td class="num">${x.out2 ? isk(x.out2) : '–'}</td>` : ''}<td>${verdict}</td></tr>`;
+          }
+        )}</tbody></table></div>${pg.html}
+  <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.</p>${m2Hint()}`
+  );
   renderRepSum();
 }
 function renderRepChars() {
@@ -441,7 +445,7 @@ function renderRepChars() {
   if (!el) return;
   const cs = workChars().map(id => CHARS.find(c => c.id === id));
   if (!cs.length) {
-    el.innerHTML = '<p class="muted">Még nincs karakter.</p>';
+    setHtml(el, html`<p class="muted">Még nincs karakter.</p>`);
     return;
   }
   const cfg = repCfg();
@@ -451,20 +455,26 @@ function renderRepChars() {
     [2, 'RX-802 (2%)'],
     [4, 'RX-804 (4%)']
   ];
-  el.innerHTML = `<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs
-    .map(
+  setHtml(
+    el,
+    html`<div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Reprocessing</th><th class="num" title="Reprocessing Efficiency">Efficiency</th><th class="num" title="Scrapmetal Processing">Scrapmetal</th><th>Implant</th></tr></thead><tbody>${cs.map(
       c =>
-        `<tr><td>${esc(c.name)}</td><td class="num">${lvlOf(c.id, SK.repro)}</td><td class="num">${lvlOf(c.id, SK.reproEff)}</td><td class="num">${lvlOf(c.id, SCRAP)}</td><td>${(() => {
+        html`<tr><td>${c.name}</td><td class="num">${lvlOf(c.id, SK.repro)}</td><td class="num">${lvlOf(c.id, SK.reproEff)}</td><td class="num">${lvlOf(c.id, SCRAP)}</td><td>${(() => {
           const man = cfg.imp[c.id];
           const isMan = man != null && man !== '' && man !== 'auto';
           const a = impAuto(c.id);
           const an = a == null ? T('nem ismert') : (imps.find(x => x[0] === a) || [0, a + '%'])[1];
-          return `<select data-imp="${c.id}"><option value="auto" ${isMan ? '' : 'selected'}>${esc(T('ESI szerint: {0}', an))}</option>${imps.map(([v, n]) => `<option value="${v}" ${isMan && Number(man) === v ? 'selected' : ''}>${n}</option>`).join('')}</select>${a == null ? `<div class="small muted">${T('Jelentkezz be újra, hogy az implant automatikus legyen.')}</div>` : ''}`;
+          return html`<select data-imp="${c.id}"><option value="auto" ${isMan ? '' : 'selected'}>${T('ESI szerint: {0}', an)}</option>${hjoin(
+            imps.map(
+              ([v, n]) => html`<option value="${v}" ${isMan && Number(man) === v ? 'selected' : ''}>${n}</option>`
+            ),
+            ''
+          )}</select>${a == null ? html`<div class="small muted">${T('Jelentkezz be újra, hogy az implant automatikus legyen.')}</div>` : ''}`;
         })()}</td></tr>`
-    )
-    .join('')}</tbody></table></div>
-  <div class="row" style="margin-top:8px"><label>Ki reprocesszál <select id="repWho"><option value="">a legjobb hozamú karakter</option>${cs.map(c => `<option value="${c.id}" ${String(cfg.char) === String(c.id) ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label></div>
-  <p class="small muted" style="margin-top:6px">Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.</p>`;
+    )}</tbody></table></div>
+  <div class="row" style="margin-top:8px"><label>Ki reprocesszál <select id="repWho"><option value="">a legjobb hozamú karakter</option>${cs.map(c => html`<option value="${c.id}" ${String(cfg.char) === String(c.id) ? 'selected' : ''}>${c.name}</option>`)}</select></label></div>
+  <p class="small muted" style="margin-top:6px">Az érc- és ice-feldolgozó skilleket (pl. Simple Ore Processing) tárgyanként veszi figyelembe. Az implantot az ESI-ből olvassa (az aktív klónból); ha reprocesszáláshoz klónt váltasz, itt kézzel is beállíthatod. Modulra és lootra csak a Scrapmetal Processing hat.</p>`
+  );
 }
 function renderRepLocs(locs) {
   const el = $('#repLocs');
@@ -479,42 +489,46 @@ function renderRepLocs(locs) {
             ? NAMES[L.st] || 'Upwell'
             : 'Upwell'
           : T('űrben – itt nem lehet');
-  el.innerHTML = `<div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Típus</th><th class="num">Sec</th><th>Rig</th><th class="num">Adó %</th><th class="num">Alap %</th><th class="num">Érc hozam</th><th class="num">Loot hozam</th></tr></thead><tbody>${locs
-    .map(l => {
-      const L = locStats(l);
-      const c = repCfg().loc[l] || {};
-      const best = ti => {
-        let b = null;
-        for (const cid of cs) {
-          const y = repYield(cid, l, ti);
-          if (y && (!b || y.y > b.y)) b = { y: y.y, cid, tax: y.tax };
-        }
-        return b;
-      };
-      const yo = best({ rs: -1, c: 25, tm: [] }),
-        yl = best({ rs: null, c: 7, tm: [] });
-      const show = b =>
-        b
-          ? `<span class="mono">${fmt(b.y * 100, 1)}%</span><div class="small muted">${cs.length > 1 ? esc(charName(b.cid)) + ' · ' : ''}${T('adó {0}%', fmt(b.tax, 2))}</div>`
-          : '–';
-      return `<tr><td>${esc(locName(l))}</td><td class="small">${esc(kindName(L))}</td><td class="num">${L.sec != null ? fmt(L.sec, 2) : '–'}</td>
+  setHtml(
+    el,
+    html`<div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Típus</th><th class="num">Sec</th><th>Rig</th><th class="num">Adó %</th><th class="num">Alap %</th><th class="num">Érc hozam</th><th class="num">Loot hozam</th></tr></thead><tbody>${locs.map(
+      l => {
+        const L = locStats(l);
+        const c = repCfg().loc[l] || {};
+        const best = ti => {
+          let b = null;
+          for (const cid of cs) {
+            const y = repYield(cid, l, ti);
+            if (y && (!b || y.y > b.y)) b = { y: y.y, cid, tax: y.tax };
+          }
+          return b;
+        };
+        const yo = best({ rs: -1, c: 25, tm: [] }),
+          yl = best({ rs: null, c: 7, tm: [] });
+        const show = b =>
+          b
+            ? html`<span class="mono">${fmt(b.y * 100, 1)}%</span><div class="small muted">${cs.length > 1 ? charName(b.cid) + ' · ' : ''}${T('adó {0}%', fmt(b.tax, 2))}</div>`
+            : '–';
+        return html`<tr><td>${locName(l)}</td><td class="small">${kindName(L)}</td><td class="num">${L.sec != null ? fmt(L.sec, 2) : '–'}</td>
     <td>${
       L.k === 'struct'
-        ? `<select data-rig="${l}">${[
-            [0, 'nincs'],
-            [1, 'T1'],
-            [3, 'T2']
-          ]
-            .map(([v, n]) => `<option value="${v}" ${L.rig === v ? 'selected' : ''}>${n}</option>`)
-            .join('')}</select>`
-        : '<span class="muted">–</span>'
+        ? html`<select data-rig="${l}">${hjoin(
+            [
+              [0, 'nincs'],
+              [1, 'T1'],
+              [3, 'T2']
+            ].map(([v, n]) => html`<option value="${v}" ${L.rig === v ? 'selected' : ''}>${n}</option>`),
+            ''
+          )}</select>`
+        : html`<span class="muted">–</span>`
     }</td>
-    <td class="num">${L.k === 'none' || L.k === 'nosvc' ? '–' : `<input type="number" step="0.1" min="0" max="100" style="width:70px" data-tax="${l}" value="${c.tax != null && c.tax !== '' ? c.tax : ''}" placeholder="${fmt(L.taxAuto, 1)}">`}</td>
-    <td class="num">${L.k === 'npc' ? `<input type="number" step="1" min="0" max="100" style="width:60px" data-base="${l}" value="${c.base != null && c.base !== '' ? c.base : ''}" placeholder="${fmt(L.baseAuto, 0)}">` : L.k === 'struct' ? '50' : '–'}</td>
+    <td class="num">${L.k === 'none' || L.k === 'nosvc' ? '–' : html`<input type="number" step="0.1" min="0" max="100" style="width:70px" data-tax="${l}" value="${c.tax != null && c.tax !== '' ? c.tax : ''}" placeholder="${fmt(L.taxAuto, 1)}">`}</td>
+    <td class="num">${L.k === 'npc' ? html`<input type="number" step="1" min="0" max="100" style="width:60px" data-base="${l}" value="${c.base != null && c.base !== '' ? c.base : ''}" placeholder="${fmt(L.baseAuto, 0)}">` : L.k === 'struct' ? '50' : '–'}</td>
     <td class="num">${show(yo)}</td><td class="num">${show(yl)}</td></tr>`;
-    })
-    .join('')}</tbody></table></div>
-  <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`;
+      }
+    )}</tbody></table></div>
+  <p class="small muted" style="margin-top:6px">Érc hozam: érc-feldolgozó skill nélkül számolva, a tárgyankénti skill a listában benne van. Upwell struktúránál az alap 50%, plusz a rig (T1 +1, T2 +3), a rendszer biztonsága (lowsec +6%, null és WH +12%, csak riggel) és a struktúra bónusza (Athanor +2%, Tatara +5,5%). NPC állomásnál az alaphozamot, az alapadót és azt, hogy van-e ott reprocessing, az ESI-ből veszi; az adót karakterenként a tulaj corp felé vett standinggel csökkenti (6,67-nél 0%); kézzel felülírhatod. A struktúra rigjét és adóját az ESI nem adja ki, azt neked kell beállítani. Az adót a kinyert anyagból vonja le.</p>`
+  );
 }
 // Sums the selected rows: materials out, values in and out (Jita and the second market; a: some value is
 // approximate), rows that cannot be reprocessed where they are (none), and who reprocesses where (steps).
@@ -555,54 +569,59 @@ function repCoverHtml(mats) {
   if (typeof LASTPLAN === 'undefined' || !LASTPLAN) return '';
   const need = [...LASTPLAN.buyList].filter(([t]) => mats.has(t));
   return need.length
-    ? `<h3>${T('A „{0}” terv hiányából', esc(LASTPLAN.title || ''))}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need
-        .map(([t, q]) => {
+    ? html`<h3>${T('A „{0}” terv hiányából', LASTPLAN.title || '')}</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Hiány</th><th class="num">Reprocessből</th><th class="num">Fedezet</th></tr></thead><tbody>${need.map(
+        ([t, q]) => {
           const b = mats.get(t) || 0;
-          return `<tr><td>${esc(NAMES[t] || t)}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span></td></tr>`;
-        })
-        .join('')}</tbody></table></div>`
-    : `<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.', esc(LASTPLAN.title || ''))}</p>`;
+          return html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${fmt(b)}</td><td class="num"><span class="pill ${b >= q ? 'ok' : 'warn'}">${fmt(Math.min(100, (b / q) * 100))}%</span></td></tr>`;
+        }
+      )}</tbody></table></div>`
+    : html`<p class="small muted">${T('A „{0}” terv hiányában nincs olyan anyag, ami ebből kijön.', LASTPLAN.title || '')}</p>`;
 }
 // materials that come out, most valuable first
 function repOutHtml(Q) {
   const { mats, outV, out2, a } = Q;
   const ml = [...mats].sort((x, y) => y[1] * repPrice(y[0]).v - x[1] * repPrice(x[0]).v);
-  return `<h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num" data-noi18n>Jita sell</th>${m2On() ? `<th class="num" data-noi18n>${esc(m2Short())} sell</th>` : ''}</tr></thead><tbody>${ml
-    .map(([m, q]) => {
+  return html`<h3>Mi jön ki</h3><div class="tablewrap"><table><thead><tr><th>Anyag</th><th class="num">Mennyiség</th><th class="num" data-noi18n>Jita sell</th>${m2On() ? html`<th class="num" data-noi18n>${m2Short()} sell</th>` : ''}</tr></thead><tbody>${ml.map(
+    ([m, q]) => {
       const p = repPrice(m);
-      return `<tr><td>${esc(NAMES[m] || m)}</td><td class="num">${fmt(q)}</td><td class="num">${p.a ? '~' : ''}${isk(q * p.v)}</td>${m2On() ? `<td class="num">${sell2(m) ? isk(q * sell2(m)) : '–'}</td>` : ''}</tr>`;
-    })
-    .join('')}
-  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a ? '~' : ''}${isk(outV)}</b></td>${m2On() ? `<td class="num"><b>${isk(out2)}</b></td>` : ''}</tr></tbody></table></div>`;
+      return html`<tr><td>${NAMES[m] || m}</td><td class="num">${fmt(q)}</td><td class="num">${p.a ? '~' : ''}${isk(q * p.v)}</td>${m2On() ? html`<td class="num">${sell2(m) ? isk(q * sell2(m)) : '–'}</td>` : ''}</tr>`;
+    }
+  )}
+  <tr><td><b>Összesen</b></td><td></td><td class="num"><b>${a ? '~' : ''}${isk(outV)}</b></td>${m2On() ? html`<td class="num"><b>${isk(out2)}</b></td>` : ''}</tr></tbody></table></div>`;
 }
 // selling the items as they are vs. reprocessing them, per market (gross values)
 function repCompareHtml(Q) {
   const { inV, outV, in2, out2, a } = Q;
   const mk = [['Jita', inV, outV, a]].concat(m2On() ? [[m2Short(), in2, out2, false]] : []);
-  return `<h3>Eladás vagy reprocess</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Piac</th><th class="num">Egyben eladva</th><th class="num">Szétszedve</th><th>Jobb</th></tr></thead><tbody>${mk.map(([n, i, o, ap]) => `<tr><td data-noi18n>${esc(n)}</td><td class="num">${ap ? '~' : ''}${i ? isk(i) : '–'}</td><td class="num">${ap ? '~' : ''}${o ? isk(o) : '–'}</td><td>${!i && !o ? '' : o > i ? `<span class="pill ok">${T('reprocess +{0}', isk(o - i))}</span>` : `<span class="pill warn">${T('eladás +{0}', isk(i - o))}</span>`}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.</p>`;
+  return html`<h3>Eladás vagy reprocess</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Piac</th><th class="num">Egyben eladva</th><th class="num">Szétszedve</th><th>Jobb</th></tr></thead><tbody>${mk.map(([n, i, o, ap]) => html`<tr><td data-noi18n>${n}</td><td class="num">${ap ? '~' : ''}${i ? isk(i) : '–'}</td><td class="num">${ap ? '~' : ''}${o ? isk(o) : '–'}</td><td>${!i && !o ? '' : o > i ? html`<span class="pill ok">${T('reprocess +{0}', isk(o - i))}</span>` : html`<span class="pill warn">${T('eladás +{0}', isk(i - o))}</span>`}</td></tr>`)}</tbody></table></div><p class="small muted" style="margin-top:4px">Bruttó értékek, az eladási díjak nélkül; a két oldalt ugyanúgy terhelnék.</p>`;
 }
 function repWhereHtml(Q) {
   const { steps } = Q;
-  return `<h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s => `<tr><td>${esc(locName(s.l))}</td><td>${esc(charName(s.cid))}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size ? T('Át kell adni tőle: {0}', [...s.from].map(charName).join(', ')) : ''}</td></tr>`).join('')}</tbody></table></div>`;
+  return html`<h3>Hol és ki</h3><div class="tablewrap"><table><thead><tr><th>Helyszín</th><th>Karakter</th><th class="num">Tétel</th><th>Megjegyzés</th></tr></thead><tbody>${[...steps.values()].map(s => html`<tr><td>${locName(s.l)}</td><td>${charName(s.cid)}</td><td class="num">${fmt(s.n)}</td><td class="small">${s.from.size ? T('Át kell adni tőle: {0}', [...s.from].map(charName).join(', ')) : ''}</td></tr>`)}</tbody></table></div>`;
 }
 function renderRepSum() {
   const el = $('#repSum');
   const sel = (REP.rows || []).filter(r => REP.sel.has(repKey(r)));
   if (!sel.length) {
-    el.innerHTML =
-      '<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>';
+    setHtml(
+      el,
+      html`<p class="muted">Jelölj ki tételeket a listában (vagy a fejlécben mindet), és itt összesíti, mi jön ki belőlük.</p>`
+    );
     return;
   }
   const Q = repSummary(sel);
-  el.innerHTML = `<div class="row"><b>${T('{0} tétel kijelölve', fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On() ? T('Jita és {0} árak a kijelöltekre', esc(m2Short())) : T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
+  setHtml(
+    el,
+    html`<div class="row"><b>${T('{0} tétel kijelölve', fmt(sel.length))}</b><button class="btn" id="repPrice">${m2On() ? T('Jita és {0} árak a kijelöltekre', m2Short()) : T('Jita árak a kijelöltekre')}</button><button class="btn" id="repClear">Kijelölés törlése</button></div>
   <div class="grid2" style="margin-top:10px"><div>
   ${repOutHtml(Q)}
   ${repCompareHtml(Q)}
   ${sellerHtml()}
-  ${Q.none ? `<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).', Q.none)}</p>` : ''}
+  ${Q.none ? html`<p class="small muted">${T('{0} tétel olyan helyen van, ahol nem lehet reprocesszálni (pl. űrben).', Q.none)}</p>` : ''}
   </div><div>
   ${repWhereHtml(Q)}
-  ${repCoverHtml(Q.mats)}</div></div>`;
+  ${repCoverHtml(Q.mats)}</div></div>`
+  );
 }
 // events
 (function () {

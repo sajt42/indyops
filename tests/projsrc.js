@@ -5,6 +5,7 @@ const html = fs.readFileSync('../dist/indyops.html', 'utf8').replace(/<link[^>]+
 const fx = JSON.parse(fs.readFileSync('fixture.json', 'utf8'));
 const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.org/' });
 const w = dom.window;
+w.__htmlCheck = true;
 w.fetch = async u => {
   u = String(u);
   const J = d => ({

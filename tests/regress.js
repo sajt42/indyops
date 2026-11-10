@@ -23,6 +23,7 @@ let failPrice = new Set(),
   sec = {};
 const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.org/' });
 const w = dom.window;
+w.__htmlCheck = true;
 let hang = null,
   tokenHang = false;
 w.fetch = async (u, o) => {

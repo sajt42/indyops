@@ -5,7 +5,7 @@ let INVROWS = [],
   INVSKIP = [];
 async function runInvention() {
   const out = $('#ivOut');
-  out.innerHTML = '<div class="card muted">Receptek betöltése…</div>';
+  setHtml(out, html`<div class="card muted">Receptek betöltése…</div>`);
   await indexBPProducts();
   const t1s = [...new Set(allBPs().map(b => b.t))];
   await Promise.all(t1s.map(t => refGet('b', t)));
@@ -14,7 +14,7 @@ async function runInvention() {
     return b && b.i && b.i.p && b.i.p.length;
   });
   if (!cands.length) {
-    out.innerHTML = '<div class="card muted">Egyik saját blueprintedből sem lehet inventálni.</div>';
+    setHtml(out, html`<div class="card muted">Egyik saját blueprintedből sem lehet inventálni.</div>`);
     return;
   }
   const decOpts = [null, ...Object.keys(DECS).map(Number)];
@@ -99,10 +99,10 @@ async function runInvention() {
 function renderInvention() {
   const out = $('#ivOut');
   const skipHtml = INVSKIP.length
-    ? `<details style="margin-top:10px"><summary>${INVSKIP.length} tételt kihagytam</summary><ul class="small muted">${INVSKIP.map(x => '<li>' + esc(x) + '</li>').join('')}</ul></details>`
+    ? html`<details style="margin-top:10px"><summary>${INVSKIP.length} tételt kihagytam</summary><ul class="small muted">${INVSKIP.map(x => html`<li>${x}</li>`)}</ul></details>`
     : '';
   if (!INVROWS.length) {
-    out.innerHTML = '<div class="card muted">Nincs számolható invention.</div>' + skipHtml;
+    setHtml(out, html`<div class="card muted">Nincs számolható invention.</div>${skipHtml}`);
     return;
   }
   if (!SRT.inv) SRT.inv = { f: 'profit', d: -1 };
@@ -125,18 +125,18 @@ function renderInvention() {
   };
   const pg = pageOf('inv', sortRows('inv', INVROWS.slice(), ig), String(INVROWS.length), renderInvention);
   const rows = pg.rows;
-  out.innerHTML =
-    `${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('inv', 'name', T('T2 termék'))}${sortTh('inv', 't1', T('T1 BP'))}${sortTh('inv', 'dec', T('Legjobb decryptor'))}${sortTh('inv', 'chance', T('Esély'), 1)}${sortTh('inv', 'runs', T('Run / BPC'), 1)}${sortTh('inv', 'me', T('ME / TE'), 1)}${sortTh('inv', 'cost', T('Invention költség / BPC'), 1)}${sortTh('inv', 'profit', T('Profit / BPC'), 1)}${sortTh('inv', 'perRun', T('Profit / run'), 1)}${sortTh('inv', 'none', T('Decryptor nélkül / BPC'), 1)}${sortTh('inv', 'vol', T('Napi forgalom'), 1)}<th></th></tr></thead><tbody>${rows
-      .map(g => {
+  setHtml(
+    out,
+    html`${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('inv', 'name', T('T2 termék'))}${sortTh('inv', 't1', T('T1 BP'))}${sortTh('inv', 'dec', T('Legjobb decryptor'))}${sortTh('inv', 'chance', T('Esély'), 1)}${sortTh('inv', 'runs', T('Run / BPC'), 1)}${sortTh('inv', 'me', T('ME / TE'), 1)}${sortTh('inv', 'cost', T('Invention költség / BPC'), 1)}${sortTh('inv', 'profit', T('Profit / BPC'), 1)}${sortTh('inv', 'perRun', T('Profit / run'), 1)}${sortTh('inv', 'none', T('Decryptor nélkül / BPC'), 1)}${sortTh('inv', 'vol', T('Napi forgalom'), 1)}<th></th></tr></thead><tbody>${rows.map(
+      g => {
         const r = g.best;
         if (!r) return '';
         const unsure = r.noPrice.length > 0;
-        return `<tr><td>${esc(NAMES[r.prod] || r.prod)}${r.price ? `<div class="src">Jita ${isk(r.price)}${m2On() && sell2(r.prod) ? ' · ' + esc(m2Short()) + ' ' + isk(sell2(r.prod)) : ''}</div>` : ''}${r.price ? '' : ' <span class="pill warn">nincs Jita ár</span>'}${unsure ? `<div class="src">${T('Nincs Jita ára: {0}', esc(r.noPrice.map(t => NAMES[t] || t).join(', ')))}</div>` : ''}</td><td class="small">${esc(NAMES[r.t1] || r.t1)}<br>${r.copy.r === -1 ? 'BPO' : 'BPC ' + r.copy.r + ' run'} · ${esc(charName(r.copy.cid))}</td><td class="small">${r.dec ? esc(DECS[r.dec].n) : 'nincs'}</td><td class="num">${fmt(r.info.chance * 100, 1)}%</td><td class="num">${fmt(r.info.runsPer)}</td><td class="num">${r.info.me} / ${r.info.te}</td><td class="num">${isk(r.invCost)}</td><td class="num ${unsure ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${unsure ? '? ' : ''}${isk(r.profit)}</td><td class="num">${isk(r.perRun)}</td><td class="num">${g.none ? isk(g.none.profit) : '–'}</td><td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}</td><td><button class="btn mini" data-invadd="${r.t1}" data-invdec="${r.dec || ''}" data-invt2="${r.t2}" data-invruns="${r.info.runsPer}" data-invpi="${r.info.pi || 0}">+ projekt</button></td></tr>`;
-      })
-      .join('')}</tbody></table></div>${pg.html}
-  <p class="small muted" style="margin-top:6px">Az esélyt a legjobb skillű karaktered skilljeivel számolja (két science skill és az encryption skill). Az invention költsége átlagos értékre van számolva: datacore-ok, decryptor, invention job és T1 copy job, osztva az eséllyel. A T2 gyártás anyagköltsége a teljes anyagfával, piaci áron számít. A „+ projekt” egy BPC-nyi runt ad a kiválasztott projekthez a legjobb decryptorral.</p>` +
-    m2Hint() +
-    skipHtml;
+        return html`<tr><td>${NAMES[r.prod] || r.prod}${r.price ? html`<div class="src">Jita ${isk(r.price)}${m2On() && sell2(r.prod) ? ' · ' + m2Short() + ' ' + isk(sell2(r.prod)) : ''}</div>` : ''}${r.price ? '' : html` <span class="pill warn">nincs Jita ár</span>`}${unsure ? html`<div class="src">${T('Nincs Jita ára: {0}', r.noPrice.map(t => NAMES[t] || t).join(', '))}</div>` : ''}</td><td class="small">${NAMES[r.t1] || r.t1}<br>${r.copy.r === -1 ? 'BPO' : 'BPC ' + r.copy.r + ' run'} · ${charName(r.copy.cid)}</td><td class="small">${r.dec ? DECS[r.dec].n : 'nincs'}</td><td class="num">${fmt(r.info.chance * 100, 1)}%</td><td class="num">${fmt(r.info.runsPer)}</td><td class="num">${r.info.me} / ${r.info.te}</td><td class="num">${isk(r.invCost)}</td><td class="num ${unsure ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${unsure ? '? ' : ''}${isk(r.profit)}</td><td class="num">${isk(r.perRun)}</td><td class="num">${g.none ? isk(g.none.profit) : '–'}</td><td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}</td><td><button class="btn mini" data-invadd="${r.t1}" data-invdec="${r.dec || ''}" data-invt2="${r.t2}" data-invruns="${r.info.runsPer}" data-invpi="${r.info.pi || 0}">+ projekt</button></td></tr>`;
+      }
+    )}</tbody></table></div>${pg.html}
+  <p class="small muted" style="margin-top:6px">Az esélyt a legjobb skillű karaktered skilljeivel számolja (két science skill és az encryption skill). Az invention költsége átlagos értékre van számolva: datacore-ok, decryptor, invention job és T1 copy job, osztva az eséllyel. A T2 gyártás anyagköltsége a teljes anyagfával, piaci áron számít. A „+ projekt” egy BPC-nyi runt ad a kiválasztott projekthez a legjobb decryptorral.</p>${m2Hint()}${skipHtml}`
+  );
   out.querySelectorAll('[data-invadd]').forEach(b =>
     b.addEventListener('click', () => {
       let p = PROJ.find(x => x.id === SELP);

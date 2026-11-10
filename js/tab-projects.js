@@ -12,36 +12,46 @@ function bpTypeByName(n) {
   return b ? b.t : null;
 }
 function renderProjects() {
-  $('#pList').innerHTML = PROJ.length
-    ? PROJ.map(
-        (p, i) =>
-          `<div class="prow ${p.id === SELP ? 'sel' : ''}" data-pid="${p.id}"><label class="inline" title="Aktív: beleszámít az összesített tervbe"><input type="checkbox" data-pact="${p.id}" ${p.active ? 'checked' : ''}></label><button class="plink" data-psel="${p.id}">${esc(p.name)}<span class="small muted"> · ${p.items.length} tétel${p.src && p.src.mode === 'sel' ? ' · 📦' : ''}</span></button><span class="pord"><button class="btn mini" data-pup="${i}" ${i === 0 ? 'disabled' : ''} aria-label="Feljebb">▲</button><button class="btn mini" data-pdown="${i}" ${i === PROJ.length - 1 ? 'disabled' : ''} aria-label="Lejjebb">▼</button></span></div>`
-      ).join('')
-    : '<p class="small muted">Még nincs projekt. Adj egy nevet, pl. „Orca rendelés”, és hozd létre.</p>';
+  setHtml(
+    $('#pList'),
+    PROJ.length
+      ? hjoin(
+          PROJ.map(
+            (p, i) =>
+              html`<div class="prow ${p.id === SELP ? 'sel' : ''}" data-pid="${p.id}"><label class="inline" title="Aktív: beleszámít az összesített tervbe"><input type="checkbox" data-pact="${p.id}" ${p.active ? 'checked' : ''}></label><button class="plink" data-psel="${p.id}">${p.name}<span class="small muted"> · ${p.items.length} tétel${p.src && p.src.mode === 'sel' ? ' · 📦' : ''}</span></button><span class="pord"><button class="btn mini" data-pup="${i}" ${i === 0 ? 'disabled' : ''} aria-label="Feljebb">▲</button><button class="btn mini" data-pdown="${i}" ${i === PROJ.length - 1 ? 'disabled' : ''} aria-label="Lejjebb">▼</button></span></div>`
+          ),
+          ''
+        )
+      : html`<p class="small muted">Még nincs projekt. Adj egy nevet, pl. „Orca rendelés”, és hozd létre.</p>`
+  );
   const p = PROJ.find(x => x.id === SELP);
   const ed = $('#pEdit');
   if (!p) {
-    ed.innerHTML = '<h2>Projekt</h2><p class="muted">Válassz vagy hozz létre egy projektet a bal oldalon.</p>';
+    setHtml(ed, html`<h2>Projekt</h2><p class="muted">Válassz vagy hozz létre egy projektet a bal oldalon.</p>`);
     return;
   }
-  ed.innerHTML = `<div class="row" style="justify-content:space-between"><label style="flex:1;min-width:200px">Projekt neve<input id="pName" value="${esc(p.name)}"></label><button class="btn" id="pDel">Projekt törlése</button></div>
-  <div id="pDelConfirm" class="notice err" hidden><p>${T('Biztosan törlöd a(z) „{0}” projektet?', esc(p.name))}</p><div class="row"><button class="btn primary" id="pDelYes">Igen, törlöm</button><button class="btn" id="pDelNo">Mégse</button></div></div>
+  setHtml(
+    ed,
+    html`<div class="row" style="justify-content:space-between"><label style="flex:1;min-width:200px">Projekt neve<input id="pName" value="${p.name}"></label><button class="btn" id="pDel">Projekt törlése</button></div>
+  <div id="pDelConfirm" class="notice err" hidden><p>${T('Biztosan törlöd a(z) „{0}” projektet?', p.name)}</p><div class="row"><button class="btn primary" id="pDelYes">Igen, törlöm</button><button class="btn" id="pDelNo">Mégse</button></div></div>
   <h3>Tételek</h3><div class="tablewrap"><table><thead><tr><th>Blueprint</th><th class="num">Run</th><th>Saját példányok</th><th>Nyersanyag</th><th></th></tr></thead><tbody>${
-    p.items
-      .map((it, i) => {
+    hjoin(
+      p.items.map((it, i) => {
         if (it.invT1) {
           const c1 = copiesOf(it.invT1);
-          return `<tr><td>${esc(NAMES[it.t2] || 'T2 BPC')} <span class="pill">invention</span><div class="src">${esc(it.dec ? DECS[it.dec].n : 'decryptor nélkül')}</div></td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${c1.length ? 'T1: ' + esc(NAMES[it.invT1] || it.invT1) + ' · ' + (c1[0].r === -1 ? 'BPO' : 'BPC ' + c1[0].r + ' run') : '<span class="pill bad">nincs T1 BP</span>'}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
+          return html`<tr><td>${NAMES[it.t2] || 'T2 BPC'} <span class="pill">invention</span><div class="src">${it.dec ? DECS[it.dec].n : 'decryptor nélkül'}</div></td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${c1.length ? 'T1: ' + (NAMES[it.invT1] || it.invT1) + ' · ' + (c1[0].r === -1 ? 'BPO' : 'BPC ' + c1[0].r + ' run') : html`<span class="pill bad">nincs T1 BP</span>`}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
         }
         const cp = copiesOf(it.bpType);
         const runs = cp.reduce((s, c) => (c.r === -1 ? Infinity : s + c.r), 0);
-        return `<tr><td>${esc(NAMES[it.bpType] || it.bpType)}</td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${cp.length ? cp.length + ' db · legjobb: ' + (cp[0].r === -1 ? 'BPO' : 'BPC') + ' ME' + cp[0].me + (runs !== Infinity ? ' · összesen ' + runs + ' run' + (runs < it.runs ? ' <span class="pill bad">kevés</span>' : '') : '') : '<span class="pill bad">nincs saját példány</span>'}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
-      })
-      .join('') || '<tr><td colspan="5" class="muted">Még nincs tétel.</td></tr>'
+        return html`<tr><td>${NAMES[it.bpType] || it.bpType}</td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${cp.length ? cp.length + ' db · legjobb: ' + (cp[0].r === -1 ? 'BPO' : 'BPC') + ' ME' + cp[0].me + (runs !== Infinity ? ' · összesen ' + runs + ' run' + (runs < it.runs ? html` <span class="pill bad">kevés</span>` : '') : '') : html`<span class="pill bad">nincs saját példány</span>`}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
+      }),
+      ''
+    ) || html`<tr><td colspan="5" class="muted">Még nincs tétel.</td></tr>`
   }</tbody></table></div>
   ${projSrcHtml(p)}
   <div class="row" style="margin-top:10px"><label style="flex:1;min-width:220px">Új tétel (saját BP)<input id="pItemName" list="bpOptions" placeholder="pl. Hurricane Blueprint"></label><label>Run<input type="number" id="pItemRuns" min="1" value="1"></label><button class="btn" id="pItemAdd">Hozzáadás</button></div>
-  <div class="row" style="margin-top:14px"><button class="btn primary" id="pCalc">Ennek a projektnek a számolása</button></div>`;
+  <div class="row" style="margin-top:14px"><button class="btn primary" id="pCalc">Ennek a projektnek a számolása</button></div>`
+  );
   $('#pName').addEventListener('change', e => {
     p.name = e.target.value.trim() || p.name;
     saveP();
@@ -84,17 +94,17 @@ function renderProjects() {
 /* ---- project material sources ---- */
 function itemSrcSel(it, i) {
   const sel = it.src && it.src.mode === 'sel';
-  return `<select data-isrc="${i}"><option value="">${T('projekt szerint')}</option><option value="sel" ${sel ? 'selected' : ''}>${T('saját források')}</option></select>`;
+  return html`<select data-isrc="${i}"><option value="">${T('projekt szerint')}</option><option value="sel" ${sel ? 'selected' : ''}>${T('saját források')}</option></select>`;
 }
 function itemSrcRow(it, i, p) {
   if (!(it.src && it.src.mode === 'sel')) return '';
-  return `<tr class="srcrow"><td colspan="5">${srcEditor(it.src, 'i' + i, false, p.id)}</td></tr>`;
+  return html`<tr class="srcrow"><td colspan="5">${srcEditor(it.src, 'i' + i, false, p.id)}</td></tr>`;
 }
 function projSrcHtml(p) {
   const s = p.src || { mode: 'all' };
   const sel = s.mode === 'sel';
-  return `<h3>Nyersanyag-források</h3><div class="row"><label class="inline"><input type="radio" name="psrcm" value="all" ${sel ? '' : 'checked'}> Mindenhonnan (a Beállításokban kijelölt helyekről)</label><label class="inline"><input type="radio" name="psrcm" value="sel" ${sel ? 'checked' : ''}> Kiválasztott forrásokból</label></div>
-  ${sel ? srcEditor(s, 'p', true, p.id) : '<p class="small muted">A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.</p>'}`;
+  return html`<h3>Nyersanyag-források</h3><div class="row"><label class="inline"><input type="radio" name="psrcm" value="all" ${sel ? '' : 'checked'}> Mindenhonnan (a Beállításokban kijelölt helyekről)</label><label class="inline"><input type="radio" name="psrcm" value="sel" ${sel ? 'checked' : ''}> Kiválasztott forrásokból</label></div>
+  ${sel ? srcEditor(s, 'p', true, p.id) : html`<p class="small muted">A projekt a közös készletből dolgozik, prioritás szerint a többi aktív projekttel együtt. Válts a „Kiválasztott forrásokból” módra, ha a projektnek saját állomása, konténere vagy foglalt doboza van.</p>`}`;
 }
 function srcEditor(spec, key, withExcl, pid) {
   const all = allConts();
@@ -130,26 +140,27 @@ function srcEditor(spec, key, withExcl, pid) {
   };
   const contRow = (c, d) => {
     const other = resv.has(c.id) && resv.get(c.id) !== pid;
-    return (
-      `<div class="srcc" style="padding-left:${22 + d * 18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id) ? 'checked' : ''}> ${esc(contLabel(c.id, all))}</label> <span class="small muted">${esc(charName(c.cid))} · ${T('{0} féle tárgy', fmt((ckinds.get(c.id) || new Set()).size))}</span>${withExcl ? ` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id) ? 'checked' : ''}> ${T('csak ez a projekt')}</label>` : ''}${other ? ` <span class="pill warn">${T('foglalja: {0}', esc(pname(resv.get(c.id))))}</span>` : ''}</div>` +
-      [...all.values()]
-        .filter(x => x.pc === c.id && byLoc.get(c.l) && byLoc.get(c.l).includes(x))
-        .map(x => contRow(x, d + 1))
-        .join('')
-    );
+    return html`<div class="srcc" style="padding-left:${22 + d * 18}px"><label class="inline"><input type="checkbox" data-scont="${key}|${c.id}" ${selC.has(c.id) ? 'checked' : ''}> ${contLabel(c.id, all)}</label> <span class="small muted">${charName(c.cid)} · ${T('{0} féle tárgy', fmt((ckinds.get(c.id) || new Set()).size))}</span>${withExcl ? html` <label class="inline small"><input type="checkbox" data-sexcl="${key}|${c.id}" ${ex.has(c.id) ? 'checked' : ''}> ${T('csak ez a projekt')}</label>` : ''}${other ? html` <span class="pill warn">${T('foglalja: {0}', pname(resv.get(c.id)))}</span>` : ''}</div>${[
+      ...all.values()
+    ]
+      .filter(x => x.pc === c.id && byLoc.get(c.l) && byLoc.get(c.l).includes(x))
+      .map(x => contRow(x, d + 1))}`;
   };
   const locs = [...kinds.keys()].sort((a, b) => locName(a).localeCompare(locName(b)));
   const nL = selL.size,
     nC = selC.size;
-  return `<div class="srcbox"><p class="small"><label class="inline" style="float:right"><input type="checkbox" data-srcships ${showShips ? 'checked' : ''}> ${T('hajók is')}</label>${T('Kiválasztva: {0} helyszín, {1} konténer.', nL, nC)} ${withExcl && ex.size ? T('Foglalt doboz: {0}.', ex.size) : ''}${nL + nC ? '' : ` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
-  ${hasCont ? '' : `<p class="small muted">${T('A konténerek listájához frissítsd egyszer a karaktereket.')}</p>`}
-  ${locs
-    .map(l => {
-      const cs = (byLoc.get(l) || []).filter(c => c.pc == null || !all.has(c.pc) || all.get(c.pc).l !== l);
-      const open = [...(byLoc.get(l) || [])].some(c => selC.has(c.id) || ex.has(c.id));
-      return `<details data-dl="${key}|${l}" ${open || SRCOPEN.has(key + '|' + l) ? 'open' : ''}><summary><input type="checkbox" data-sloc="${key}|${l}" ${selL.has(l) ? 'checked' : ''} aria-label="${esc(locName(l))}"> ${esc(locName(l))} <span class="small muted">${T('{0} féle tárgy', fmt(kinds.get(l).size))}${byLoc.get(l) ? ' · ' + T('{0} konténer', byLoc.get(l).length) : ''}</span></summary>${cs.map(c => contRow(c, 0)).join('') || `<div class="srcc small muted" style="padding-left:22px">${T('nincs konténer')}</div>`}</details>`;
-    })
-    .join('')}
+  return html`<div class="srcbox"><p class="small"><label class="inline" style="float:right"><input type="checkbox" data-srcships ${showShips ? 'checked' : ''}> ${T('hajók is')}</label>${T('Kiválasztva: {0} helyszín, {1} konténer.', nL, nC)} ${withExcl && ex.size ? T('Foglalt doboz: {0}.', ex.size) : ''}${nL + nC ? '' : html` <span class="pill warn">${T('Még nincs kiválasztva forrás: így minden anyagot venni kell.')}</span>`}</p>
+  ${hasCont ? '' : html`<p class="small muted">${T('A konténerek listájához frissítsd egyszer a karaktereket.')}</p>`}
+  ${locs.map(l => {
+    const cs = (byLoc.get(l) || []).filter(c => c.pc == null || !all.has(c.pc) || all.get(c.pc).l !== l);
+    const open = [...(byLoc.get(l) || [])].some(c => selC.has(c.id) || ex.has(c.id));
+    return html`<details data-dl="${key}|${l}" ${open || SRCOPEN.has(key + '|' + l) ? 'open' : ''}><summary><input type="checkbox" data-sloc="${key}|${l}" ${selL.has(l) ? 'checked' : ''} aria-label="${locName(l)}"> ${locName(l)} <span class="small muted">${T('{0} féle tárgy', fmt(kinds.get(l).size))}${byLoc.get(l) ? ' · ' + T('{0} konténer', byLoc.get(l).length) : ''}</span></summary>${
+      hjoin(
+        cs.map(c => contRow(c, 0)),
+        ''
+      ) || html`<div class="srcc small muted" style="padding-left:22px">${T('nincs konténer')}</div>`
+    }</details>`;
+  })}
   <p class="small muted" style="margin-top:6px">${T('A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.')}${withExcl ? ' ' + T('„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.') : ''}</p></div>`;
 }
 let SRCOPEN = new Set();
@@ -216,7 +227,7 @@ document.getElementById('pEdit').addEventListener('change', srcChange);
 
 async function calcProjects(list) {
   const out = $('#pOut');
-  out.innerHTML = '<div class="card muted">Számolás…</div>';
+  setHtml(out, html`<div class="card muted">Számolás…</div>`);
   try {
     await indexBPProducts();
     const opt = Object.assign(getOpt(), { incoming: $('#pIncoming').checked });
@@ -263,13 +274,13 @@ async function calcProjects(list) {
       for (const [t, q] of r.usedList) R.usedList.set(t, (R.usedList.get(t) || 0) + q);
     }
     if (!R.trees.length) {
-      out.innerHTML = '<div class="card muted">Nincs számolható tétel. Adj hozzá tételeket a projekthez.</div>';
+      setHtml(out, html`<div class="card muted">Nincs számolható tétel. Adj hozzá tételeket a projekthez.</div>`);
       return;
     }
     await finishResult(R, firstBP);
     R.title = list.map(p => p.name).join(' + ');
     LASTPLAN = R;
-    out.innerHTML = '';
+    setHtml(out, '');
     const head = document.createElement('h2');
     head.textContent = R.title;
     head.style.marginTop = '8px';
@@ -279,7 +290,7 @@ async function calcProjects(list) {
     LASTRENDER();
     renderMineNeed();
   } catch (e) {
-    out.innerHTML = '<div class="notice err"><p>' + esc(e.message) + '</p></div>';
+    setHtml(out, html`<div class="notice err"><p>${e.message}</p></div>`);
     log(e.stack || e.message);
   }
 }
