@@ -98,8 +98,10 @@ async function finishResult(R,firstBP){
   await resolveNames([...types]);await ensurePrices([...types]);
   await Promise.all([...types].map(t=>refGet('t',t).catch(()=>null)));
   await resolveNames(R.jobs.flatMap(j=>j.miss.map(m=>m[0])));
-  R.sys=firstBP?await sysFor(firstBP):null;await assignJobSys(R.jobs);await resolveNames([...new Set(R.jobs.map(j=>j.sys).filter(Boolean))]);
-  try{await prepHaul(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
+  R.sys=firstBP?await sysFor(firstBP):null;
+  // sorrend: előbb a végleges karakter-/BP-kiosztás, utána a rendszerek és a szállítás
+  assignChars(R.jobs);await assignJobSys(R.jobs);await resolveNames([...new Set(R.jobs.map(j=>jobSysOf(j,R.sys)).filter(Boolean))]);
+  try{await prepHaul(R);R.haulSig=haulSig(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
   return R;
 }
 async function runPlan(){
@@ -142,7 +144,9 @@ function nodeCost(n,free){ // egy fa anyagköltsége: vásárlás + saját kész
   let c=n.buy*buyPrice(n.t);if(!free)c+=n.stock.filter(x=>x.l!=='surplus'&&x.l!=='job').reduce((s,x)=>s+x.q,0)*unitPrice(n.t);
   n.ch.forEach(ch=>c+=nodeCost(ch,free));return c;
 }
-function prodLocOf(n){if(S.prodLoc)return Number(S.prodLoc);return n.build&&n.build.jobs[0]?n.build.jobs[0].c.l:null}
+// a gyártás helye: a Beállítások gyártási helye, különben a (kiosztás utáni) BP helye
+function prodLocOf(n){if(S.prodLoc)return Number(S.prodLoc);if(n.jobsRef&&n.jobsRef[0]&&n.jobsRef[0].bp)return n.jobsRef[0].bp.l;return n.build&&n.build.jobs[0]?n.build.jobs[0].c.l:null}
+function haulSig(R){const H=haulList(R);return [...H.moves.keys(),...[...H.sale.keys()].map(f=>f+'|J')].sort().join(',')}
 function haulList(R){ // mit honnan hova kell vinni
   const moves=new Map(),oreRoutes=new Set();
   const add=(from,to,t,q)=>{if(!q||from==null||to==null||from===to)return;const k=from+'|'+to;let m=moves.get(k);if(!m){m=new Map();moves.set(k,m)}m.set(t,(m.get(t)||0)+q)};
@@ -160,6 +164,7 @@ function haulList(R){ // mit honnan hova kell vinni
 }
 const volOf=t=>(REFC.t[t]&&REFC.t[t].vol)||0;
 /* ---- hajók és útvonalak a szállításhoz ---- */
+const ROUTE_RETRY=5*60000;
 let SHIPC=load('shipc',{}),ROUTES=load('routes2',{}); // {n: ugrás, hs: végig highsec-e (null: nem tudni), min: legalacsonyabb sec}
 async function getShipType(t){
   if(SHIPC[t]!==undefined)return SHIPC[t];
@@ -185,16 +190,18 @@ async function ownShips(){ // a karakterek hangárjában lévő összerakott haj
 const JUMP_SEC={513:120,902:120,941:110,28:75,380:75,1202:45,463:60,543:70};
 function sysOfLoc(l){if(l===JITA_STATION)return 30000142;return LOCINFO[l]&&LOCINFO[l].system}
 async function ensureRoute(a,b){
-  if(a==null||b==null)return null;if(a===b)return {n:0,hs:SYSSEC[a]!=null?SYSSEC[a]>=0.45:null,min:SYSSEC[a]??null};const k=a+'|'+b;if(ROUTES[k]!==undefined)return ROUTES[k];
+  if(a==null||b==null)return null;if(a===b)return {n:0,hs:SYSSEC[a]!=null?SYSSEC[a]>=0.45:null,min:SYSSEC[a]??null};const k=a+'|'+b;
+  // sikertelen vagy hiányos (ismeretlen biztonságú) eredményt csak 5 percig tartunk meg, utána újrapróbálja
+  const c=ROUTES[k];if(c!==undefined&&c!==null){const weak=c.fail||c.hs==null;if(!weak||Date.now()-(c.at||0)<ROUTE_RETRY)return c.fail?null:c}
   let r=null;try{r=await esi('/route/'+a+'/'+b+'/?flag=secure')}catch(e){}
   if(!r){try{r=await esi('/route/'+a+'/'+b+'/')}catch(e){}}
   let res=null;
   if(Array.isArray(r)&&r.length){ // a biztonságot rendszerenként ellenőrizzük, nem a kérés módjából találgatjuk
     const need=r.filter(id=>SYSSEC[id]==null);await Promise.all(need.map(async id=>{try{SYSSEC[id]=(await esi('/universe/systems/'+id+'/')).security_status}catch(e){}}));store('syssec',SYSSEC);
     const known=r.every(id=>SYSSEC[id]!=null);const min=known?Math.min(...r.map(id=>SYSSEC[id])):null;
-    res={n:r.length-1,hs:known?min>=0.45:null,min};
+    res={n:r.length-1,hs:known?min>=0.45:null,min,at:Date.now()};
   }
-  ROUTES[k]=res;store('routes2',ROUTES);return res;
+  ROUTES[k]=res||{fail:true,at:Date.now()};store('routes2',ROUTES);return res;
 }
 async function prepHaul(R){
   const H=haulList(R);const pairs=[];
@@ -232,6 +239,8 @@ function buildUnit(n,sys){ // gyártási egységár: részfa piaci áron + a cso
 }
 function renderResult(el,R,rerun){
   assignChars(R.jobs);
+  // ha a kiosztás változott (pl. más karakterek dolgoznak), a szállítási útvonalakat újra előkészíti, majd újrarajzol
+  {const sig=haulSig(R);if(R.haulSig!==sig){R.haulSig=sig;Promise.all([assignJobSys(R.jobs),prepHaul(R)]).then(()=>{if(R.haulSig===sig&&el.isConnected)renderResult(el,R,rerun)}).catch(e=>log('Szállítás előkészítés: '+e.message))}}
   const free=$('#optStockFree').checked;const fee=salesTax()+brokerFee();
   // ár nélküli tételek: ezekből a profit nem számolható (nem 0 költséggel számolunk)
   const unkOf=(tree)=>{const u=new Set();const scan=n=>{if(n.buy>0&&!buyPrice(n.t))u.add(n.t);if(!free&&n.stock.some(x=>x.l!=='surplus'&&x.l!=='job'&&x.q>0)&&!unitPrice(n.t))u.add(n.t);n.ch.forEach(scan)};scan(tree);if(!sell(tree.t))u.add(tree.t);return u};
@@ -250,7 +259,7 @@ function renderResult(el,R,rerun){
     <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?(()=>{const g=R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0);const f2=m2Fee();return `<div class="small muted">${esc(m2Short())}: ${f2!=null?isk(g*(1-f2)):isk(g)+' '+T('(díjak nélkül)')}</div>`})():''}</div>
     <div class="kpi"><div class="k">Profit</div>${unkAll.size?`<div class="v">${T('nem számolható')}</div><div class="small muted">${T('becslés ár nélküli tételek nélkül: {0}',isk(profit))}</div>`:`<div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div>`}</div>
   </div>${unkAll.size?`<div class="notice" style="margin:8px 0"><p class="small">${T('Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.',esc([...unkAll].map(t=>NAMES[t]||t).join(', ')))}</p></div>`:''}`;
-  const syss=[...new Set(R.jobs.map(j=>j.sys??R.sys).filter(Boolean))];
+  const syss=[...new Set(R.jobs.map(j=>jobSysOf(j,R.sys)).filter(Boolean))];
   h+=`<p class="small muted">${syss.length>1?T('Gyártási rendszerek: {0}',syss.map(s=>esc(NAMES[s]||s)+((IDX.p[s]||{}).manufacturing!=null?' ('+fmt(IDX.p[s].manufacturing*100,2)+'%)':'')).join(', ')):T('Gyártási rendszer: {0}',esc(NAMES[syss[0]||R.sys]||syss[0]||R.sys||T('ismeretlen')))+(((IDX.p[syss[0]||R.sys]||{}).manufacturing)!=null?' · cost index '+fmt(IDX.p[syss[0]||R.sys].manufacturing*100,2)+'%':'')} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
   R.warn.forEach(w=>h+=`<div class="notice">${esc(warnText(w))}</div>`);
   // termékenként

@@ -72,10 +72,12 @@ function buyPrice(t){return buyAt(t)===JITA_STATION?unitPrice(t):sell2(t)}
 
 /* ============ árak ============ */
 // sikertelen árletöltés: a korábbi jó ár megmarad (hibajelzéssel), és 5 perc múlva újrapróbálja; ha nem volt ár, „nincs ár” marad, nem 0
-function priceFail(old,now){const retry=now-25*60000;return old&&(old.s||old.b)?Object.assign({},old,{at:Math.min(old.at,retry),err:now}):{s:null,b:null,at:retry,err:now}}
+// at: az utolsó sikeres ár ideje; retry: a következő megengedett próbálkozás (5 perc)
+const PRICE_RETRY=5*60000;
+function priceFail(old,now){const retry=now+PRICE_RETRY;return old&&(old.s||old.b)?Object.assign({},old,{err:now,retry}):{s:null,b:null,at:0,err:now,retry}}
 async function ensurePrices(typeIds){
   const now=Date.now();const m2=m2On()?Number(S.market2):null;const isStr=m2&&m2>1e12;const reg2=m2&&!isStr?await regionOf(m2):null;PRICES.p2=PRICES.p2||{};
-  const stale=(x,loc)=>!x||now-x.at>30*60000||(loc!=null&&x.loc!==loc);
+  const stale=(x,loc)=>!x||(loc!=null&&x.loc!==loc)||(x.retry?now>=x.retry:now-x.at>30*60000);
   const all=[...new Set(typeIds)];const need=all.filter(t=>stale(PRICES.p[t])||(m2&&reg2===JITA_REGION&&stale(PRICES.p2[t],m2)));
   const need2=m2&&reg2&&reg2!==JITA_REGION?all.filter(t=>stale(PRICES.p2[t],m2)):[];
   const best=(o,loc)=>{let s=Infinity,b=0;for(const x of o){if(x.location_id!==loc)continue;if(x.is_buy_order){if(x.price>b)b=x.price}else if(x.price<s)s=x.price}return {s:s===Infinity?null:s,b:b||null,at:now,loc}};

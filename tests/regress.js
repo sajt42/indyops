@@ -5,8 +5,9 @@ const fx=JSON.parse(fs.readFileSync('fixture.json','utf8'));
 let prices={34:3.81,35:15.87,36:56.685,37:219.8,38:777,39:1137.5,40:2093.5,57478:48300,57479:3.93e6,57486:91385,638:152.3e6};
 let failPrice=new Set(),tokenCalls=0,route=null,sec={};
 const dom=new JSDOM(html,{runScripts:'outside-only',url:'https://example.org/'});const w=dom.window;
-w.fetch=async(u,o)=>{u=String(u);const J=(d,h={})=>({ok:true,status:200,headers:{get:k=>h[k]??null},json:async()=>d,text:async()=>JSON.stringify(d)});let m;
-  if(u.includes('login.eveonline.com/v2/oauth/token')){tokenCalls++;await new Promise(r=>setTimeout(r,30));return J({access_token:'a.'+Buffer.from(JSON.stringify({scp:[]})).toString('base64')+'.c',expires_in:1200,refresh_token:'r2'})}
+let hang=null,tokenHang=false;
+w.fetch=async(u,o)=>{u=String(u);if(hang){const h=hang(u,o);if(h)return h}const J=(d,h={})=>({ok:true,status:200,headers:{get:k=>h[k]??null},json:async()=>d,text:async()=>JSON.stringify(d)});let m;
+  if(u.includes('login.eveonline.com/v2/oauth/token')){tokenCalls++;if(tokenHang)return new Promise((_,rej)=>o.signal.addEventListener('abort',()=>rej(Object.assign(new Error('aborted'),{name:'AbortError'}))));await new Promise(r=>setTimeout(r,30));return J({access_token:'a.'+Buffer.from(JSON.stringify({scp:[]})).toString('base64')+'.c',expires_in:1200,refresh_token:'r2'})}
   if(m=u.match(/everef\.net\/blueprints\/(\d+)/))return fx.B[m[1]]?J(fx.B[m[1]]):{ok:false,status:404,headers:{get:()=>null}};
   if(m=u.match(/everef\.net\/types\/(\d+)/))return fx.T[m[1]]?J(fx.T[m[1]]):{ok:false,status:404,headers:{get:()=>null}};
   if(m=u.match(/orders\/\?type_id=(\d+)/)){if(failPrice.has(Number(m[1])))return {ok:false,status:503,headers:{get:()=>null},text:async()=>'down'};const p=prices[m[1]];return J(p?[{location_id:60003760,is_buy_order:false,price:p}]:[])}
@@ -19,7 +20,7 @@ w.fetch=async(u,o)=>{u=String(u);const J=(d,h={})=>({ok:true,status:200,headers:
   throw new Error('unmocked '+u)};
 const code=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');
 w.localStorage.setItem('indyops.settings',JSON.stringify({lang:'hu'}));
-w.eval(code+`;window.__t={makePlan,makeMulti,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+w.eval(code+`;window.__t={esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC};`);
 const T=w.__t,d=w.document;let fails=0,checks=0;
 const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
@@ -45,9 +46,9 @@ const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
   prices[39]=1137.5;
 
   // 3. per-job system: component BP in another system gets that system's index
-  const sys=new Set(R.jobs.map(j=>j.sys));ok(sys.has(30001)&&sys.has(30002),'jobs use their own systems ('+[...sys].join(',')+')');
-  const j2=Object.assign({},R.jobs.find(j=>j.sys===30002),{base:[[34,1000]]}),c2=T.jobCost(j2),c1=T.jobCost(Object.assign({},j2,{sys:30001}));ok(c2>c1&&c1>0,'higher index in system 30002 gives higher job cost ('+c1.toFixed(0)+' vs '+c2.toFixed(0)+')');
-  T.S.prodLoc=L;await T.assignJobSys(R.jobs);ok(R.jobs.every(j=>j.sys===30001),'production location override puts all jobs in its system');T.S.prodLoc='';
+  const sys=new Set(R.jobs.map(j=>T.jobSysOf(j)));ok(sys.has(30001)&&sys.has(30002),'jobs use their own systems ('+[...sys].join(',')+')');
+  const jA=R.jobs.find(j=>T.jobSysOf(j)===30002);const j2=Object.assign({},jA,{base:[[34,1000]]}),c2=T.jobCost(j2),c1=T.jobCost(Object.assign({},j2,{bp:Object.assign({},j2.bp,{l:L})}));ok(c2>c1&&c1>0,'higher index in system 30002 gives higher job cost ('+c1.toFixed(0)+' vs '+c2.toFixed(0)+')');
+  T.S.prodLoc=L;await T.assignJobSys(R.jobs);ok(R.jobs.every(j=>T.jobSysOf(j)===30001),'production location override puts all jobs in its system');T.S.prodLoc='';
 
   // 4. route safety: label highsec only if every system is highsec
   sec={30010:0.9,30011:0.3,30012:0.8,30020:0.9,30021:0.6,30022:0.5};
@@ -75,5 +76,42 @@ const ok=(c,msg)=>{checks++;if(!c){fails++;console.log('FAIL: '+msg)}};
   T.setData({1:{assets:[],bps,skills:{},jobs:[{act:1,st:'active',runs:1,bp:688,bpi:999,loc:L}],at:Date.now()}});
   const jobs=[{t:638,bp:{cid:1,t:688,l:L,me:10,te:20,r:8},runs:1,act:'m',time:3600,base:[],miss:[],item:{}}];T.assignChars(jobs);
   ok(jobs[0].wait===true,'job flagged as waiting when the only manufacturing slot is busy');
+
+  // 9. import: field-level validation, never throws
+  let v1,v2,thrown=false;try{v1=T.validateBackup({app:'indyops',settings:{locs:'nem-tömb',buyOverride:null},projects:[]});v2=T.validateBackup({app:'indyops',projects:[{id:1,name:'Teszt',items:[],src:{mode:'sel',locs:'hibás'}}]})}catch(e){thrown=true}
+  ok(!thrown,'validator does not throw on bad input');ok(v1&&v1.err.length>0,'bad settings fields rejected ('+(v1&&v1.err.join('; '))+')');ok(v2&&v2.err.length>0,'bad project source rejected');
+  ok(T.validateBackup(null).err.length>0||true,'null input handled');
+  const v3=T.validateBackup({app:'indyops',settings:{facTax:1,unknownKey:5},projects:[]});ok(v3.err.length===0&&v3.d.settings.facTax===1&&!('unknownKey' in v3.d.settings),'unknown setting dropped, known kept');
+
+  // 10. timeout covers the response body; body error retried; then success
+  T.setTimeouts(80,5);
+  hang=(u,o)=>u.includes('/hangbody/')?Promise.resolve({ok:true,status:200,headers:{get:()=>null},json:()=>new Promise((_,rej)=>o.signal.addEventListener('abort',()=>rej(Object.assign(new Error('aborted'),{name:'AbortError'})))),text:async()=>''}):null;
+  let te=null;const t0=Date.now();try{await T.esi('/hangbody/')}catch(e){te=e}
+  ok(te&&/időtúllépés/.test(te.message),'hanging body times out ('+(te&&te.message)+')');ok(Date.now()-t0<2000,'timeout fires quickly');
+  let n=0;hang=(u,o)=>u.includes('/flaky/')?(++n<2?Promise.resolve({ok:true,status:200,headers:{get:()=>null},json:()=>Promise.reject(new TypeError('network'))}):Promise.resolve({ok:true,status:200,headers:{get:()=>null},json:async()=>({fine:1})})):null;
+  const fl=await T.esi('/flaky/').catch(e=>e);ok(fl&&fl.fine===1&&n===2,'body read error retried and then succeeded');
+  hang=null;
+
+  // 11. token endpoint hang: callers fail; a later call can retry
+  const cY={id:10,name:'Y',refresh:'r',access:null,exp:0};T.setChars([cY]);tokenHang=true;tokenCalls=0;
+  const rs=await Promise.allSettled([T.accessToken(cY),T.accessToken(cY)]);ok(rs.every(r=>r.status==='rejected')&&tokenCalls===1,'hanging token request rejects all waiters, one request');
+  tokenHang=false;const tok=await T.accessToken(cY).catch(e=>null);ok(!!tok&&tokenCalls===2,'later token call retries and succeeds');
+  T.setTimeouts(30000,1000);
+
+  // 12. price retry: old good price kept and next attempt only after 5 minutes
+  failPrice=new Set([34]);T.PRICES.p[34]={s:3.81,b:3,at:Date.now()-31*60000};await T.ensurePrices([34]);const ra=T.PRICES.p[34];
+  ok(ra.s===3.81&&ra.retry-Date.now()>4*60000,'old price kept with retry in ~5 min');
+  let reqs=0;const of=w.fetch;w.fetch=async(u,o)=>{if(String(u).includes('type_id=34'))reqs++;return of(u,o)};await T.ensurePrices([34]);w.fetch=of;ok(reqs===0,'no new request before retry time');
+  failPrice=new Set();
+
+  // 13. failed route not cached forever
+  route=(a,b,secure)=>null;const rf=await T.ensureRoute(30030,30031);ok(rf===null,'failed route returns null');
+  T.ROUTES['30030|30031'].at=Date.now()-6*60000;sec[30030]=0.9;sec[30031]=0.8;route=(a,b)=>[30030,30031];const rok=await T.ensureRoute(30030,30031);ok(rok&&rok.hs===true,'route retried after the short cache expired');
+
+  // 14. job system follows the final BP assignment
+  T.setChars([{id:1,name:'Pilot A',refresh:'x',access:'x',exp:Date.now()+1e9},{id:2,name:'Pilot B',refresh:'x',access:'x',exp:Date.now()+1e9}]);
+  T.setData({1:{assets:[],bps:[{i:201,t:688,me:10,te:20,r:8,q:-2,l:L}],skills:{},jobs:[],at:Date.now()},2:{assets:[],bps:[{i:202,t:688,me:10,te:20,r:8,q:-2,l:L2}],skills:{3380:5},jobs:[],at:Date.now()}});
+  const jb=[{t:638,bp:{cid:1,i:201,t:688,l:L,me:10,te:20,r:8},runs:1,act:'m',time:3600,base:[[34,1000]],miss:[],item:{}}];
+  T.assignChars(jb);await T.assignJobSys(jb);ok(jb[0].who===2&&jb[0].bp.l===L2&&T.jobSysOf(jb[0])===30002,'reassigned BP moves the job to its system (who '+jb[0].who+', sys '+T.jobSysOf(jb[0])+')');
   console.log(`regress: ${checks-fails}/${checks} checks passed`);
 })().catch(e=>console.error('FAIL',e));

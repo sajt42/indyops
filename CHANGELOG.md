@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.12.1 – 2026-11-10
+
+- Backup restore: every setting and project field is type-checked, unknown fields are dropped, and bad input never throws
+- ESI: the 30 s timeout now covers reading the response body; body read errors are retried; the token request has a timeout too, and a failed refresh can be retried
+- Job system and hauling are resolved after the final character/blueprint assignment (a reassigned BP moves the job to its own system)
+- Failed price download: the last good price is kept and the next attempt waits 5 minutes (separate retry time)
+- Failed or incomplete routes are retried after 5 minutes instead of being cached forever
+- Offline file: Content-Security-Policy allows only its own script blocks by SHA-256 hash (no 'unsafe-inline')
+- 32 assertion-based regression checks
+
 ## 1.12.0 – 2026-11-10
 
 - Prices: a failed download keeps the last good price and retries in 5 minutes; items without a price make profit “can't be calculated” (with the missing items listed) instead of counting them as free

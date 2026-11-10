@@ -18,9 +18,13 @@ async function startLogin(){
   window.open(u.toString(),'_blank','noopener');
 }
 function jwtPayload(t){const p=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(p+'='.repeat((4-p.length%4)%4)))))}
+let ESI_TIMEOUT=30000,ESI_BACKOFF=1000; // a tesztek rövidebbre állíthatják
 async function tokenCall(params){
-  const r=await fetch('https://login.eveonline.com/v2/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params).toString()});
-  const txt=await r.text(); let j=null; try{j=JSON.parse(txt)}catch(e){}
+  // időkorlát itt is: egy beragadt tokenkérés ne tartsa fel az összes rá váró hívást
+  const ac=new AbortController();const to=setTimeout(()=>ac.abort(),ESI_TIMEOUT);let r,txt;
+  try{r=await fetch('https://login.eveonline.com/v2/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params).toString(),signal:ac.signal});txt=await r.text()}
+  catch(e){throw new Error(T('Token hiba: {0}',e.name==='AbortError'?T('időtúllépés'):T('hálózati hiba')))}finally{clearTimeout(to)}
+  let j=null; try{j=JSON.parse(txt)}catch(e){}
   if(!r.ok||!j||!j.access_token) throw new Error(T('Token hiba ({0}): {1}',r.status,(j&&(j.error_description||j.error)||T('ismeretlen válasz'))));
   return j;
 }
@@ -74,15 +78,20 @@ async function esi(path,{char,method='GET',body,paged=false,meta=false}={}){
     const h={'Accept':'application/json'};if(body)h['Content-Type']='application/json';
     if(char)h.Authorization='Bearer '+await accessToken(char);
     for(let attempt=0;attempt<3;attempt++){
-      // időkorlát: egy beragadt kérés ne foglalja örökre a helyet; időtúllépésnél és hálózati hibánál újrapróbálja
-      let r;const ac=new AbortController();const to=setTimeout(()=>ac.abort(),30000);
-      try{r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined,signal:ac.signal})}
-      catch(e){clearTimeout(to);const msg=e.name==='AbortError'?'időtúllépés (30 s)':'hálózati hiba';if(attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}const er=new Error('ESI '+msg+' '+path);er.status=0;throw er}
+      // időkorlát a teljes válaszra (fejléc + törzs): egy beragadt kérés ne foglalja örökre a helyet;
+      // időtúllépésnél, hálózati hibánál és hibás törzsnél újrapróbálja
+      const ac=new AbortController();const to=setTimeout(()=>ac.abort(),ESI_TIMEOUT);let res=null,httpErr=null;
+      try{
+        const r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined,signal:ac.signal});
+        const rem=r.headers.get('x-esi-error-limit-remain');
+        if(r.ok){const data=await r.json();res={data,pages:Number(r.headers.get('x-pages')||1),lm:Date.parse(r.headers.get('last-modified')||'')||null,exp:Date.parse(r.headers.get('expires')||'')||null}}
+        else{const t=await r.text();httpErr={status:r.status,t}}
+        if(rem!=null&&Number(rem)<20){log('ESI hibakeret alacsony ('+rem+'), várakozás…');await new Promise(z=>setTimeout(z,5000))}
+      }catch(e){clearTimeout(to);const msg=e.name==='AbortError'?'időtúllépés ('+ESI_TIMEOUT/1000+' s)':'hálózati hiba';if(attempt<2){await new Promise(z=>setTimeout(z,ESI_BACKOFF*(attempt+1)));continue}const er=new Error('ESI '+msg+' '+path);er.status=0;throw er}
       clearTimeout(to);
-      const rem=r.headers.get('x-esi-error-limit-remain'); if(rem!=null&&Number(rem)<20){log('ESI hibakeret alacsony ('+rem+'), várakozás…');await new Promise(z=>setTimeout(z,5000))}
-      if(r.ok) return {data:await r.json(),pages:Number(r.headers.get('x-pages')||1),lm:Date.parse(r.headers.get('last-modified')||'')||null,exp:Date.parse(r.headers.get('expires')||'')||null};
-      if(r.status>=500&&attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}
-      const t=await r.text();const e=new Error('ESI '+r.status+' '+path+': '+t.slice(0,140));e.status=r.status;throw e;
+      if(res)return res;
+      if(httpErr.status>=500&&attempt<2){await new Promise(z=>setTimeout(z,ESI_BACKOFF*(attempt+1)));continue}
+      const e=new Error('ESI '+httpErr.status+' '+path+': '+httpErr.t.slice(0,140));e.status=httpErr.status;throw e;
     }
   });
   if(!paged){const r=await go(0);return meta?{data:r.data,lm:r.lm,exp:r.exp}:r.data}

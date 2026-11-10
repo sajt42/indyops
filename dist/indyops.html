@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aR1shMIrRyAgtZuqUbzSi3BQgmyEWlaor3h0qdQZmVc=' 'sha256-yXijC94hRM9CpcXhDT7K+WgSY1HIvPrmY46kENh2PGw=' 'sha256-TjEZ0n7mybdqzORc58/3EtbqMrl++fyUSOvcp7jETKs=' 'sha256-yktekfaKHQZcGnP07gLCV9rqyOEeRPma9HYl2jYRieQ=' 'sha256-EC/fkYYbSVnbYd6m3DrzQmfLSHuBJ3UJLVIVEy7Utuw=' 'sha256-eXDbQbjeNGkTv74xLSQSROUyBEWqDGSII6h14mqn5v8=' 'sha256-c1p8bknU2t2m8KiQe0Cj9Lur0JfeLtFwU+QPhZLh/JM=' 'sha256-g8/LcYTbdQDDwRkOTSCKS1HuyOkwXvDvqFV1rEczCy8=' 'sha256-Cpub085pjNoe3DonPDenCStwloDQWBfob/AXuIRiIHY=' 'sha256-0kjOUf46GUzjVViMQx4EM2JVeP8UJVRH2oradfWDyDo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -2004,7 +2004,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
 // dataVersion: emeld meg, ha egy új verzió új adatot olvas az ESI-ből, és ehhez a felhasználónak frissítenie kell (a tool szól neki)
-const APP={dataVersion:3,name:'IndyOps',version:'1.12.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={dataVersion:3,name:'IndyOps',version:'1.12.1',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2095,9 +2095,13 @@ async function startLogin(){
   window.open(u.toString(),'_blank','noopener');
 }
 function jwtPayload(t){const p=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(p+'='.repeat((4-p.length%4)%4)))))}
+let ESI_TIMEOUT=30000,ESI_BACKOFF=1000; // a tesztek rövidebbre állíthatják
 async function tokenCall(params){
-  const r=await fetch('https://login.eveonline.com/v2/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params).toString()});
-  const txt=await r.text(); let j=null; try{j=JSON.parse(txt)}catch(e){}
+  // időkorlát itt is: egy beragadt tokenkérés ne tartsa fel az összes rá váró hívást
+  const ac=new AbortController();const to=setTimeout(()=>ac.abort(),ESI_TIMEOUT);let r,txt;
+  try{r=await fetch('https://login.eveonline.com/v2/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params).toString(),signal:ac.signal});txt=await r.text()}
+  catch(e){throw new Error(T('Token hiba: {0}',e.name==='AbortError'?T('időtúllépés'):T('hálózati hiba')))}finally{clearTimeout(to)}
+  let j=null; try{j=JSON.parse(txt)}catch(e){}
   if(!r.ok||!j||!j.access_token) throw new Error(T('Token hiba ({0}): {1}',r.status,(j&&(j.error_description||j.error)||T('ismeretlen válasz'))));
   return j;
 }
@@ -2151,15 +2155,20 @@ async function esi(path,{char,method='GET',body,paged=false,meta=false}={}){
     const h={'Accept':'application/json'};if(body)h['Content-Type']='application/json';
     if(char)h.Authorization='Bearer '+await accessToken(char);
     for(let attempt=0;attempt<3;attempt++){
-      // időkorlát: egy beragadt kérés ne foglalja örökre a helyet; időtúllépésnél és hálózati hibánál újrapróbálja
-      let r;const ac=new AbortController();const to=setTimeout(()=>ac.abort(),30000);
-      try{r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined,signal:ac.signal})}
-      catch(e){clearTimeout(to);const msg=e.name==='AbortError'?'időtúllépés (30 s)':'hálózati hiba';if(attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}const er=new Error('ESI '+msg+' '+path);er.status=0;throw er}
+      // időkorlát a teljes válaszra (fejléc + törzs): egy beragadt kérés ne foglalja örökre a helyet;
+      // időtúllépésnél, hálózati hibánál és hibás törzsnél újrapróbálja
+      const ac=new AbortController();const to=setTimeout(()=>ac.abort(),ESI_TIMEOUT);let res=null,httpErr=null;
+      try{
+        const r=await fetch(u,{method,headers:h,body:body?JSON.stringify(body):undefined,signal:ac.signal});
+        const rem=r.headers.get('x-esi-error-limit-remain');
+        if(r.ok){const data=await r.json();res={data,pages:Number(r.headers.get('x-pages')||1),lm:Date.parse(r.headers.get('last-modified')||'')||null,exp:Date.parse(r.headers.get('expires')||'')||null}}
+        else{const t=await r.text();httpErr={status:r.status,t}}
+        if(rem!=null&&Number(rem)<20){log('ESI hibakeret alacsony ('+rem+'), várakozás…');await new Promise(z=>setTimeout(z,5000))}
+      }catch(e){clearTimeout(to);const msg=e.name==='AbortError'?'időtúllépés ('+ESI_TIMEOUT/1000+' s)':'hálózati hiba';if(attempt<2){await new Promise(z=>setTimeout(z,ESI_BACKOFF*(attempt+1)));continue}const er=new Error('ESI '+msg+' '+path);er.status=0;throw er}
       clearTimeout(to);
-      const rem=r.headers.get('x-esi-error-limit-remain'); if(rem!=null&&Number(rem)<20){log('ESI hibakeret alacsony ('+rem+'), várakozás…');await new Promise(z=>setTimeout(z,5000))}
-      if(r.ok) return {data:await r.json(),pages:Number(r.headers.get('x-pages')||1),lm:Date.parse(r.headers.get('last-modified')||'')||null,exp:Date.parse(r.headers.get('expires')||'')||null};
-      if(r.status>=500&&attempt<2){await new Promise(z=>setTimeout(z,1000*(attempt+1)));continue}
-      const t=await r.text();const e=new Error('ESI '+r.status+' '+path+': '+t.slice(0,140));e.status=r.status;throw e;
+      if(res)return res;
+      if(httpErr.status>=500&&attempt<2){await new Promise(z=>setTimeout(z,ESI_BACKOFF*(attempt+1)));continue}
+      const e=new Error('ESI '+httpErr.status+' '+path+': '+httpErr.t.slice(0,140));e.status=httpErr.status;throw e;
     }
   });
   if(!paged){const r=await go(0);return meta?{data:r.data,lm:r.lm,exp:r.exp}:r.data}
@@ -2344,10 +2353,12 @@ function buyPrice(t){return buyAt(t)===JITA_STATION?unitPrice(t):sell2(t)}
 
 /* ============ árak ============ */
 // sikertelen árletöltés: a korábbi jó ár megmarad (hibajelzéssel), és 5 perc múlva újrapróbálja; ha nem volt ár, „nincs ár” marad, nem 0
-function priceFail(old,now){const retry=now-25*60000;return old&&(old.s||old.b)?Object.assign({},old,{at:Math.min(old.at,retry),err:now}):{s:null,b:null,at:retry,err:now}}
+// at: az utolsó sikeres ár ideje; retry: a következő megengedett próbálkozás (5 perc)
+const PRICE_RETRY=5*60000;
+function priceFail(old,now){const retry=now+PRICE_RETRY;return old&&(old.s||old.b)?Object.assign({},old,{err:now,retry}):{s:null,b:null,at:0,err:now,retry}}
 async function ensurePrices(typeIds){
   const now=Date.now();const m2=m2On()?Number(S.market2):null;const isStr=m2&&m2>1e12;const reg2=m2&&!isStr?await regionOf(m2):null;PRICES.p2=PRICES.p2||{};
-  const stale=(x,loc)=>!x||now-x.at>30*60000||(loc!=null&&x.loc!==loc);
+  const stale=(x,loc)=>!x||(loc!=null&&x.loc!==loc)||(x.retry?now>=x.retry:now-x.at>30*60000);
   const all=[...new Set(typeIds)];const need=all.filter(t=>stale(PRICES.p[t])||(m2&&reg2===JITA_REGION&&stale(PRICES.p2[t],m2)));
   const need2=m2&&reg2&&reg2!==JITA_REGION?all.filter(t=>stale(PRICES.p2[t],m2)):[];
   const best=(o,loc)=>{let s=Infinity,b=0;for(const x of o){if(x.location_id!==loc)continue;if(x.is_buy_order){if(x.price>b)b=x.price}else if(x.price<s)s=x.price}return {s:s===Infinity?null:s,b:b||null,at:now,loc}};
@@ -2583,14 +2594,18 @@ const ACT_IDX={m:'manufacturing',r:'reaction',i:'invention',c:'copying',rme:'res
 // minden job a saját gyártási helyének rendszerével számol; a Beállítások „rendszer” mezője mindent felülír, a „gyártási hely” a helyet
 const SYSNAME={};
 async function sysByName(n){if(SYSNAME[n]!==undefined)return SYSNAME[n];try{const r=await esi('/universe/ids/',{method:'POST',body:[n]});SYSNAME[n]=r.systems&&r.systems[0]?r.systems[0].id:null}catch(e){SYSNAME[n]=null}return SYSNAME[n]}
+// előkészítés: a rendszer-felülírás azonosítója és minden szóba jöhető BP-hely rendszere legyen ismert,
+// hogy a job rendszere a VÉGLEGES (kiosztás utáni) BP-helyből, szinkron számolható legyen
 async function assignJobSys(jobs){
-  const ov=S.system?await sysByName(S.system):null;const cache={};
-  for(const j of jobs){if(ov){j.sys=ov;continue}const l=S.prodLoc?Number(S.prodLoc):(j.bp&&j.bp.l);if(l==null)continue;
-    if(cache[l]===undefined){let li=LOCINFO[l];if(!li){try{li=await resolveLoc(l)}catch(e){li=null}}cache[l]=li&&li.system||null}j.sys=cache[l]||j.sys||null}
+  if(S.system)await sysByName(S.system);
+  const types=new Set(jobs.map(j=>j.bp&&j.bp.t));const locs=new Set(allBPs().filter(b=>types.has(b.t)).map(b=>b.l));
+  if(S.prodLoc)locs.add(Number(S.prodLoc));jobs.forEach(j=>j.bp&&locs.add(j.bp.l));
+  for(const l of locs){if(l==null||LOCINFO[l])continue;try{await resolveLoc(l)}catch(e){}}
 }
+function jobSysOf(j,fallback){if(S.system&&SYSNAME[S.system])return SYSNAME[S.system];const l=S.prodLoc?Number(S.prodLoc):(j.bp&&j.bp.l);const li=l!=null?LOCINFO[l]:null;return (li&&li.system)||fallback||null}
 function jobCost(j,sysId){
   const eiv=j.base.reduce((s,[m,q])=>s+(ADJ.p[m]||0)*q,0)*j.runs*(j.cm||1);
-  const index=((IDX.p[j.sys??sysId]||{})[ACT_IDX[j.act]])||0;
+  const index=((IDX.p[jobSysOf(j,sysId)]||{})[ACT_IDX[j.act]])||0;
   return eiv*(index+Number(S.facTax||0)/100+Number(S.scc||0)/100);
 }
 function jobTime(j){
@@ -2709,8 +2724,10 @@ async function finishResult(R,firstBP){
   await resolveNames([...types]);await ensurePrices([...types]);
   await Promise.all([...types].map(t=>refGet('t',t).catch(()=>null)));
   await resolveNames(R.jobs.flatMap(j=>j.miss.map(m=>m[0])));
-  R.sys=firstBP?await sysFor(firstBP):null;await assignJobSys(R.jobs);await resolveNames([...new Set(R.jobs.map(j=>j.sys).filter(Boolean))]);
-  try{await prepHaul(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
+  R.sys=firstBP?await sysFor(firstBP):null;
+  // sorrend: előbb a végleges karakter-/BP-kiosztás, utána a rendszerek és a szállítás
+  assignChars(R.jobs);await assignJobSys(R.jobs);await resolveNames([...new Set(R.jobs.map(j=>jobSysOf(j,R.sys)).filter(Boolean))]);
+  try{await prepHaul(R);R.haulSig=haulSig(R)}catch(e){log('Szállítás előkészítés: '+e.message)}
   return R;
 }
 async function runPlan(){
@@ -2753,7 +2770,9 @@ function nodeCost(n,free){ // egy fa anyagköltsége: vásárlás + saját kész
   let c=n.buy*buyPrice(n.t);if(!free)c+=n.stock.filter(x=>x.l!=='surplus'&&x.l!=='job').reduce((s,x)=>s+x.q,0)*unitPrice(n.t);
   n.ch.forEach(ch=>c+=nodeCost(ch,free));return c;
 }
-function prodLocOf(n){if(S.prodLoc)return Number(S.prodLoc);return n.build&&n.build.jobs[0]?n.build.jobs[0].c.l:null}
+// a gyártás helye: a Beállítások gyártási helye, különben a (kiosztás utáni) BP helye
+function prodLocOf(n){if(S.prodLoc)return Number(S.prodLoc);if(n.jobsRef&&n.jobsRef[0]&&n.jobsRef[0].bp)return n.jobsRef[0].bp.l;return n.build&&n.build.jobs[0]?n.build.jobs[0].c.l:null}
+function haulSig(R){const H=haulList(R);return [...H.moves.keys(),...[...H.sale.keys()].map(f=>f+'|J')].sort().join(',')}
 function haulList(R){ // mit honnan hova kell vinni
   const moves=new Map(),oreRoutes=new Set();
   const add=(from,to,t,q)=>{if(!q||from==null||to==null||from===to)return;const k=from+'|'+to;let m=moves.get(k);if(!m){m=new Map();moves.set(k,m)}m.set(t,(m.get(t)||0)+q)};
@@ -2771,6 +2790,7 @@ function haulList(R){ // mit honnan hova kell vinni
 }
 const volOf=t=>(REFC.t[t]&&REFC.t[t].vol)||0;
 /* ---- hajók és útvonalak a szállításhoz ---- */
+const ROUTE_RETRY=5*60000;
 let SHIPC=load('shipc',{}),ROUTES=load('routes2',{}); // {n: ugrás, hs: végig highsec-e (null: nem tudni), min: legalacsonyabb sec}
 async function getShipType(t){
   if(SHIPC[t]!==undefined)return SHIPC[t];
@@ -2796,16 +2816,18 @@ async function ownShips(){ // a karakterek hangárjában lévő összerakott haj
 const JUMP_SEC={513:120,902:120,941:110,28:75,380:75,1202:45,463:60,543:70};
 function sysOfLoc(l){if(l===JITA_STATION)return 30000142;return LOCINFO[l]&&LOCINFO[l].system}
 async function ensureRoute(a,b){
-  if(a==null||b==null)return null;if(a===b)return {n:0,hs:SYSSEC[a]!=null?SYSSEC[a]>=0.45:null,min:SYSSEC[a]??null};const k=a+'|'+b;if(ROUTES[k]!==undefined)return ROUTES[k];
+  if(a==null||b==null)return null;if(a===b)return {n:0,hs:SYSSEC[a]!=null?SYSSEC[a]>=0.45:null,min:SYSSEC[a]??null};const k=a+'|'+b;
+  // sikertelen vagy hiányos (ismeretlen biztonságú) eredményt csak 5 percig tartunk meg, utána újrapróbálja
+  const c=ROUTES[k];if(c!==undefined&&c!==null){const weak=c.fail||c.hs==null;if(!weak||Date.now()-(c.at||0)<ROUTE_RETRY)return c.fail?null:c}
   let r=null;try{r=await esi('/route/'+a+'/'+b+'/?flag=secure')}catch(e){}
   if(!r){try{r=await esi('/route/'+a+'/'+b+'/')}catch(e){}}
   let res=null;
   if(Array.isArray(r)&&r.length){ // a biztonságot rendszerenként ellenőrizzük, nem a kérés módjából találgatjuk
     const need=r.filter(id=>SYSSEC[id]==null);await Promise.all(need.map(async id=>{try{SYSSEC[id]=(await esi('/universe/systems/'+id+'/')).security_status}catch(e){}}));store('syssec',SYSSEC);
     const known=r.every(id=>SYSSEC[id]!=null);const min=known?Math.min(...r.map(id=>SYSSEC[id])):null;
-    res={n:r.length-1,hs:known?min>=0.45:null,min};
+    res={n:r.length-1,hs:known?min>=0.45:null,min,at:Date.now()};
   }
-  ROUTES[k]=res;store('routes2',ROUTES);return res;
+  ROUTES[k]=res||{fail:true,at:Date.now()};store('routes2',ROUTES);return res;
 }
 async function prepHaul(R){
   const H=haulList(R);const pairs=[];
@@ -2843,6 +2865,8 @@ function buildUnit(n,sys){ // gyártási egységár: részfa piaci áron + a cso
 }
 function renderResult(el,R,rerun){
   assignChars(R.jobs);
+  // ha a kiosztás változott (pl. más karakterek dolgoznak), a szállítási útvonalakat újra előkészíti, majd újrarajzol
+  {const sig=haulSig(R);if(R.haulSig!==sig){R.haulSig=sig;Promise.all([assignJobSys(R.jobs),prepHaul(R)]).then(()=>{if(R.haulSig===sig&&el.isConnected)renderResult(el,R,rerun)}).catch(e=>log('Szállítás előkészítés: '+e.message))}}
   const free=$('#optStockFree').checked;const fee=salesTax()+brokerFee();
   // ár nélküli tételek: ezekből a profit nem számolható (nem 0 költséggel számolunk)
   const unkOf=(tree)=>{const u=new Set();const scan=n=>{if(n.buy>0&&!buyPrice(n.t))u.add(n.t);if(!free&&n.stock.some(x=>x.l!=='surplus'&&x.l!=='job'&&x.q>0)&&!unitPrice(n.t))u.add(n.t);n.ch.forEach(scan)};scan(tree);if(!sell(tree.t))u.add(tree.t);return u};
@@ -2861,7 +2885,7 @@ function renderResult(el,R,rerun){
     <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?(()=>{const g=R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0);const f2=m2Fee();return `<div class="small muted">${esc(m2Short())}: ${f2!=null?isk(g*(1-f2)):isk(g)+' '+T('(díjak nélkül)')}</div>`})():''}</div>
     <div class="kpi"><div class="k">Profit</div>${unkAll.size?`<div class="v">${T('nem számolható')}</div><div class="small muted">${T('becslés ár nélküli tételek nélkül: {0}',isk(profit))}</div>`:`<div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div>`}</div>
   </div>${unkAll.size?`<div class="notice" style="margin:8px 0"><p class="small">${T('Ezeknek nincs piaci ára, ezért a költség és a profit nem pontos: {0}. Ha hálózati hiba volt, pár perc múlva számolj újra.',esc([...unkAll].map(t=>NAMES[t]||t).join(', ')))}</p></div>`:''}`;
-  const syss=[...new Set(R.jobs.map(j=>j.sys??R.sys).filter(Boolean))];
+  const syss=[...new Set(R.jobs.map(j=>jobSysOf(j,R.sys)).filter(Boolean))];
   h+=`<p class="small muted">${syss.length>1?T('Gyártási rendszerek: {0}',syss.map(s=>esc(NAMES[s]||s)+((IDX.p[s]||{}).manufacturing!=null?' ('+fmt(IDX.p[s].manufacturing*100,2)+'%)':'')).join(', ')):T('Gyártási rendszer: {0}',esc(NAMES[syss[0]||R.sys]||syss[0]||R.sys||T('ismeretlen')))+(((IDX.p[syss[0]||R.sys]||{}).manufacturing)!=null?' · cost index '+fmt(IDX.p[syss[0]||R.sys].manufacturing*100,2)+'%':'')} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
   R.warn.forEach(w=>h+=`<div class="notice">${esc(warnText(w))}</div>`);
   // termékenként
@@ -3524,20 +3548,41 @@ $('#expBtn').onclick=()=>{
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='indyops-backup-'+new Date().toISOString().slice(0,10)+(withTok?'-with-logins':'')+'.json';
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);status('mentés letöltve');
 };
-// mentés ellenőrzése: típusok és kötelező mezők; ismeretlen mezőket eldob, a hibás projekteket nem veszi át
-function validateBackup(d){const err=[];const num=x=>typeof x==='number'&&isFinite(x);const out={app:d.app,at:d.at,withTokens:!!d.withTokens};
-  if(d.settings!=null&&(typeof d.settings!=='object'||Array.isArray(d.settings)))err.push(T('a beállítások nem objektum'));
-  out.settings=d.settings&&typeof d.settings==='object'&&!Array.isArray(d.settings)?d.settings:{};
-  if(d.projects!=null&&!Array.isArray(d.projects))err.push(T('a projektek nem lista'));
-  out.projects=[];for(const [i,p] of (Array.isArray(d.projects)?d.projects:[]).entries()){
-    if(!p||typeof p!=='object'||!num(p.id)||typeof p.name!=='string'||!Array.isArray(p.items)){err.push(T('{0}. projekt hibás',i+1));continue}
-    const items=p.items.filter(it=>it&&typeof it==='object'&&num(it.runs)&&it.runs>0&&(num(it.bpType)||num(it.invT1)));
-    if(items.length!==p.items.length)err.push(T('„{0}” projekt: {1} hibás tétel',p.name,p.items.length-items.length));
-    const src=p.src&&typeof p.src==='object'&&(p.src.mode==='all'||p.src.mode==='sel')?{mode:p.src.mode,locs:(p.src.locs||[]).filter(num),conts:(p.src.conts||[]).filter(num),excl:(p.src.excl||[]).filter(num)}:undefined;
-    out.projects.push(Object.assign({},p,{items,src,active:p.active!==false}))}
-  out.selp=num(d.selp)?d.selp:null;
-  out.chars=Array.isArray(d.chars)?d.chars.filter(c=>c&&num(c.id)&&typeof c.name==='string'):[];
-  if(Array.isArray(d.chars)&&out.chars.length!==d.chars.length)err.push(T('hibás karakter-bejegyzés'));
+// mentés ellenőrzése mezőnként: ismert beállítás csak a várt típussal jöhet át, ismeretlen mező kimarad;
+// hibás bemenetre sem dob kivételt, és hiba esetén semmit nem alkalmaz
+const SET_SCHEMA={clientId:'str',system:'str',lang:'str',prodLoc:'numOrEmpty',salesTax:'numOrEmpty',broker:'numOrEmpty',market2:'numOrEmpty',
+  structME:'num',structTE:'num',structRes:'num',facTax:'num',scc:'num',yieldBase:'num',implant:'num',
+  locs:'numArrOrNull',workChars:'numArrOrNull',wallet:'bool',buyM2:'bool',srcShips:'bool',
+  buyOverride:'mapNumOrStr',locNames:'mapStr',structBroker:'mapNum',repro:'repro'};
+function validateBackup(d){
+  const err=[];const out={settings:{},projects:[],chars:[],selp:null};
+  try{
+    const num=x=>typeof x==='number'&&isFinite(x);const isObj=x=>x!=null&&typeof x==='object'&&!Array.isArray(x);
+    const numish=x=>num(x)||(typeof x==='string'&&x.trim()!==''&&isFinite(Number(x)));
+    const mapOf=(o,f)=>isObj(o)&&Object.values(o).every(f);
+    const okType={str:x=>typeof x==='string',num:numish,numOrEmpty:x=>x===''||x==null||numish(x),bool:x=>typeof x==='boolean',
+      numArrOrNull:x=>x===null||(Array.isArray(x)&&x.every(num)),mapNumOrStr:x=>mapOf(x,v=>numish(v)||typeof v==='string'),mapStr:x=>mapOf(x,v=>typeof v==='string'),mapNum:x=>mapOf(x,numish),
+      repro:x=>isObj(x)&&(x.loc==null||mapOf(x.loc,v=>isObj(v)&&Object.values(v).every(y=>y===''||y==null||numish(y))))&&(x.imp==null||mapOf(x.imp,v=>numish(v)||v==='auto'))&&(x.char==null||x.char===''||numish(x.char))};
+    out.app=d.app;out.at=d.at;out.withTokens=!!d.withTokens;
+    if(d.settings!=null&&!isObj(d.settings))err.push(T('a beállítások nem objektum'));
+    else for(const [k,v] of Object.entries(d.settings||{})){const t=SET_SCHEMA[k];if(!t)continue;if(okType[t](v))out.settings[k]=v;else err.push(T('hibás beállítás: {0}',k))}
+    if(d.projects!=null&&!Array.isArray(d.projects))err.push(T('a projektek nem lista'));
+    const srcOk=x=>x==null||(isObj(x)&&(x.mode==='all'||x.mode==='sel')&&['locs','conts','excl'].every(f=>x[f]==null||(Array.isArray(x[f])&&x[f].every(num))));
+    const cleanSrc=x=>x?{mode:x.mode,locs:(x.locs||[]).slice(),conts:(x.conts||[]).slice(),excl:(x.excl||[]).slice()}:undefined;
+    for(const [i,p] of (Array.isArray(d.projects)?d.projects:[]).entries()){
+      if(!isObj(p)||!num(p.id)||typeof p.name!=='string'||!Array.isArray(p.items)){err.push(T('{0}. projekt hibás',i+1));continue}
+      if(!srcOk(p.src)){err.push(T('„{0}” projekt: hibás nyersanyag-forrás',p.name));continue}
+      const items=[];let bad=0;
+      for(const it of p.items){if(!isObj(it)||!num(it.runs)||!(it.runs>0)||!(num(it.bpType)||num(it.invT1))||!srcOk(it.src)){bad++;continue}
+        const c={runs:it.runs};if(num(it.bpType))c.bpType=it.bpType;else{c.invT1=it.invT1;if(num(it.t2))c.t2=it.t2;c.dec=num(it.dec)?it.dec:null;c.pi=num(it.pi)?it.pi:0}
+        if(it.src)c.src=cleanSrc(it.src);items.push(c)}
+      if(bad)err.push(T('„{0}” projekt: {1} hibás tétel',p.name,bad));
+      out.projects.push({id:p.id,name:p.name,active:p.active!==false,items,src:cleanSrc(p.src)})}
+    out.selp=num(d.selp)?d.selp:null;
+    if(d.chars!=null&&!Array.isArray(d.chars))err.push(T('hibás karakter-bejegyzés'));
+    for(const c of (Array.isArray(d.chars)?d.chars:[])){if(!isObj(c)||!num(c.id)||typeof c.name!=='string'){err.push(T('hibás karakter-bejegyzés'));continue}
+      out.chars.push({id:c.id,name:c.name,refresh:typeof c.refresh==='string'?c.refresh:undefined,cid:typeof c.cid==='string'?c.cid:undefined,scp:Array.isArray(c.scp)?c.scp.filter(x=>typeof x==='string'):undefined})}
+  }catch(e){err.push(T('váratlan hiba: {0}',e.message))}
   return {err,d:out}}
 $('#impFile').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;const rd=new FileReader();

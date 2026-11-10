@@ -114,14 +114,18 @@ const ACT_IDX={m:'manufacturing',r:'reaction',i:'invention',c:'copying',rme:'res
 // minden job a saját gyártási helyének rendszerével számol; a Beállítások „rendszer” mezője mindent felülír, a „gyártási hely” a helyet
 const SYSNAME={};
 async function sysByName(n){if(SYSNAME[n]!==undefined)return SYSNAME[n];try{const r=await esi('/universe/ids/',{method:'POST',body:[n]});SYSNAME[n]=r.systems&&r.systems[0]?r.systems[0].id:null}catch(e){SYSNAME[n]=null}return SYSNAME[n]}
+// előkészítés: a rendszer-felülírás azonosítója és minden szóba jöhető BP-hely rendszere legyen ismert,
+// hogy a job rendszere a VÉGLEGES (kiosztás utáni) BP-helyből, szinkron számolható legyen
 async function assignJobSys(jobs){
-  const ov=S.system?await sysByName(S.system):null;const cache={};
-  for(const j of jobs){if(ov){j.sys=ov;continue}const l=S.prodLoc?Number(S.prodLoc):(j.bp&&j.bp.l);if(l==null)continue;
-    if(cache[l]===undefined){let li=LOCINFO[l];if(!li){try{li=await resolveLoc(l)}catch(e){li=null}}cache[l]=li&&li.system||null}j.sys=cache[l]||j.sys||null}
+  if(S.system)await sysByName(S.system);
+  const types=new Set(jobs.map(j=>j.bp&&j.bp.t));const locs=new Set(allBPs().filter(b=>types.has(b.t)).map(b=>b.l));
+  if(S.prodLoc)locs.add(Number(S.prodLoc));jobs.forEach(j=>j.bp&&locs.add(j.bp.l));
+  for(const l of locs){if(l==null||LOCINFO[l])continue;try{await resolveLoc(l)}catch(e){}}
 }
+function jobSysOf(j,fallback){if(S.system&&SYSNAME[S.system])return SYSNAME[S.system];const l=S.prodLoc?Number(S.prodLoc):(j.bp&&j.bp.l);const li=l!=null?LOCINFO[l]:null;return (li&&li.system)||fallback||null}
 function jobCost(j,sysId){
   const eiv=j.base.reduce((s,[m,q])=>s+(ADJ.p[m]||0)*q,0)*j.runs*(j.cm||1);
-  const index=((IDX.p[j.sys??sysId]||{})[ACT_IDX[j.act]])||0;
+  const index=((IDX.p[jobSysOf(j,sysId)]||{})[ACT_IDX[j.act]])||0;
   return eiv*(index+Number(S.facTax||0)/100+Number(S.scc||0)/100);
 }
 function jobTime(j){

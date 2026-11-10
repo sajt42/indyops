@@ -51,20 +51,41 @@ $('#expBtn').onclick=()=>{
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='indyops-backup-'+new Date().toISOString().slice(0,10)+(withTok?'-with-logins':'')+'.json';
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);status('mentés letöltve');
 };
-// mentés ellenőrzése: típusok és kötelező mezők; ismeretlen mezőket eldob, a hibás projekteket nem veszi át
-function validateBackup(d){const err=[];const num=x=>typeof x==='number'&&isFinite(x);const out={app:d.app,at:d.at,withTokens:!!d.withTokens};
-  if(d.settings!=null&&(typeof d.settings!=='object'||Array.isArray(d.settings)))err.push(T('a beállítások nem objektum'));
-  out.settings=d.settings&&typeof d.settings==='object'&&!Array.isArray(d.settings)?d.settings:{};
-  if(d.projects!=null&&!Array.isArray(d.projects))err.push(T('a projektek nem lista'));
-  out.projects=[];for(const [i,p] of (Array.isArray(d.projects)?d.projects:[]).entries()){
-    if(!p||typeof p!=='object'||!num(p.id)||typeof p.name!=='string'||!Array.isArray(p.items)){err.push(T('{0}. projekt hibás',i+1));continue}
-    const items=p.items.filter(it=>it&&typeof it==='object'&&num(it.runs)&&it.runs>0&&(num(it.bpType)||num(it.invT1)));
-    if(items.length!==p.items.length)err.push(T('„{0}” projekt: {1} hibás tétel',p.name,p.items.length-items.length));
-    const src=p.src&&typeof p.src==='object'&&(p.src.mode==='all'||p.src.mode==='sel')?{mode:p.src.mode,locs:(p.src.locs||[]).filter(num),conts:(p.src.conts||[]).filter(num),excl:(p.src.excl||[]).filter(num)}:undefined;
-    out.projects.push(Object.assign({},p,{items,src,active:p.active!==false}))}
-  out.selp=num(d.selp)?d.selp:null;
-  out.chars=Array.isArray(d.chars)?d.chars.filter(c=>c&&num(c.id)&&typeof c.name==='string'):[];
-  if(Array.isArray(d.chars)&&out.chars.length!==d.chars.length)err.push(T('hibás karakter-bejegyzés'));
+// mentés ellenőrzése mezőnként: ismert beállítás csak a várt típussal jöhet át, ismeretlen mező kimarad;
+// hibás bemenetre sem dob kivételt, és hiba esetén semmit nem alkalmaz
+const SET_SCHEMA={clientId:'str',system:'str',lang:'str',prodLoc:'numOrEmpty',salesTax:'numOrEmpty',broker:'numOrEmpty',market2:'numOrEmpty',
+  structME:'num',structTE:'num',structRes:'num',facTax:'num',scc:'num',yieldBase:'num',implant:'num',
+  locs:'numArrOrNull',workChars:'numArrOrNull',wallet:'bool',buyM2:'bool',srcShips:'bool',
+  buyOverride:'mapNumOrStr',locNames:'mapStr',structBroker:'mapNum',repro:'repro'};
+function validateBackup(d){
+  const err=[];const out={settings:{},projects:[],chars:[],selp:null};
+  try{
+    const num=x=>typeof x==='number'&&isFinite(x);const isObj=x=>x!=null&&typeof x==='object'&&!Array.isArray(x);
+    const numish=x=>num(x)||(typeof x==='string'&&x.trim()!==''&&isFinite(Number(x)));
+    const mapOf=(o,f)=>isObj(o)&&Object.values(o).every(f);
+    const okType={str:x=>typeof x==='string',num:numish,numOrEmpty:x=>x===''||x==null||numish(x),bool:x=>typeof x==='boolean',
+      numArrOrNull:x=>x===null||(Array.isArray(x)&&x.every(num)),mapNumOrStr:x=>mapOf(x,v=>numish(v)||typeof v==='string'),mapStr:x=>mapOf(x,v=>typeof v==='string'),mapNum:x=>mapOf(x,numish),
+      repro:x=>isObj(x)&&(x.loc==null||mapOf(x.loc,v=>isObj(v)&&Object.values(v).every(y=>y===''||y==null||numish(y))))&&(x.imp==null||mapOf(x.imp,v=>numish(v)||v==='auto'))&&(x.char==null||x.char===''||numish(x.char))};
+    out.app=d.app;out.at=d.at;out.withTokens=!!d.withTokens;
+    if(d.settings!=null&&!isObj(d.settings))err.push(T('a beállítások nem objektum'));
+    else for(const [k,v] of Object.entries(d.settings||{})){const t=SET_SCHEMA[k];if(!t)continue;if(okType[t](v))out.settings[k]=v;else err.push(T('hibás beállítás: {0}',k))}
+    if(d.projects!=null&&!Array.isArray(d.projects))err.push(T('a projektek nem lista'));
+    const srcOk=x=>x==null||(isObj(x)&&(x.mode==='all'||x.mode==='sel')&&['locs','conts','excl'].every(f=>x[f]==null||(Array.isArray(x[f])&&x[f].every(num))));
+    const cleanSrc=x=>x?{mode:x.mode,locs:(x.locs||[]).slice(),conts:(x.conts||[]).slice(),excl:(x.excl||[]).slice()}:undefined;
+    for(const [i,p] of (Array.isArray(d.projects)?d.projects:[]).entries()){
+      if(!isObj(p)||!num(p.id)||typeof p.name!=='string'||!Array.isArray(p.items)){err.push(T('{0}. projekt hibás',i+1));continue}
+      if(!srcOk(p.src)){err.push(T('„{0}” projekt: hibás nyersanyag-forrás',p.name));continue}
+      const items=[];let bad=0;
+      for(const it of p.items){if(!isObj(it)||!num(it.runs)||!(it.runs>0)||!(num(it.bpType)||num(it.invT1))||!srcOk(it.src)){bad++;continue}
+        const c={runs:it.runs};if(num(it.bpType))c.bpType=it.bpType;else{c.invT1=it.invT1;if(num(it.t2))c.t2=it.t2;c.dec=num(it.dec)?it.dec:null;c.pi=num(it.pi)?it.pi:0}
+        if(it.src)c.src=cleanSrc(it.src);items.push(c)}
+      if(bad)err.push(T('„{0}” projekt: {1} hibás tétel',p.name,bad));
+      out.projects.push({id:p.id,name:p.name,active:p.active!==false,items,src:cleanSrc(p.src)})}
+    out.selp=num(d.selp)?d.selp:null;
+    if(d.chars!=null&&!Array.isArray(d.chars))err.push(T('hibás karakter-bejegyzés'));
+    for(const c of (Array.isArray(d.chars)?d.chars:[])){if(!isObj(c)||!num(c.id)||typeof c.name!=='string'){err.push(T('hibás karakter-bejegyzés'));continue}
+      out.chars.push({id:c.id,name:c.name,refresh:typeof c.refresh==='string'?c.refresh:undefined,cid:typeof c.cid==='string'?c.cid:undefined,scp:Array.isArray(c.scp)?c.scp.filter(x=>typeof x==='string'):undefined})}
+  }catch(e){err.push(T('váratlan hiba: {0}',e.message))}
   return {err,d:out}}
 $('#impFile').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;const rd=new FileReader();
