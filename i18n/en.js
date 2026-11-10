@@ -790,5 +790,8 @@ window.I18N.en = {
   'csak highsec útvonal': 'highsec route only',
   Vásárlás: 'Purchase',
   'Köztes termék': 'Intermediate',
-  Eladásra: 'For sale'
+  Eladásra: 'For sale',
+  'Legfeljebb {0} megtakarítás.': 'Up to {0} saved.',
+  kell: 'need',
+  'A Jitánál nem olcsóbb a közelben: {0}': 'Not cheaper than Jita nearby: {0}'
 };

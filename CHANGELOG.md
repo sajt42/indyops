@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.14.2 – 2026-11-10
+
+- Where to buy cheaper?: the result spans the full width under the shopping list and the jobs, grouped per material (needed quantity and Jita price in the group row), with short station names (full name on hover), the largest possible saving at the top, and the materials that are not cheaper nearby listed below.
+
 ## 1.14.1 – 2026-11-10
 
 - Hauling: one card per route that wraps instead of scrolling sideways; each card says what moves (purchase, from stock, intermediate product, for sale), shows short station names (full name on hover), the items, and the ship suggestions below.

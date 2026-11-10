@@ -797,5 +797,8 @@ window.I18N.de = {
   'csak highsec útvonal': 'nur Highsec-Route',
   Vásárlás: 'Einkauf',
   'Köztes termék': 'Zwischenprodukt',
-  Eladásra: 'Zum Verkauf'
+  Eladásra: 'Zum Verkauf',
+  'Legfeljebb {0} megtakarítás.': 'Bis zu {0} Ersparnis.',
+  kell: 'Bedarf',
+  'A Jitánál nem olcsóbb a közelben: {0}': 'In der Nähe nicht billiger als Jita: {0}'
 };

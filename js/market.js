@@ -175,29 +175,29 @@ function mktHtml(res) {
     .map(r => NAMES[r] || r)
     .join(', ');
   const rows = res.rows.filter(x => x.cands.length || (S.buySrc && S.buySrc[x.t]));
-  return html`<div class="notice" style="margin-top:10px"><p class="small">${T(
+  const none = res.rows.filter(x => !x.cands.length).map(x => NAMES[x.t] || x.t);
+  const best = rows.reduce((s, x) => s + Math.max(0, ...x.cands.map(c => c.save || 0)), 0);
+  const cand = (x, c) =>
+    html`<tr><td></td><td class="small"><span title="${locName(c.l)}">${shortLoc(c.l)}</span>${c.l > 1e12 ? html` <span class="pill warn">${T('struktúra: dokkolási jog kell')}</span>` : ''}</td><td class="num">${c.n != null ? fmt(c.n) : '?'}${c.hs === false ? html` <span class="pill warn">ls/ns</span>` : ''}</td><td class="num">${fmt(c.q)}${c.q < x.q ? html`<div class="src">${T('a többi Jitáról')}</div>` : ''}</td><td class="num">${isk(c.p)}</td><td class="num pos">${c.save != null ? isk(c.save) : '–'}</td><td>${
+      S.buySrc && S.buySrc[x.t] === c.l
+        ? html`<span class="pill ok">${T('innen')}</span> <button class="btn mini" data-mktpick="${x.t}|">${T('vissza')}</button>`
+        : html`<button class="btn mini" data-mktpick="${x.t}|${c.l}">${T('Innen veszem')}</button>`
+    }</td></tr>`;
+  return html`<div class="card mktcard" style="margin-top:12px"><h3>${T('Hol vegyem olcsóbban?')}</h3><p class="small muted">${T(
     'Keresés: {0}; legfeljebb {1} ugrás {2} innen: {3}. A közeli ár az order book átlaga a szükséges mennyiségre; ami ott nem kapható, az a Jitáról jön.',
     regs,
     res.maxJ,
     res.hsOnly ? T('highsec úton') : '',
-    res.home ? locName(res.home.l) : '?'
-  )}</p></div>${
+    res.home ? shortLoc(res.home.l) : '?'
+  )}${best > 0 ? html` <b class="pos">${T('Legfeljebb {0} megtakarítás.', isk(best))}</b>` : ''}</p>${
     rows.length
-      ? html`<div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Kell</th><th class="num">Jita</th><th>Hol</th><th class="num">Ugrás</th><th class="num">Kapható</th><th class="num">Átlagár</th><th class="num">Megtakarítás</th><th></th></tr></thead><tbody>${rows.map(
+      ? html`<div class="tablewrap"><table class="mkttab"><thead><tr><th>Tárgy</th><th>Hol</th><th class="num">Ugrás</th><th class="num">Kapható</th><th class="num">Átlagár</th><th class="num">Megtakarítás</th><th></th></tr></thead><tbody>${rows.map(
           x =>
-            html`${x.cands.map(
-              (c, i) =>
-                html`<tr><td>${i ? '' : NAMES[x.t] || x.t}</td><td class="num">${i ? '' : fmt(x.q)}</td><td class="num">${i ? '' : isk(x.jita)}</td><td class="small">${locName(c.l)}${c.l > 1e12 ? html` <span class="pill warn">${T('struktúra: dokkolási jog kell')}</span>` : ''}</td><td class="num">${c.n != null ? fmt(c.n) : '?'}${c.hs === true ? '' : c.hs === false ? html` <span class="pill warn">ls/ns</span>` : ''}</td><td class="num">${fmt(c.q)}${c.q < x.q ? html`<div class="src">${T('a többi Jitáról')}</div>` : ''}</td><td class="num">${isk(c.p)}</td><td class="num pos">${c.save != null ? isk(c.save) : '–'}</td><td>${
-                  S.buySrc && S.buySrc[x.t] === c.l
-                    ? html`<span class="pill ok">${T('innen')}</span> <button class="btn mini" data-mktpick="${x.t}|">${T('vissza')}</button>`
-                    : html`<button class="btn mini" data-mktpick="${x.t}|${c.l}">${T('Innen veszem')}</button>`
-                }</td></tr>`
-            )}`
+            html`<tr class="mkthead"><td colspan="7"><b>${NAMES[x.t] || x.t}</b> <span class="small muted">· ${T('kell')} ${fmt(x.q)} · Jita ${isk(x.jita)}</span></td></tr>${x.cands.map(c => cand(x, c))}`
         )}</tbody></table></div>`
       : html`<p class="small muted">${T('Nincs a Jitánál olcsóbb ajánlat a megadott régiókban és távolságon belül.')}</p>`
-  }`;
+  }${none.length && rows.length ? html`<p class="small muted" style="margin-top:6px">${T('A Jitánál nem olcsóbb a közelben: {0}', none.join(', '))}</p>` : ''}</div>`;
 }
-
 // shopping list controls: manual price fields, the market search button and the "buy here" buttons
 function bindBuySources(el, R) {
   el.querySelectorAll('[data-manp]').forEach(i =>

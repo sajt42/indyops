@@ -991,7 +991,7 @@ function resultShopping(bl) {
   ${bl.some(([t, q]) => !buyPrice(t, q)) ? html`<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs ára, ezért a profit nem számolható. Adj meg kézi árat, vagy keress forrást.</p>` : ''}
   <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button> ${
     bl.length ? html`<button class="btn" data-mktsearch>Hol vegyem olcsóbban?</button>` : ''
-  }</p><p class="small muted">A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi.</p><div class="mktout"></div></div>`;
+  }</p><p class="small muted">A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi.</p></div>`;
 }
 function resultJobs(R, multi) {
   return html`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs
@@ -1068,6 +1068,8 @@ function renderResult(el, R, rerun) {
   h = html`${h}${resultProducts(R, P.rows, multi)}`;
   h = html`${h}${resultShopping(bl)}`;
   h = html`${h}${resultJobs(R, multi)}`;
+  // the market search result spans the full width, under the shopping list and the jobs
+  h = html`${h}<div class="mktout"></div>`;
   h = html`${h}${resultCharLoad(R)}`;
   h = html`${h}${renderHaul(R)}`;
   h = html`${h}${resultTrees(R, multi)}`;
