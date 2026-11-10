@@ -20,7 +20,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.10.6">
+<link rel="stylesheet" href="css/style.css?v=1.11.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -240,7 +240,7 @@
     </div>
   </div>
   <div id="stPg1"></div>
-  <div class="tablewrap"><table id="stTable"><thead><tr><th>Tárgy</th><th class="num">Összesen</th><th>Hol</th></tr></thead><tbody></tbody></table></div>
+  <div class="tablewrap"><table id="stTable"><thead><tr id="stHead"><th>Tárgy</th><th class="num">Összesen</th><th>Hol</th></tr></thead><tbody></tbody></table></div>
   <div id="stPg2"></div>
   <p class="small muted" id="stCount" style="margin-top:6px"></p>
 </section>
@@ -409,7 +409,7 @@
     <dt>Kutatás &amp; copy</dt><dd>BPO-nként a következő ME szint ideje és költsége, mennyit spórol runonként, mikor térül meg, plusz a copy ideje és a science slotjaid.</dd>
     <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van. Játékos-struktúránál a broker fee-t a tulaj állítja, ezt egyszer beírhatod, és onnantól az eladó-javaslat és az összeg is számol vele. A struktúrában lévő ordereidnél az alá-ígérést a struktúra piacáról nézi.</dd>
     <dt>Vásárlás nélkül</dt><dd>Hány runt tudsz legyártani csak abból, ami megvan, és mi fogy el először.</dd>
-    <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind), és a fejlécre kattintva rendezhetők.</dd>
+    <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind). Minden listás oldalon (Blueprintek, Készlet, Mit érdemes?, Invention, Kutatás, Eladás, Vásárlás nélkül, Reprocess) a fejlécre kattintva rendezhetsz, újabb kattintásra fordított sorrendben.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Reprocess</dt><dd>Végignézi a készletet, és kilistázza, mi reprocesszálható belőle (érc, ice, modulok, loot): mennyi anyag jön ki, melyik karakterrel a legjobb a hozam, és egyben eladva vagy szétszedve ér-e többet. Helyszínenként számol: NPC állomásnál az állomás saját hozamával, alapadójával és azzal, hogy van-e ott reprocessing (az ESI-ből), az adót karakterenként a standinggel csökkentve; Upwell struktúránál (Athanor, Tatara) a riggel, a rendszer biztonságával és az adóval, amit neked kell megadni. Az implantot az aktív klónból olvassa. Az értékeket Jita és a második piac szerint is mutatja. Kijelölhetsz egyenként vagy mindet, és összesíti, mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac (és hogy ott vásároljon-e, ha olcsóbb), kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
@@ -472,7 +472,7 @@
     <dt>Research &amp; copy</dt><dd>Per BPO: time and cost of the next ME level, how much it saves per run, when it pays off, plus copy time and your science slots.</dd>
     <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do. In a player structure the owner sets the broker fee; enter it once and the seller suggestion and totals use it. For your orders in structures, undercuts are checked on the structure's own market.</dd>
     <dt>No-buy builds</dt><dd>How many runs you can build from what you already have, and what runs out first.</dd>
-    <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all) and can be sorted by clicking the header.</dd>
+    <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all). On every list page (Blueprints, Stock, What pays?, Invention, Research, Selling, No-buy builds, Reprocess) click a header to sort, click again to reverse.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
     <dt>Reprocess</dt><dd>Goes through your stock and lists what can be reprocessed (ore, ice, modules, loot): how much comes out, which character gets the best yield, and whether it's worth more sold as is or broken down. Each location counts separately: for NPC stations, the station's own yield, base tax and whether it offers reprocessing (from ESI), with the tax lowered per character by standing; for Upwell structures (Athanor, Tatara), rig, system security and tax, which you set yourself. The implant is read from your active clone. Values are shown for Jita and the second market. Select items one by one or all at once, and it sums up how much of your latest plan's shortfall they cover.</dd>
     <dt>Settings</dt><dd>Structure bonuses, taxes, second market (and whether to buy there when cheaper), who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
@@ -535,7 +535,7 @@
     <dt>Forschung &amp; Kopie</dt><dd>Pro BPO: Zeit und Kosten der nächsten ME-Stufe, Ersparnis pro Run, wann es sich lohnt, dazu Kopierzeit und deine Science-Slots.</dd>
     <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen. In einer Spielerstruktur legt der Besitzer die Broker Fee fest; trage sie einmal ein, dann rechnen Verkäufervorschlag und Summen damit. Bei deinen Orders in Strukturen wird das Unterbieten am Markt der Struktur geprüft.</dd>
     <dt>Ohne Einkauf</dt><dd>Wie viele Runs du nur aus deinem Bestand bauen kannst und was zuerst ausgeht.</dd>
-    <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle) und per Klick auf die Kopfzeile sortierbar.</dd>
+    <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle). Auf jeder Listenseite (Blueprints, Bestand, Was lohnt sich?, Invention, Forschung, Verkauf, Ohne Einkauf, Reprocess) sortierst du per Klick auf die Kopfzeile, erneuter Klick dreht die Reihenfolge.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
     <dt>Reprocess</dt><dd>Geht deinen Bestand durch und listet auf, was sich reprocessen lässt (Erz, Eis, Module, Loot): wie viel herauskommt, welcher Charakter die beste Ausbeute hat und ob es am Stück oder zerlegt mehr wert ist. Jeder Ort zählt einzeln: bei NPC-Stationen mit eigener Ausbeute, Grundsteuer und ob es dort Reprocessing gibt (aus ESI), die Steuer pro Charakter um das Standing gesenkt; bei Upwell-Strukturen (Athanor, Tatara) mit Rig, Systemsicherheit und Steuer, die du selbst einstellst. Das Implantat wird aus dem aktiven Klon gelesen. Werte werden für Jita und den zweiten Markt angezeigt. Wähle einzeln oder alles aus, dann wird zusammengefasst, wie viel vom Bedarf deines letzten Plans gedeckt ist.</dd>
     <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt (und ob dort gekauft wird, wenn billiger), wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
@@ -582,15 +582,15 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.10.6"></script>
-<script src="i18n/de.js?v=1.10.6"></script>
-<script src="js/core.js?v=1.10.6"></script>
-<script src="js/esi.js?v=1.10.6"></script>
-<script src="js/data.js?v=1.10.6"></script>
-<script src="js/engine.js?v=1.10.6"></script>
-<script src="js/views.js?v=1.10.6"></script>
-<script src="js/tabs.js?v=1.10.6"></script>
-<script src="js/repro.js?v=1.10.6"></script>
-<script src="js/main.js?v=1.10.6"></script>
+<script src="i18n/en.js?v=1.11.0"></script>
+<script src="i18n/de.js?v=1.11.0"></script>
+<script src="js/core.js?v=1.11.0"></script>
+<script src="js/esi.js?v=1.11.0"></script>
+<script src="js/data.js?v=1.11.0"></script>
+<script src="js/engine.js?v=1.11.0"></script>
+<script src="js/views.js?v=1.11.0"></script>
+<script src="js/tabs.js?v=1.11.0"></script>
+<script src="js/repro.js?v=1.11.0"></script>
+<script src="js/main.js?v=1.11.0"></script>
 </body>
 </html>

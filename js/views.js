@@ -59,7 +59,8 @@ function renderStock(){
   const f=$('#stFilter').value.toLowerCase(),lf=$('#stLoc').value,only=$('#stOnlyPlan').checked;
   const sm=stockMap(only);let rows=[];
   for(const [t,arr] of sm){const name=NAMES[t]||'#'+t;if(f&&!name.toLowerCase().includes(f))continue;const a=lf?arr.filter(x=>String(x.l)===lf):arr;const tot=a.reduce((s,x)=>s+x.q,0);if(!tot)continue;rows.push({t,name,tot,a})}
-  rows.sort((a,b)=>a.name.localeCompare(b.name,'hu'));
+  if(!SRT.st)SRT.st={f:'name',d:1};sortRows('st',rows,(r,f)=>f==='name'?r.name:f==='tot'?r.tot:r.a.length);
+  $('#stHead').innerHTML=sortTh('st','name',T('Tárgy'))+sortTh('st','tot',T('Összesen'),1)+sortTh('st','where',T('Hol'),1);
   const pg=pageOf('st',rows,[f,lf,only].join('|'),renderStock);const shown=pg.rows;$('#stPg1').innerHTML=pg.html;$('#stPg2').innerHTML=pg.html;
   $('#stTable tbody').innerHTML=shown.map(r=>`<tr><td>${esc(r.name)}</td><td class="num">${fmt(r.tot)}</td><td class="small">${r.a.map(x=>esc(charName(x.cid))+' · '+esc(locName(x.l))+': <span class="mono">'+fmt(x.q)+'</span>').join('<br>')}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">Nincs adat.</td></tr>';
   $('#stCount').textContent=T('{0} tételtípus',fmt(rows.length));

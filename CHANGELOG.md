@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.0 – 2026-11-10
+
+- Sort by clicking the column header on every list page: Stock, Invention, Research, Selling (orders), No-buy builds (Blueprints, What pays? and Reprocess already had it)
+
 ## 1.10.6 – 2026-11-10
 
 - Help: FAQ on BPC runs marked * and on the refresh banner; ships in project sources; buying at the second market in Settings. README brought up to date
