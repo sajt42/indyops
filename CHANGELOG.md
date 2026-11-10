@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.12.11 – 2026-11-10
+
+- Fix: the station owners of Jita and the second market (corp and faction, needed for the broker fee) are loaded at start-up. Before, after 1.12.10 reset the faction cache, the seller table showed 'faction not known' until prices were loaded.
+- Tests: outputs that are cut to a length no longer depend on the length of the version number.
+
 ## 1.12.10 – 2026-11-10
 
 - Fix: the broker fee at NPC stations uses the raw standings, without Connections/Diplomacy, as the game does (checked against an in-game order: 1.23%, where the adjusted standings gave 1.27–1.18%).

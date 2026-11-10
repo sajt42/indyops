@@ -548,3 +548,4 @@ updateHelpLang();
 startI18n();
 handleRedirect();
 everefLocs(false);
+loadMarketOwners();

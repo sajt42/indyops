@@ -123,6 +123,13 @@ const T = w.__t,
   console.log('banner:', d.querySelector('#dvNote').textContent.trim() || '(none)');
   T.DATA[1].dv = 1;
   w.eval('renderAll()');
-  console.log('banner old:', d.querySelector('#dvNote').textContent.trim().slice(0, 90));
+  console.log(
+    'banner old:',
+    d
+      .querySelector('#dvNote')
+      .textContent.trim()
+      .replace(/v\d+\.\d+\.\d+/g, 'v<VER>')
+      .slice(0, 90)
+  );
   console.log('count:', d.querySelector('#bpCount').textContent);
 })().catch(e => console.error('FAIL', e));

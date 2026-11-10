@@ -63,6 +63,14 @@ setTimeout(() => {
     '| bug label:',
     d.querySelector('#bugBtn').textContent
   );
-  console.log('footer:', d.querySelector('.fwrap').textContent.replace(/\s+/g, ' ').trim().slice(0, 240));
+  console.log(
+    'footer:',
+    d
+      .querySelector('.fwrap')
+      .textContent.replace(/\s+/g, ' ')
+      .trim()
+      .replace(/v\d+\.\d+\.\d+/g, 'v<VER>')
+      .slice(0, 240)
+  );
   console.log('errors:', errs.length ? errs : 'none');
 }, 400);

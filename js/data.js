@@ -255,12 +255,24 @@ document.addEventListener('change', e => {
   if (v === '') delete S.structBroker[t.dataset.sbroker];
   else S.structBroker[t.dataset.sbroker] = Number(v);
   saveS();
+  redrawSellerBoxes();
+});
+// redraws every "who should sell" table on the page (after a fee or a station owner became known)
+function redrawSellerBoxes() {
   document.querySelectorAll('.sellerbox').forEach(b => {
     const w = document.createElement('div');
     w.innerHTML = sellerHtml();
-    b.replaceWith(w.firstElementChild);
+    if (w.firstElementChild) b.replaceWith(w.firstElementChild);
   });
-});
+}
+// station owners (corp and faction) of Jita and the second market, needed for the broker fee; loaded at start-up
+async function loadMarketOwners() {
+  if (!CHARS.length) return;
+  try {
+    await ensureOwners([JITA_STATION, S.market2 ? Number(S.market2) : null]);
+  } catch (e) {}
+  redrawSellerBoxes();
+}
 function m2Hint() {
   return m2On()
     ? ''

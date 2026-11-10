@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-5nZjPY7HhioA8rmESqIp/s1MzRe9wPrBDRwNDhN7WJs=' 'sha256-r5lCUzUFvVYHzTUwLDaBJb7ysvPIbSDqpG29cA+aI38=' 'sha256-kUm/RIkyMqws7+0ge6/lqmajllxnBK584tpcxDv83a4=' 'sha256-n1eURjpfTIP1l/4fTyR+zg6syrCleDv/MwmK/Thiq9w=' 'sha256-BvgTO5qvXGBkJMX3W/WBwQIy0xK6+eUmiyvcPDrgIK8=' 'sha256-PkGZYp2u1zrJCuiJUp436M2b4f16LJtPYVjpeQvb7gA=' 'sha256-usHtTTyC6MACykjCVk4UjqRMfo6WZX1bK1ZPZP1mlJQ=' 'sha256-DMHYJvgGlAg8W6aA/vbYqfPabLELHy8d+IYlKWjAADM=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-mpFwwF3Bgc4ztUTeSs3HSQ1Wd9OJgZQbIkKRnVGcgTs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-5nZjPY7HhioA8rmESqIp/s1MzRe9wPrBDRwNDhN7WJs=' 'sha256-r5lCUzUFvVYHzTUwLDaBJb7ysvPIbSDqpG29cA+aI38=' 'sha256-Gsdn0uxkjCEds1ZgkHDYOvyExid1U7Nx2Qxd18zXNPk=' 'sha256-n1eURjpfTIP1l/4fTyR+zg6syrCleDv/MwmK/Thiq9w=' 'sha256-0wcLFNM9e+FpjA4I5mMOce8Y03SDvkJ0ekDQ+tBBJFw=' 'sha256-PkGZYp2u1zrJCuiJUp436M2b4f16LJtPYVjpeQvb7gA=' 'sha256-usHtTTyC6MACykjCVk4UjqRMfo6WZX1bK1ZPZP1mlJQ=' 'sha256-DMHYJvgGlAg8W6aA/vbYqfPabLELHy8d+IYlKWjAADM=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-z4Ym1CDPm9LwxRwBp/392bOxbF58GjvJDRnYpV+hU78='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -2284,7 +2284,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.12.10',
+  version: '1.12.11',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -3465,12 +3465,24 @@ document.addEventListener('change', e => {
   if (v === '') delete S.structBroker[t.dataset.sbroker];
   else S.structBroker[t.dataset.sbroker] = Number(v);
   saveS();
+  redrawSellerBoxes();
+});
+// redraws every "who should sell" table on the page (after a fee or a station owner became known)
+function redrawSellerBoxes() {
   document.querySelectorAll('.sellerbox').forEach(b => {
     const w = document.createElement('div');
     w.innerHTML = sellerHtml();
-    b.replaceWith(w.firstElementChild);
+    if (w.firstElementChild) b.replaceWith(w.firstElementChild);
   });
-});
+}
+// station owners (corp and faction) of Jita and the second market, needed for the broker fee; loaded at start-up
+async function loadMarketOwners() {
+  if (!CHARS.length) return;
+  try {
+    await ensureOwners([JITA_STATION, S.market2 ? Number(S.market2) : null]);
+  } catch (e) {}
+  redrawSellerBoxes();
+}
 function m2Hint() {
   return m2On()
     ? ''
@@ -7817,6 +7829,7 @@ updateHelpLang();
 startI18n();
 handleRedirect();
 everefLocs(false);
+loadMarketOwners();
 </script>
 </body>
 </html>

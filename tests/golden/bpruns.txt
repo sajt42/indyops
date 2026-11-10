@@ -1,5 +1,5 @@
 runs: 5:5* 6:0* 7:0*
 bp tab: 5* | 0* elfogyott | 0* elfogyott
 banner: (none)
-banner old: Az IndyOps frissült (v<VER>). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait
+banner old: Az IndyOps frissült (v<VER>). Ehhez a verzióhoz újra le kell tölteni a karakterek adatait:
 count: 3 blueprint · ESI állapot: Pilot A <TIME>, legközelebb <TIME> után frissül. A *: az ESI még nem tud egy gyártásról (fut, vagy a leadás az ESI állapota után történt), ezért a runokat itt javítottam. Az ESI frissülése után eltűnik.
