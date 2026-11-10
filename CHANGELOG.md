@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.9.0 – 2026-11-10
+
+- Long lists are paged (25/50/100/250/500/all) instead of cut off: Reprocess, Stock, Blueprints, What pays?, Invention, Research
+- Reprocess list: sortable columns, character filter, “selected only”, select all filtered items
+- Player structure as second market: broker fee entered by hand (+0.5% SCC) in the seller table and Settings; Planner shows the net at the second market
+- Selling: undercuts on orders in player structures checked on the structure market
+
 ## 1.8.0 – 2026-11-10
 
 - Projects: material sources per project or per item: from everywhere (as before) or only from chosen stations, structures and containers

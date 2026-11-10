@@ -593,5 +593,18 @@ window.I18N.en={
  "{0} konténer": "{0} containers",
  "nincs konténer": "no containers",
  "A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.": "Ticking a location means its hangar and all containers there (except those reserved by another project). You can also tick a container on its own, without the location.",
- "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "“This project only”: no other project touches the box, even one working from everywhere; if two projects reserve it, the one higher in priority wins."
+ "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "“This project only”: no other project touches the box, even one working from everywhere; if two projects reserve it, the one higher in priority wins.",
+ "Első oldal": "First page",
+ "Előző oldal": "Previous page",
+ "Következő oldal": "Next page",
+ "Utolsó oldal": "Last page",
+ "Soronként": "Rows",
+ "Mind a(z) {0} szűrt tétel kijelölése": "Select all {0} filtered items",
+ "{0} kijelölve": "{0} selected",
+ "minden karakter": "all characters",
+ "csak a kijelöltek": "selected only",
+ "{0} tételtípus": "{0} item types",
+ "{0} broker fee (a tulaj állítja), %": "{0} broker fee (set by the owner), %",
+ "+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.": "+ 0.5% SCC surcharge. You see it in game when placing a sell order. Skills and standings don't count here.",
+ "(díjak nélkül)": "(before fees)"
 };

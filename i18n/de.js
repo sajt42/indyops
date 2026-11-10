@@ -593,5 +593,18 @@ window.I18N.de={
  "{0} konténer": "{0} Container",
  "nincs konténer": "keine Container",
  "A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.": "Ein angehakter Ort bedeutet seinen Hangar und alle Container dort (außer den von einem anderen Projekt reservierten). Du kannst auch einen Container allein anhaken, ohne den Ort.",
- "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "„Nur dieses Projekt“: Kein anderes Projekt greift auf die Kiste zu, auch keines, das von überall nimmt; bei zwei Reservierungen gewinnt das Projekt mit höherer Priorität."
+ "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "„Nur dieses Projekt“: Kein anderes Projekt greift auf die Kiste zu, auch keines, das von überall nimmt; bei zwei Reservierungen gewinnt das Projekt mit höherer Priorität.",
+ "Első oldal": "Erste Seite",
+ "Előző oldal": "Vorherige Seite",
+ "Következő oldal": "Nächste Seite",
+ "Utolsó oldal": "Letzte Seite",
+ "Soronként": "Zeilen",
+ "Mind a(z) {0} szűrt tétel kijelölése": "Alle {0} gefilterten auswählen",
+ "{0} kijelölve": "{0} ausgewählt",
+ "minden karakter": "alle Charaktere",
+ "csak a kijelöltek": "nur ausgewählte",
+ "{0} tételtípus": "{0} Gegenstandstypen",
+ "{0} broker fee (a tulaj állítja), %": "{0} Broker Fee (vom Besitzer festgelegt), %",
+ "+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.": "+ 0,5 % SCC-Zuschlag. Im Spiel siehst du sie beim Erstellen einer Verkaufsorder. Skills und Standing zählen hier nicht.",
+ "(díjak nélkül)": "(vor Gebühren)"
 };

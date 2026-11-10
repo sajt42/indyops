@@ -113,3 +113,7 @@ select{max-width:100%;text-overflow:ellipsis}
 .srcc{padding:2px 0;display:flex;flex-wrap:wrap;gap:2px 14px;align-items:center}
 .srcc label.inline{display:inline-flex;width:auto;margin:0}
 .srcrow td{background:var(--bg)}
+.pager{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0}
+.pager label{display:inline-flex;align-items:center;gap:4px;margin-left:8px}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{text-decoration:underline}

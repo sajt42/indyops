@@ -92,9 +92,9 @@ async function repPrices(){
 }
 
 function repFiltered(){
-  const loc=$('#repLoc').value,cat=$('#repCat').value,q=$('#repQ').value.trim().toLowerCase(),better=$('#repBetter').checked;
+  const loc=$('#repLoc').value,cat=$('#repCat').value,q=$('#repQ').value.trim().toLowerCase(),better=$('#repBetter').checked,own=$('#repOwn').value,so=$('#repSelOnly').checked;
   return (REP.rows||[]).filter(r=>{const ti=REFC.t[r.t];
-    if(loc&&String(r.l)!==loc)return false;if(cat==='ore'&&!repIsOre(ti))return false;if(cat==='loot'&&repIsOre(ti))return false;
+    if(loc&&String(r.l)!==loc)return false;if(own&&!r.own.has(Number(own)))return false;if(so&&!REP.sel.has(repKey(r)))return false;if(cat==='ore'&&!repIsOre(ti))return false;if(cat==='loot'&&repIsOre(ti))return false;
     if(q&&!(NAMES[r.t]||'').toLowerCase().includes(q))return false;
     if(better){const c=repCalc(r);if(!c.pick||!(c.outV>c.inV))return false}
     return true});
@@ -115,18 +115,21 @@ function renderRepro(){
   // szűrők
   const locs=[...new Set(REP.rows.map(r=>r.l))].sort((a,b)=>locName(a).localeCompare(locName(b)));
   const ls=$('#repLoc'),cur=ls.value;ls.innerHTML='<option value="">minden helyszín</option>'+locs.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');ls.value=locs.map(String).includes(cur)?cur:'';
+  {const os=$('#repOwn'),cur2=os.value;const cs=CHARS.filter(c=>DATA[c.id]);os.innerHTML='<option value="">'+esc(T('minden karakter'))+'</option>'+cs.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');os.value=cs.some(c=>String(c.id)===cur2)?cur2:''}
   renderRepLocs(locs);
-  const rows=repFiltered().map(r=>Object.assign({r},repCalc(r))).sort((a,b)=>b.outV-a.outV||b.inV-a.inV);
-  const LIM=400;const shown=rows.slice(0,LIM);
+  const get=(x,f)=>f==='name'?(NAMES[x.r.t]||''):f==='loc'?locName(x.r.l):f==='q'?x.r.q:f==='y'?(x.pick?x.pick.y.y:-1):f==='gain'?Math.max(x.outV,x.out2||0)-Math.max(x.inV,x.in2||0):(x[f]||0);
+  if(!SRT.rep)SRT.rep={f:'outV',d:-1};
+  const rows=sortRows('rep',repFiltered().map(r=>Object.assign({r},repCalc(r))),get);
+  const sig=['repLoc','repCat','repQ','repOwn'].map(id=>$('#'+id).value).join('|')+$('#repBetter').checked+$('#repSelOnly').checked;
+  const pg=pageOf('rep',rows,sig,renderRepro);const shown=pg.rows;REP.filtered=rows;
   const allOn=shown.length&&shown.every(x=>REP.sel.has(repKey(x.r)));
   box.innerHTML=!rows.length?'<p class="muted">Nincs a szűrésnek megfelelő reprocesszálható tétel.</p>':
-  `<div class="tablewrap"><table><thead><tr><th><input type="checkbox" id="repAll" ${allOn?'checked':''} aria-label="Mind kijelölése"></th><th>Tárgy</th><th>Helyszín</th><th class="num">Db</th><th>Ki · hozam</th><th>Mi jön ki belőle</th><th class="num">Egyben<div class="small muted" data-noi18n>Jita</div></th><th class="num">Szétszedve<div class="small muted" data-noi18n>Jita</div></th>${m2On()?`<th class="num">Egyben<div class="small muted" data-noi18n>${esc(m2Short())}</div></th><th class="num">Szétszedve<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th>Jobb</th></tr></thead><tbody>${shown.map(x=>{const r=x.r,k=repKey(r);
+  `<div class="row" style="margin-bottom:6px"><button class="btn mini" id="repSelFilt">${T('Mind a(z) {0} szűrt tétel kijelölése',fmt(rows.length))}</button><button class="btn mini" id="repClear2">${T('Kijelölés törlése')}</button><span class="small muted">${T('{0} kijelölve',fmt(REP.sel.size))}</span></div>${pg.html}<div class="tablewrap"><table><thead><tr><th><input type="checkbox" id="repAll" ${allOn?'checked':''} aria-label="Mind kijelölése"></th>${sortTh('rep','name',T('Tárgy'))}${sortTh('rep','loc',T('Helyszín'))}${sortTh('rep','q',T('Db'),1)}${sortTh('rep','y',T('Ki · hozam'),1)}<th>Mi jön ki belőle</th>${sortTh('rep','inV',T('Egyben')+' · Jita',1)}${sortTh('rep','outV',T('Szétszedve')+' · Jita',1)}${m2On()?`${sortTh('rep','in2',T('Egyben')+' · '+esc(m2Short()),1)}${sortTh('rep','out2',T('Szétszedve')+' · '+esc(m2Short()),1)}`:''}${sortTh('rep','gain',T('Jobb'),1)}</tr></thead><tbody>${shown.map(x=>{const r=x.r,k=repKey(r);
     const who=x.pick?`${esc(charName(x.pick.cid))} · <span class="mono">${fmt(x.pick.y.y*100,1)}%</span>${r.own.has(x.pick.cid)?'':` <span class="pill warn" title="${T('A tárgy másik karakternél van, át kell adni.')}">⇄</span>`}`:'<span class="muted">itt nem lehet</span>';
     const top=x.out.slice().sort((a,b)=>b[1]*repPrice(b[0]).v-a[1]*repPrice(a[0]).v).slice(0,4).map(([m,q])=>esc(NAMES[m]||m)+' '+fmt(q)).join(', ')+(x.out.length>4?' …':'');
     const bi=Math.max(x.inV,x.in2||0),bo=Math.max(x.outV,x.out2||0);const where=(v,j,m)=>m2On()&&m>j?esc(m2Short()):'Jita';
     const verdict=!x.pick||!bi&&!bo?'':bo>bi?`<span class="pill ok">reprocess</span><div class="small muted" data-noi18n>${where(bo,x.outV,x.out2)}</div>`:`<span class="pill warn">eladás</span><div class="small muted" data-noi18n>${where(bi,x.inV,x.in2)}</div>`;
-    return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k)?'checked':''}></td><td>${esc(NAMES[r.t]||r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest?`<div class="small muted">${T('{0} marad',fmt(x.rest))}</div>`:''}</td><td class="small">${who}</td><td class="small">${top||'–'}</td><td class="num">${x.inV?(repPrice(r.t).a?'~':'')+isk(x.inV):'–'}</td><td class="num">${x.outV?(x.out.some(([m])=>repPrice(m).a)?'~':'')+isk(x.outV):'–'}</td>${m2On()?`<td class="num">${x.in2?isk(x.in2):'–'}</td><td class="num">${x.out2?isk(x.out2):'–'}</td>`:''}<td>${verdict}</td></tr>`}).join('')}</tbody></table></div>
-  ${rows.length>LIM?`<p class="small muted">${T('Az első {0} tétel látszik ({1}-ból). Szűkíts a szűrőkkel.',LIM,fmt(rows.length))}</p>`:''}
+    return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k)?'checked':''}></td><td>${esc(NAMES[r.t]||r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest?`<div class="small muted">${T('{0} marad',fmt(x.rest))}</div>`:''}</td><td class="small">${who}</td><td class="small">${top||'–'}</td><td class="num">${x.inV?(repPrice(r.t).a?'~':'')+isk(x.inV):'–'}</td><td class="num">${x.outV?(x.out.some(([m])=>repPrice(m).a)?'~':'')+isk(x.outV):'–'}</td>${m2On()?`<td class="num">${x.in2?isk(x.in2):'–'}</td><td class="num">${x.out2?isk(x.out2):'–'}</td>`:''}<td>${verdict}</td></tr>`}).join('')}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.</p>`+m2Hint();
   renderRepSum();
 }
@@ -184,7 +187,8 @@ function renderRepSum(){
   tab.addEventListener('click',e=>{
     if(e.target.id==='repLoad')repLoad();
     else if(e.target.id==='repPrice')repPrices();
-    else if(e.target.id==='repClear'){REP.sel.clear();renderRepro()}
+    else if(e.target.id==='repClear'||e.target.id==='repClear2'){REP.sel.clear();renderRepro()}
+    else if(e.target.id==='repSelFilt'){(REP.filtered||[]).forEach(x=>REP.sel.add(repKey(x.r)));renderRepro()}
   });
   tab.addEventListener('change',e=>{const t=e.target,cfg=repCfg();
     if(t.dataset.rk){t.checked?REP.sel.add(t.dataset.rk):REP.sel.delete(t.dataset.rk);renderRepSum();
@@ -195,7 +199,7 @@ function renderRepSum(){
     else if(t.dataset.rig){(cfg.loc[t.dataset.rig]=cfg.loc[t.dataset.rig]||{}).rig=Number(t.value);save()}
     else if(t.dataset.tax!=null&&t.dataset.tax!==''){(cfg.loc[t.dataset.tax]=cfg.loc[t.dataset.tax]||{}).tax=t.value;save()}
     else if(t.dataset.base){(cfg.loc[t.dataset.base]=cfg.loc[t.dataset.base]||{}).base=t.value;save()}
-    else if(['repLoc','repCat','repBetter'].includes(t.id))renderRepro();
+    else if(['repLoc','repCat','repBetter','repOwn','repSelOnly'].includes(t.id))renderRepro();
   });
   let qt=null;tab.addEventListener('input',e=>{if(e.target.id==='repQ'){clearTimeout(qt);qt=setTimeout(renderRepro,200)}});
 })();

@@ -50,8 +50,22 @@ const rows=sel=>[...d.querySelectorAll(sel+' tbody tr')].map(r=>r.textContent.re
   console.log('SELLER:',d.querySelector('#repSum .small b')&&[...d.querySelectorAll('#repSum p.small')].map(p=>p.textContent.replace(/\s+/g,' ').trim()).join(' | '));
   T.S.market2=L2;await w.eval('ensurePrices([1230,34,35])');T.renderRepro();await tick();
   console.log('STRUCT M2:',rows('#repOut')[0]);
+  T.S.market2=L2;T.renderRepro();await tick();
+  console.log('STRUCT SELLER(no fee):',[...d.querySelectorAll('#repSum .seltab tbody tr')].map(r=>r.textContent.replace(/\s+/g,' ').trim()).join(' / '));
+  const sb=d.querySelector('#repSum [data-sbroker]');sb.value='1';sb.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();
+  console.log('STRUCT SELLER(1%):',[...d.querySelectorAll('#repSum .seltab tbody tr')].map(r=>r.textContent.replace(/\s+/g,' ').trim()).join(' / '));
   T.S.workChars=[1];T.S.market2='';T.renderRepro();const all2=d.querySelector('#repAll');all2.checked=true;all2.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();
   console.log('WORK A ONLY:',[...d.querySelectorAll('#repSum .seltab tbody tr')].map(r=>r.textContent.replace(/\s+/g,' ').trim()).join(' / '),'| chars table:',[...d.querySelectorAll('#repChars tbody tr')].length);
   T.S.workChars=null;
+  {const many=[];for(let i=0;i<130;i++){many.push({t:2001,q:1,l:60000004+(i%2?0:0),own:new Map([[1,1]])})}
+   const keep=T.REP.rows;T.REP.rows=keep.concat(Array.from({length:130},(_,i)=>({t:i%2?2001:1230,q:100+i,l:i%2?L1:L2,own:new Map([[1,100+i]])})));
+   const cat2=d.querySelector('#repCat');cat2.value='';cat2.dispatchEvent(new w.Event('change',{bubbles:true}));const wb=d.querySelector('#repBetter');wb.checked=false;
+   T.renderRepro();await tick();const pagerTxt=()=>d.querySelector('#repOut .pager .small').textContent;
+   console.log('PAGER:',pagerTxt(),'rows:',d.querySelectorAll('#repOut tbody tr').length);
+   d.querySelector('#repOut [data-pg$="|next"]').click();await tick();console.log('PAGE2:',pagerTxt());
+   const sz=d.querySelector('#repOut [data-pgn]');sz.value='25';sz.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();console.log('SIZE25:',pagerTxt(),'rows:',d.querySelectorAll('#repOut tbody tr').length);
+   d.querySelector('#repOut th[data-srt^="rep|q"]').click();await tick();console.log('SORT q first:',d.querySelector('#repOut tbody tr').textContent.replace(/\s+/g,' ').slice(0,60));
+   d.querySelector('#repSelFilt').click();await tick();console.log('SEL ALL FILT:',T.REP.sel.size);
+   T.REP.rows=keep;T.REP.sel.clear();}
   console.log('saved:',JSON.stringify(T.S.repro));
 })().catch(e=>console.error('FAIL',e));

@@ -35,15 +35,24 @@ async function ensureOwners(locs){let ch=false;
     if(i.owner!=null&&CORPFAC[i.owner]===undefined){try{const c=await esi('/corporations/'+i.owner+'/');CORPFAC[i.owner]=c.faction_id??0}catch(e){CORPFAC[i.owner]=0}store('corpfac',CORPFAC)}}
   if(ch)store('locinfo',LOCINFO)}
 // broker fee egy adott helyen: NPC állomáson a tulaj corp és faction felé vett standinggel csökken
-function brokerFeeOf(cid,l){if(S.broker!==''&&S.broker!=null)return Number(S.broker)/100;
+function structBrokerOf(l){const v=S.structBroker&&S.structBroker[l];return v!=null&&v!==''?Number(v):null}
+function brokerFeeOf(cid,l){if(l!=null&&locKind(l)==='struct'){const v=structBrokerOf(l);return v==null?null:(v+0.5)/100}
+  if(S.broker!==''&&S.broker!=null)return Number(S.broker)/100;
   let f=0.03-0.003*lvlOf(cid,SK.broker);const o=l!=null&&locKind(l)==='npc'?stationOwner(l):null;
   if(o&&hasStd(cid))f-=0.0003*effStd(cid,o.fac)+0.0002*effStd(cid,o.corp);return Math.max(0.01,f)}
-function sellers(l=JITA_STATION){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id,l),b2:m2On()&&locKind(Number(S.market2))==='npc'?brokerFeeOf(id,Number(S.market2)):null})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
+function sellers(l=JITA_STATION){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id,l),b2:m2On()?brokerFeeOf(id,Number(S.market2)):null})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
+// a második piacon a legolcsóbb eladó díja (null, ha a struktúra díja nincs megadva)
+function m2Fee(){const b=sellers().filter(x=>x.b2!=null).map(x=>x.tax+x.b2).sort((a,b)=>a-b)[0];return b??null}
 function bestSeller(){return sellers()[0]||null} // akinek a legkisebb az eladási díja
 function salesTax(){const b=bestSeller();return b?b.tax:salesTaxOf(null)}
 function brokerFee(){const b=bestSeller();return b?b.broker:brokerFeeOf(null)}
-function sellerHtml(){const ss=sellers();if(!ss.length)return '';const m2=ss.some(x=>x.b2!=null);const noStd=workChars().some(id=>!hasStd(id));
-  return `<h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2?`<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th><th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td>${m2?`<td class="num">${x.b2!=null?fmt(x.b2*100,2)+'%':'–'}</td>`:''}<td class="num"><b>${fmt(x.fee*100,2)}%</b></td><td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">${noStd?T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.'):T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p>`}
+function sellerHtml(){const ss=sellers();if(!ss.length)return '';const m2=m2On();const m2l=m2?Number(S.market2):null;const isStr=m2&&locKind(m2l)==='struct';const noStd=workChars().some(id=>!hasStd(id));
+  const tot2=x=>x.b2==null?null:x.tax+x.b2;
+  return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2?`<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2?`<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td>${m2?`<td class="num">${x.b2!=null?fmt(x.b2*100,2)+'%':'?'}</td>`:''}<td class="num"><b>${fmt(x.fee*100,2)}%</b></td>${m2?`<td class="num"><b>${tot2(x)!=null?fmt(tot2(x)*100,2)+'%':'?'}</b></td>`:''}<td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div>
+  ${isStr?`<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %',esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l)??''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>`:''}
+  <p class="small muted" style="margin-top:4px">${noStd?T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.'):T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p></div>`}
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||t.dataset.sbroker==null)return;S.structBroker=S.structBroker||{};const v=t.value.trim();if(v==='')delete S.structBroker[t.dataset.sbroker];else S.structBroker[t.dataset.sbroker]=Number(v);saveS();
+  document.querySelectorAll('.sellerbox').forEach(b=>{const w=document.createElement('div');w.innerHTML=sellerHtml();b.replaceWith(w.firstElementChild)})});
 function m2Hint(){return m2On()?'':`<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`}
 
 /* ============ második piac ============ */
@@ -105,15 +114,15 @@ async function oreToMinerals(typeId,units,cid){
 }
 function m2Cell(jita,v,buying){if(v==null||!v)return '–';const better=jita?(buying?v<jita:v>jita):false;const d=jita?(v/jita-1)*100:null;return `<span class="${better?'pos':''}">${isk(v)}</span>${d!=null?`<div class="small muted">${d>0?'+':''}${fmt(d,1)}%</div>`:''}`}
 // játékos-struktúra teljes piaca egyszerre (esi-markets.structure_markets.v1, dokkolási jog kell), 30 percig tárolva
-let STRBOOK=null;
+const STRBOOKS={},STRFAIL={};
 async function structBook(id){
-  if(STRBOOK&&STRBOOK.id===id&&Date.now()-STRBOOK.at<30*60000)return STRBOOK;
+  const hit=STRBOOKS[id];if(hit&&Date.now()-hit.at<30*60000)return hit;if(STRFAIL[id]&&Date.now()-STRFAIL[id]<30*60000)return null;
   const cs=CHARS.filter(c=>hasScope(c,'esi-markets.structure_markets.v1'));
   if(!cs.length){log('Struktúra piac: egyik karakternek sincs meg az engedély, jelentkezz be újra.');return null}
-  for(const c of cs){try{status(T('{0} piaca…',m2Short()));const o=await esi('/markets/structures/'+id+'/',{char:c,paged:true});const m=new Map();
-    for(const x of o){let r=m.get(x.type_id);if(!r){r={s:Infinity,b:0};m.set(x.type_id,r)}if(x.is_buy_order){if(x.price>r.b)r.b=x.price}else if(x.price<r.s)r.s=x.price}
-    STRBOOK={id,at:Date.now(),m};log(T('{0} piaca: {1} order',m2Short(),fmt(o.length)));return STRBOOK}catch(e){log('Struktúra piac ('+c.name+'): '+e.message)}}
-  alertBox(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));return null;
+  for(const c of cs){try{status(T('{0} piaca…',locName(id)));const o=await esi('/markets/structures/'+id+'/',{char:c,paged:true});const m=new Map(),raw=new Map();
+    for(const x of o){let r=m.get(x.type_id);if(!r){r={s:Infinity,b:0};m.set(x.type_id,r)}if(x.is_buy_order){if(x.price>r.b)r.b=x.price}else if(x.price<r.s)r.s=x.price;if(!raw.has(x.type_id))raw.set(x.type_id,[]);raw.get(x.type_id).push(x)}
+    STRBOOKS[id]={id,at:Date.now(),m,raw};log(T('{0} piaca: {1} order',locName(id),fmt(o.length)));return STRBOOKS[id]}catch(e){log('Struktúra piac ('+c.name+'): '+e.message)}}
+  STRFAIL[id]=Date.now();log(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));if(Number(S.market2)===id)alertBox(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));return null;
 }
 
 /* ============ ismeretlen helyek ============ */

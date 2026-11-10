@@ -136,6 +136,10 @@ select{max-width:100%;text-overflow:ellipsis}
 .srcc{padding:2px 0;display:flex;flex-wrap:wrap;gap:2px 14px;align-items:center}
 .srcc label.inline{display:inline-flex;width:auto;margin:0}
 .srcrow td{background:var(--bg)}
+.pager{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0}
+.pager label{display:inline-flex;align-items:center;gap:4px;margin-left:8px}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -335,9 +339,11 @@ select{max-width:100%;text-overflow:ellipsis}
       <label class="inline"><input type="checkbox" id="bpNotMax"> csak nem max kutatott BPO</label>
     </div>
   </div>
+  <div id="bpPg1"></div>
   <div class="tablewrap"><table id="bpTable"><thead><tr>
     <th class="sortable" data-k="name">Név</th><th>Típus</th><th class="num sortable" data-k="me">ME</th><th class="num sortable" data-k="te">TE</th><th class="num sortable" data-k="runs">Run</th><th class="sortable" data-k="char">Karakter</th><th class="sortable" data-k="loc">Hely</th><th>Állapot</th>
   </tr></thead><tbody></tbody></table></div>
+  <div id="bpPg2"></div>
   <p class="small muted" id="bpCount" style="margin-top:6px"></p>
 </section>
 
@@ -352,7 +358,9 @@ select{max-width:100%;text-overflow:ellipsis}
       <label class="inline"><input type="checkbox" id="stOnlyPlan"> csak a tervezőben számító helyek</label>
     </div>
   </div>
+  <div id="stPg1"></div>
   <div class="tablewrap"><table id="stTable"><thead><tr><th>Tárgy</th><th class="num">Összesen</th><th>Hol</th></tr></thead><tbody></tbody></table></div>
+  <div id="stPg2"></div>
   <p class="small muted" id="stCount" style="margin-top:6px"></p>
 </section>
 
@@ -402,7 +410,9 @@ select{max-width:100%;text-overflow:ellipsis}
       <label>Helyszín <select id="repLoc"><option value="">minden helyszín</option></select></label>
       <label>Fajta <select id="repCat"><option value="">mind</option><option value="ore">érc és ice</option><option value="loot">modulok és loot</option></select></label>
       <label>Keresés <input id="repQ" type="search" placeholder="név"></label>
+      <label>Karakter <select id="repOwn"><option value="">minden karakter</option></select></label>
       <label class="inline"><input type="checkbox" id="repBetter"> csak ami reprocesszálva ér többet</label>
+      <label class="inline"><input type="checkbox" id="repSelOnly"> csak a kijelöltek</label>
     </div>
     <div id="repOut"></div>
   </div>
@@ -441,6 +451,7 @@ select{max-width:100%;text-overflow:ellipsis}
       <p class="small muted" style="margin-top:8px">Üresen hagyva a sales taxot és a broker fee-t karakterenként a skillekből számolja (Accounting, Broker Relations, standing nélkül), és a legkisebb díjú karaktert javasolja eladásra; a profitot is ezzel számolja. NPC állomás alaphozama 50%. A reprocess skilleket az ESI-ből veszi.</p>
       <div class="row" style="margin-top:8px">
         <label style="flex:1 1 100%">Második piac a Jita mellé <select id="sMarket2"></select></label>
+        <div id="sM2Broker" style="flex:1 1 100%"></div>
       </div>
       <p class="small muted" style="margin-top:6px">A Jita árak mellett ennek az állomásnak a legjobb eladási ára is megjelenik (Tervező, Mit érdemes?, Eladás, Reprocess). Választhatsz kereskedelmi központot, vagy olyan állomást vagy struktúrát, ahol van cuccod. Struktúránál az egyik karakterednek dokkolási joga kell legyen, és ott piac modulnak kell futnia.</p>
     </div>
@@ -514,9 +525,9 @@ select{max-width:100%;text-overflow:ellipsis}
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze.</dd>
     <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
     <dt>Kutatás &amp; copy</dt><dd>BPO-nként a következő ME szint ideje és költsége, mennyit spórol runonként, mikor térül meg, plusz a copy ideje és a science slotjaid.</dd>
-    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van.</dd>
+    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van. Játékos-struktúránál a broker fee-t a tulaj állítja, ezt egyszer beírhatod, és onnantól az eladó-javaslat és az összeg is számol vele. A struktúrában lévő ordereidnél az alá-ígérést a struktúra piacáról nézi.</dd>
     <dt>Vásárlás nélkül</dt><dd>Hány runt tudsz legyártani csak abból, ami megvan, és mi fogy el először.</dd>
-    <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően.</dd>
+    <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind), és a fejlécre kattintva rendezhetők.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Reprocess</dt><dd>Végignézi a készletet, és kilistázza, mi reprocesszálható belőle (érc, ice, modulok, loot): mennyi anyag jön ki, melyik karakterrel a legjobb a hozam, és egyben eladva vagy szétszedve ér-e többet. Helyszínenként számol: NPC állomásnál az állomás saját hozamával, alapadójával és azzal, hogy van-e ott reprocessing (az ESI-ből), az adót karakterenként a standinggel csökkentve; Upwell struktúránál (Athanor, Tatara) a riggel, a rendszer biztonságával és az adóval, amit neked kell megadni. Az implantot az aktív klónból olvassa. Az értékeket Jita és a második piac szerint is mutatja. Kijelölhetsz egyenként vagy mindet, és összesíti, mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac, kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
@@ -575,9 +586,9 @@ select{max-width:100%;text-overflow:ellipsis}
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together.</dd>
     <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
     <dt>Research &amp; copy</dt><dd>Per BPO: time and cost of the next ME level, how much it saves per run, when it pays off, plus copy time and your science slots.</dd>
-    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do.</dd>
+    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do. In a player structure the owner sets the broker fee; enter it once and the seller suggestion and totals use it. For your orders in structures, undercuts are checked on the structure's own market.</dd>
     <dt>No-buy builds</dt><dd>How many runs you can build from what you already have, and what runs out first.</dd>
-    <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters.</dd>
+    <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all) and can be sorted by clicking the header.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
     <dt>Reprocess</dt><dd>Goes through your stock and lists what can be reprocessed (ore, ice, modules, loot): how much comes out, which character gets the best yield, and whether it's worth more sold as is or broken down. Each location counts separately: for NPC stations, the station's own yield, base tax and whether it offers reprocessing (from ESI), with the tax lowered per character by standing; for Upwell structures (Athanor, Tatara), rig, system security and tax, which you set yourself. The implant is read from your active clone. Values are shown for Jita and the second market. Select items one by one or all at once, and it sums up how much of your latest plan's shortfall they cover.</dd>
     <dt>Settings</dt><dd>Structure bonuses, taxes, second market, who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
@@ -636,9 +647,9 @@ select{max-width:100%;text-overflow:ellipsis}
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen.</dd>
     <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
     <dt>Forschung &amp; Kopie</dt><dd>Pro BPO: Zeit und Kosten der nächsten ME-Stufe, Ersparnis pro Run, wann es sich lohnt, dazu Kopierzeit und deine Science-Slots.</dd>
-    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen.</dd>
+    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen. In einer Spielerstruktur legt der Besitzer die Broker Fee fest; trage sie einmal ein, dann rechnen Verkäufervorschlag und Summen damit. Bei deinen Orders in Strukturen wird das Unterbieten am Markt der Struktur geprüft.</dd>
     <dt>Ohne Einkauf</dt><dd>Wie viele Runs du nur aus deinem Bestand bauen kannst und was zuerst ausgeht.</dd>
-    <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar.</dd>
+    <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle) und per Klick auf die Kopfzeile sortierbar.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
     <dt>Reprocess</dt><dd>Geht deinen Bestand durch und listet auf, was sich reprocessen lässt (Erz, Eis, Module, Loot): wie viel herauskommt, welcher Charakter die beste Ausbeute hat und ob es am Stück oder zerlegt mehr wert ist. Jeder Ort zählt einzeln: bei NPC-Stationen mit eigener Ausbeute, Grundsteuer und ob es dort Reprocessing gibt (aus ESI), die Steuer pro Charakter um das Standing gesenkt; bei Upwell-Strukturen (Athanor, Tatara) mit Rig, Systemsicherheit und Steuer, die du selbst einstellst. Das Implantat wird aus dem aktiven Klon gelesen. Werte werden für Jita und den zweiten Markt angezeigt. Wähle einzeln oder alles aus, dann wird zusammengefasst, wie viel vom Bedarf deines letzten Plans gedeckt ist.</dd>
     <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt, wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
@@ -1280,7 +1291,20 @@ window.I18N.en={
  "{0} konténer": "{0} containers",
  "nincs konténer": "no containers",
  "A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.": "Ticking a location means its hangar and all containers there (except those reserved by another project). You can also tick a container on its own, without the location.",
- "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "“This project only”: no other project touches the box, even one working from everywhere; if two projects reserve it, the one higher in priority wins."
+ "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "“This project only”: no other project touches the box, even one working from everywhere; if two projects reserve it, the one higher in priority wins.",
+ "Első oldal": "First page",
+ "Előző oldal": "Previous page",
+ "Következő oldal": "Next page",
+ "Utolsó oldal": "Last page",
+ "Soronként": "Rows",
+ "Mind a(z) {0} szűrt tétel kijelölése": "Select all {0} filtered items",
+ "{0} kijelölve": "{0} selected",
+ "minden karakter": "all characters",
+ "csak a kijelöltek": "selected only",
+ "{0} tételtípus": "{0} item types",
+ "{0} broker fee (a tulaj állítja), %": "{0} broker fee (set by the owner), %",
+ "+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.": "+ 0.5% SCC surcharge. You see it in game when placing a sell order. Skills and standings don't count here.",
+ "(díjak nélkül)": "(before fees)"
 };
 </script>
 <script>
@@ -1880,7 +1904,20 @@ window.I18N.de={
  "{0} konténer": "{0} Container",
  "nincs konténer": "keine Container",
  "A helyszín pipája a hangárt és az összes ottani konténert jelenti (a más projekt által foglaltak kivételével). Konténert külön is pipálhatsz, a helyszín nélkül.": "Ein angehakter Ort bedeutet seinen Hangar und alle Container dort (außer den von einem anderen Projekt reservierten). Du kannst auch einen Container allein anhaken, ohne den Ort.",
- "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "„Nur dieses Projekt“: Kein anderes Projekt greift auf die Kiste zu, auch keines, das von überall nimmt; bei zwei Reservierungen gewinnt das Projekt mit höherer Priorität."
+ "„Csak ez a projekt”: a dobozhoz más projekt nem nyúl, akkor sem, ha mindenhonnan dolgozik; két foglalásnál a prioritásban előbb álló projekt nyer.": "„Nur dieses Projekt“: Kein anderes Projekt greift auf die Kiste zu, auch keines, das von überall nimmt; bei zwei Reservierungen gewinnt das Projekt mit höherer Priorität.",
+ "Első oldal": "Erste Seite",
+ "Előző oldal": "Vorherige Seite",
+ "Következő oldal": "Nächste Seite",
+ "Utolsó oldal": "Letzte Seite",
+ "Soronként": "Zeilen",
+ "Mind a(z) {0} szűrt tétel kijelölése": "Alle {0} gefilterten auswählen",
+ "{0} kijelölve": "{0} ausgewählt",
+ "minden karakter": "alle Charaktere",
+ "csak a kijelöltek": "nur ausgewählte",
+ "{0} tételtípus": "{0} Gegenstandstypen",
+ "{0} broker fee (a tulaj állítja), %": "{0} Broker Fee (vom Besitzer festgelegt), %",
+ "+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.": "+ 0,5 % SCC-Zuschlag. Im Spiel siehst du sie beim Erstellen einer Verkaufsorder. Skills und Standing zählen hier nicht.",
+ "(díjak nélkül)": "(vor Gebühren)"
 };
 </script>
 <script>
@@ -1901,7 +1938,7 @@ const SK={connections:3359,diplomacy:3357,industry:3380,advInd:3388,accounting:1
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 /* ============ nyelv / i18n ============ */
 const LANGS={en:{loc:'en-US',name:'English',dur:['d','h','m']},de:{loc:'de-DE',name:'Deutsch',dur:['T','h','min']},hu:{loc:'hu-HU',name:'Magyar',dur:['n','ó','p']}};
-const APP={name:'IndyOps',version:'1.8.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
+const APP={name:'IndyOps',version:'1.9.0',built:'2026-11-10',repo:'sajt42/indyops',home:'https://sajt42.github.io/indyops/',clientId:'b02779a9ea1c427bb46c9d70a697a4c7',author:'SajT'};
 const HOSTED=typeof location!=='undefined'&&(location.href.split(/[?#]/)[0]===APP.home||location.href.split(/[?#]/)[0]===APP.home+'index.html');
 const SP='indyops.';
 try{if(!localStorage.getItem(SP+'settings')){Object.keys(localStorage).filter(k=>k.startsWith('gyp.')).forEach(k=>localStorage.setItem(SP+k.slice(4),localStorage.getItem(k)))}}catch(e){} // régi Gyártópult-adatok átvétele
@@ -2185,15 +2222,24 @@ async function ensureOwners(locs){let ch=false;
     if(i.owner!=null&&CORPFAC[i.owner]===undefined){try{const c=await esi('/corporations/'+i.owner+'/');CORPFAC[i.owner]=c.faction_id??0}catch(e){CORPFAC[i.owner]=0}store('corpfac',CORPFAC)}}
   if(ch)store('locinfo',LOCINFO)}
 // broker fee egy adott helyen: NPC állomáson a tulaj corp és faction felé vett standinggel csökken
-function brokerFeeOf(cid,l){if(S.broker!==''&&S.broker!=null)return Number(S.broker)/100;
+function structBrokerOf(l){const v=S.structBroker&&S.structBroker[l];return v!=null&&v!==''?Number(v):null}
+function brokerFeeOf(cid,l){if(l!=null&&locKind(l)==='struct'){const v=structBrokerOf(l);return v==null?null:(v+0.5)/100}
+  if(S.broker!==''&&S.broker!=null)return Number(S.broker)/100;
   let f=0.03-0.003*lvlOf(cid,SK.broker);const o=l!=null&&locKind(l)==='npc'?stationOwner(l):null;
   if(o&&hasStd(cid))f-=0.0003*effStd(cid,o.fac)+0.0002*effStd(cid,o.corp);return Math.max(0.01,f)}
-function sellers(l=JITA_STATION){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id,l),b2:m2On()&&locKind(Number(S.market2))==='npc'?brokerFeeOf(id,Number(S.market2)):null})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
+function sellers(l=JITA_STATION){return workChars().map(id=>({cid:id,tax:salesTaxOf(id),broker:brokerFeeOf(id,l),b2:m2On()?brokerFeeOf(id,Number(S.market2)):null})).map(x=>Object.assign(x,{fee:x.tax+x.broker})).sort((a,b)=>a.fee-b.fee)}
+// a második piacon a legolcsóbb eladó díja (null, ha a struktúra díja nincs megadva)
+function m2Fee(){const b=sellers().filter(x=>x.b2!=null).map(x=>x.tax+x.b2).sort((a,b)=>a-b)[0];return b??null}
 function bestSeller(){return sellers()[0]||null} // akinek a legkisebb az eladási díja
 function salesTax(){const b=bestSeller();return b?b.tax:salesTaxOf(null)}
 function brokerFee(){const b=bestSeller();return b?b.broker:brokerFeeOf(null)}
-function sellerHtml(){const ss=sellers();if(!ss.length)return '';const m2=ss.some(x=>x.b2!=null);const noStd=workChars().some(id=>!hasStd(id));
-  return `<h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2?`<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th><th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td>${m2?`<td class="num">${x.b2!=null?fmt(x.b2*100,2)+'%':'–'}</td>`:''}<td class="num"><b>${fmt(x.fee*100,2)}%</b></td><td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="small muted" style="margin-top:4px">${noStd?T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.'):T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p>`}
+function sellerHtml(){const ss=sellers();if(!ss.length)return '';const m2=m2On();const m2l=m2?Number(S.market2):null;const isStr=m2&&locKind(m2l)==='struct';const noStd=workChars().some(id=>!hasStd(id));
+  const tot2=x=>x.b2==null?null:x.tax+x.b2;
+  return `<div class="sellerbox"><h3>Ki adjon el?</h3><div class="tablewrap"><table class="seltab"><thead><tr><th>Karakter</th><th class="num">Sales tax</th><th class="num">Broker fee<div class="small muted" data-noi18n>Jita</div></th>${m2?`<th class="num">Broker fee<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th class="num">Összesen<div class="small muted" data-noi18n>Jita</div></th>${m2?`<th class="num">Összesen<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th></th></tr></thead><tbody>${ss.map((x,i)=>`<tr><td>${esc(charName(x.cid))}</td><td class="num">${fmt(x.tax*100,2)}%</td><td class="num">${fmt(x.broker*100,2)}%</td>${m2?`<td class="num">${x.b2!=null?fmt(x.b2*100,2)+'%':'?'}</td>`:''}<td class="num"><b>${fmt(x.fee*100,2)}%</b></td>${m2?`<td class="num"><b>${tot2(x)!=null?fmt(tot2(x)*100,2)+'%':'?'}</b></td>`:''}<td>${i===0?'<span class="pill ok">javasolt</span>':''}</td></tr>`).join('')}</tbody></table></div>
+  ${isStr?`<div class="row" style="margin-top:6px"><label class="small">${T('{0} broker fee (a tulaj állítja), %',esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${m2l}" value="${structBrokerOf(m2l)??''}" placeholder="?"></label><span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span></div>`:''}
+  <p class="small muted" style="margin-top:4px">${noStd?T('A díjak a skillekből jönnek (Accounting, Broker Relations). A standinghez jelentkezz be újra a karakterekkel; addig a broker fee a valóságban kicsit kisebb lehet.'):T('A díjak a skillekből (Accounting, Broker Relations) és az állomás tulajdonosához fűződő standingből jönnek (Connections, Diplomacy beszámítva). Játékos-struktúrában a broker fee-t a tulaj állítja.')}</p></div>`}
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||t.dataset.sbroker==null)return;S.structBroker=S.structBroker||{};const v=t.value.trim();if(v==='')delete S.structBroker[t.dataset.sbroker];else S.structBroker[t.dataset.sbroker]=Number(v);saveS();
+  document.querySelectorAll('.sellerbox').forEach(b=>{const w=document.createElement('div');w.innerHTML=sellerHtml();b.replaceWith(w.firstElementChild)})});
 function m2Hint(){return m2On()?'':`<p class="small muted m2hint">${T('Tipp: a Jita mellé egy második piacot is beállíthatsz (pl. Amarr, vagy egy állomás vagy struktúra, ahol van cuccod), és az árai itt is megjelennek.')} <a href="#" data-goto="settings">Beállítások</a></p>`}
 
 /* ============ második piac ============ */
@@ -2255,15 +2301,15 @@ async function oreToMinerals(typeId,units,cid){
 }
 function m2Cell(jita,v,buying){if(v==null||!v)return '–';const better=jita?(buying?v<jita:v>jita):false;const d=jita?(v/jita-1)*100:null;return `<span class="${better?'pos':''}">${isk(v)}</span>${d!=null?`<div class="small muted">${d>0?'+':''}${fmt(d,1)}%</div>`:''}`}
 // játékos-struktúra teljes piaca egyszerre (esi-markets.structure_markets.v1, dokkolási jog kell), 30 percig tárolva
-let STRBOOK=null;
+const STRBOOKS={},STRFAIL={};
 async function structBook(id){
-  if(STRBOOK&&STRBOOK.id===id&&Date.now()-STRBOOK.at<30*60000)return STRBOOK;
+  const hit=STRBOOKS[id];if(hit&&Date.now()-hit.at<30*60000)return hit;if(STRFAIL[id]&&Date.now()-STRFAIL[id]<30*60000)return null;
   const cs=CHARS.filter(c=>hasScope(c,'esi-markets.structure_markets.v1'));
   if(!cs.length){log('Struktúra piac: egyik karakternek sincs meg az engedély, jelentkezz be újra.');return null}
-  for(const c of cs){try{status(T('{0} piaca…',m2Short()));const o=await esi('/markets/structures/'+id+'/',{char:c,paged:true});const m=new Map();
-    for(const x of o){let r=m.get(x.type_id);if(!r){r={s:Infinity,b:0};m.set(x.type_id,r)}if(x.is_buy_order){if(x.price>r.b)r.b=x.price}else if(x.price<r.s)r.s=x.price}
-    STRBOOK={id,at:Date.now(),m};log(T('{0} piaca: {1} order',m2Short(),fmt(o.length)));return STRBOOK}catch(e){log('Struktúra piac ('+c.name+'): '+e.message)}}
-  alertBox(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));return null;
+  for(const c of cs){try{status(T('{0} piaca…',locName(id)));const o=await esi('/markets/structures/'+id+'/',{char:c,paged:true});const m=new Map(),raw=new Map();
+    for(const x of o){let r=m.get(x.type_id);if(!r){r={s:Infinity,b:0};m.set(x.type_id,r)}if(x.is_buy_order){if(x.price>r.b)r.b=x.price}else if(x.price<r.s)r.s=x.price;if(!raw.has(x.type_id))raw.set(x.type_id,[]);raw.get(x.type_id).push(x)}
+    STRBOOKS[id]={id,at:Date.now(),m,raw};log(T('{0} piaca: {1} order',locName(id),fmt(o.length)));return STRBOOKS[id]}catch(e){log('Struktúra piac ('+c.name+'): '+e.message)}}
+  STRFAIL[id]=Date.now();log(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));if(Number(S.market2)===id)alertBox(T('A(z) {0} piacát egyik karaktered sem éri el (dokkolási jog kell, vagy nincs piac modul).',locName(id)));return null;
 }
 
 /* ============ ismeretlen helyek ============ */
@@ -2464,6 +2510,27 @@ async function sysFor(bp){
 /* js/views.js */
 /* IndyOps – Rendering: characters, blueprints, stock, settings, plan results, hauling. */
 "use strict";
+/* ============ lapozás és rendezés (közös) ============ */
+const PG={},PGR={},SRT={};
+// rows: teljes (szűrt) lista; sig: a szűrők aláírása (ha változik, vissza az első oldalra); render: újrarajzoló függvény
+function pageOf(key,rows,sig,render){const s=PG[key]||(PG[key]={p:0,n:100,sig});if(s.sig!==sig){s.sig=sig;s.p=0}PGR[key]=render;
+  const n=s.n||rows.length||1;const pages=Math.max(1,Math.ceil(rows.length/n));if(s.p>=pages)s.p=pages-1;const a=s.p*n,b=Math.min(rows.length,a+n);
+  return {rows:rows.slice(a,b),html:pagerHtml(key,rows.length,pages,s,a,b)}}
+function pagerHtml(key,total,pages,s,a,b){if(total<=25)return '';
+  const sizes=[25,50,100,250,500,0];
+  return `<div class="pager" data-noi18n><button class="btn mini" data-pg="${key}|first" ${s.p?'':'disabled'} aria-label="${esc(T('Első oldal'))}">«</button><button class="btn mini" data-pg="${key}|prev" ${s.p?'':'disabled'} aria-label="${esc(T('Előző oldal'))}">‹</button>
+  <span class="small">${fmt(a+1)}–${fmt(b)} / ${fmt(total)}</span>
+  <button class="btn mini" data-pg="${key}|next" ${s.p<pages-1?'':'disabled'} aria-label="${esc(T('Következő oldal'))}">›</button><button class="btn mini" data-pg="${key}|last" ${s.p<pages-1?'':'disabled'} aria-label="${esc(T('Utolsó oldal'))}">»</button>
+  <label class="small">${esc(T('Soronként'))} <select data-pgn="${key}">${sizes.map(z=>`<option value="${z}" ${s.n===z?'selected':''}>${z||esc(T('mind'))}</option>`).join('')}</select></label></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pg]');if(!b)return;const [k,act]=b.dataset.pg.split('|');const s=PG[k];if(!s)return;
+  if(act==='first')s.p=0;else if(act==='prev')s.p=Math.max(0,s.p-1);else if(act==='next')s.p++;else if(act==='last')s.p=1e9;PGR[k]&&PGR[k]()});
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||t.dataset.pgn==null)return;const k=t.dataset.pgn;const s=PG[k];if(!s)return;s.n=Number(t.value);s.p=0;PGR[k]&&PGR[k]()});
+// rendezhető fejléc: sortTh(kulcs,mező,felirat,szám?) ; sortRows(kulcs,sorok,alap)
+function sortTh(key,f,label,num,dflt){const s=SRT[key]||(SRT[key]=dflt||{f,d:num?-1:1});const on=s.f===f;
+  return `<th class="${num?'num ':''}sortable" data-srt="${key}|${f}|${num?1:0}" aria-sort="${on?(s.d>0?'ascending':'descending'):'none'}">${label}${on?(s.d>0?' ▲':' ▼'):''}</th>`}
+function sortRows(key,rows,get){const s=SRT[key];if(!s)return rows;return rows.sort((a,b)=>{const va=get(a,s.f),vb=get(b,s.f);return (typeof va==='number'&&typeof vb==='number'?va-vb:String(va??'').localeCompare(String(vb??''),LOC()))*s.d})}
+document.addEventListener('click',e=>{const th=e.target.closest('[data-srt]');if(!th)return;const [k,f,num]=th.dataset.srt.split('|');const s=SRT[k]||{};SRT[k]=s.f===f?{f,d:-s.d}:{f,d:num==='1'?-1:1};if(PG[k])PG[k].p=0;PGR[k]&&PGR[k]()});
+
 /* ============ RENDER ============ */
 function renderAll(){renderProjects();renderChars();renderJobs();renderBPs();renderStock();renderLocList();renderPlanOptions();renderSettings();renderUnknownLocs()}
 function alertBox(msg){const d=document.createElement('div');d.className='notice err';d.innerHTML='<p>'+esc(msg)+'</p>';const host=document.querySelector('section:not([hidden])')||document.body;host.prepend(d);setTimeout(()=>d.remove(),12000)}
@@ -2486,7 +2553,8 @@ function renderBPs(){
   let list=allBPs().map(b=>({b,name:NAMES[b.t]||'#'+b.t,char:charName(b.cid),loc:locName(b.l)+(b.cn?' › '+b.cn:''),me:b.me,te:b.te,runs:b.r}));
   list=list.filter(x=>(!f||x.name.toLowerCase().includes(f)||x.loc.toLowerCase().includes(f))&&(!kind||(kind==='bpo')===(x.b.r===-1))&&(!nm||(x.b.r===-1&&(x.me<10||x.te<20))));
   list.sort((a,b)=>{const k=bpSort.k;const va=a[k],vb=b[k];return (typeof va==='number'?va-vb:String(va).localeCompare(String(vb),'hu'))*bpSort.d});
-  $('#bpTable tbody').innerHTML=list.map(x=>{const j=inJob(x.b.i);const max=x.b.r===-1&&x.me>=10&&x.te>=20;
+  const pg=pageOf('bp',list,[f,kind,nm,bpSort.k,bpSort.d].join('|'),renderBPs);$('#bpPg1').innerHTML=pg.html;$('#bpPg2').innerHTML=pg.html;
+  $('#bpTable tbody').innerHTML=pg.rows.map(x=>{const j=inJob(x.b.i);const max=x.b.r===-1&&x.me>=10&&x.te>=20;
     return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
   $('#bpCount').textContent=list.length+' blueprint';
 }
@@ -2495,9 +2563,9 @@ function renderStock(){
   const sm=stockMap(only);let rows=[];
   for(const [t,arr] of sm){const name=NAMES[t]||'#'+t;if(f&&!name.toLowerCase().includes(f))continue;const a=lf?arr.filter(x=>String(x.l)===lf):arr;const tot=a.reduce((s,x)=>s+x.q,0);if(!tot)continue;rows.push({t,name,tot,a})}
   rows.sort((a,b)=>a.name.localeCompare(b.name,'hu'));
-  const shown=rows.slice(0,1500);
+  const pg=pageOf('st',rows,[f,lf,only].join('|'),renderStock);const shown=pg.rows;$('#stPg1').innerHTML=pg.html;$('#stPg2').innerHTML=pg.html;
   $('#stTable tbody').innerHTML=shown.map(r=>`<tr><td>${esc(r.name)}</td><td class="num">${fmt(r.tot)}</td><td class="small">${r.a.map(x=>esc(charName(x.cid))+' · '+esc(locName(x.l))+': <span class="mono">'+fmt(x.q)+'</span>').join('<br>')}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">Nincs adat.</td></tr>';
-  $('#stCount').textContent=rows.length+' tételtípus'+(rows.length>shown.length?' (az első 1500 látszik, szűrj)':'');
+  $('#stCount').textContent=T('{0} tételtípus',fmt(rows.length));
   const sel=$('#stLoc'),cur=sel.value;sel.innerHTML='<option value="">minden hely</option>'+allLocs().sort((a,b)=>locName(a).localeCompare(locName(b))).map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');sel.value=cur;
 }
 function renderLocList(){
@@ -2510,7 +2578,7 @@ function renderSettings(){
   $('#sSalesTax').placeholder=fmt(salesTax()*100,2);$('#sBroker').placeholder=fmt(brokerFee()*100,2);
   {const sel=$('#sProdLoc');sel.innerHTML='<option value="">automatikus: a BP helye</option>'+allLocs().sort((a,b)=>locName(a).localeCompare(locName(b))).map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');sel.value=S.prodLoc||''}
   {const sel=$('#sMarket2');const hubs=HUBS.filter(h=>h[0]!==JITA_STATION);const own=allLocs().filter(l=>locKind(l)==='npc'&&l!==JITA_STATION&&!hubs.some(h=>h[0]===l)).sort((a,b)=>locName(a).localeCompare(locName(b)));
-    sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'')+(()=>{const st=allLocs().filter(l=>locKind(l)==='struct').sort((a,b)=>locName(a).localeCompare(locName(b)));return st.length?'<optgroup label="'+esc(T('Struktúrák, ahol van cuccod'))+'">'+st.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':''})();sel.value=S.market2||''}
+    sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'')+(()=>{const st=allLocs().filter(l=>locKind(l)==='struct').sort((a,b)=>locName(a).localeCompare(locName(b)));return st.length?'<optgroup label="'+esc(T('Struktúrák, ahol van cuccod'))+'">'+st.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':''})();sel.value=S.market2||'';const mb=$('#sM2Broker');if(mb){const l=Number(S.market2);mb.innerHTML=S.market2&&locKind(l)==='struct'?`<label class="small">${T('{0} broker fee (a tulaj állítja), %',esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${l}" value="${structBrokerOf(l)??''}" placeholder="?"></label> <span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span>`:''}}
   {const w=workChars();const cs=CHARS.filter(c=>DATA[c.id]);$('#sWorkChars').innerHTML=cs.length?cs.map(c=>`<label class="inline"><input type="checkbox" data-wc="${c.id}" ${w.includes(c.id)?'checked':''}> ${esc(c.name)}</label>`).join(''):'<span class="muted small">'+esc(T('Még nincs karakter.'))+'</span>'}
 }
 function renderPlanOptions(){
@@ -2667,7 +2735,7 @@ function renderResult(el,R,rerun){
     <div class="kpi"><div class="k">Vásárolni kell</div><div class="v">${isk(buyCost)}</div></div>
     <div class="kpi"><div class="k">Saját készlet értéke</div><div class="v">${free?'ingyen':isk(stockCost)}</div></div>
     <div class="kpi"><div class="k">Job költség</div><div class="v">${isk(jcT)}</div></div>
-    <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?`<div class="small muted">${esc(m2Short())}: ${isk(R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0)*(1-fee))}</div>`:''}</div>
+    <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?(()=>{const g=R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0);const f2=m2Fee();return `<div class="small muted">${esc(m2Short())}: ${f2!=null?isk(g*(1-f2)):isk(g)+' '+T('(díjak nélkül)')}</div>`})():''}</div>
     <div class="kpi"><div class="k">Profit</div><div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div></div>
   </div>`;
   h+=`<p class="small muted">${T('Gyártási rendszer: {0}',esc(NAMES[R.sys]||R.sys||T('ismeretlen')))}${ixm!=null?' · cost index '+fmt(ixm*100,2)+'%':''} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
@@ -2850,8 +2918,9 @@ function renderProfit(){
   const onlyPos=$('#prOnlyPos').checked,minVol=Number($('#prMinVol').value||0);
   let rows=PROFROWS.filter(r=>(!onlyPos||r.perRun>0)&&(r.vol>=minVol));
   const k=profSort.k;rows.sort((a,b)=>{const va=a[k],vb=b[k];if(typeof va==='string')return va.localeCompare(vb,'hu')*profSort.d;return ((va??-Infinity)-(vb??-Infinity))*profSort.d});
+  const pg=pageOf('prof',rows,[onlyPos,minVol,profSort.k,profSort.d].join('|'),renderProfit);rows=pg.rows;
   const th=(key,label,num)=>`<th class="sortable${num?' num':''}" data-psort="${key}">${label}${profSort.k===key?'<span> '+(profSort.d>0?'▲':'▼')+'</span>':''}</th>`;
-  out.innerHTML=`<div class="tablewrap"><table><thead><tr>${th('name','Termék')}<th>Legjobb saját BP</th>${th('price','Jita sell',1)}${m2On()?th('price2',esc(m2Short())+' sell',1):''}${th('perRun','Profit / run',1)}${th('margin','Margó',1)}${th('pph','Profit / gyártási óra',1)}${th('vol','Napi forgalom',1)}${th('pot','Maradék runok értéke',1)}<th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}${r.noMarket?' <span class="pill warn">nincs Jita ár</span>':''}${r.warn?' <span class="pill bad">kevés run</span>':''}${r.unsure?`<div class="src">${T('Nincs Jita ára: {0}. A profit emiatt túl magas lehet.',esc(r.noPrice.map(t=>NAMES[t]||t).join(', ')))}</div>`:''}</td><td class="small">${r.best.r===-1?'BPO':'BPC '+r.runsLeft+' run'} · ME${r.best.me} · ${esc(charName(r.best.cid))}</td><td class="num">${isk(r.price)}</td>${m2On()?`<td class="num">${m2Cell(r.price,r.price2)}</td>`:''}<td class="num ${r.unsure?'':(r.perRun>=0?'pos':'neg')}">${r.unsure?'? ':''}${isk(r.perRun)}</td><td class="num">${r.margin==null?'–':fmt(r.margin*100,1)+'%'}</td><td class="num ${r.pph>=0?'pos':'neg'}">${isk(r.pph)}</td><td class="num">${fmt(r.vol,r.vol<10?1:0)}${r.vol&&r.daysToSell>1?' <span class="pill warn" title="Egy run termékének eladása több napi forgalom">lassú</span>':''}</td><td class="num">${r.pot==null?'∞ (BPO)':isk(r.pot)}</td><td><button class="btn mini" data-addproj="${r.best.t}">+ projekt</button></td></tr>`).join('')||'<tr><td colspan="9" class="muted">A szűrőknek egy tétel sem felel meg.</td></tr>'}</tbody></table></div>
+  out.innerHTML=pg.html+`<div class="tablewrap"><table><thead><tr>${th('name','Termék')}<th>Legjobb saját BP</th>${th('price','Jita sell',1)}${m2On()?th('price2',esc(m2Short())+' sell',1):''}${th('perRun','Profit / run',1)}${th('margin','Margó',1)}${th('pph','Profit / gyártási óra',1)}${th('vol','Napi forgalom',1)}${th('pot','Maradék runok értéke',1)}<th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}${r.noMarket?' <span class="pill warn">nincs Jita ár</span>':''}${r.warn?' <span class="pill bad">kevés run</span>':''}${r.unsure?`<div class="src">${T('Nincs Jita ára: {0}. A profit emiatt túl magas lehet.',esc(r.noPrice.map(t=>NAMES[t]||t).join(', ')))}</div>`:''}</td><td class="small">${r.best.r===-1?'BPO':'BPC '+r.runsLeft+' run'} · ME${r.best.me} · ${esc(charName(r.best.cid))}</td><td class="num">${isk(r.price)}</td>${m2On()?`<td class="num">${m2Cell(r.price,r.price2)}</td>`:''}<td class="num ${r.unsure?'':(r.perRun>=0?'pos':'neg')}">${r.unsure?'? ':''}${isk(r.perRun)}</td><td class="num">${r.margin==null?'–':fmt(r.margin*100,1)+'%'}</td><td class="num ${r.pph>=0?'pos':'neg'}">${isk(r.pph)}</td><td class="num">${fmt(r.vol,r.vol<10?1:0)}${r.vol&&r.daysToSell>1?' <span class="pill warn" title="Egy run termékének eladása több napi forgalom">lassú</span>':''}</td><td class="num">${r.pot==null?'∞ (BPO)':isk(r.pot)}</td><td><button class="btn mini" data-addproj="${r.best.t}">+ projekt</button></td></tr>`).join('')||'<tr><td colspan="9" class="muted">A szűrőknek egy tétel sem felel meg.</td></tr>'}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Minden anyag piaci áron számít, a saját készlet is, mert azt el is adhatnád. Profit / gyártási óra: a run összes jobjának idejére vetítve (komponensekkel együtt), a BP-t tartó karakter skilljeivel. Napi forgalom: The Forge régió, az utolsó 30 nap átlaga. A „+ projekt” gomb a kiválasztott projekthez ad 1 runt (ha nincs kiválasztott, újat hoz létre).</p>`+m2Hint();
   out.querySelectorAll('[data-psort]').forEach(th=>th.addEventListener('click',()=>{const k=th.dataset.psort;profSort=profSort.k===k?{k,d:-profSort.d}:{k,d:k==='name'?1:-1};renderProfit()}));
   out.querySelectorAll('[data-addproj]').forEach(b=>b.addEventListener('click',()=>{const t=Number(b.dataset.addproj);let p=PROJ.find(x=>x.id===SELP);if(!p){p={id:Date.now(),name:T('Profit-válogatás'),active:true,items:[]};PROJ.push(p);SELP=p.id}
@@ -2900,8 +2969,8 @@ async function runInvention(){
 }
 function renderInvention(){
   const out=$('#ivOut');const skipHtml=INVSKIP.length?`<details style="margin-top:10px"><summary>${INVSKIP.length} tételt kihagytam</summary><ul class="small muted">${INVSKIP.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></details>`:'';if(!INVROWS.length){out.innerHTML='<div class="card muted">Nincs számolható invention.</div>'+skipHtml;return}
-  const rows=INVROWS.slice().sort((a,b)=>(b.best?b.best.profit:-Infinity)-(a.best?a.best.profit:-Infinity));
-  out.innerHTML=`<div class="tablewrap"><table><thead><tr><th>T2 termék</th><th>T1 BP</th><th>Legjobb decryptor</th><th class="num">Esély</th><th class="num">Run / BPC</th><th class="num">ME / TE</th><th class="num">Invention költség / BPC</th><th class="num">Profit / BPC</th><th class="num">Profit / run</th><th class="num">Decryptor nélkül / BPC</th><th class="num">Napi forgalom</th><th></th></tr></thead><tbody>${rows.map(g=>{const r=g.best;if(!r)return '';const unsure=r.noPrice.length>0;return `<tr><td>${esc(NAMES[r.prod]||r.prod)}${r.price?`<div class="src">Jita ${isk(r.price)}${m2On()&&sell2(r.prod)?' · '+esc(m2Short())+' '+isk(sell2(r.prod)):''}</div>`:''}${r.price?'':' <span class="pill warn">nincs Jita ár</span>'}${unsure?`<div class="src">${T('Nincs Jita ára: {0}',esc(r.noPrice.map(t=>NAMES[t]||t).join(', ')))}</div>`:''}</td><td class="small">${esc(NAMES[r.t1]||r.t1)}<br>${r.copy.r===-1?'BPO':'BPC '+r.copy.r+' run'} · ${esc(charName(r.copy.cid))}</td><td class="small">${r.dec?esc(DECS[r.dec].n):'nincs'}</td><td class="num">${fmt(r.info.chance*100,1)}%</td><td class="num">${fmt(r.info.runsPer)}</td><td class="num">${r.info.me} / ${r.info.te}</td><td class="num">${isk(r.invCost)}</td><td class="num ${unsure?'':(r.profit>=0?'pos':'neg')}">${unsure?'? ':''}${isk(r.profit)}</td><td class="num">${isk(r.perRun)}</td><td class="num">${g.none?isk(g.none.profit):'–'}</td><td class="num">${fmt(r.vol,r.vol<10?1:0)}</td><td><button class="btn mini" data-invadd="${r.t1}" data-invdec="${r.dec||''}" data-invt2="${r.t2}" data-invruns="${r.info.runsPer}" data-invpi="${r.info.pi||0}">+ projekt</button></td></tr>`}).join('')}</tbody></table></div>
+  const pg=pageOf('inv',INVROWS.slice().sort((a,b)=>(b.best?b.best.profit:-Infinity)-(a.best?a.best.profit:-Infinity)),String(INVROWS.length),renderInvention);const rows=pg.rows;
+  out.innerHTML=`${pg.html}<div class="tablewrap"><table><thead><tr><th>T2 termék</th><th>T1 BP</th><th>Legjobb decryptor</th><th class="num">Esély</th><th class="num">Run / BPC</th><th class="num">ME / TE</th><th class="num">Invention költség / BPC</th><th class="num">Profit / BPC</th><th class="num">Profit / run</th><th class="num">Decryptor nélkül / BPC</th><th class="num">Napi forgalom</th><th></th></tr></thead><tbody>${rows.map(g=>{const r=g.best;if(!r)return '';const unsure=r.noPrice.length>0;return `<tr><td>${esc(NAMES[r.prod]||r.prod)}${r.price?`<div class="src">Jita ${isk(r.price)}${m2On()&&sell2(r.prod)?' · '+esc(m2Short())+' '+isk(sell2(r.prod)):''}</div>`:''}${r.price?'':' <span class="pill warn">nincs Jita ár</span>'}${unsure?`<div class="src">${T('Nincs Jita ára: {0}',esc(r.noPrice.map(t=>NAMES[t]||t).join(', ')))}</div>`:''}</td><td class="small">${esc(NAMES[r.t1]||r.t1)}<br>${r.copy.r===-1?'BPO':'BPC '+r.copy.r+' run'} · ${esc(charName(r.copy.cid))}</td><td class="small">${r.dec?esc(DECS[r.dec].n):'nincs'}</td><td class="num">${fmt(r.info.chance*100,1)}%</td><td class="num">${fmt(r.info.runsPer)}</td><td class="num">${r.info.me} / ${r.info.te}</td><td class="num">${isk(r.invCost)}</td><td class="num ${unsure?'':(r.profit>=0?'pos':'neg')}">${unsure?'? ':''}${isk(r.profit)}</td><td class="num">${isk(r.perRun)}</td><td class="num">${g.none?isk(g.none.profit):'–'}</td><td class="num">${fmt(r.vol,r.vol<10?1:0)}</td><td><button class="btn mini" data-invadd="${r.t1}" data-invdec="${r.dec||''}" data-invt2="${r.t2}" data-invruns="${r.info.runsPer}" data-invpi="${r.info.pi||0}">+ projekt</button></td></tr>`}).join('')}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Az esélyt a legjobb skillű karaktered skilljeivel számolja (két science skill és az encryption skill). Az invention költsége átlagos értékre van számolva: datacore-ok, decryptor, invention job és T1 copy job, osztva az eséllyel. A T2 gyártás anyagköltsége a teljes anyagfával, piaci áron számít. A „+ projekt” egy BPC-nyi runt ad a kiválasztott projekthez a legjobb decryptorral.</p>`+m2Hint()+skipHtml;
   out.querySelectorAll('[data-invadd]').forEach(b=>b.addEventListener('click',()=>{let p=PROJ.find(x=>x.id===SELP);if(!p){p={id:Date.now(),name:T('Invention'),active:true,items:[]};PROJ.push(p);SELP=p.id}
     p.items.push({invT1:Number(b.dataset.invadd),dec:b.dataset.invdec?Number(b.dataset.invdec):null,t2:Number(b.dataset.invt2),runs:Number(b.dataset.invruns),pi:Number(b.dataset.invpi||0)});saveP();renderProjects();b.textContent='✓ '+p.name}));
@@ -2942,11 +3011,12 @@ function renderResearch(mME,mTE,mCP){
   const out=$('#rsOut');const f=$('#rsFilter').value.toLowerCase(),nm=$('#rsNotMax').checked;
   let rows=RESROWS.filter(r=>(!f||r.name.toLowerCase().includes(f))&&(!nm||r.me<10||r.te<20));
   rows.sort((a,b)=>(a.payback??Infinity)-(b.payback??Infinity)||a.name.localeCompare(b.name,'hu'));
+  const pg=pageOf('res',rows,[f,nm,RESROWS.length].join('|'),renderResearch);rows=pg.rows;
   // research slotok karakterenként
   const slots=workChars().map(id=>CHARS.find(c=>c.id===id)).map(c=>{const sl=slotsOf(c.id),bz=busyOf(c.id);return T('{0}: {1} szabad',esc(c.name),`<span class="mono">${Math.max(0,sl.s-bz.s)} / ${sl.s}</span>`)}).join(' · ');
   const sk=x=>x.who!=null?T('{0} (szint {1})',esc(charName(x.who)),x.l):'–';
   out.innerHTML=`<p class="small muted">${T('Science slotok (kutatás, copy, invention): {0}. Skillek: ME kutatás {1}, TE kutatás {2}, copy {3}.',slots||'–',sk(mME||resMod('me')),sk(mTE||resMod('te')),sk(mCP||resMod('cp')))}</p>
-  <div class="tablewrap"><table><thead><tr><th>BPO</th><th class="num">ME / TE</th><th class="num">Következő ME szint</th><th class="num">Költsége</th><th class="num">Megtakarítás / run</th><th class="num">Megtérül</th><th class="num">ME → 10</th><th class="num">TE → 20</th><th class="num">Copy idő / run</th><th class="num">Max run / BPC</th><th>Állapot</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}<div class="src">${esc(charName(r.bp.cid))} · ${esc(locName(r.bp.l))}</div></td><td class="num">${r.me} / ${r.te}</td><td class="num">${r.isReac?'–':r.nextME?dur(r.nextME.t):'<span class="pill ok">max</span>'}</td><td class="num">${r.nextME&&!r.isReac?isk(r.nextME.c):'–'}</td><td class="num">${r.isReac?'–':r.nextME?isk(r.saving):'–'}</td><td class="num">${r.payback!=null&&!r.isReac?fmt(Math.ceil(r.payback))+' run':'–'}</td><td class="num">${r.isReac?'–':r.me<10?dur(r.meT)+'<div class="src">'+isk(r.meC)+'</div>':'–'}</td><td class="num">${r.te<20?dur(r.teT)+'<div class="src">'+isk(r.teC)+'</div>':'–'}</td><td class="num">${dur(r.cpRun)}</td><td class="num">${fmt(r.lim)}<div class="src">${dur(r.cpRun*r.lim)}</div></td><td>${r.job?'<span class="pill warn">jobban</span>':''}${r.isReac?'<span class="pill">reakció</span>':''}</td></tr>`).join('')||'<tr><td colspan="11" class="muted">Nincs találat.</td></tr>'}</tbody></table></div>
+  ${pg.html}<div class="tablewrap"><table><thead><tr><th>BPO</th><th class="num">ME / TE</th><th class="num">Következő ME szint</th><th class="num">Költsége</th><th class="num">Megtakarítás / run</th><th class="num">Megtérül</th><th class="num">ME → 10</th><th class="num">TE → 20</th><th class="num">Copy idő / run</th><th class="num">Max run / BPC</th><th>Állapot</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}<div class="src">${esc(charName(r.bp.cid))} · ${esc(locName(r.bp.l))}</div></td><td class="num">${r.me} / ${r.te}</td><td class="num">${r.isReac?'–':r.nextME?dur(r.nextME.t):'<span class="pill ok">max</span>'}</td><td class="num">${r.nextME&&!r.isReac?isk(r.nextME.c):'–'}</td><td class="num">${r.isReac?'–':r.nextME?isk(r.saving):'–'}</td><td class="num">${r.payback!=null&&!r.isReac?fmt(Math.ceil(r.payback))+' run':'–'}</td><td class="num">${r.isReac?'–':r.me<10?dur(r.meT)+'<div class="src">'+isk(r.meC)+'</div>':'–'}</td><td class="num">${r.te<20?dur(r.teT)+'<div class="src">'+isk(r.teC)+'</div>':'–'}</td><td class="num">${dur(r.cpRun)}</td><td class="num">${fmt(r.lim)}<div class="src">${dur(r.cpRun*r.lim)}</div></td><td>${r.job?'<span class="pill warn">jobban</span>':''}${r.isReac?'<span class="pill">reakció</span>':''}</td></tr>`).join('')||'<tr><td colspan="11" class="muted">Nincs találat.</td></tr>'}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Megtakarítás / run: a következő ME szint 1%-a az alapanyagok mai Jita-értékéből. Megtérül: hány gyártott run után hozza vissza a következő ME szint kutatási költségét. A kutatás költsége: EIV × 2% × szintszorzó × a BP helyének research cost indexe, plusz adók. A copy ideje egy runra szól; a „Max run / BPC” alatt egy teljes BPC másolási ideje látszik. Reakció formulát nem lehet ME-re kutatni.</p>`;
 }
 
@@ -2960,9 +3030,10 @@ async function runSales(){
   out.innerHTML='<div class="card muted">Piaci árak lekérése…</div>';
   if(S.wallet){const tt=new Set();for(const c of CHARS){const d=DATA[c.id];if(d&&d.tx)d.tx.forEach(x=>{if(!x.buy)tt.add(x.t)})}if(tt.size)await ensurePrices([...tt])}
   const own=new Set(orders.map(o=>o.id));const book={};
-  const keys=[...new Set(orders.map(o=>o.reg+'|'+o.t))];let i=0;
+  const strs=[...new Set(orders.filter(o=>o.l>1e12).map(o=>o.l))];const sbook={};for(const l of strs){try{sbook[l]=await structBook(l)}catch(e){sbook[l]=null}}
+  const keys=[...new Set(orders.filter(o=>!(o.l>1e12)).map(o=>o.reg+'|'+o.t))];let i=0;
   await Promise.all(keys.map(async k=>{const [reg,t]=k.split('|');try{book[k]=await esi('/markets/'+reg+'/orders/?type_id='+t+'&order_type=all',{paged:true})}catch(e){book[k]=null}i++;status('piac: '+i+'/'+keys.length)}));
-  const rows=orders.map(o=>{const b=book[o.reg+'|'+o.t];if(!b)return {o,best:null,state:'ismeretlen'};
+  const rows=orders.map(o=>{const b=o.l>1e12?(sbook[o.l]?(sbook[o.l].raw.get(o.t)||[]).map(x=>Object.assign({location_id:o.l},x)):null):book[o.reg+'|'+o.t];if(!b)return {o,best:null,state:'ismeretlen'};
     const comp=b.filter(x=>x.location_id===o.l&&x.is_buy_order===o.buy&&!own.has(x.order_id));
     const best=comp.length?(o.buy?Math.max(...comp.map(x=>x.price)):Math.min(...comp.map(x=>x.price))):null;
     let state='egyedül',sugg=null;
@@ -3143,9 +3214,9 @@ async function repPrices(){
 }
 
 function repFiltered(){
-  const loc=$('#repLoc').value,cat=$('#repCat').value,q=$('#repQ').value.trim().toLowerCase(),better=$('#repBetter').checked;
+  const loc=$('#repLoc').value,cat=$('#repCat').value,q=$('#repQ').value.trim().toLowerCase(),better=$('#repBetter').checked,own=$('#repOwn').value,so=$('#repSelOnly').checked;
   return (REP.rows||[]).filter(r=>{const ti=REFC.t[r.t];
-    if(loc&&String(r.l)!==loc)return false;if(cat==='ore'&&!repIsOre(ti))return false;if(cat==='loot'&&repIsOre(ti))return false;
+    if(loc&&String(r.l)!==loc)return false;if(own&&!r.own.has(Number(own)))return false;if(so&&!REP.sel.has(repKey(r)))return false;if(cat==='ore'&&!repIsOre(ti))return false;if(cat==='loot'&&repIsOre(ti))return false;
     if(q&&!(NAMES[r.t]||'').toLowerCase().includes(q))return false;
     if(better){const c=repCalc(r);if(!c.pick||!(c.outV>c.inV))return false}
     return true});
@@ -3166,18 +3237,21 @@ function renderRepro(){
   // szűrők
   const locs=[...new Set(REP.rows.map(r=>r.l))].sort((a,b)=>locName(a).localeCompare(locName(b)));
   const ls=$('#repLoc'),cur=ls.value;ls.innerHTML='<option value="">minden helyszín</option>'+locs.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');ls.value=locs.map(String).includes(cur)?cur:'';
+  {const os=$('#repOwn'),cur2=os.value;const cs=CHARS.filter(c=>DATA[c.id]);os.innerHTML='<option value="">'+esc(T('minden karakter'))+'</option>'+cs.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');os.value=cs.some(c=>String(c.id)===cur2)?cur2:''}
   renderRepLocs(locs);
-  const rows=repFiltered().map(r=>Object.assign({r},repCalc(r))).sort((a,b)=>b.outV-a.outV||b.inV-a.inV);
-  const LIM=400;const shown=rows.slice(0,LIM);
+  const get=(x,f)=>f==='name'?(NAMES[x.r.t]||''):f==='loc'?locName(x.r.l):f==='q'?x.r.q:f==='y'?(x.pick?x.pick.y.y:-1):f==='gain'?Math.max(x.outV,x.out2||0)-Math.max(x.inV,x.in2||0):(x[f]||0);
+  if(!SRT.rep)SRT.rep={f:'outV',d:-1};
+  const rows=sortRows('rep',repFiltered().map(r=>Object.assign({r},repCalc(r))),get);
+  const sig=['repLoc','repCat','repQ','repOwn'].map(id=>$('#'+id).value).join('|')+$('#repBetter').checked+$('#repSelOnly').checked;
+  const pg=pageOf('rep',rows,sig,renderRepro);const shown=pg.rows;REP.filtered=rows;
   const allOn=shown.length&&shown.every(x=>REP.sel.has(repKey(x.r)));
   box.innerHTML=!rows.length?'<p class="muted">Nincs a szűrésnek megfelelő reprocesszálható tétel.</p>':
-  `<div class="tablewrap"><table><thead><tr><th><input type="checkbox" id="repAll" ${allOn?'checked':''} aria-label="Mind kijelölése"></th><th>Tárgy</th><th>Helyszín</th><th class="num">Db</th><th>Ki · hozam</th><th>Mi jön ki belőle</th><th class="num">Egyben<div class="small muted" data-noi18n>Jita</div></th><th class="num">Szétszedve<div class="small muted" data-noi18n>Jita</div></th>${m2On()?`<th class="num">Egyben<div class="small muted" data-noi18n>${esc(m2Short())}</div></th><th class="num">Szétszedve<div class="small muted" data-noi18n>${esc(m2Short())}</div></th>`:''}<th>Jobb</th></tr></thead><tbody>${shown.map(x=>{const r=x.r,k=repKey(r);
+  `<div class="row" style="margin-bottom:6px"><button class="btn mini" id="repSelFilt">${T('Mind a(z) {0} szűrt tétel kijelölése',fmt(rows.length))}</button><button class="btn mini" id="repClear2">${T('Kijelölés törlése')}</button><span class="small muted">${T('{0} kijelölve',fmt(REP.sel.size))}</span></div>${pg.html}<div class="tablewrap"><table><thead><tr><th><input type="checkbox" id="repAll" ${allOn?'checked':''} aria-label="Mind kijelölése"></th>${sortTh('rep','name',T('Tárgy'))}${sortTh('rep','loc',T('Helyszín'))}${sortTh('rep','q',T('Db'),1)}${sortTh('rep','y',T('Ki · hozam'),1)}<th>Mi jön ki belőle</th>${sortTh('rep','inV',T('Egyben')+' · Jita',1)}${sortTh('rep','outV',T('Szétszedve')+' · Jita',1)}${m2On()?`${sortTh('rep','in2',T('Egyben')+' · '+esc(m2Short()),1)}${sortTh('rep','out2',T('Szétszedve')+' · '+esc(m2Short()),1)}`:''}${sortTh('rep','gain',T('Jobb'),1)}</tr></thead><tbody>${shown.map(x=>{const r=x.r,k=repKey(r);
     const who=x.pick?`${esc(charName(x.pick.cid))} · <span class="mono">${fmt(x.pick.y.y*100,1)}%</span>${r.own.has(x.pick.cid)?'':` <span class="pill warn" title="${T('A tárgy másik karakternél van, át kell adni.')}">⇄</span>`}`:'<span class="muted">itt nem lehet</span>';
     const top=x.out.slice().sort((a,b)=>b[1]*repPrice(b[0]).v-a[1]*repPrice(a[0]).v).slice(0,4).map(([m,q])=>esc(NAMES[m]||m)+' '+fmt(q)).join(', ')+(x.out.length>4?' …':'');
     const bi=Math.max(x.inV,x.in2||0),bo=Math.max(x.outV,x.out2||0);const where=(v,j,m)=>m2On()&&m>j?esc(m2Short()):'Jita';
     const verdict=!x.pick||!bi&&!bo?'':bo>bi?`<span class="pill ok">reprocess</span><div class="small muted" data-noi18n>${where(bo,x.outV,x.out2)}</div>`:`<span class="pill warn">eladás</span><div class="small muted" data-noi18n>${where(bi,x.inV,x.in2)}</div>`;
-    return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k)?'checked':''}></td><td>${esc(NAMES[r.t]||r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest?`<div class="small muted">${T('{0} marad',fmt(x.rest))}</div>`:''}</td><td class="small">${who}</td><td class="small">${top||'–'}</td><td class="num">${x.inV?(repPrice(r.t).a?'~':'')+isk(x.inV):'–'}</td><td class="num">${x.outV?(x.out.some(([m])=>repPrice(m).a)?'~':'')+isk(x.outV):'–'}</td>${m2On()?`<td class="num">${x.in2?isk(x.in2):'–'}</td><td class="num">${x.out2?isk(x.out2):'–'}</td>`:''}<td>${verdict}</td></tr>`}).join('')}</tbody></table></div>
-  ${rows.length>LIM?`<p class="small muted">${T('Az első {0} tétel látszik ({1}-ból). Szűkíts a szűrőkkel.',LIM,fmt(rows.length))}</p>`:''}
+    return `<tr><td><input type="checkbox" data-rk="${k}" ${REP.sel.has(k)?'checked':''}></td><td>${esc(NAMES[r.t]||r.t)}</td><td class="small">${esc(locName(r.l))}</td><td class="num">${fmt(r.q)}${x.rest?`<div class="small muted">${T('{0} marad',fmt(x.rest))}</div>`:''}</td><td class="small">${who}</td><td class="small">${top||'–'}</td><td class="num">${x.inV?(repPrice(r.t).a?'~':'')+isk(x.inV):'–'}</td><td class="num">${x.outV?(x.out.some(([m])=>repPrice(m).a)?'~':'')+isk(x.outV):'–'}</td>${m2On()?`<td class="num">${x.in2?isk(x.in2):'–'}</td><td class="num">${x.out2?isk(x.out2):'–'}</td>`:''}<td>${verdict}</td></tr>`}).join('')}</tbody></table></div>${pg.html}
   <p class="small muted" style="margin-top:6px">Az értékek Jita sell árak. A ~ jelű sorokhoz még nincs friss Jita ár, ott az ESI átlagár a becslés; a kijelöltekre szóló árgomb pontosítja (a második piacét is). A „marad” a portion alatti maradék, az nem dolgozható fel.</p>`+m2Hint();
   renderRepSum();
 }
@@ -3235,7 +3309,8 @@ function renderRepSum(){
   tab.addEventListener('click',e=>{
     if(e.target.id==='repLoad')repLoad();
     else if(e.target.id==='repPrice')repPrices();
-    else if(e.target.id==='repClear'){REP.sel.clear();renderRepro()}
+    else if(e.target.id==='repClear'||e.target.id==='repClear2'){REP.sel.clear();renderRepro()}
+    else if(e.target.id==='repSelFilt'){(REP.filtered||[]).forEach(x=>REP.sel.add(repKey(x.r)));renderRepro()}
   });
   tab.addEventListener('change',e=>{const t=e.target,cfg=repCfg();
     if(t.dataset.rk){t.checked?REP.sel.add(t.dataset.rk):REP.sel.delete(t.dataset.rk);renderRepSum();
@@ -3246,7 +3321,7 @@ function renderRepSum(){
     else if(t.dataset.rig){(cfg.loc[t.dataset.rig]=cfg.loc[t.dataset.rig]||{}).rig=Number(t.value);save()}
     else if(t.dataset.tax!=null&&t.dataset.tax!==''){(cfg.loc[t.dataset.tax]=cfg.loc[t.dataset.tax]||{}).tax=t.value;save()}
     else if(t.dataset.base){(cfg.loc[t.dataset.base]=cfg.loc[t.dataset.base]||{}).base=t.value;save()}
-    else if(['repLoc','repCat','repBetter'].includes(t.id))renderRepro();
+    else if(['repLoc','repCat','repBetter','repOwn','repSelOnly'].includes(t.id))renderRepro();
   });
   let qt=null;tab.addEventListener('input',e=>{if(e.target.id==='repQ'){clearTimeout(qt);qt=setTimeout(renderRepro,200)}});
 })();

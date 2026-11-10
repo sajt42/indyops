@@ -1,5 +1,26 @@
 /* IndyOps – Rendering: characters, blueprints, stock, settings, plan results, hauling. */
 "use strict";
+/* ============ lapozás és rendezés (közös) ============ */
+const PG={},PGR={},SRT={};
+// rows: teljes (szűrt) lista; sig: a szűrők aláírása (ha változik, vissza az első oldalra); render: újrarajzoló függvény
+function pageOf(key,rows,sig,render){const s=PG[key]||(PG[key]={p:0,n:100,sig});if(s.sig!==sig){s.sig=sig;s.p=0}PGR[key]=render;
+  const n=s.n||rows.length||1;const pages=Math.max(1,Math.ceil(rows.length/n));if(s.p>=pages)s.p=pages-1;const a=s.p*n,b=Math.min(rows.length,a+n);
+  return {rows:rows.slice(a,b),html:pagerHtml(key,rows.length,pages,s,a,b)}}
+function pagerHtml(key,total,pages,s,a,b){if(total<=25)return '';
+  const sizes=[25,50,100,250,500,0];
+  return `<div class="pager" data-noi18n><button class="btn mini" data-pg="${key}|first" ${s.p?'':'disabled'} aria-label="${esc(T('Első oldal'))}">«</button><button class="btn mini" data-pg="${key}|prev" ${s.p?'':'disabled'} aria-label="${esc(T('Előző oldal'))}">‹</button>
+  <span class="small">${fmt(a+1)}–${fmt(b)} / ${fmt(total)}</span>
+  <button class="btn mini" data-pg="${key}|next" ${s.p<pages-1?'':'disabled'} aria-label="${esc(T('Következő oldal'))}">›</button><button class="btn mini" data-pg="${key}|last" ${s.p<pages-1?'':'disabled'} aria-label="${esc(T('Utolsó oldal'))}">»</button>
+  <label class="small">${esc(T('Soronként'))} <select data-pgn="${key}">${sizes.map(z=>`<option value="${z}" ${s.n===z?'selected':''}>${z||esc(T('mind'))}</option>`).join('')}</select></label></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pg]');if(!b)return;const [k,act]=b.dataset.pg.split('|');const s=PG[k];if(!s)return;
+  if(act==='first')s.p=0;else if(act==='prev')s.p=Math.max(0,s.p-1);else if(act==='next')s.p++;else if(act==='last')s.p=1e9;PGR[k]&&PGR[k]()});
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||t.dataset.pgn==null)return;const k=t.dataset.pgn;const s=PG[k];if(!s)return;s.n=Number(t.value);s.p=0;PGR[k]&&PGR[k]()});
+// rendezhető fejléc: sortTh(kulcs,mező,felirat,szám?) ; sortRows(kulcs,sorok,alap)
+function sortTh(key,f,label,num,dflt){const s=SRT[key]||(SRT[key]=dflt||{f,d:num?-1:1});const on=s.f===f;
+  return `<th class="${num?'num ':''}sortable" data-srt="${key}|${f}|${num?1:0}" aria-sort="${on?(s.d>0?'ascending':'descending'):'none'}">${label}${on?(s.d>0?' ▲':' ▼'):''}</th>`}
+function sortRows(key,rows,get){const s=SRT[key];if(!s)return rows;return rows.sort((a,b)=>{const va=get(a,s.f),vb=get(b,s.f);return (typeof va==='number'&&typeof vb==='number'?va-vb:String(va??'').localeCompare(String(vb??''),LOC()))*s.d})}
+document.addEventListener('click',e=>{const th=e.target.closest('[data-srt]');if(!th)return;const [k,f,num]=th.dataset.srt.split('|');const s=SRT[k]||{};SRT[k]=s.f===f?{f,d:-s.d}:{f,d:num==='1'?-1:1};if(PG[k])PG[k].p=0;PGR[k]&&PGR[k]()});
+
 /* ============ RENDER ============ */
 function renderAll(){renderProjects();renderChars();renderJobs();renderBPs();renderStock();renderLocList();renderPlanOptions();renderSettings();renderUnknownLocs()}
 function alertBox(msg){const d=document.createElement('div');d.className='notice err';d.innerHTML='<p>'+esc(msg)+'</p>';const host=document.querySelector('section:not([hidden])')||document.body;host.prepend(d);setTimeout(()=>d.remove(),12000)}
@@ -22,7 +43,8 @@ function renderBPs(){
   let list=allBPs().map(b=>({b,name:NAMES[b.t]||'#'+b.t,char:charName(b.cid),loc:locName(b.l)+(b.cn?' › '+b.cn:''),me:b.me,te:b.te,runs:b.r}));
   list=list.filter(x=>(!f||x.name.toLowerCase().includes(f)||x.loc.toLowerCase().includes(f))&&(!kind||(kind==='bpo')===(x.b.r===-1))&&(!nm||(x.b.r===-1&&(x.me<10||x.te<20))));
   list.sort((a,b)=>{const k=bpSort.k;const va=a[k],vb=b[k];return (typeof va==='number'?va-vb:String(va).localeCompare(String(vb),'hu'))*bpSort.d});
-  $('#bpTable tbody').innerHTML=list.map(x=>{const j=inJob(x.b.i);const max=x.b.r===-1&&x.me>=10&&x.te>=20;
+  const pg=pageOf('bp',list,[f,kind,nm,bpSort.k,bpSort.d].join('|'),renderBPs);$('#bpPg1').innerHTML=pg.html;$('#bpPg2').innerHTML=pg.html;
+  $('#bpTable tbody').innerHTML=pg.rows.map(x=>{const j=inJob(x.b.i);const max=x.b.r===-1&&x.me>=10&&x.te>=20;
     return `<tr><td>${esc(x.name)}</td><td><span class="pill ${x.b.r===-1?'bpo':'bpc'}">${x.b.r===-1?'BPO':'BPC'}</span></td><td class="num">${x.me}</td><td class="num">${x.te}</td><td class="num">${x.b.r===-1?'∞':x.b.r}</td><td>${esc(x.char)}</td><td class="small">${esc(x.loc)}</td><td>${j?'<span class="pill warn">jobban</span> ':''}${x.b.r===-1?(max?'<span class="pill ok">max</span>':'<span class="pill warn">kutatható</span>'):''}</td></tr>`}).join('')||'<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>';
   $('#bpCount').textContent=list.length+' blueprint';
 }
@@ -31,9 +53,9 @@ function renderStock(){
   const sm=stockMap(only);let rows=[];
   for(const [t,arr] of sm){const name=NAMES[t]||'#'+t;if(f&&!name.toLowerCase().includes(f))continue;const a=lf?arr.filter(x=>String(x.l)===lf):arr;const tot=a.reduce((s,x)=>s+x.q,0);if(!tot)continue;rows.push({t,name,tot,a})}
   rows.sort((a,b)=>a.name.localeCompare(b.name,'hu'));
-  const shown=rows.slice(0,1500);
+  const pg=pageOf('st',rows,[f,lf,only].join('|'),renderStock);const shown=pg.rows;$('#stPg1').innerHTML=pg.html;$('#stPg2').innerHTML=pg.html;
   $('#stTable tbody').innerHTML=shown.map(r=>`<tr><td>${esc(r.name)}</td><td class="num">${fmt(r.tot)}</td><td class="small">${r.a.map(x=>esc(charName(x.cid))+' · '+esc(locName(x.l))+': <span class="mono">'+fmt(x.q)+'</span>').join('<br>')}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">Nincs adat.</td></tr>';
-  $('#stCount').textContent=rows.length+' tételtípus'+(rows.length>shown.length?' (az első 1500 látszik, szűrj)':'');
+  $('#stCount').textContent=T('{0} tételtípus',fmt(rows.length));
   const sel=$('#stLoc'),cur=sel.value;sel.innerHTML='<option value="">minden hely</option>'+allLocs().sort((a,b)=>locName(a).localeCompare(locName(b))).map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');sel.value=cur;
 }
 function renderLocList(){
@@ -46,7 +68,7 @@ function renderSettings(){
   $('#sSalesTax').placeholder=fmt(salesTax()*100,2);$('#sBroker').placeholder=fmt(brokerFee()*100,2);
   {const sel=$('#sProdLoc');sel.innerHTML='<option value="">automatikus: a BP helye</option>'+allLocs().sort((a,b)=>locName(a).localeCompare(locName(b))).map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('');sel.value=S.prodLoc||''}
   {const sel=$('#sMarket2');const hubs=HUBS.filter(h=>h[0]!==JITA_STATION);const own=allLocs().filter(l=>locKind(l)==='npc'&&l!==JITA_STATION&&!hubs.some(h=>h[0]===l)).sort((a,b)=>locName(a).localeCompare(locName(b)));
-    sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'')+(()=>{const st=allLocs().filter(l=>locKind(l)==='struct').sort((a,b)=>locName(a).localeCompare(locName(b)));return st.length?'<optgroup label="'+esc(T('Struktúrák, ahol van cuccod'))+'">'+st.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':''})();sel.value=S.market2||''}
+    sel.innerHTML='<option value="">nincs</option><optgroup label="'+esc(T('Kereskedelmi központok'))+'">'+hubs.map(h=>`<option value="${h[0]}">${esc(h[2])}</option>`).join('')+'</optgroup>'+(own.length?'<optgroup label="'+esc(T('Állomások, ahol van cuccod'))+'">'+own.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':'')+(()=>{const st=allLocs().filter(l=>locKind(l)==='struct').sort((a,b)=>locName(a).localeCompare(locName(b)));return st.length?'<optgroup label="'+esc(T('Struktúrák, ahol van cuccod'))+'">'+st.map(l=>`<option value="${l}">${esc(locName(l))}</option>`).join('')+'</optgroup>':''})();sel.value=S.market2||'';const mb=$('#sM2Broker');if(mb){const l=Number(S.market2);mb.innerHTML=S.market2&&locKind(l)==='struct'?`<label class="small">${T('{0} broker fee (a tulaj állítja), %',esc(m2Short()))} <input type="number" step="0.1" min="0" max="100" style="width:80px" data-sbroker="${l}" value="${structBrokerOf(l)??''}" placeholder="?"></label> <span class="small muted">${T('+ 0,5% SCC pótdíj. A játékban egy eladási order feladásakor látod. Skillek és standing itt nem számítanak.')}</span>`:''}}
   {const w=workChars();const cs=CHARS.filter(c=>DATA[c.id]);$('#sWorkChars').innerHTML=cs.length?cs.map(c=>`<label class="inline"><input type="checkbox" data-wc="${c.id}" ${w.includes(c.id)?'checked':''}> ${esc(c.name)}</label>`).join(''):'<span class="muted small">'+esc(T('Még nincs karakter.'))+'</span>'}
 }
 function renderPlanOptions(){
@@ -203,7 +225,7 @@ function renderResult(el,R,rerun){
     <div class="kpi"><div class="k">Vásárolni kell</div><div class="v">${isk(buyCost)}</div></div>
     <div class="kpi"><div class="k">Saját készlet értéke</div><div class="v">${free?'ingyen':isk(stockCost)}</div></div>
     <div class="kpi"><div class="k">Job költség</div><div class="v">${isk(jcT)}</div></div>
-    <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?`<div class="small muted">${esc(m2Short())}: ${isk(R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0)*(1-fee))}</div>`:''}</div>
+    <div class="kpi"><div class="k">Eladás (Jita sell, díjak után)</div><div class="v">${isk(net)}</div>${m2On()?(()=>{const g=R.trees.reduce((s,x)=>s+x.made*(sell2(x.tree.t)||0),0);const f2=m2Fee();return `<div class="small muted">${esc(m2Short())}: ${f2!=null?isk(g*(1-f2)):isk(g)+' '+T('(díjak nélkül)')}</div>`})():''}</div>
     <div class="kpi"><div class="k">Profit</div><div class="v ${profit>=0?'pos':'neg'}">${isk(profit)}</div></div>
   </div>`;
   h+=`<p class="small muted">${T('Gyártási rendszer: {0}',esc(NAMES[R.sys]||R.sys||T('ismeretlen')))}${ixm!=null?' · cost index '+fmt(ixm*100,2)+'%':''} · sales tax ${fmt(salesTax()*100,2)}% · broker ${fmt(brokerFee()*100,2)}%${bestSeller()?' · '+T('eladó: {0}',esc(charName(bestSeller().cid))):''}</p>`+m2Hint();
