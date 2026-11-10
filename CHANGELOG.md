@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.13 – 2026-11-10
+
+- Selling: the in-game standing in the broker fee tooltip is rounded like the game's Standings window (1.12.10 cut it off, which showed 4.76 where the game shows 4.77). The fee itself was right.
+
 ## 1.12.12 – 2026-11-10
 
 - Fix: the faction of a station owner corp now comes from EVE Ref. ESI's corporation data has no faction for NPC corps (checked: Spacelane Patrol, Caldari Navy), so every corp was stored as 'no faction' and the faction standing never counted in the broker fee; 1.12.10 and 1.12.11 did not fix this. The stored values are reloaded once.

@@ -190,7 +190,7 @@ function brokerExplain(cid, l) {
   const part = (k, from, label) =>
     T('{0}% × {1} standing {2}', fmt(k, 2), NAMES[from] || label, fmt(rawStd(cid, from), 2)) +
     ' (' +
-    T('a játékban látható, skillel javított: {0}', fmt(Math.trunc(effStd(cid, from) * 100 + 1e-9) / 100, 2)) +
+    T('a játékban látható, skillel javított: {0}', fmt(effStd(cid, from), 2)) +
     ')';
   const fac = o.fac ? ' − ' + part(0.03, o.fac, T('frakció')) : ' − ' + T('frakció: nincs, vagy nem ismert');
   return (

@@ -566,7 +566,7 @@ const ok = (c, msg) => {
     ok(ok3, 'showResult draws a full plan');
   }
   // 21. broker fee at an NPC station uses the RAW standings. Measured in game: Broker Relations 5, Connections 5,
-  //     faction 4.77 / corp 8.61 shown in game (skill-adjusted) = raw 3.4625 / 8.27 -> order fee 1.2309%.
+  //     faction 4.77 / corp 8.61 shown in game (skill-adjusted, rounded), raw 3.46 / 8.27 from ESI -> order fee 1.2309%.
   //     Adjusted standings would give 1.18%.
   {
     T.setChars([{ id: 7, name: 'Broker', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
@@ -576,7 +576,7 @@ const ok = (c, msg) => {
         bps: [],
         skills: { 3446: 5, 3359: 5 },
         jobs: [],
-        std: { 500001: 3.4625, 1000035: 8.27 },
+        std: { 500001: 3.46, 1000035: 8.266 },
         at: Date.now()
       }
     });
@@ -606,7 +606,7 @@ const ok = (c, msg) => {
     );
     T.CORPFAC[1000035] = 0;
     ok(
-      Math.abs(T.brokerFeeOf(7, 60009999) - (0.015 - 0.0002 * 8.27)) < 1e-12 &&
+      Math.abs(T.brokerFeeOf(7, 60009999) - (0.015 - 0.0002 * 8.266)) < 1e-12 &&
         /nincs, vagy nem ismert/.test(T.brokerExplain(7, 60009999)),
       'corp without faction: only the corp standing counts'
     );
