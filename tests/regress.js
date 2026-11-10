@@ -554,21 +554,26 @@ const ok = (c, msg) => {
     }
     ok(ok3, 'showResult draws a full plan');
   }
-  // 21. broker fee at an NPC station with standings: formula and its tooltip
+  // 21. broker fee at an NPC station uses the RAW standings. Measured in game: Broker Relations 5, Connections 5,
+  //     faction 4.77 / corp 8.61 shown in game (skill-adjusted) = raw 3.4625 / 8.27 -> order fee 1.2309%.
+  //     Adjusted standings would give 1.18%.
   {
     T.setChars([{ id: 7, name: 'Broker', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
-    T.setData({ 7: { assets: [], bps: [], skills: { 3446: 5, 3359: 3 }, jobs: [], std: { 500001: 2, 1000035: 5 }, at: Date.now() } });
+    T.setData({ 7: { assets: [], bps: [], skills: { 3446: 5, 3359: 5 }, jobs: [], std: { 500001: 3.4625, 1000035: 8.27 }, at: Date.now() } });
     T.LI[60009999] = { name: 'Zzyzx Test Station', system: 30001, owner: 1000035 };
     T.CORPFAC[1000035] = 500001;
+    T.names[500001] = 'Test Faction';
+    T.names[1000035] = 'Test Corp';
     const savedBroker = T.S.broker;
     T.S.broker = '';
-    const eff = r => r + (10 - r) * 0.04 * 3;
-    const want = 0.03 - 0.015 - 0.0003 * eff(2) - 0.0002 * eff(5);
     const got = T.brokerFeeOf(7, 60009999);
-    ok(Math.abs(got - want) < 1e-12, 'broker fee uses Connections-adjusted standings (' + (got * 100).toFixed(4) + '%)');
+    ok(Math.abs(got * 100 - 1.2309) < 0.001, 'broker fee matches the in-game value 1.2309% (' + (got * 100).toFixed(4) + '%)');
     const ex = T.brokerExplain(7, 60009999);
-    ok(ex.includes('Broker Relations 5') && ex.includes('nyers 2,00') && ex.includes('nyers 5,00') && ex.includes('Connections 3'), 'tooltip shows skills and raw standings: ' + ex);
+    ok(/Test Faction standing 3,46/.test(ex) && /Test Corp standing 8,27/.test(ex) && /4,77/.test(ex) && /8,61/.test(ex) && /= 1,23%/.test(ex), 'tooltip names the faction and corp with raw and in-game values: ' + ex);
     ok(T.brokerFeeOf(7, 60009998) === 0.015 && /standing nélkül/.test(T.brokerExplain(7, 60009998)), 'unknown owner: no standing reduction, said in the tooltip');
+    T.CORPFAC[1000035] = 0;
+    ok(Math.abs(T.brokerFeeOf(7, 60009999) - (0.015 - 0.0002 * 8.27)) < 1e-12 && /nincs, vagy nem ismert/.test(T.brokerExplain(7, 60009999)), 'corp without faction: only the corp standing counts');
+    T.CORPFAC[1000035] = 500001;
     T.S.broker = savedBroker;
   }
 

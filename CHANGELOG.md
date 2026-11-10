@@ -1,8 +1,15 @@
 # Changelog
 
+## 1.12.10 – 2026-11-10
+
+- Fix: the broker fee at NPC stations uses the raw standings, without Connections/Diplomacy, as the game does (checked against an in-game order: 1.23%, where the adjusted standings gave 1.27–1.18%).
+- Fix: a failed lookup of a station owner's faction was stored as 'no faction' for good, so the faction standing was left out of the broker fee; failures are now retried and old entries are reloaded once.
+- Selling: the broker fee tooltip names the faction and the corp and shows both the raw standing used and the value the game's Standings window shows.
+- Changelog wording of 1.12.9.
+
 ## 1.12.9 – 2026-11-10
 
-- Fix: on the Profit tab the Jita profit per run was empty on every row since 1.10.0 (the value was not stored with the row). This also broke the 'only profitable' filter, sorting by profit per run and nothing else; the remaining-runs value was right.
+- Fix: on the Profit tab the Jita profit per run was empty on every row since 1.10.0 (the value was not stored with the row). This also broke the 'only profitable' filter and sorting by profit per run; the remaining-runs value was right.
 - Tests: the profit scenario checks that every row has a profit per run (the reference output had recorded the empty column).
 
 ## 1.12.8 – 2026-11-10

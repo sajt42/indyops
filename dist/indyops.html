@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-p63bt1La6LKi71/i7cljOIJVOkbGqpkP2DFy4LLWJn0=' 'sha256-8KFlpnTOLS65r65U/BIJKwQouNWtDMSeE/wRAKbq5jk=' 'sha256-la/KQ7u/1c45mzpxNNv3E9LRDVU6Z/ajBgwha+rlmDQ=' 'sha256-n1eURjpfTIP1l/4fTyR+zg6syrCleDv/MwmK/Thiq9w=' 'sha256-O43fR/8TjSCEucgh/nZRN7yTEZD6waIkPofvnNTzXHA=' 'sha256-PkGZYp2u1zrJCuiJUp436M2b4f16LJtPYVjpeQvb7gA=' 'sha256-usHtTTyC6MACykjCVk4UjqRMfo6WZX1bK1ZPZP1mlJQ=' 'sha256-DMHYJvgGlAg8W6aA/vbYqfPabLELHy8d+IYlKWjAADM=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-mpFwwF3Bgc4ztUTeSs3HSQ1Wd9OJgZQbIkKRnVGcgTs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-5nZjPY7HhioA8rmESqIp/s1MzRe9wPrBDRwNDhN7WJs=' 'sha256-r5lCUzUFvVYHzTUwLDaBJb7ysvPIbSDqpG29cA+aI38=' 'sha256-kUm/RIkyMqws7+0ge6/lqmajllxnBK584tpcxDv83a4=' 'sha256-n1eURjpfTIP1l/4fTyR+zg6syrCleDv/MwmK/Thiq9w=' 'sha256-BvgTO5qvXGBkJMX3W/WBwQIy0xK6+eUmiyvcPDrgIK8=' 'sha256-PkGZYp2u1zrJCuiJUp436M2b4f16LJtPYVjpeQvb7gA=' 'sha256-usHtTTyC6MACykjCVk4UjqRMfo6WZX1bK1ZPZP1mlJQ=' 'sha256-DMHYJvgGlAg8W6aA/vbYqfPabLELHy8d+IYlKWjAADM=' 'sha256-+qvnvUpldvwuShH0VqIvEY5PrvvMg0ONFGWsdjO1cCk=' 'sha256-mpFwwF3Bgc4ztUTeSs3HSQ1Wd9OJgZQbIkKRnVGcgTs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://images.evetech.net; connect-src https://esi.evetech.net https://login.eveonline.com https://ref-data.everef.net https://data.everef.net; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Free EVE Online industry calculator and manufacturing planner: reads your characters via ESI and works out material trees, blueprint ME/TE, invention, research, reprocessing, hauling and selling. Runs entirely in your browser.">
 <meta name="keywords" content="EVE Online, EVE industry, industry calculator, manufacturing planner, blueprint calculator, invention calculator, reprocessing calculator, ESI, IndyOps">
 <link rel="canonical" href="https://sajt42.github.io/indyops/">
@@ -529,7 +529,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>Mit érdemes?</dt><dd>Minden saját BP-d rangsorolva: profit runonként, margó, profit gyártási óránként és napi piaci forgalom. A „+ projekt” gombbal rendelést állíthatsz össze. Ha van második piac, a profit runonként ott is látszik, az ottani díjakkal.</dd>
     <dt>Invention</dt><dd>Minden inventálható T1 BP-dre: esély a skilljeidből, mind a 8 decryptor összevetve, invention-költség és profit T2 BPC-nként.</dd>
     <dt>Kutatás &amp; copy</dt><dd>BPO-nként a következő ME szint ideje és költsége, mennyit spórol runonként, mikor térül meg, plusz a copy ideje és a science slotjaid.</dd>
-    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). Az eladó-táblában a broker fee fölé víve az egeret látszik a képlet a karakter skilljeivel és standingjeivel (nyers és Connections/Diplomacy-val javított érték), így a játékban feladott order díjával össze tudod vetni. A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van. Játékos-struktúránál a broker fee-t a tulaj állítja, ezt egyszer beírhatod, és onnantól az eladó-javaslat és az összeg is számol vele. A struktúrában lévő ordereidnél az alá-ígérést a struktúra piacáról nézi.</dd>
+    <dt>Eladás</dt><dd>Az aktív market ordereid: hol ígértek alá, és mi lenne az új ár (gombnyomásra vágólapra). A wallet-engedéllyel az elmúlt 30 nap eladásai is. Azt is megmondja, melyik karaktered adjon el: akinél a legkisebb a sales tax (Accounting) és a broker fee (Broker Relations, valamint az állomás tulajdonosa felé vett standing). A broker fee a nyers standinggel számol, Connections és Diplomacy nélkül (a játékban a Standings ablak a skillel javított értéket mutatja). Az eladó-táblában a broker fee fölé víve az egeret látszik a képlet a karakter skilljeivel, a frakció és a corp nevével, a nyers és a játékban látható standinggel, így a játékban feladott order díjával össze tudod vetni. A Beállításokban a Jita mellé egy második piacot is választhatsz (kereskedelmi központ, vagy állomás vagy struktúra, ahol van cuccod); az árai mindenhol megjelennek, ahol Jita ár van. Játékos-struktúránál a broker fee-t a tulaj állítja, ezt egyszer beírhatod, és onnantól az eladó-javaslat és az összeg is számol vele. A struktúrában lévő ordereidnél az alá-ígérést a struktúra piacáról nézi.</dd>
     <dt>Vásárlás nélkül</dt><dd>Hány runt tudsz legyártani csak abból, ami megvan, és mi fogy el először.</dd>
     <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind). Minden listás oldalon (Blueprintek, Készlet, Mit érdemes?, Invention, Kutatás, Eladás, Vásárlás nélkül, Reprocess) a fejlécre kattintva rendezhetsz, újabb kattintásra fordított sorrendben.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
@@ -593,7 +593,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>What pays?</dt><dd>All your BPs ranked: profit per run, margin, profit per build hour and daily market volume. Use "+ project" to put an order together. With a second market, profit per run is shown there too, with that market's fees.</dd>
     <dt>Invention</dt><dd>For every T1 BP you can invent from: the chance from your skills, all 8 decryptors compared, invention cost and profit per T2 BPC.</dd>
     <dt>Research &amp; copy</dt><dd>Per BPO: time and cost of the next ME level, how much it saves per run, when it pays off, plus copy time and your science slots.</dd>
-    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). Hover over a broker fee in the seller table to see the formula with the character's skills and standings (raw and adjusted by Connections/Diplomacy), so you can compare it with the fee the game shows for an order. In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do. In a player structure the owner sets the broker fee; enter it once and the seller suggestion and totals use it. For your orders in structures, undercuts are checked on the structure's own market.</dd>
+    <dt>Selling</dt><dd>Your active market orders: where you were undercut and what the new price would be (one click copies it). With the wallet permission, also your sales of the last 30 days. It also tells you which character should sell: the one with the lowest sales tax (Accounting) and broker fee (Broker Relations plus standing towards the station owner). The broker fee uses the raw standings, without Connections and Diplomacy (the game's Standings window shows the skill-adjusted value). Hover over a broker fee in the seller table to see the formula with the character's skills, the faction and corp names, and the raw and in-game standings, so you can compare it with the fee the game shows for an order. In Settings you can pick a second market next to Jita (a trade hub, or a station or structure where you have stuff); its prices show up wherever Jita prices do. In a player structure the owner sets the broker fee; enter it once and the seller suggestion and totals use it. For your orders in structures, undercuts are checked on the structure's own market.</dd>
     <dt>No-buy builds</dt><dd>How many runs you can build from what you already have, and what runs out first.</dd>
     <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all). On every list page (Blueprints, Stock, What pays?, Invention, Research, Selling, No-buy builds, Reprocess) click a header to sort, click again to reverse.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
@@ -657,7 +657,7 @@ th.sortable:hover{text-decoration:underline}
     <dt>Was lohnt sich?</dt><dd>Alle deine BPs als Rangliste: Gewinn pro Run, Marge, Gewinn pro Bauzeit-Stunde und Tagesvolumen am Markt. Mit „+ Projekt“ stellst du einen Auftrag zusammen. Mit einem zweiten Markt wird der Gewinn pro Run auch dort angezeigt, mit dessen Gebühren.</dd>
     <dt>Invention</dt><dd>Für jedes T1-BP, aus dem du inventieren kannst: Chance aus deinen Skills, alle 8 Decryptoren im Vergleich, Invention-Kosten und Gewinn pro T2-BPC.</dd>
     <dt>Forschung &amp; Kopie</dt><dd>Pro BPO: Zeit und Kosten der nächsten ME-Stufe, Ersparnis pro Run, wann es sich lohnt, dazu Kopierzeit und deine Science-Slots.</dd>
-    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). Fährst du in der Verkäufertabelle mit der Maus über eine Broker Fee, siehst du die Formel mit Skills und Standings des Charakters (roh und mit Connections/Diplomacy angepasst) und kannst sie mit der Gebühr vergleichen, die das Spiel für eine Order anzeigt. In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen. In einer Spielerstruktur legt der Besitzer die Broker Fee fest; trage sie einmal ein, dann rechnen Verkäufervorschlag und Summen damit. Bei deinen Orders in Strukturen wird das Unterbieten am Markt der Struktur geprüft.</dd>
+    <dt>Verkauf</dt><dd>Deine aktiven Marktorders: wo du unterboten wurdest und welcher Preis neu wäre (ein Klick kopiert ihn). Mit der Wallet-Berechtigung auch deine Verkäufe der letzten 30 Tage. Es sagt dir auch, welcher Charakter verkaufen sollte: der mit der niedrigsten Sales Tax (Accounting) und Broker Fee (Broker Relations plus Standing zum Stationsbesitzer). Die Broker Fee rechnet mit den Roh-Standings, ohne Connections und Diplomacy (das Standings-Fenster im Spiel zeigt den mit Skills angepassten Wert). Fährst du in der Verkäufertabelle mit der Maus über eine Broker Fee, siehst du die Formel mit den Skills, den Namen von Fraktion und Corp sowie dem rohen und dem im Spiel angezeigten Standing und kannst sie mit der Gebühr vergleichen, die das Spiel für eine Order anzeigt. In den Einstellungen kannst du neben Jita einen zweiten Markt wählen (Handelsknoten oder Station oder Struktur mit deinen Sachen); dessen Preise erscheinen überall, wo Jita-Preise stehen. In einer Spielerstruktur legt der Besitzer die Broker Fee fest; trage sie einmal ein, dann rechnen Verkäufervorschlag und Summen damit. Bei deinen Orders in Strukturen wird das Unterbieten am Markt der Struktur geprüft.</dd>
     <dt>Ohne Einkauf</dt><dd>Wie viele Runs du nur aus deinem Bestand bauen kannst und was zuerst ausgeht.</dd>
     <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle). Auf jeder Listenseite (Blueprints, Bestand, Was lohnt sich?, Invention, Forschung, Verkauf, Ohne Einkauf, Reprocess) sortierst du per Klick auf die Kopfzeile, erneuter Klick dreht die Reihenfolge.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
@@ -1446,13 +1446,17 @@ window.I18N.en = {
   'A Beállításokban megadott érték.': 'The value set in Settings.',
   '3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)':
     '3% − 0.3% × Broker Relations {0} = {1}% (without standing)',
-  'nyers {0}': 'raw {0}',
-  '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.':
-    '3% − 0.3% × Broker Relations {0} − 0.03% × faction standing {1} − 0.02% × corp standing {2} = {3}%. Connections {4}, Diplomacy {5}.',
   'Második piac: {0}…': 'Second market: {0}…',
   'Második piac: {0}': 'Second market: {0}',
   'A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.':
-    'The second market changed since the last calculation: the {0} columns fill in with the next calculation.'
+    'The second market changed since the last calculation: the {0} columns fill in with the next calculation.',
+  '{0}% × {1} standing {2}': '{0}% × {1} standing {2}',
+  'a játékban látható, skillel javított: {0}': 'shown in game, adjusted by skills: {0}',
+  frakció: 'faction',
+  'frakció: nincs, vagy nem ismert': 'faction: none, or not known',
+  '3% − 0,3% × Broker Relations {0}': '3% − 0.3% × Broker Relations {0}',
+  'A díj a nyers standinggel számol (Connections/Diplomacy nélkül).':
+    'The fee uses the raw standings (without Connections/Diplomacy).'
 };
 </script>
 <script>
@@ -2202,13 +2206,17 @@ window.I18N.de = {
   'A Beállításokban megadott érték.': 'Der in den Einstellungen eingetragene Wert.',
   '3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)':
     '3 % − 0,3 % × Broker Relations {0} = {1} % (ohne Standing)',
-  'nyers {0}': 'roh {0}',
-  '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.':
-    '3 % − 0,3 % × Broker Relations {0} − 0,03 % × Fraktions-Standing {1} − 0,02 % × Corp-Standing {2} = {3} %. Connections {4}, Diplomacy {5}.',
   'Második piac: {0}…': 'Zweiter Markt: {0}…',
   'Második piac: {0}': 'Zweiter Markt: {0}',
   'A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.':
-    'Der zweite Markt hat sich seit der letzten Berechnung geändert: Die Spalten {0} werden bei der nächsten Berechnung gefüllt.'
+    'Der zweite Markt hat sich seit der letzten Berechnung geändert: Die Spalten {0} werden bei der nächsten Berechnung gefüllt.',
+  '{0}% × {1} standing {2}': '{0} % × Standing {1} {2}',
+  'a játékban látható, skillel javított: {0}': 'im Spiel angezeigt, mit Skills angepasst: {0}',
+  frakció: 'Fraktion',
+  'frakció: nincs, vagy nem ismert': 'Fraktion: keine oder nicht bekannt',
+  '3% − 0,3% × Broker Relations {0}': '3 % − 0,3 % × Broker Relations {0}',
+  'A díj a nyers standinggel számol (Connections/Diplomacy nélkül).':
+    'Die Gebühr rechnet mit den Roh-Standings (ohne Connections/Diplomacy).'
 };
 </script>
 <script>
@@ -2276,7 +2284,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.12.9',
+  version: '1.12.10',
   built: '2026-11-10',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -3306,18 +3314,26 @@ function salesTaxOf(cid) {
     ? Number(S.salesTax) / 100
     : 0.075 * (1 - 0.11 * lvlOf(cid, SK.accounting));
 }
-// standing: the raw value is improved by Connections (positive) / Diplomacy (negative); null without the scope
+// standing: ESI gives the raw value. The game shows (and some formulas use) the effective value, improved by
+// Connections (positive) / Diplomacy (negative). hasStd is false without the standings scope.
 function hasStd(cid) {
   return !!(DATA[cid] && DATA[cid].std);
 }
-function effStd(cid, from) {
+function rawStd(cid, from) {
   const d = DATA[cid];
-  if (!d || !d.std || from == null) return 0;
-  const r = d.std[from] || 0;
+  if (!d || !d.std || !from) return 0;
+  return d.std[from] || 0;
+}
+function effStd(cid, from) {
+  if (!from) return 0;
+  const r = rawStd(cid, from);
   const sk = r >= 0 ? lvlOf(cid, SK.connections) : lvlOf(cid, SK.diplomacy);
   return r + (10 - r) * 0.04 * sk;
 }
+// NPC corp -> faction id (0: the corp has no faction). Only answers are cached; a failed lookup is retried later.
+// v2: earlier versions also cached failures as 0, so those entries are dropped once.
 let CORPFAC = load('corpfac', {});
+if (!CORPFAC.v2) CORPFAC = { v2: 1 };
 function stationOwner(l) {
   const i = LOCINFO[l];
   if (!i || i.owner == null) return null;
@@ -3325,6 +3341,7 @@ function stationOwner(l) {
 }
 async function ensureOwners(locs) {
   let ch = false;
+  const names = [];
   for (const l of locs) {
     if (!l || locKind(l) !== 'npc') continue;
     let i = LOCINFO[l];
@@ -3337,17 +3354,23 @@ async function ensureOwners(locs) {
         continue;
       }
     }
-    if (i.owner != null && CORPFAC[i.owner] === undefined) {
+    if (i.owner == null) continue;
+    if (CORPFAC[i.owner] === undefined) {
       try {
         const c = await esi('/corporations/' + i.owner + '/');
         CORPFAC[i.owner] = c.faction_id ?? 0;
+        store('corpfac', CORPFAC);
       } catch (e) {
-        CORPFAC[i.owner] = 0;
+        log('Corp frakciója nem ismert (' + i.owner + '): ' + e.message);
       }
-      store('corpfac', CORPFAC);
     }
+    names.push(i.owner);
+    if (CORPFAC[i.owner]) names.push(CORPFAC[i.owner]);
   }
   if (ch) store('locinfo', LOCINFO);
+  try {
+    await resolveNames(names);
+  } catch (e) {}
 }
 // broker fee at a location: at an NPC station it drops with standing towards the owner corp and faction
 function structBrokerOf(l) {
@@ -3362,7 +3385,9 @@ function brokerFeeOf(cid, l) {
   if (S.broker !== '' && S.broker != null) return Number(S.broker) / 100;
   let f = 0.03 - 0.003 * lvlOf(cid, SK.broker);
   const o = l != null && locKind(l) === 'npc' ? stationOwner(l) : null;
-  if (o && hasStd(cid)) f -= 0.0003 * effStd(cid, o.fac) + 0.0002 * effStd(cid, o.corp);
+  // the raw standings count, without Connections/Diplomacy (checked in game: 1.23% with raw 3.46 / 8.27,
+  // where the skill-adjusted values would give 1.18%)
+  if (o && hasStd(cid)) f -= 0.0003 * rawStd(cid, o.fac) + 0.0002 * rawStd(cid, o.corp);
   return Math.max(0.01, f);
 }
 // The broker fee formula with this character's numbers, for the seller table tooltip (so it can be checked in game).
@@ -3373,18 +3398,21 @@ function brokerExplain(cid, l) {
   const o = l != null && locKind(l) === 'npc' ? stationOwner(l) : null;
   const f = brokerFeeOf(cid, l);
   if (!o || !hasStd(cid)) return T('3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)', br, fmt(f * 100, 2));
-  const std = from => {
-    const r = (DATA[cid].std || {})[from] || 0;
-    return fmt(effStd(cid, from), 2) + ' (' + T('nyers {0}', fmt(r, 2)) + ')';
-  };
-  return T(
-    '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.',
-    br,
-    std(o.fac),
-    std(o.corp),
-    fmt(f * 100, 2),
-    lvlOf(cid, SK.connections),
-    lvlOf(cid, SK.diplomacy)
+  const part = (k, from, label) =>
+    T('{0}% × {1} standing {2}', fmt(k, 2), NAMES[from] || label, fmt(rawStd(cid, from), 2)) +
+    ' (' +
+    T('a játékban látható, skillel javított: {0}', fmt(Math.trunc(effStd(cid, from) * 100 + 1e-9) / 100, 2)) +
+    ')';
+  const fac = o.fac ? ' − ' + part(0.03, o.fac, T('frakció')) : ' − ' + T('frakció: nincs, vagy nem ismert');
+  return (
+    T('3% − 0,3% × Broker Relations {0}', br) +
+    fac +
+    ' − ' +
+    part(0.02, o.corp, 'corp') +
+    ' = ' +
+    fmt(f * 100, 2) +
+    '%. ' +
+    T('A díj a nyers standinggel számol (Connections/Diplomacy nélkül).')
   );
 }
 function sellers(l = JITA_STATION) {

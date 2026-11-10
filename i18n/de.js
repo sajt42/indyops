@@ -743,11 +743,15 @@ window.I18N.de = {
   'A Beállításokban megadott érték.': 'Der in den Einstellungen eingetragene Wert.',
   '3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)':
     '3 % − 0,3 % × Broker Relations {0} = {1} % (ohne Standing)',
-  'nyers {0}': 'roh {0}',
-  '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.':
-    '3 % − 0,3 % × Broker Relations {0} − 0,03 % × Fraktions-Standing {1} − 0,02 % × Corp-Standing {2} = {3} %. Connections {4}, Diplomacy {5}.',
   'Második piac: {0}…': 'Zweiter Markt: {0}…',
   'Második piac: {0}': 'Zweiter Markt: {0}',
   'A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.':
-    'Der zweite Markt hat sich seit der letzten Berechnung geändert: Die Spalten {0} werden bei der nächsten Berechnung gefüllt.'
+    'Der zweite Markt hat sich seit der letzten Berechnung geändert: Die Spalten {0} werden bei der nächsten Berechnung gefüllt.',
+  '{0}% × {1} standing {2}': '{0} % × Standing {1} {2}',
+  'a játékban látható, skillel javított: {0}': 'im Spiel angezeigt, mit Skills angepasst: {0}',
+  frakció: 'Fraktion',
+  'frakció: nincs, vagy nem ismert': 'Fraktion: keine oder nicht bekannt',
+  '3% − 0,3% × Broker Relations {0}': '3 % − 0,3 % × Broker Relations {0}',
+  'A díj a nyers standinggel számol (Connections/Diplomacy nélkül).':
+    'Die Gebühr rechnet mit den Roh-Standings (ohne Connections/Diplomacy).'
 };

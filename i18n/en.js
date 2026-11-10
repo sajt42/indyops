@@ -735,11 +735,15 @@ window.I18N.en = {
   'A Beállításokban megadott érték.': 'The value set in Settings.',
   '3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)':
     '3% − 0.3% × Broker Relations {0} = {1}% (without standing)',
-  'nyers {0}': 'raw {0}',
-  '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.':
-    '3% − 0.3% × Broker Relations {0} − 0.03% × faction standing {1} − 0.02% × corp standing {2} = {3}%. Connections {4}, Diplomacy {5}.',
   'Második piac: {0}…': 'Second market: {0}…',
   'Második piac: {0}': 'Second market: {0}',
   'A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.':
-    'The second market changed since the last calculation: the {0} columns fill in with the next calculation.'
+    'The second market changed since the last calculation: the {0} columns fill in with the next calculation.',
+  '{0}% × {1} standing {2}': '{0}% × {1} standing {2}',
+  'a játékban látható, skillel javított: {0}': 'shown in game, adjusted by skills: {0}',
+  frakció: 'faction',
+  'frakció: nincs, vagy nem ismert': 'faction: none, or not known',
+  '3% − 0,3% × Broker Relations {0}': '3% − 0.3% × Broker Relations {0}',
+  'A díj a nyers standinggel számol (Connections/Diplomacy nélkül).':
+    'The fee uses the raw standings (without Connections/Diplomacy).'
 };

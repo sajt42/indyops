@@ -104,18 +104,26 @@ function salesTaxOf(cid) {
     ? Number(S.salesTax) / 100
     : 0.075 * (1 - 0.11 * lvlOf(cid, SK.accounting));
 }
-// standing: the raw value is improved by Connections (positive) / Diplomacy (negative); null without the scope
+// standing: ESI gives the raw value. The game shows (and some formulas use) the effective value, improved by
+// Connections (positive) / Diplomacy (negative). hasStd is false without the standings scope.
 function hasStd(cid) {
   return !!(DATA[cid] && DATA[cid].std);
 }
-function effStd(cid, from) {
+function rawStd(cid, from) {
   const d = DATA[cid];
-  if (!d || !d.std || from == null) return 0;
-  const r = d.std[from] || 0;
+  if (!d || !d.std || !from) return 0;
+  return d.std[from] || 0;
+}
+function effStd(cid, from) {
+  if (!from) return 0;
+  const r = rawStd(cid, from);
   const sk = r >= 0 ? lvlOf(cid, SK.connections) : lvlOf(cid, SK.diplomacy);
   return r + (10 - r) * 0.04 * sk;
 }
+// NPC corp -> faction id (0: the corp has no faction). Only answers are cached; a failed lookup is retried later.
+// v2: earlier versions also cached failures as 0, so those entries are dropped once.
 let CORPFAC = load('corpfac', {});
+if (!CORPFAC.v2) CORPFAC = { v2: 1 };
 function stationOwner(l) {
   const i = LOCINFO[l];
   if (!i || i.owner == null) return null;
@@ -123,6 +131,7 @@ function stationOwner(l) {
 }
 async function ensureOwners(locs) {
   let ch = false;
+  const names = [];
   for (const l of locs) {
     if (!l || locKind(l) !== 'npc') continue;
     let i = LOCINFO[l];
@@ -135,17 +144,23 @@ async function ensureOwners(locs) {
         continue;
       }
     }
-    if (i.owner != null && CORPFAC[i.owner] === undefined) {
+    if (i.owner == null) continue;
+    if (CORPFAC[i.owner] === undefined) {
       try {
         const c = await esi('/corporations/' + i.owner + '/');
         CORPFAC[i.owner] = c.faction_id ?? 0;
+        store('corpfac', CORPFAC);
       } catch (e) {
-        CORPFAC[i.owner] = 0;
+        log('Corp frakciója nem ismert (' + i.owner + '): ' + e.message);
       }
-      store('corpfac', CORPFAC);
     }
+    names.push(i.owner);
+    if (CORPFAC[i.owner]) names.push(CORPFAC[i.owner]);
   }
   if (ch) store('locinfo', LOCINFO);
+  try {
+    await resolveNames(names);
+  } catch (e) {}
 }
 // broker fee at a location: at an NPC station it drops with standing towards the owner corp and faction
 function structBrokerOf(l) {
@@ -160,7 +175,9 @@ function brokerFeeOf(cid, l) {
   if (S.broker !== '' && S.broker != null) return Number(S.broker) / 100;
   let f = 0.03 - 0.003 * lvlOf(cid, SK.broker);
   const o = l != null && locKind(l) === 'npc' ? stationOwner(l) : null;
-  if (o && hasStd(cid)) f -= 0.0003 * effStd(cid, o.fac) + 0.0002 * effStd(cid, o.corp);
+  // the raw standings count, without Connections/Diplomacy (checked in game: 1.23% with raw 3.46 / 8.27,
+  // where the skill-adjusted values would give 1.18%)
+  if (o && hasStd(cid)) f -= 0.0003 * rawStd(cid, o.fac) + 0.0002 * rawStd(cid, o.corp);
   return Math.max(0.01, f);
 }
 // The broker fee formula with this character's numbers, for the seller table tooltip (so it can be checked in game).
@@ -171,18 +188,21 @@ function brokerExplain(cid, l) {
   const o = l != null && locKind(l) === 'npc' ? stationOwner(l) : null;
   const f = brokerFeeOf(cid, l);
   if (!o || !hasStd(cid)) return T('3% − 0,3% × Broker Relations {0} = {1}% (standing nélkül)', br, fmt(f * 100, 2));
-  const std = from => {
-    const r = (DATA[cid].std || {})[from] || 0;
-    return fmt(effStd(cid, from), 2) + ' (' + T('nyers {0}', fmt(r, 2)) + ')';
-  };
-  return T(
-    '3% − 0,3% × Broker Relations {0} − 0,03% × frakció-standing {1} − 0,02% × corp-standing {2} = {3}%. Connections {4}, Diplomacy {5}.',
-    br,
-    std(o.fac),
-    std(o.corp),
-    fmt(f * 100, 2),
-    lvlOf(cid, SK.connections),
-    lvlOf(cid, SK.diplomacy)
+  const part = (k, from, label) =>
+    T('{0}% × {1} standing {2}', fmt(k, 2), NAMES[from] || label, fmt(rawStd(cid, from), 2)) +
+    ' (' +
+    T('a játékban látható, skillel javított: {0}', fmt(Math.trunc(effStd(cid, from) * 100 + 1e-9) / 100, 2)) +
+    ')';
+  const fac = o.fac ? ' − ' + part(0.03, o.fac, T('frakció')) : ' − ' + T('frakció: nincs, vagy nem ismert');
+  return (
+    T('3% − 0,3% × Broker Relations {0}', br) +
+    fac +
+    ' − ' +
+    part(0.02, o.corp, 'corp') +
+    ' = ' +
+    fmt(f * 100, 2) +
+    '%. ' +
+    T('A díj a nyers standinggel számol (Connections/Diplomacy nélkül).')
   );
 }
 function sellers(l = JITA_STATION) {
