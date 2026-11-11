@@ -61,7 +61,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.15.0',
+  version: '1.15.1',
   built: '2026-11-11',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -216,6 +216,8 @@ const isk = n => {
   if (a >= 1e3) return fmt(n / 1e3, 1) + ' k';
   return fmt(n, a < 100 ? 2 : 0);
 };
+// quantity in short form for running text: 4,2 M, 18,5 k, 950
+const qtyShort = n => (Math.abs(n) >= 1e4 ? isk(n) : fmt(n));
 const esc = s =>
   String(s ?? '').replace(
     /[&<>"']/g,

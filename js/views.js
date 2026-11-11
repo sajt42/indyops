@@ -701,7 +701,11 @@ async function ownShips() {
   }
   return out;
 }
-const JUMP_SEC = { 513: 120, 902: 120, 941: 110, 28: 75, 380: 75, 1202: 45, 463: 60, 543: 70 };
+// rough seconds per highsec jump (align, warp across the system, jump) by ship group: freighter, jump freighter,
+// industrial command ship, industrial, deep space transport, blockade runner, mining barge, exhumer
+const JUMP_SEC = { 513: 180, 902: 150, 941: 140, 28: 75, 380: 80, 1202: 50, 463: 70, 543: 75 };
+// docking, loading or unloading and undocking at each end of a trip
+const TRIP_END_SEC = 120;
 function sysOfLoc(l) {
   if (l === JITA_STATION) return 30000142;
   return LOCINFO[l] && LOCINFO[l].system;
@@ -761,7 +765,19 @@ async function prepHaul(R) {
   }
   const jumps = {};
   for (const [f, t] of pairs) jumps[f + '|' + t] = await ensureRoute(sysOfLoc(f), sysOfLoc(t));
-  const ctx = { jumps, ships: await ownShips() };
+  const ships = await ownShips();
+  // the ship first has to fly (empty) from where it is to the pickup point
+  const pos = {};
+  for (const x of ships)
+    for (const [f] of pairs) {
+      const k = x.l + '|' + f;
+      if (!(k in pos)) {
+        if (x.l !== JITA_STATION && !LOCINFO[x.l]) await resolveLoc(x.l);
+        const r = await ensureRoute(sysOfLoc(x.l), sysOfLoc(f));
+        pos[k] = r ? r.n : null;
+      }
+    }
+  const ctx = { jumps, ships, pos };
   // only the newest run AND one matching the current assignment may publish (a newer one started, or the assignment switched back)
   if (gen !== R.haulGen || sig !== haulSig(R)) return false;
   R.haulCtx = ctx;
@@ -789,9 +805,13 @@ function shipAdvice(R, key, vol, maxUnit) {
     return html`<div class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</div>`;
   const opts = ships.map(x => {
     const trips = Math.ceil(vol / x.cap);
-    const per = JUMP_SEC[x.g] || 60;
-    const time = j == null ? null : j === 0 ? trips * 300 : (2 * trips - 1) * j * per;
-    return Object.assign({ trips, time }, x);
+    const per = JUMP_SEC[x.g] || 75;
+    // empty flight to the pickup point, then loaded legs and the empty legs back between them
+    const from = Number(key.split('|')[0]);
+    const pj = ctx.pos ? ctx.pos[x.l + '|' + from] : 0;
+    const jumpsAll = j == null || pj == null ? null : pj + (2 * trips - 1) * j;
+    const time = jumpsAll == null ? null : jumpsAll * per + trips * 2 * TRIP_END_SEC;
+    return Object.assign({ trips, time, pj }, x);
   });
   opts.sort((a, b) => (a.time ?? a.trips * 1e6) - (b.time ?? b.trips * 1e6) || a.trips - b.trips);
   const seen = new Set();
@@ -803,14 +823,14 @@ function shipAdvice(R, key, vol, maxUnit) {
       return true;
     })
     .slice(0, 3);
-  return html`<div class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : html`<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? html`<span class="neg">${safety}</span>` : safety}). `}${best.map((o, i) => html`${i ? html`<br>` : ''}${o.n} <span class="muted">(${charName(o.cid)}, ${locName(o.l)}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`)}</div>`;
+  return html`<div class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : html`<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? html`<span class="neg">${safety}</span>` : safety}). `}${best.map((o, i) => html`${i ? html`<br>` : ''}${o.n} <span class="muted">(${charName(o.cid)}, ${locName(o.l)}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.pj ? ' · ' + T('előtte {0} ugrás üresen odáig', o.pj) : ''}${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`)}</div>`;
 }
 function renderHaul(R) {
   const H = haulList(R);
   if (!H.moves.size && !H.sale.size)
     return html`<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>`;
   let tot = 0;
-  let h = html`<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő 45–120 mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="haulgrid">`;
+  let h = html`<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: a hajó üres útja oda, ahol a rakomány van, utána a fordulók (megrakva oda, üresen vissza), ugrásonként a hajótípustól függően 50–180 mp, fordulónként dokkolással és pakolással 2 × 2 perc. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="haulgrid">`;
   for (const [k, m] of H.moves) {
     const [from, to] = k.split('|').map(Number);
     const rows = [...m].map(([t, q]) => ({ t, q, v: q * volOf(t) }));
@@ -1123,14 +1143,21 @@ function whyAt(at) {
 function treeRows(n, d, sys) {
   const st = n.stock.reduce((s, x) => s + x.q, 0);
   const canToggle = d > 0 && ownedFor(n.t).length > 0;
-  const src = n.stock.map(x =>
-    x.l === 'surplus'
-      ? T('felesleg más jobból')
-      : x.l === 'job'
-        ? T('futó job ({0})', charName(x.cid))
-        : locName(x.l) + (x.c != null ? ' · ' + contLabel(x.c) : '') + (x.ore ? ' ' + T('(ércből)') : '')
-  );
-  const where = src.filter((v, i, a) => a.indexOf(v) === i).join(', ');
+  // where the stock comes from, with the quantity per place (several entries of one place are added up)
+  const from = new Map();
+  for (const x of n.stock) {
+    const k =
+      x.l === 'surplus'
+        ? T('felesleg más jobból')
+        : x.l === 'job'
+          ? T('futó job ({0})', charName(x.cid))
+          : locName(x.l) + (x.c != null ? ' · ' + contLabel(x.c) : '') + (x.ore ? ' ' + T('(ércből)') : '');
+    from.set(k, (from.get(k) || 0) + x.q);
+  }
+  const where = [...from]
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, q]) => (from.size > 1 ? k + ' (' + qtyShort(q) + ')' : k))
+    .join(', ');
   // stock that is there but this item may not take (see stockWhy)
   const why = n.why
     ? [

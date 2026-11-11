@@ -158,8 +158,8 @@ window.I18N.en = {
     '{0}: the T1 BPC has {1} runs, invention needs {2}. Copy the BPO or get a BPC.',
   Szállítás: 'Hauling',
   'Semmit nem kell mozgatni: minden a gyártás helyén van.': 'Nothing to move: everything is already where you build.',
-  'Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő #–# mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.':
-    "What needs to go to the production site. The production site is where the BP is, or what you set in Settings. Volume is packaged m³. Ship suggestions come from the ships in your characters' hangars that their owner can fly; cargo includes skill bonuses. Time is a rough estimate: round trips at #–# s per jump depending on ship type, not counting getting the ship to the starting point. Only the cargo hold counts, not ore holds or fitted expanders.",
+  'Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: a hajó üres útja oda, ahol a rakomány van, utána a fordulók (megrakva oda, üresen vissza), ugrásonként a hajótípustól függően #–# mp, fordulónként dokkolással és pakolással # × # perc. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.':
+    "What needs to go to the production site. The production site is where the BP is, or what you set in Settings. Volume is packaged m³. Ship suggestions come from the ships in your characters' hangars that their owner can fly; cargo includes skill bonuses. Time is a rough estimate: the ship's empty flight to where the cargo is, then the trips (loaded there, empty back), #–# s per jump depending on the ship type, plus # × # minutes per trip for docking and loading. Only the cargo hold counts, not ore holds or fitted expanders.",
   'Jita (vásárlás)': 'Jita (purchase)',
   'Eladásra: {0} → Jita': 'For sale: {0} → Jita',
   'Odaszállítás összesen:': 'Total to haul:',
@@ -807,5 +807,6 @@ window.I18N.en = {
   '{0} a tervezőben nem számító helyen van': '{0} at a location the planner does not count',
   'Készletben még: {0}.': 'Still in stock: {0}.',
   'Itt: {0}.': 'At: {0}.',
-  'és még {0} hely': 'and {0} more places'
+  'és még {0} hely': 'and {0} more places',
+  'előtte {0} ugrás üresen odáig': 'first {0} jumps empty to the pickup'
 };

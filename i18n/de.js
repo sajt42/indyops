@@ -158,8 +158,8 @@ window.I18N.de = {
     '{0}: die T1-BPC hat {1} Runs, die Invention braucht {2}. Kopiere das BPO oder besorge eine BPC.',
   Szállítás: 'Transport',
   'Semmit nem kell mozgatni: minden a gyártás helyén van.': 'Nichts zu bewegen: alles ist bereits am Produktionsort.',
-  'Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: oda-vissza fordulók, ugrásonként a hajótípustól függő #–# mp, a hajó odaútja a kiindulási pontig nélkül. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.':
-    'Was zum Produktionsort muss. Produktionsort ist der Ort des BPs oder was du in den Einstellungen festlegst. Volumen ist verpackt in m³. Schiffsvorschläge kommen aus den Hangars deiner Charaktere und nur Schiffe, die der Besitzer fliegen kann; der Frachtraum enthält Skillboni. Die Zeit ist eine grobe Schätzung: Hin- und Rückflüge mit #–# s pro Sprung je nach Schiffstyp, ohne die Anreise des Schiffs zum Startpunkt. Nur der Frachtraum zählt, keine Erzladeräume oder gefitteten Erweiterungen.',
+  'Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: a hajó üres útja oda, ahol a rakomány van, utána a fordulók (megrakva oda, üresen vissza), ugrásonként a hajótípustól függően #–# mp, fordulónként dokkolással és pakolással # × # perc. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.':
+    'Was zum Produktionsort muss. Produktionsort ist der Ort des BPs oder was du in den Einstellungen festlegst. Volumen ist verpackt in m³. Schiffsvorschläge kommen aus den Hangars deiner Charaktere und nur Schiffe, die der Besitzer fliegen kann; der Frachtraum enthält Skillboni. Die Zeit ist eine grobe Schätzung: der leere Flug des Schiffs dorthin, wo die Ladung liegt, dann die Fahrten (beladen hin, leer zurück), je nach Schiffstyp #–# s pro Sprung, plus # × # Minuten pro Fahrt für Andocken und Laden. Nur der Frachtraum zählt, keine Erzladeräume oder gefitteten Erweiterungen.',
   'Jita (vásárlás)': 'Jita (Einkauf)',
   'Eladásra: {0} → Jita': 'Zum Verkauf: {0} → Jita',
   'Odaszállítás összesen:': 'Transport gesamt:',
@@ -815,5 +815,6 @@ window.I18N.de = {
   '{0} a tervezőben nem számító helyen van': '{0} an einem Ort, den der Planer nicht zählt',
   'Készletben még: {0}.': 'Noch im Bestand: {0}.',
   'Itt: {0}.': 'Ort: {0}.',
-  'és még {0} hely': 'und {0} weitere Orte'
+  'és még {0} hely': 'und {0} weitere Orte',
+  'előtte {0} ugrás üresen odáig': 'vorher {0} Spr\u00fcnge leer zur Abholung'
 };

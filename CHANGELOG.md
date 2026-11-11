@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.15.1 – 2026-11-11
+
+- Hauling: the time estimate now includes the ship's empty flight to the cargo, the empty legs back between trips and docking/loading time; per-jump times are more realistic, and each ship option shows the empty positioning jumps.
+- Material tree: when stock comes from several places, the source column shows the quantity at each place.
+
 ## 1.15.0 – 2026-11-11
 
 - Projects and Planner: when a material is bought although there is stock left, the material tree says how much is left, why the plan does not use it (not among the material sources, in a container another project reserved, or at a location the planner does not count) and where it is.

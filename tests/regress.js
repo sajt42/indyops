@@ -109,7 +109,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,shipAdvice,dur,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -942,6 +942,33 @@ const ok = (c, msg) => {
     await T.finishResult(RR, bp);
     T.renderResult(el, RR, () => {});
     ok(/Készletben még: 5000 nincs a nyersanyag-források között\. Itt: /.test(el.textContent), 'and the tree shows it');
+    // with both places among the sources the stock comes from two places, each with its quantity
+    item.src.locs.push(60008494);
+    const R2 = await T.makeMulti([item], { useStock: true, buildOwn: false, incoming: false, ore: false });
+    await T.finishResult(R2, bp);
+    T.renderResult(el, R2, () => {});
+    const row = [...el.querySelectorAll('tr[data-toggle], tr')].find(tr => /^Tritanium/.test(tr.textContent.trim()) && tr.querySelector('td.src'));
+    ok(
+      row && /\(5000\)/.test(row.textContent) && /\(1000\)/.test(row.textContent),
+      'quantity per source place: ' + (row && row.lastElementChild.textContent)
+    );
+  }
+  {
+    // 32. haul time: the ship first flies empty to the cargo, then loaded there and empty back between trips, plus docking
+    const R = {
+      haulCtx: {
+        jumps: { '1|2': { n: 9, hs: true } },
+        ships: [{ n: 'Hauler', t: 20183, g: 513, cid: 1, l: 3, cap: 500000, canFly: true }],
+        pos: { '3|1': 9 }
+      }
+    };
+    const el = d.createElement('div');
+    T.setHtml(el, T.shipAdvice(R, '1|2', 48000, 1));
+    const want = T.dur((9 + 9) * 180 + 2 * 120);
+    ok(
+      el.textContent.includes('9 ugrás üresen') && el.textContent.includes('kb. ' + want),
+      'haul time counts the empty flight and docking (' + want + '): ' + el.textContent
+    );
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));
