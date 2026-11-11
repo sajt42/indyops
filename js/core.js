@@ -61,8 +61,8 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.14.2',
-  built: '2026-11-10',
+  version: '1.14.3',
+  built: '2026-11-11',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
   clientId: 'b02779a9ea1c427bb46c9d70a697a4c7',
@@ -334,6 +334,42 @@ let S = Object.assign(
 );
 let CHARS = load('chars', []); // [{id,name,refresh,access,exp}]
 let DATA = load('data', {}); // charId -> {assets,bps,skills,jobs,at}
+/* ---- characters and their data ----
+ * CHARS and DATA change only through these functions (tests/lint.js checks it). Removing a character raises its
+ * generation, so a refresh that started before the removal cannot write its result back (setCharData).
+ */
+const CHARGEN = {};
+const charGen = id => CHARGEN[id] || 0;
+const charExists = id => CHARS.some(c => c.id == id);
+// [charId, data] of the logged-in characters
+const charEntries = () => Object.entries(DATA).filter(([cid]) => charExists(cid));
+// adds a character, or replaces the one with the same id (login, restore)
+function putChar(c) {
+  CHARS = CHARS.filter(x => x.id !== c.id).concat(c);
+  store('chars', CHARS);
+}
+// saves the token fields changed in place on a character
+const saveChars = () => store('chars', CHARS);
+function removeChar(id) {
+  id = Number(id);
+  CHARS = CHARS.filter(x => x.id !== id);
+  delete DATA[id];
+  CHARGEN[id] = charGen(id) + 1;
+  store('chars', CHARS);
+  store('data', DATA);
+}
+// stores the result of a refresh started at generation gen: 'stale' if the character was removed meanwhile,
+// 'full' if the browser storage is full (the data stays in memory), otherwise 'saved'
+function setCharData(c, gen, d) {
+  if (!charExists(c.id) || charGen(c.id) !== gen) return 'stale';
+  DATA[c.id] = d;
+  return store('data', DATA) ? 'saved' : 'full';
+}
+// data of removed characters left behind by versions before 1.14.3
+if (Object.keys(DATA).some(id => !charExists(id))) {
+  for (const id of Object.keys(DATA)) if (!charExists(id)) delete DATA[id];
+  store('data', DATA);
+}
 let NAMES = load('names', {}); // id -> name
 let LOCINFO = load('locinfo', {}); // locId -> {name,system}
 let REFC = load('ref', { t: {}, b: {}, v3: 1 }); // everef cache

@@ -8,6 +8,7 @@ const w = dom.window;
 w.__htmlCheck = true;
 const LM = 'Tue, 10 Nov 2026 07:00:00 GMT';
 let broken = new Set();
+let slow = 0; // delay (ms) for the wallet call, to remove a character while its refresh runs
 const recent = new Date(Date.now() - 2 * 86400000).toISOString(),
   old = new Date(Date.now() - 40 * 86400000).toISOString();
 w.fetch = async (u, o) => {
@@ -169,6 +170,7 @@ w.fetch = async (u, o) => {
         duration: 90
       }
     ]);
+  if (u.includes('/wallet/transactions/') && slow) await new Promise(r => setTimeout(r, slow));
   if (u.includes('/wallet/transactions/'))
     return J([
       { date: recent, type_id: 35, quantity: 10, unit_price: 12, is_buy: true, location_id: 60003760 },
@@ -187,7 +189,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu', wallet: true }));
 w.eval(
   code +
-    `;window.__t={refreshChar,setChars:c=>{CHARS=c},get DATA(){return DATA},setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b}};`
+    `;window.__t={refreshChar,setChars:c=>{CHARS=c},get DATA(){return DATA},setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},removeChar,putChar,get CHARS(){return CHARS}};`
 );
 const T = w.__t;
 const dump = d => {
@@ -240,5 +242,45 @@ const dump = d => {
       d2.orders.length +
       ' tx=' +
       d2.tx.length
+  );
+
+  // removing a character while it refreshes: the refresh must not write its data back
+  T.setChars([]);
+  T.putChar(c);
+  slow = 300;
+  const run = T.refreshChar(c);
+  await new Promise(r => setTimeout(r, 100));
+  T.removeChar(1);
+  await run;
+  slow = 0;
+  const stored = Object.keys(JSON.parse(w.localStorage.getItem('indyops.data') || '{}'));
+  console.log(
+    !T.DATA[1] && !stored.includes('1') && !T.CHARS.length
+      ? 'removed during refresh: no data written back'
+      : 'FAIL: removed during refresh, data written back (memory ' + !!T.DATA[1] + ', stored ' + stored + ')'
+  );
+  // a refresh after logging in again works as before
+  T.putChar(c);
+  await T.refreshChar(c);
+  console.log(
+    T.DATA[1] && T.DATA[1].assets.length
+      ? 'logged in again: refresh stores data'
+      : 'FAIL: refresh after new login stored nothing'
+  );
+
+  // data of removed characters left behind by older versions is dropped at start-up
+  const dom2 = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.org/' });
+  dom2.window.localStorage.setItem('indyops.chars', JSON.stringify([{ id: 5, name: 'Kept' }]));
+  dom2.window.localStorage.setItem(
+    'indyops.data',
+    JSON.stringify({ 5: { assets: [], bps: [], jobs: [], skills: {} }, 9: { assets: [], bps: [], jobs: [], skills: {} } })
+  );
+  dom2.window.eval(code + ';window.__d=()=>Object.keys(DATA);');
+  const left = dom2.window.__d();
+  const left2 = Object.keys(JSON.parse(dom2.window.localStorage.getItem('indyops.data')));
+  console.log(
+    JSON.stringify(left) === '["5"]' && JSON.stringify(left2) === '["5"]'
+      ? 'orphan data dropped at start-up'
+      : 'FAIL: orphan data kept: ' + left + ' / ' + left2
   );
 })().catch(e => console.error('FAIL', e));

@@ -3,8 +3,7 @@
 /* ============ aggregated views ============ */
 function allLocs() {
   const m = new Map();
-  for (const [cid, d] of Object.entries(DATA)) {
-    if (!CHARS.find(c => c.id == cid)) continue;
+  for (const [cid, d] of charEntries()) {
     for (const a of d.assets) m.set(a.l, true);
     for (const b of d.bps) m.set(b.l, true);
   }
@@ -30,22 +29,20 @@ function planLocs() {
 }
 function allBPs() {
   const out = [];
-  for (const [cid, d] of Object.entries(DATA)) {
-    if (!CHARS.find(c => c.id == cid)) continue;
+  for (const [cid, d] of charEntries()) {
     for (const b of d.bps) out.push(Object.assign({ cid: Number(cid) }, b));
   }
   return out;
 }
 function inJob(itemId) {
-  for (const d of Object.values(DATA)) for (const j of d.jobs) if (j.bpi === itemId && j.st === 'active') return j;
+  for (const [, d] of charEntries()) for (const j of d.jobs) if (j.bpi === itemId && j.st === 'active') return j;
   return null;
 }
 // stock: typeId -> [{l,cid,q}]
 function stockMap(onlyPlan) {
   const allow = onlyPlan ? planLocs() : null;
   const m = new Map();
-  for (const [cid, d] of Object.entries(DATA)) {
-    if (!CHARS.find(c => c.id == cid)) continue;
+  for (const [cid, d] of charEntries()) {
     for (const a of d.assets) {
       if (allow && !allow.has(a.l)) continue;
       if (a.f && /Slot\d|SubSystemSlot|FighterTube/.test(a.f)) continue;
@@ -594,8 +591,7 @@ function locClues(l) {
   let reg = null,
     jobs = 0,
     tx = 0;
-  for (const [cid, d] of Object.entries(DATA)) {
-    if (!CHARS.find(x => x.id == cid)) continue;
+  for (const [cid, d] of charEntries()) {
     const m = d.lm && d.lm[l];
     if (m) {
       lt = m.t;
@@ -662,8 +658,7 @@ function renderUnknownLocs() {
     html`<div class="tablewrap"><table><thead><tr><th>Azonosító</th><th>Mi van ott</th><th>Név</th></tr></thead><tbody>${ls.map(
       l => {
         const items = new Map();
-        for (const [cid, d] of Object.entries(DATA)) {
-          if (!CHARS.find(c => c.id == cid)) continue;
+        for (const [cid, d] of charEntries()) {
           for (const a of d.assets) if (a.l === l) items.set(a.t, (items.get(a.t) || 0) + a.q);
           for (const b of d.bps) if (b.l === l) items.set(b.t, (items.get(b.t) || 0) + 1);
         }
@@ -680,8 +675,8 @@ function renderUnknownLocs() {
 /* ============ containers and project material sources ============ */
 function allConts() {
   const m = new Map();
-  for (const [cid, d] of Object.entries(DATA)) {
-    if (!CHARS.find(c => c.id == cid) || !d.cont) continue;
+  for (const [cid, d] of charEntries()) {
+    if (!d.cont) continue;
     for (const [id, c] of Object.entries(d.cont))
       m.set(Number(id), Object.assign({ id: Number(id), cid: Number(cid) }, c));
   }

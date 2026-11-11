@@ -153,8 +153,7 @@ function renderJobs() {
     9: 'Reakció',
     11: 'Reakció'
   };
-  for (const [cid, d] of Object.entries(DATA)) {
-    if (!CHARS.find(c => c.id == cid)) continue;
+  for (const [cid, d] of charEntries()) {
     for (const j of d.jobs) rows.push({ cid, j });
   }
   rows.sort((a, b) => a.j.end.localeCompare(b.j.end));
@@ -212,11 +211,11 @@ function renderBPs() {
     ) ||
       html`<tr><td colspan="8" class="muted">Nincs találat. Ha még nem frissítettél, a Karakterek fülön tedd meg.</td></tr>`
   );
-  const ats = Object.values(DATA)
-      .map(d => d.bpAt)
+  const ats = charEntries()
+      .map(([, d]) => d.bpAt)
       .filter(Boolean),
-    exps = Object.values(DATA)
-      .map(d => d.bpExp)
+    exps = charEntries()
+      .map(([, d]) => d.bpExp)
       .filter(Boolean);
   const tf = v => {
     const d = new Date(v);

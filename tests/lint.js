@@ -1,4 +1,5 @@
-// Source checks: HTML reaches the page only through setHtml/appendHtml (js/core.js), which take html`` templates.
+// Source checks: HTML reaches the page only through setHtml/appendHtml (js/core.js), which take html`` templates;
+// characters and their data (CHARS, DATA) change only through the functions in js/core.js.
 const fs = require('fs');
 const path = require('path');
 const dir = path.join(__dirname, '..', 'js');
@@ -11,6 +12,15 @@ for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.js'))) {
       fails++;
       console.log(`FAIL: ${f}:${i + 1}: HTML set without setHtml: ${line.trim().slice(0, 100)}`);
     }
+    if (
+      f !== 'core.js' &&
+      /\bCHARS\s*=[^=]|\bDATA\s*=[^=]|\bDATA\[[^\]]+\]\s*=[^=]|delete DATA\[|CHARS\.(push|splice)\(/.test(line)
+    ) {
+      fails++;
+      console.log(
+        `FAIL: ${f}:${i + 1}: CHARS/DATA changed outside core.js (use putChar/removeChar/setCharData): ${line.trim().slice(0, 100)}`
+      );
+    }
     if (/\braw\(/.test(line) && f !== 'core.js') {
       fails++;
       console.log(
@@ -19,4 +29,6 @@ for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.js'))) {
     }
   });
 }
-console.log(fails ? `lint: ${fails} problem(s)` : 'lint: HTML is set only through setHtml/appendHtml');
+console.log(
+  fails ? `lint: ${fails} problem(s)` : 'lint: HTML only through setHtml/appendHtml; CHARS/DATA only through core.js'
+);

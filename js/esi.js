@@ -119,8 +119,7 @@ async function completeLogin(code, state) {
       scp: scpOf(j.access_token),
       cid
     };
-    CHARS = CHARS.filter(x => x.id !== id).concat(c);
-    store('chars', CHARS);
+    putChar(c);
     store('pkce', null);
     $('#loginPaste').hidden = true;
     renderChars();
@@ -159,7 +158,7 @@ async function accessToken(c) {
     c.exp = Date.now() + j.expires_in * 1000;
     c.scp = scpOf(j.access_token);
     if (j.refresh_token) c.refresh = j.refresh_token;
-    store('chars', CHARS);
+    saveChars();
     return c.access;
   })();
   TOKREF.set(c.id, p);
@@ -659,6 +658,7 @@ async function resolveCharNames(c, d) {
 }
 
 async function refreshChar(c) {
+  const gen = charGen(c.id); // a removal during the refresh makes the result stale
   status(T('frissítés: {0}…', c.name));
   log('Adatok letöltése: ' + c.name);
   try {
@@ -695,11 +695,13 @@ async function refreshChar(c) {
       dv: APP.dataVersion,
       at: Date.now()
     };
-    DATA[c.id] = d;
     await resolveCharNames(c, d);
-    if (!store('data', DATA))
-      log('Figyelem: a böngésző tárhelye megtelt, az adatok csak a lap bezárásáig maradnak meg.');
-    log(c.name + ': ' + d.assets.length + ' tárgy, ' + B.length + ' blueprint, ' + d.jobs.length + ' job');
+    const r = setCharData(c, gen, d);
+    if (r === 'stale') log(c.name + ': a karaktert közben törölted, az adatait nem mentem el.');
+    else {
+      if (r === 'full') log('Figyelem: a böngésző tárhelye megtelt, az adatok csak a lap bezárásáig maradnak meg.');
+      log(c.name + ': ' + d.assets.length + ' tárgy, ' + B.length + ' blueprint, ' + d.jobs.length + ' job');
+    }
   } catch (e) {
     log('Hiba (' + c.name + '): ' + e.message);
     alertBox(T('Nem sikerült frissíteni: {0}. {1}', c.name, e.message));

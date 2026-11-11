@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.14.3 – 2026-11-11
+
+- Fix: removing a character (or restoring a backup) while that character was refreshing wrote its data back when the refresh finished, and it stayed in the browser storage. Characters and their data now change only through a few functions in core.js; a refresh drops its result if the character was removed meanwhile, and data of removed characters left by older versions is cleared at start-up.
+- Code: one helper (charEntries) lists the data of logged-in characters instead of eight separate checks; tests/lint.js fails if CHARS or DATA is changed elsewhere.
+- Tests: outputs that contain a date or time no longer depend on the day the tests run.
+
 ## 1.14.2 – 2026-11-10
 
 - Where to buy cheaper?: the result spans the full width under the shopping list and the jobs, grouped per material (needed quantity and Jita price in the group row), with short station names (full name on hover), the largest possible saving at the top, and the materials that are not cheaper nearby listed below.

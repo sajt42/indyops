@@ -40,8 +40,8 @@ All state is global (`let` at the top level of a file). Persisted entries are st
 |---|---|---|---|
 | `S` | settings (schema and expected types in `SET_SCHEMA`) | `settings` | settings inputs in `main.js` and the tabs (`S.x = …; saveS()`), restore |
 | `LANG` | UI language | inside `settings` | `setLang` (`core.js`) |
-| `CHARS` | logged-in characters `{id, name, refresh, access, exp, scp}` | `chars` | `esi.js` (login, token refresh), `main.js` (remove, restore) |
-| `DATA` | per character: `assets, bps, skills, jobs, orders, tx, imp, std, lm, cont, bpAt, bpExp, dv, at` | `data` | `refreshChar` only |
+| `CHARS` | logged-in characters `{id, name, refresh, access, exp, scp}` | `chars` | only the functions in `core.js`: `putChar` (login, restore), `removeChar`, `saveChars` (token refresh) |
+| `DATA` | per character: `assets, bps, skills, jobs, orders, tx, imp, std, lm, cont, bpAt, bpExp, dv, at` | `data` | only `setCharData` (result of `refreshChar`) and `removeChar`; read through `charEntries()`, which skips removed characters |
 | `NAMES` | id → name (types, systems, regions, characters, corps) | `names` | `resolveNames` |
 | `LOCINFO` | location id → `{name, system, …}` | `locinfo` | `resolveLoc`, unknown-location naming in `data.js` |
 | `REFC` | EVE Ref cache: `t` types, `b` blueprints | `ref` | `refGet`, cache reset in `main.js` |
@@ -55,7 +55,7 @@ All state is global (`let` at the top level of a file). Persisted entries are st
 | `REP`, `REPLOG` | reprocess rows, selection, load log | – | `repro.js` |
 | `PROFROWS`, `INVROWS`, `RESROWS`, `SLROWS`, `CBROWS`, `PG`, `PGR`, `SRT` | last result rows of the list tabs, their paging and sort state | – | the tab that owns them |
 
-`DATA` and `CHARS` are the only inputs that come from the user's characters. Everything a tab shows is derived from them, the settings and the caches.
+`DATA` and `CHARS` are the only inputs that come from the user's characters. A removal raises the character's generation (`charGen`); `refreshChar` remembers the generation it started with, and `setCharData` drops a result that belongs to a removed character. `tests/lint.js` fails if `CHARS` or `DATA` is changed anywhere else. Everything a tab shows is derived from them, the settings and the caches.
 
 ## Data flow
 

@@ -109,14 +109,13 @@ function projSrcHtml(p) {
 function srcEditor(spec, key, withExcl, pid) {
   const all = allConts();
   const resv = reservedMap();
-  const hasCont = Object.values(DATA).some(d => d.cont);
+  const hasCont = charEntries().some(([, d]) => d.cont);
   const selL = new Set((spec.locs || []).map(Number)),
     selC = new Set((spec.conts || []).map(Number)),
     ex = new Set((spec.excl || []).map(Number));
   const kinds = new Map(),
     ckinds = new Map();
-  for (const [cid, d] of Object.entries(DATA)) {
-    if (!CHARS.find(c => c.id == cid)) continue;
+  for (const [cid, d] of charEntries()) {
     for (const a of d.assets) {
       if (a.f && /Slot\d|SubSystemSlot|FighterTube/.test(a.f)) continue;
       (kinds.get(a.l) || kinds.set(a.l, new Set()).get(a.l)).add(a.t);

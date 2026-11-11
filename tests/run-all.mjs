@@ -38,7 +38,8 @@ const tests = process.argv.length > 2 ? process.argv.slice(2) : ALL;
 const norm = s =>
   s
     .replace(/\d{4}\. \d{2}\. \d{2}\.( \d{1,2}:\d{2}(:\d{2})?)?/g, '<DATE>')
-    .replace(/\b\d{1,2}:\d{2}(:\d{2})?\b/g, '<TIME>')
+    .replace(/\b\d{1,2}\. \d{1,2}\. (?=\d{1,2}:\d{2})/g, '') // month. day. in front of a time (not today)
+  .replace(/\b\d{1,2}:\d{2}(:\d{2})?\b/g, '<TIME>')
     .replace(/\b1\d{12}\b/g, '<EPOCH>')
     .replace(/len \d+/g, 'len <N>')
     .replace(/\bv\d+\.\d+\.\d+\b(?<!v1\.0\.0)/g, 'v<VER>')

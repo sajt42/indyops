@@ -254,7 +254,7 @@ const T = w.__t;
   console.log(
     'CHAR CARDS:',
     [...d.querySelectorAll('#charList .char')]
-      .map(c => c.textContent.replace(/\s+/g, ' ').trim().slice(0, 200))
+      .map(c => c.textContent.replace(/\s+/g, ' ').trim().replace(/\d{4}\. \d{2}\. \d{2}\.( \d{1,2}:\d{2}(:\d{2})?)?/g, '<DATE>').slice(0, 200))
       .join(' || ')
   );
   await T.ensurePrices([638, 34]);

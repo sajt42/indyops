@@ -260,7 +260,7 @@ async function repPrepare(rows, locs) {
 }
 async function repLoad() {
   if (REP.busy) return;
-  if (!Object.keys(DATA).length) {
+  if (!charEntries().length) {
     alertBox('Előbb jelentkezz be, és frissítsd az adatokat.');
     return;
   }

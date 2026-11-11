@@ -40,10 +40,7 @@ $('#charList').addEventListener('click', e => {
     c && refreshChar(c);
   }
   if (d) {
-    CHARS = CHARS.filter(x => x.id != d.dataset.del);
-    delete DATA[d.dataset.del];
-    store('chars', CHARS);
-    store('data', DATA);
+    removeChar(d.dataset.del);
     renderAll();
   }
 });
@@ -491,11 +488,7 @@ $('#impFile').addEventListener('change', e => {
       SELP = d.selp ?? (PROJ[0] ? PROJ[0].id : null);
       saveP();
       if (d.withTokens && Array.isArray(d.chars)) {
-        for (const c of d.chars) {
-          if (!c.refresh) continue;
-          CHARS = CHARS.filter(x => x.id !== c.id).concat(c);
-        }
-        store('chars', CHARS);
+        for (const c of d.chars) if (c.refresh) putChar(c);
       }
       box.hidden = true;
       e.target.value = '';

@@ -35,8 +35,7 @@ async function buildPool(opt) {
     if (opt.ore) await addOreToPool(pool);
   }
   if (opt.incoming) {
-    for (const [cid, d] of Object.entries(DATA)) {
-      if (!CHARS.find(c => c.id == cid)) continue;
+    for (const [cid, d] of charEntries()) {
       for (const j of d.jobs) {
         if (j.st !== 'active' || !(j.act === 1 || j.act === 9 || j.act === 11) || !j.prod) continue;
         const meta = BPPROD[j.bp];

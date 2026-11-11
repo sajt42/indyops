@@ -14,3 +14,6 @@ full:
   dv: 3
 optional calls failing: std={} imp=null orders=0 tx=0 assets=7
 no scopes: std=null imp=null orders=0 tx=0
+removed during refresh: no data written back
+logged in again: refresh stores data
+orphan data dropped at start-up
