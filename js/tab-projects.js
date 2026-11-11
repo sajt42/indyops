@@ -7,6 +7,60 @@ const saveP = () => {
   store('projects', PROJ);
   store('selp', SELP);
 };
+/* ---- projects: PROJ and SELP change only through these functions ----
+ * Other files (What pays?, Invention, main.js) call them; tests/lint.js fails on direct writes there. Each function
+ * stores the change; the caller redraws what it shows.
+ */
+const selectedProject = () => PROJ.find(x => x.id === SELP) || null;
+const newProjectId = () => Math.max(Date.now(), ...PROJ.map(p => p.id + 1));
+function createProject(name) {
+  const p = { id: newProjectId(), name, active: true, items: [] };
+  PROJ = PROJ.concat(p);
+  SELP = p.id;
+  saveP();
+  return p;
+}
+// changes one project in place: fn(p)
+function updateProject(id, fn) {
+  const p = PROJ.find(x => x.id === id);
+  if (!p) return null;
+  fn(p);
+  saveP();
+  return p;
+}
+function selectProject(id) {
+  SELP = id;
+  saveP();
+}
+function deleteProject(id) {
+  PROJ = PROJ.filter(x => x.id !== id);
+  if (SELP === id) SELP = PROJ[0] ? PROJ[0].id : null;
+  saveP();
+}
+// moves the project at index i one place up (dir -1) or down (dir 1); the order is the priority
+function moveProject(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= PROJ.length) return;
+  const a = PROJ.slice();
+  [a[i], a[j]] = [a[j], a[i]];
+  PROJ = a;
+  saveP();
+}
+// restore from a checked backup
+function replaceProjects(list, selp) {
+  PROJ = list;
+  SELP = selp ?? (PROJ[0] ? PROJ[0].id : null);
+  saveP();
+}
+// adds an item to the selected project, or to a new one called newName; same(x) finds an item to add runs to instead
+function addToProject(item, newName, same) {
+  const p = selectedProject() || createProject(newName);
+  return updateProject(p.id, p => {
+    const ex = same ? p.items.find(same) : null;
+    if (ex) ex.runs += item.runs;
+    else p.items.push(item);
+  });
+}
 function bpTypeByName(n) {
   const b = allBPs().find(x => NAMES[x.t] === n);
   return b ? b.t : null;
@@ -24,7 +78,7 @@ function renderProjects() {
         )
       : html`<p class="small muted">Még nincs projekt. Adj egy nevet, pl. „Orca rendelés”, és hozd létre.</p>`
   );
-  const p = PROJ.find(x => x.id === SELP);
+  const p = selectedProject();
   const ed = $('#pEdit');
   if (!p) {
     setHtml(ed, html`<h2>Projekt</h2><p class="muted">Válassz vagy hozz létre egy projektet a bal oldalon.</p>`);
@@ -53,29 +107,27 @@ function renderProjects() {
   <div class="row" style="margin-top:14px"><button class="btn primary" id="pCalc">Ennek a projektnek a számolása</button></div>`
   );
   $('#pName').addEventListener('change', e => {
-    p.name = e.target.value.trim() || p.name;
-    saveP();
+    updateProject(p.id, p => (p.name = e.target.value.trim() || p.name));
     renderProjects();
   });
   $('#pDel').onclick = () => ($('#pDelConfirm').hidden = false);
   $('#pDelNo').onclick = () => ($('#pDelConfirm').hidden = true);
   $('#pDelYes').onclick = () => {
-    PROJ = PROJ.filter(x => x.id !== p.id);
-    SELP = PROJ[0] ? PROJ[0].id : null;
-    saveP();
+    deleteProject(p.id);
     renderProjects();
   };
   ed.querySelectorAll('[data-iruns]').forEach(inp =>
     inp.addEventListener('change', e => {
-      p.items[Number(e.target.dataset.iruns)].runs = Math.max(1, Number(e.target.value) || 1);
-      saveP();
+      updateProject(
+        p.id,
+        p => (p.items[Number(e.target.dataset.iruns)].runs = Math.max(1, Number(e.target.value) || 1))
+      );
       renderProjects();
     })
   );
   ed.querySelectorAll('[data-idel]').forEach(b =>
     b.addEventListener('click', () => {
-      p.items.splice(Number(b.dataset.idel), 1);
-      saveP();
+      updateProject(p.id, p => p.items.splice(Number(b.dataset.idel), 1));
       renderProjects();
     })
   );
@@ -85,8 +137,7 @@ function renderProjects() {
       alertBox('Ilyen saját blueprintet nem találok. Válassz a listából.');
       return;
     }
-    p.items.push({ bpType: t, runs: Math.max(1, Number($('#pItemRuns').value) || 1) });
-    saveP();
+    updateProject(p.id, p => p.items.push({ bpType: t, runs: Math.max(1, Number($('#pItemRuns').value) || 1) }));
     renderProjects();
   };
   $('#pCalc').onclick = () => calcProjects([p]);
@@ -174,9 +225,9 @@ function srcRerender() {
 }
 function srcChange(e) {
   const t = e.target;
-  const p = PROJ.find(x => x.id === SELP);
+  const p = selectedProject();
   if (!p) return;
-  const specOf = k =>
+  const specOf = (p, k) =>
     k === 'p'
       ? (p.src = p.src || { mode: 'sel' })
       : (p.items[Number(k.slice(1))].src = p.items[Number(k.slice(1))].src || { mode: 'sel' });
@@ -191,17 +242,16 @@ function srcChange(e) {
     return;
   }
   if (t.name === 'psrcm') {
-    p.src = p.src || {};
-    p.src.mode = t.value;
-    saveP();
+    updateProject(p.id, p => (p.src = Object.assign(p.src || {}, { mode: t.value })));
     renderProjects();
     return;
   }
   if (t.dataset.isrc != null) {
-    const it = p.items[Number(t.dataset.isrc)];
-    if (t.value === 'sel') it.src = Object.assign(it.src || {}, { mode: 'sel' });
-    else delete it.src;
-    saveP();
+    updateProject(p.id, p => {
+      const it = p.items[Number(t.dataset.isrc)];
+      if (t.value === 'sel') it.src = Object.assign(it.src || {}, { mode: 'sel' });
+      else delete it.src;
+    });
     renderProjects();
     return;
   }
@@ -213,10 +263,11 @@ function srcChange(e) {
     const v = t.dataset[k];
     if (v == null) continue;
     const [key, id] = v.split('|');
-    const sp = specOf(key);
-    sp[arr] = tog(sp[arr], Number(id), t.checked);
-    if (arr === 'excl' && t.checked) sp.conts = tog(sp.conts, Number(id), true);
-    saveP();
+    updateProject(p.id, p => {
+      const sp = specOf(p, key);
+      sp[arr] = tog(sp[arr], Number(id), t.checked);
+      if (arr === 'excl' && t.checked) sp.conts = tog(sp.conts, Number(id), true);
+    });
     srcRerender();
     return;
   }

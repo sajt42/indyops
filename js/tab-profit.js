@@ -169,16 +169,7 @@ function renderProfit() {
   out.querySelectorAll('[data-addproj]').forEach(b =>
     b.addEventListener('click', () => {
       const t = Number(b.dataset.addproj);
-      let p = PROJ.find(x => x.id === SELP);
-      if (!p) {
-        p = { id: Date.now(), name: T('Profit-válogatás'), active: true, items: [] };
-        PROJ.push(p);
-        SELP = p.id;
-      }
-      const ex = p.items.find(x => x.bpType === t);
-      if (ex) ex.runs++;
-      else p.items.push({ bpType: t, runs: 1 });
-      saveP();
+      const p = addToProject({ bpType: t, runs: 1 }, T('Profit-válogatás'), x => x.bpType === t);
       renderProjects();
       status(T('hozzáadva: {0}', p.name));
       b.textContent = '✓ ' + p.name;

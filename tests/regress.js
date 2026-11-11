@@ -110,7 +110,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -867,6 +867,33 @@ const ok = (c, msg) => {
     T.setSetting('structME', sme ?? '');
     R.stale = null;
     T.setLast(null, null);
+  }
+  // 29. projects change only through the project functions
+  {
+    const keep = JSON.stringify(T.PROJ),
+      keepSel = T.SELP;
+    T.deleteProject && T.PROJ.slice().forEach(p => T.deleteProject(p.id));
+    ok(T.PROJ.length === 0 && T.SELP === null, 'all projects deleted');
+    const a = T.addToProject({ bpType: 688, runs: 1 }, 'Auto', x => x.bpType === 688);
+    T.addToProject({ bpType: 688, runs: 1 }, 'Auto', x => x.bpType === 688);
+    ok(
+      T.PROJ.length === 1 && a.name === 'Auto' && T.PROJ[0].items[0].runs === 2,
+      'add to project creates one and adds runs to the same item'
+    );
+    const b = T.createProject('B');
+    ok(T.SELP === b.id && b.id !== a.id, 'new project is selected, ids differ even when created at once');
+    T.moveProject(1, -1);
+    ok(T.PROJ[0].id === b.id, 'move up changes the priority');
+    T.updateProject(a.id, p => (p.active = false));
+    ok(
+      JSON.parse(w.localStorage.getItem('indyops.projects')).find(p => p.id === a.id).active === false,
+      'changes are stored'
+    );
+    T.deleteProject(b.id);
+    ok(T.SELP === a.id, 'deleting the selected project selects the first one');
+    T.deleteProject(a.id);
+    JSON.parse(keep).forEach(p => T.updateProject(T.createProject(p.name).id, q => Object.assign(q, p)));
+    if (keepSel != null) T.selectProject(keepSel);
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

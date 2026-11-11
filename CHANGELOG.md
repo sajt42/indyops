@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.14.6 – 2026-11-11
+
+- Code: projects change only through a few functions in tab-projects.js (create, update, select, delete, move, restore, add to project); What pays?, Invention and the event handlers call them instead of changing the project list directly, and tests/lint.js fails on direct changes elsewhere. New projects get unique ids even when created at the same moment. No change in what the app shows.
+
 ## 1.14.5 – 2026-11-11
 
 - Settings: every change redraws the open plan, the Settings tab and the seller tables from one place, instead of each handler doing it (or not). Settings the calculation itself uses (structure ME, build/buy, parallel manufacturing, stock locations, ships in material sources, system) mark the open plan as out of date, with a Recalculate button.

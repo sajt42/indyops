@@ -60,11 +60,8 @@ $('#pAdd').onclick = () => {
     alertBox('Adj nevet a projektnek.');
     return;
   }
-  const p = { id: Date.now(), name: n, active: true, items: [] };
-  PROJ.push(p);
-  SELP = p.id;
+  createProject(n);
   $('#pNew').value = '';
-  saveP();
   renderProjects();
 };
 $('#pList').addEventListener('click', e => {
@@ -72,29 +69,22 @@ $('#pList').addEventListener('click', e => {
     up = e.target.closest('[data-pup]'),
     dn = e.target.closest('[data-pdown]');
   if (sel) {
-    SELP = Number(sel.dataset.psel);
-    saveP();
+    selectProject(Number(sel.dataset.psel));
     renderProjects();
   }
   if (up) {
-    const i = Number(up.dataset.pup);
-    [PROJ[i - 1], PROJ[i]] = [PROJ[i], PROJ[i - 1]];
-    saveP();
+    moveProject(Number(up.dataset.pup), -1);
     renderProjects();
   }
   if (dn) {
-    const i = Number(dn.dataset.pdown);
-    [PROJ[i + 1], PROJ[i]] = [PROJ[i], PROJ[i + 1]];
-    saveP();
+    moveProject(Number(dn.dataset.pdown), 1);
     renderProjects();
   }
 });
 $('#pList').addEventListener('change', e => {
   const c = e.target.closest('[data-pact]');
   if (c) {
-    const p = PROJ.find(x => x.id == c.dataset.pact);
-    p.active = c.checked;
-    saveP();
+    updateProject(Number(c.dataset.pact), p => (p.active = c.checked));
   }
 });
 $('#pAll').onclick = () => {
@@ -433,9 +423,7 @@ $('#impFile').addEventListener('change', e => {
     };
     $('#impYes').onclick = () => {
       replaceSettings(d.settings || {});
-      PROJ = d.projects || [];
-      SELP = d.selp ?? (PROJ[0] ? PROJ[0].id : null);
-      saveP();
+      replaceProjects(d.projects || [], d.selp);
       if (d.withTokens && Array.isArray(d.chars)) {
         for (const c of d.chars) if (c.refresh) putChar(c);
       }

@@ -48,14 +48,14 @@ All state is global (`let` at the top level of a file). Persisted entries are st
 | `PRICES` | type → `{s, b, at, err, retry}` Jita prices | `prices` | `ensurePrices`, cache reset in `main.js` |
 | `ADJ`, `IDX` | adjusted prices; system → activity cost index | `adj`, `idx2` | `data.js` |
 | `ORES`, `CORPFAC`, `SYSSEC`, `HIST`, `ROUTES`, `SHIPC` | ore types, NPC corp → faction (from EVE Ref), system security, market history, routes, ship capacities | own keys | the module that declares them |
-| `PROJ`, `SELP` | projects and the selected project | `projects`, `selp` | `tab-projects.js`, restore |
+| `PROJ`, `SELP` | projects and the selected project | `projects`, `selp` | only the functions in `tab-projects.js`: `createProject`, `updateProject`, `selectProject`, `deleteProject`, `moveProject`, `replaceProjects` (restore) and `addToProject` (used by What pays? and Invention) |
 | `MKT`, `MKT_JUMPS`, `REGIONS` | sell orders per material in the picked regions (10 minutes), jumps of the found stations, the k-space region list | `regions` (only `REGIONS`) | `market.js` |
 | `BPPROD` | blueprint type → `{prod, qty, act}` index of recipes | – | `indexBPProducts` (`engine.js`), reset in `main.js` |
 | `LASTPLAN`, `LASTRENDER` | the plan on screen and a function that redraws it | – | `runPlan` (`views.js`), `calcProjects` (`tab-projects.js`) |
 | `REP`, `REPLOG` | reprocess rows, selection, load log | – | `repro.js` |
 | `PROFROWS`, `INVROWS`, `RESROWS`, `SLROWS`, `CBROWS`, `PG`, `PGR`, `SRT` | last result rows of the list tabs, their paging and sort state | – | the tab that owns them |
 
-`DATA` and `CHARS` are the only inputs that come from the user's characters. A removal raises the character's generation (`charGen`); `refreshChar` remembers the generation it started with, and `setCharData` drops a result that belongs to a removed character. `tests/lint.js` fails if `CHARS`, `DATA` or `S` is changed anywhere else. Everything a tab shows is derived from them, the settings and the caches.
+`DATA` and `CHARS` are the only inputs that come from the user's characters. A removal raises the character's generation (`charGen`); `refreshChar` remembers the generation it started with, and `setCharData` drops a result that belongs to a removed character. `tests/lint.js` fails if `CHARS`, `DATA` or `S` is changed anywhere else, or `PROJ`/`SELP` outside `tab-projects.js`. Everything a tab shows is derived from them, the settings and the caches.
 
 ## Data flow
 

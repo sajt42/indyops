@@ -139,20 +139,16 @@ function renderInvention() {
   );
   out.querySelectorAll('[data-invadd]').forEach(b =>
     b.addEventListener('click', () => {
-      let p = PROJ.find(x => x.id === SELP);
-      if (!p) {
-        p = { id: Date.now(), name: T('Invention'), active: true, items: [] };
-        PROJ.push(p);
-        SELP = p.id;
-      }
-      p.items.push({
-        invT1: Number(b.dataset.invadd),
-        dec: b.dataset.invdec ? Number(b.dataset.invdec) : null,
-        t2: Number(b.dataset.invt2),
-        runs: Number(b.dataset.invruns),
-        pi: Number(b.dataset.invpi || 0)
-      });
-      saveP();
+      const p = addToProject(
+        {
+          invT1: Number(b.dataset.invadd),
+          dec: b.dataset.invdec ? Number(b.dataset.invdec) : null,
+          t2: Number(b.dataset.invt2),
+          runs: Number(b.dataset.invruns),
+          pi: Number(b.dataset.invpi || 0)
+        },
+        T('Invention')
+      );
       renderProjects();
       b.textContent = '✓ ' + p.name;
     })
