@@ -186,8 +186,7 @@ function srcChange(e) {
     return arr;
   };
   if (t.dataset.srcships != null) {
-    S.srcShips = t.checked;
-    saveS();
+    setSetting('srcShips', t.checked);
     srcRerender();
     return;
   }

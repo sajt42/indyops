@@ -48,7 +48,14 @@ const T = w.__t,
   Object.defineProperty(inp, 'files', { value: [file] });
   inp.dispatchEvent(new w.Event('change'));
   await new Promise(r => setTimeout(r, 100));
-  console.log('confirm:', d.querySelector('#impConfirm').textContent.replace(/\s+/g, ' ').replace(/\d{4}\. \d{2}\. \d{2}\.( \d{1,2}:\d{2}(:\d{2})?)?/g, '<DATE>').slice(0, 160));
+  console.log(
+    'confirm:',
+    d
+      .querySelector('#impConfirm')
+      .textContent.replace(/\s+/g, ' ')
+      .replace(/\d{4}\. \d{2}\. \d{2}\.( \d{1,2}:\d{2}(:\d{2})?)?/g, '<DATE>')
+      .slice(0, 160)
+  );
   w.localStorage.removeItem('indyops.projects');
   d.querySelector('#impYes').click();
   {

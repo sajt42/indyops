@@ -255,11 +255,8 @@ function sellerHtml() {
 document.addEventListener('change', e => {
   const t = e.target;
   if (!t.dataset || t.dataset.sbroker == null) return;
-  S.structBroker = S.structBroker || {};
   const v = t.value.trim();
-  if (v === '') delete S.structBroker[t.dataset.sbroker];
-  else S.structBroker[t.dataset.sbroker] = Number(v);
-  saveS();
+  setSettingIn('structBroker', t.dataset.sbroker, v === '' ? null : Number(v));
   redrawSellerBoxes();
 });
 // redraws every "who should sell" table on the page (after a fee or a station owner became known)

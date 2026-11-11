@@ -110,7 +110,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -820,6 +820,29 @@ const ok = (c, msg) => {
     ss.prodLoc = '';
     ss.mktHsOnly = true;
     ss.mktMaxJumps = 10;
+  }
+  // 27. settings change only through setSetting/setSettingIn: checked, saved, announced
+  {
+    const seen = [];
+    T.onSetting(k => seen.push(k));
+    const before = T.S.mktMaxJumps;
+    ok(T.setSetting('mktMaxJumps', 7) === true && T.S.mktMaxJumps === 7, 'valid value is stored');
+    ok(JSON.parse(w.localStorage.getItem('indyops.settings')).mktMaxJumps === 7, 'and saved');
+    ok(T.setSetting('mktMaxJumps', 'sok') === false && T.S.mktMaxJumps === 7, 'wrong type is rejected');
+    ok(T.setSetting('noSuchKey', 1) === false && !('noSuchKey' in T.S), 'unknown key is rejected');
+    T.setSettingIn('manPrice', 34, 2.5);
+    T.setSettingIn('manPrice', 35, 9);
+    T.setSettingIn('manPrice', 34, null);
+    ok(
+      JSON.stringify(T.S.manPrice) === '{"35":9}',
+      'map entries are set and removed (' + JSON.stringify(T.S.manPrice) + ')'
+    );
+    ok(
+      seen.join(',') === 'mktMaxJumps,manPrice,manPrice,manPrice',
+      'listeners hear every stored change (' + seen + ')'
+    );
+    T.setSetting('manPrice', {});
+    T.setSetting('mktMaxJumps', before ?? 10);
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

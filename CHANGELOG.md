@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.14.4 – 2026-11-11
+
+- Code: settings are written only through setSetting / setSettingIn in core.js, which check the value against the settings schema (the same check a restored backup goes through), save it and notify listeners; 45 scattered writes are replaced and tests/lint.js fails on any other write. No change in what the app shows.
+
 ## 1.14.3 – 2026-11-11
 
 - Fix: removing a character (or restoring a backup) while that character was refreshing wrote its data back when the refresh finished, and it stayed in the browser storage. Characters and their data now change only through a few functions in core.js; a refresh drops its result if the character was removed meanwhile, and data of removed characters left by older versions is cleared at start-up.

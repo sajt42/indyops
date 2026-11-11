@@ -18,13 +18,16 @@ function repLog(m) {
   el.textContent = REPLOG.join('\n');
   if (atEnd) el.scrollTop = el.scrollHeight;
 }
+// reprocess settings (read only; change them with setRepro)
 function repCfg() {
-  if (!S.repro) S.repro = {};
-  const c = S.repro;
-  c.loc = c.loc || {};
-  c.imp = c.imp || {};
-  if (c.char == null) c.char = '';
-  return c;
+  const c = S.repro || {};
+  return { loc: c.loc || {}, imp: c.imp || {}, char: c.char ?? '' };
+}
+// changes the reprocess settings on a copy and stores it
+function setRepro(fn) {
+  const c = JSON.parse(JSON.stringify(repCfg()));
+  fn(c);
+  setSetting('repro', c);
 }
 // reprocess implant from ESI (Zainou 'Beancounter' Reprocessing RX-801/802/804 = 1/2/4%); null without the scope
 function impAuto(cid) {
@@ -627,8 +630,8 @@ function renderRepSum() {
 (function () {
   const tab = document.getElementById('tab-repro');
   if (!tab) return;
-  const save = () => {
-    saveS();
+  const save = fn => {
+    setRepro(fn);
     renderRepro();
   };
   tab.addEventListener('click', e => {
@@ -643,8 +646,7 @@ function renderRepSum() {
     }
   });
   tab.addEventListener('change', e => {
-    const t = e.target,
-      cfg = repCfg();
+    const t = e.target;
     if (t.dataset.rk) {
       t.checked ? REP.sel.add(t.dataset.rk) : REP.sel.delete(t.dataset.rk);
       renderRepSum();
@@ -660,21 +662,18 @@ function renderRepSum() {
       });
       renderRepSum();
     } else if (t.dataset.imp) {
-      if (t.value === 'auto') delete cfg.imp[t.dataset.imp];
-      else cfg.imp[t.dataset.imp] = Number(t.value);
-      save();
+      save(cfg => {
+        if (t.value === 'auto') delete cfg.imp[t.dataset.imp];
+        else cfg.imp[t.dataset.imp] = Number(t.value);
+      });
     } else if (t.id === 'repWho') {
-      cfg.char = t.value;
-      save();
+      save(cfg => (cfg.char = t.value));
     } else if (t.dataset.rig) {
-      (cfg.loc[t.dataset.rig] = cfg.loc[t.dataset.rig] || {}).rig = Number(t.value);
-      save();
+      save(cfg => ((cfg.loc[t.dataset.rig] = cfg.loc[t.dataset.rig] || {}).rig = Number(t.value)));
     } else if (t.dataset.tax != null && t.dataset.tax !== '') {
-      (cfg.loc[t.dataset.tax] = cfg.loc[t.dataset.tax] || {}).tax = t.value;
-      save();
+      save(cfg => ((cfg.loc[t.dataset.tax] = cfg.loc[t.dataset.tax] || {}).tax = t.value));
     } else if (t.dataset.base) {
-      (cfg.loc[t.dataset.base] = cfg.loc[t.dataset.base] || {}).base = t.value;
-      save();
+      save(cfg => ((cfg.loc[t.dataset.base] = cfg.loc[t.dataset.base] || {}).base = t.value));
     } else if (['repLoc', 'repCat', 'repBetter', 'repOwn', 'repSelOnly'].includes(t.id)) renderRepro();
   });
   let qt = null;

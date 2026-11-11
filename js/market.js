@@ -204,10 +204,7 @@ function bindBuySources(el, R) {
     i.addEventListener('change', () => {
       const t = Number(i.dataset.manp),
         v = Number(i.value);
-      if (!S.manPrice) S.manPrice = {};
-      if (i.value !== '' && v > 0) S.manPrice[t] = v;
-      else delete S.manPrice[t];
-      saveS();
+      setSettingIn('manPrice', t, i.value !== '' && v > 0 ? v : null);
       LASTRENDER && LASTRENDER();
     })
   );
@@ -218,10 +215,7 @@ function bindBuySources(el, R) {
     out.querySelectorAll('[data-mktpick]').forEach(b =>
       b.addEventListener('click', () => {
         const [t, l] = b.dataset.mktpick.split('|');
-        if (!S.buySrc) S.buySrc = {};
-        if (l) S.buySrc[t] = Number(l);
-        else delete S.buySrc[t];
-        saveS();
+        setSettingIn('buySrc', t, l ? Number(l) : null);
         R.mkt = res;
         LASTRENDER && LASTRENDER();
       })
@@ -273,8 +267,7 @@ function renderMktSettings() {
         const r = Number(c.dataset.mreg);
         if (c.checked) sel.add(r);
         else sel.delete(r);
-        S.mktRegions = [...sel];
-        saveS();
+        setSetting('mktRegions', [...sel]);
         draw();
       })
     );
@@ -313,15 +306,13 @@ function renderBuyLists() {
   );
   box.querySelectorAll('[data-unman]').forEach(b =>
     b.addEventListener('click', () => {
-      delete S.manPrice[b.dataset.unman];
-      saveS();
+      setSettingIn('manPrice', b.dataset.unman, null);
       renderBuyLists();
     })
   );
   box.querySelectorAll('[data-unsrc]').forEach(b =>
     b.addEventListener('click', () => {
-      delete S.buySrc[b.dataset.unsrc];
-      saveS();
+      setSettingIn('buySrc', b.dataset.unsrc, null);
       renderBuyLists();
     })
   );

@@ -1086,9 +1086,7 @@ function renderResult(el, R, rerun) {
   el.querySelectorAll('tr[data-toggle]').forEach(tr =>
     tr.addEventListener('click', () => {
       const t = Number(tr.dataset.toggle);
-      if (S.buyOverride[t]) delete S.buyOverride[t];
-      else S.buyOverride[t] = true;
-      saveS();
+      setSettingIn('buyOverride', t, S.buyOverride && S.buyOverride[t] ? null : true);
       rerun();
     })
   );

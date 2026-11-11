@@ -38,7 +38,7 @@ All state is global (`let` at the top level of a file). Persisted entries are st
 
 | Name | Contents | Stored as | Written by |
 |---|---|---|---|
-| `S` | settings (schema and expected types in `SET_SCHEMA`) | `settings` | settings inputs in `main.js` and the tabs (`S.x = …; saveS()`), restore |
+| `S` | settings (types in `SET_SCHEMA`, `core.js`) | `settings` | only `setSetting`, `setSettingIn` (one entry of a map setting) and `replaceSettings` (restore) in `core.js`; they check the type, save and notify `onSetting` listeners |
 | `LANG` | UI language | inside `settings` | `setLang` (`core.js`) |
 | `CHARS` | logged-in characters `{id, name, refresh, access, exp, scp}` | `chars` | only the functions in `core.js`: `putChar` (login, restore), `removeChar`, `saveChars` (token refresh) |
 | `DATA` | per character: `assets, bps, skills, jobs, orders, tx, imp, std, lm, cont, bpAt, bpExp, dv, at` | `data` | only `setCharData` (result of `refreshChar`) and `removeChar`; read through `charEntries()`, which skips removed characters |
@@ -55,7 +55,7 @@ All state is global (`let` at the top level of a file). Persisted entries are st
 | `REP`, `REPLOG` | reprocess rows, selection, load log | – | `repro.js` |
 | `PROFROWS`, `INVROWS`, `RESROWS`, `SLROWS`, `CBROWS`, `PG`, `PGR`, `SRT` | last result rows of the list tabs, their paging and sort state | – | the tab that owns them |
 
-`DATA` and `CHARS` are the only inputs that come from the user's characters. A removal raises the character's generation (`charGen`); `refreshChar` remembers the generation it started with, and `setCharData` drops a result that belongs to a removed character. `tests/lint.js` fails if `CHARS` or `DATA` is changed anywhere else. Everything a tab shows is derived from them, the settings and the caches.
+`DATA` and `CHARS` are the only inputs that come from the user's characters. A removal raises the character's generation (`charGen`); `refreshChar` remembers the generation it started with, and `setCharData` drops a result that belongs to a removed character. `tests/lint.js` fails if `CHARS`, `DATA` or `S` is changed anywhere else. Everything a tab shows is derived from them, the settings and the caches.
 
 ## Data flow
 
@@ -110,7 +110,7 @@ showResult(el, R, rerun)             views.js    re-assigns characters, draws, r
 ### Backup and restore
 
 - `makeBackup(withTokens)` exports the settings, projects and characters. Login tokens are included only on request.
-- `validateBackup` checks each field against `SET_SCHEMA`/`BACKUP_TYPES`, drops unknown keys and never throws. The restore is applied only if there are no errors and the user confirms.
+- `validateBackup` checks each field against `SET_SCHEMA`/`SET_TYPES` (the same check `setSetting` makes), drops unknown keys and never throws. The restore is applied only if there are no errors and the user confirms.
 
 ## Security notes
 

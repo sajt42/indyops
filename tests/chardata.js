@@ -273,7 +273,10 @@ const dump = d => {
   dom2.window.localStorage.setItem('indyops.chars', JSON.stringify([{ id: 5, name: 'Kept' }]));
   dom2.window.localStorage.setItem(
     'indyops.data',
-    JSON.stringify({ 5: { assets: [], bps: [], jobs: [], skills: {} }, 9: { assets: [], bps: [], jobs: [], skills: {} } })
+    JSON.stringify({
+      5: { assets: [], bps: [], jobs: [], skills: {} },
+      9: { assets: [], bps: [], jobs: [], skills: {} }
+    })
   );
   dom2.window.eval(code + ';window.__d=()=>Object.keys(DATA);');
   const left = dom2.window.__d();

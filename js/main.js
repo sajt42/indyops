@@ -20,8 +20,7 @@ document.addEventListener('click', e => {
   }
 });
 $('#saveClientId').onclick = () => {
-  S.clientId = $('#clientIdInput').value.trim();
-  saveS();
+  setSetting('clientId', $('#clientIdInput').value.trim());
   renderAll();
 };
 $('#addChar').onclick = startLogin;
@@ -142,26 +141,25 @@ $('#cbGo').onclick = () =>
   });
 $('#scanGo').onclick = () => runScan().catch(e => alertBox(e.message));
 $('#locList').addEventListener('change', () => {
-  S.locs = $$('#locList input[data-loc]')
-    .filter(x => x.checked)
-    .map(x => Number(x.dataset.loc));
-  saveS();
+  setSetting(
+    'locs',
+    $$('#locList input[data-loc]')
+      .filter(x => x.checked)
+      .map(x => Number(x.dataset.loc))
+  );
   renderStock();
 });
 $('#locAll').onclick = () => {
-  S.locs = null;
-  saveS();
+  setSetting('locs', null);
   renderLocList();
 };
 $('#locNone').onclick = () => {
-  S.locs = [];
-  saveS();
+  setSetting('locs', []);
   renderLocList();
 };
 const bind = (sel, key, num) =>
   $(sel).addEventListener('change', e => {
-    S[key] = num && e.target.value !== '' ? Number(e.target.value) : e.target.value;
-    saveS();
+    setSetting(key, num && e.target.value !== '' ? Number(e.target.value) : e.target.value);
     renderSettings();
   });
 bind('#sStructME', 'structME', 1);
@@ -176,38 +174,31 @@ bind('#sImplant', 'implant', 1);
 bind('#sSystem', 'system', 0);
 bind('#sClientId', 'clientId', 0);
 $('#sProdLoc').addEventListener('change', e => {
-  S.prodLoc = e.target.value;
-  saveS();
+  setSetting('prodLoc', e.target.value);
   LASTRENDER && LASTRENDER();
 });
 $('#sWallet').addEventListener('change', e => {
-  S.wallet = e.target.checked;
-  saveS();
+  setSetting('wallet', e.target.checked);
   renderChars();
 });
 $('#sParallel').addEventListener('change', e => {
-  S.parallel = e.target.checked;
-  saveS();
+  setSetting('parallel', e.target.checked);
   renderSettings();
   status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
 });
 $('#sParMode').addEventListener('change', e => {
-  S.parMode = e.target.value === 'speed' ? 'speed' : 'material';
-  saveS();
+  setSetting('parMode', e.target.value === 'speed' ? 'speed' : 'material');
   status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
 });
 $('#sMktJumps').addEventListener('change', e => {
   const v = Math.round(Number(e.target.value));
-  S.mktMaxJumps = v > 0 ? v : 10;
-  saveS();
+  setSetting('mktMaxJumps', v > 0 ? v : 10);
 });
 $('#sMktHs').addEventListener('change', e => {
-  S.mktHsOnly = e.target.checked;
-  saveS();
+  setSetting('mktHsOnly', e.target.checked);
 });
 $('#sMarket2').addEventListener('change', e => {
-  S.market2 = e.target.value ? Number(e.target.value) : '';
-  saveS();
+  setSetting('market2', e.target.value ? Number(e.target.value) : '');
   renderSettings();
   refreshMarket2();
 });
@@ -241,8 +232,7 @@ $('#sWorkChars').addEventListener('change', e => {
     .filter(x => x.checked)
     .map(x => Number(x.dataset.wc));
   const all = CHARS.filter(c => DATA[c.id]).length;
-  S.workChars = ids.length && ids.length < all ? ids : null;
-  saveS();
+  setSetting('workChars', ids.length && ids.length < all ? ids : null);
   renderAll();
   try {
     LASTRENDER && LASTRENDER();
@@ -302,68 +292,13 @@ $('#expBtn').onclick = () => {
 };
 // backup validation per field: a known setting passes only with the expected type, unknown fields are dropped;
 // never throws on bad input, and applies nothing when there is an error
-const SET_SCHEMA = {
-  clientId: 'str',
-  system: 'str',
-  lang: 'str',
-  prodLoc: 'numOrEmpty',
-  salesTax: 'numOrEmpty',
-  broker: 'numOrEmpty',
-  market2: 'numOrEmpty',
-  structME: 'numOrEmpty',
-  structTE: 'numOrEmpty',
-  structRes: 'numOrEmpty',
-  facTax: 'numOrEmpty',
-  scc: 'numOrEmpty',
-  yieldBase: 'numOrEmpty',
-  implant: 'numOrEmpty',
-  locs: 'numArrOrNull',
-  workChars: 'numArrOrNull',
-  wallet: 'bool',
-  mktRegions: 'numArrOrNull',
-  mktMaxJumps: 'num',
-  mktHsOnly: 'bool',
-  manPrice: 'mapNum',
-  buySrc: 'mapNum',
-  parallel: 'bool',
-  parMode: 'str',
-  srcShips: 'bool',
-  buyOverride: 'mapBool',
-  locNames: 'mapStr',
-  structBroker: 'mapNum',
-  repro: 'repro'
-};
-// Backup validation per field: a known setting passes only with the expected type, unknown fields are dropped.
-// It never throws on bad input; the caller applies nothing when err is not empty.
-const isNum = x => typeof x === 'number' && isFinite(x);
-const isObj = x => x != null && typeof x === 'object' && !Array.isArray(x);
-const isNumish = x => isNum(x) || (typeof x === 'string' && x.trim() !== '' && isFinite(Number(x)));
-const everyValue = (o, f) => isObj(o) && Object.values(o).every(f);
-// expected type of each setting (SET_SCHEMA names the type, BACKUP_TYPES checks it)
-const BACKUP_TYPES = {
-  str: x => typeof x === 'string',
-  num: isNumish,
-  numOrEmpty: x => x === '' || x == null || isNumish(x),
-  bool: x => typeof x === 'boolean',
-  numArrOrNull: x => x === null || (Array.isArray(x) && x.every(isNum)),
-  mapBool: x => everyValue(x, v => typeof v === 'boolean'),
-  mapStr: x => everyValue(x, v => typeof v === 'string'),
-  mapNum: x => everyValue(x, isNumish),
-  repro: x =>
-    isObj(x) &&
-    (x.loc == null ||
-      everyValue(x.loc, v => isObj(v) && Object.values(v).every(y => y === '' || y == null || isNumish(y)))) &&
-    (x.imp == null || everyValue(x.imp, v => isNumish(v) || v === 'auto')) &&
-    (x.char == null || x.char === '' || isNumish(x.char))
-};
-
 function validSettings(d, out, err) {
   if (d.settings != null && !isObj(d.settings)) err.push(T('a beállítások nem objektum'));
   else
     for (const [k, v] of Object.entries(d.settings || {})) {
       const t = SET_SCHEMA[k];
       if (!t) continue;
-      if (BACKUP_TYPES[t](v)) out.settings[k] = v;
+      if (SET_TYPES[t](v)) out.settings[k] = v;
       else err.push(T('hibás beállítás: {0}', k));
     }
 }
@@ -482,8 +417,7 @@ $('#impFile').addEventListener('change', e => {
       e.target.value = '';
     };
     $('#impYes').onclick = () => {
-      S = Object.assign({}, S, d.settings || {});
-      saveS();
+      replaceSettings(d.settings || {});
       PROJ = d.projects || [];
       SELP = d.selp ?? (PROJ[0] ? PROJ[0].id : null);
       saveP();
@@ -546,11 +480,7 @@ $('#bugBtn').addEventListener('click', () => {
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset && t.dataset.locname) {
-    S.locNames = S.locNames || {};
-    const v = t.value.trim();
-    if (v) S.locNames[t.dataset.locname] = v;
-    else delete S.locNames[t.dataset.locname];
-    saveS();
+    setSettingIn('locNames', t.dataset.locname, t.value.trim() || null);
     renderAll();
   }
 });

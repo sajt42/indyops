@@ -61,7 +61,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.14.3',
+  version: '1.14.4',
   built: '2026-11-11',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -196,8 +196,7 @@ function setLang(l) {
   if (!LANGS[l]) return;
   LANG = l;
   try {
-    S.lang = l;
-    saveS();
+    setSetting('lang', l);
   } catch (e) {}
   trTree(document.body);
   document.documentElement.lang = LANG;
@@ -379,3 +378,95 @@ let ADJ = load('adj', { at: 0, p: {} }); // adjusted prices
 let IDX = load('idx2', { at: 0, p: {} }); // systemId -> {activity: cost index}
 let ORES = load('ores', null); // [typeIds] category 25
 const saveS = () => store('settings', S);
+/* ---- settings: read anywhere, written only here ----
+ * setSetting / setSettingIn check the value against SET_SCHEMA (the same check a restored backup goes through),
+ * save it and announce the change to the onSetting listeners. tests/lint.js fails on any other write to S.
+ */
+// type of every setting; a key that is not listed here is not stored
+const SET_SCHEMA = {
+  clientId: 'str',
+  system: 'str',
+  lang: 'str',
+  prodLoc: 'numOrEmpty',
+  salesTax: 'numOrEmpty',
+  broker: 'numOrEmpty',
+  market2: 'numOrEmpty',
+  structME: 'numOrEmpty',
+  structTE: 'numOrEmpty',
+  structRes: 'numOrEmpty',
+  facTax: 'numOrEmpty',
+  scc: 'numOrEmpty',
+  yieldBase: 'numOrEmpty',
+  implant: 'numOrEmpty',
+  locs: 'numArrOrNull',
+  workChars: 'numArrOrNull',
+  wallet: 'bool',
+  mktRegions: 'numArrOrNull',
+  mktMaxJumps: 'num',
+  mktHsOnly: 'bool',
+  manPrice: 'mapNum',
+  buySrc: 'mapNum',
+  parallel: 'bool',
+  parMode: 'str',
+  srcShips: 'bool',
+  buyOverride: 'mapBool',
+  locNames: 'mapStr',
+  structBroker: 'mapNum',
+  repro: 'repro'
+};
+const isNum = x => typeof x === 'number' && isFinite(x);
+const isObj = x => x != null && typeof x === 'object' && !Array.isArray(x);
+const isNumish = x => isNum(x) || (typeof x === 'string' && x.trim() !== '' && isFinite(Number(x)));
+const everyValue = (o, f) => isObj(o) && Object.values(o).every(f);
+// checks of the types SET_SCHEMA names
+const SET_TYPES = {
+  str: x => typeof x === 'string',
+  num: isNumish,
+  numOrEmpty: x => x === '' || x == null || isNumish(x),
+  bool: x => typeof x === 'boolean',
+  numArrOrNull: x => x === null || (Array.isArray(x) && x.every(isNum)),
+  mapBool: x => everyValue(x, v => typeof v === 'boolean'),
+  mapStr: x => everyValue(x, v => typeof v === 'string'),
+  mapNum: x => everyValue(x, isNumish),
+  repro: x =>
+    isObj(x) &&
+    (x.loc == null ||
+      everyValue(x.loc, v => isObj(v) && Object.values(v).every(y => y === '' || y == null || isNumish(y)))) &&
+    (x.imp == null || everyValue(x.imp, v => isNumish(v) || v === 'auto')) &&
+    (x.char == null || x.char === '' || isNumish(x.char))
+};
+const SETTING_LISTENERS = [];
+// fn(key) runs after a setting changed; key is '*' when all settings were replaced (restore)
+const onSetting = fn => SETTING_LISTENERS.push(fn);
+function settingChanged(key) {
+  for (const fn of SETTING_LISTENERS)
+    try {
+      fn(key);
+    } catch (e) {
+      console.error(e);
+    }
+}
+function setSetting(key, value) {
+  const t = SET_SCHEMA[key];
+  if (!t || !SET_TYPES[t](value)) {
+    console.warn('setSetting: rejected ' + key);
+    return false;
+  }
+  S[key] = value;
+  saveS();
+  settingChanged(key);
+  return true;
+}
+// one entry of a map setting (manual prices, sources, location names…); null or undefined removes it
+function setSettingIn(key, sub, value) {
+  const m = Object.assign({}, S[key] || {});
+  if (value == null) delete m[sub];
+  else m[sub] = value;
+  return setSetting(key, m);
+}
+// restore: the settings of a checked backup over the current ones
+function replaceSettings(obj) {
+  S = Object.assign({}, S, obj);
+  saveS();
+  settingChanged('*');
+}
