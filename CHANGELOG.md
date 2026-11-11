@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.16.3 – 2026-11-11
+
+- What pays? and Builds without buying: the category list is filled from your blueprints when the tab opens (and when character data changes), not only after the first calculation.
+
 ## 1.16.2 – 2026-11-11
 
 - Material tree: the runs × pieces note under Build is short (e.g. “1×3 +1”) so the table fits a 1080p screen; the full text shows on hover.

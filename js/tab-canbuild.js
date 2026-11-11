@@ -14,7 +14,7 @@ async function runCanBuild() {
   }
   const prodTypes = [...byProd.keys()];
   await Promise.all(prodTypes.map(t => refGet('t', t)));
-  fillCats(prodTypes);
+  fillCatSelect($('#cbCat'), prodTypes);
   const sel = prodTypes.filter(t => !cat || String(REFC.t[t] && REFC.t[t].c) === cat);
   const opt = { buildOwn: true, useStock: true, ore: $('#cbOre').checked };
   const res = [];
@@ -81,31 +81,4 @@ function renderCanBuild() {
     html`${pg.html}<div class="tablewrap"><table><thead><tr>${sortTh('cb', 'name', T('Termék'))}${sortTh('cb', 'bp', T('Legjobb saját BP'), 1)}${sortTh('cb', 'lo', T('Legyártható run'), 1)}${sortTh('cb', 'lim', T('Szűk keresztmetszet a következő runhoz'))}</tr></thead><tbody>${res.map(r => html`<tr><td>${NAMES[r.p] || r.p}</td><td class="small">${r.bp.r === -1 ? 'BPO' : 'BPC ' + r.bp.r + ' run'} · ME${r.bp.me} · ${charName(r.bp.cid)}</td><td class="num ${r.lo ? 'pos' : ''}">${fmt(r.lo)}</td><td class="small muted">${r.limiter}</td></tr>`)}</tbody></table></div>${pg.html}`
   );
   status('kész');
-}
-function fillCats(prodTypes) {
-  const cats = new Set(prodTypes.map(t => REFC.t[t] && REFC.t[t].c).filter(Boolean));
-  const names = {
-    6: 'Hajók',
-    7: 'Modulok',
-    8: 'Töltetek',
-    18: 'Drónok',
-    4: 'Anyagok',
-    17: 'Commodity',
-    22: 'Deployable',
-    23: 'Starbase',
-    32: 'Subsystem',
-    65: 'Struktúrák',
-    66: 'Struktúra modulok',
-    87: 'Fighterek',
-    43: 'PI',
-    20: 'Implantok',
-    39: 'Infrastruktúra'
-  };
-  const sel = $('#cbCat'),
-    cur = sel.value;
-  setHtml(
-    sel,
-    html`<option value="">mind</option>${[...cats].map(c => html`<option value="${c}">${names[c] || 'Kategória ' + c}</option>`)}`
-  );
-  sel.value = cur;
 }

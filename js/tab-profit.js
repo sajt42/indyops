@@ -176,6 +176,25 @@ function renderProfit() {
     })
   );
 }
+// Fills a category list from the products of the blueprints you own, before anything is calculated
+// (What pays?, Builds without buying). Only reads recipes and type data, both cached.
+async function fillOwnCats(sel) {
+  if (!allBPs().length) return;
+  try {
+    await indexBPProducts();
+    const prods = [
+      ...new Set(
+        allBPs()
+          .map(b => BPPROD[b.t] && BPPROD[b.t].prod)
+          .filter(Boolean)
+      )
+    ];
+    await Promise.all(prods.map(t => refGet('t', t)));
+    fillCatSelect(sel, prods);
+  } catch (e) {
+    log('Kategórialista: ' + e.message); // the list fills on the next calculation anyway
+  }
+}
 function fillCatSelect(sel, prodTypes) {
   const cats = new Set(prodTypes.map(t => REFC.t[t] && REFC.t[t].c).filter(Boolean));
   const names = {

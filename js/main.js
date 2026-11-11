@@ -11,6 +11,8 @@ function showTab(t) {
   $$('main>section').forEach(s => (s.hidden = s.id !== 'tab-' + t));
   if (t === 'mine') renderMineNeed();
   if (t === 'repro') renderRepro();
+  if (t === 'profit') fillOwnCats($('#prCat'));
+  if (t === 'canbuild') fillOwnCats($('#cbCat'));
 }
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-goto]');
@@ -214,6 +216,9 @@ async function recalcAfterData() {
   }
 }
 onCharData(() => {
+  // new blueprints can bring new categories into the open tab's list
+  if (!$('#tab-profit').hidden) fillOwnCats($('#prCat'));
+  if (!$('#tab-canbuild').hidden) fillOwnCats($('#cbCat'));
   clearTimeout(dataRecalcTimer);
   dataRecalcTimer = setTimeout(recalcAfterData, DATA_RECALC_DELAY);
 });
