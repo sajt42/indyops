@@ -760,7 +760,6 @@ window.I18N.de = {
   'Párhuzamos gyártás ({0}): {1}.': 'Parallele Fertigung ({0}): {1}.',
   'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Mehrmaterial gegenüber einem Job nach dem anderen: {0} ISK.',
   'Nem kell hozzá több anyag.': 'Es braucht kein zusätzliches Material.',
-  'Párhuzamos gyártás: a következő számolásnál lép életbe.': 'Parallele Fertigung: gilt ab der nächsten Berechnung.',
   'kézi ár': 'manueller Preis',
   'highsec úton': 'über Highsec',
   innen: 'von hier',
@@ -800,5 +799,15 @@ window.I18N.de = {
   Eladásra: 'Zum Verkauf',
   'Legfeljebb {0} megtakarítás.': 'Bis zu {0} Ersparnis.',
   kell: 'Bedarf',
-  'A Jitánál nem olcsóbb a közelben: {0}': 'In der Nähe nicht billiger als Jita: {0}'
+  'A Jitánál nem olcsóbb a közelben: {0}': 'In der Nähe nicht billiger als Jita: {0}',
+  'A számolás óta megváltozott: {0}. Az eredmény ehhez már nem friss.':
+    'Seit der Berechnung geändert: {0}. Das Ergebnis berücksichtigt das noch nicht.',
+  Újraszámolás: 'Neu berechnen',
+  'struktúra ME bónusz': 'Struktur-ME-Bonus',
+  'gyártom / veszem': 'bauen / kaufen',
+  'párhuzamos gyártás': 'parallele Fertigung',
+  'készlet helyszínei': 'Lagerorte',
+  'hajók a nyersanyag-forrásokban': 'Schiffe in den Materialquellen',
+  'gyártási rendszer': 'Fertigungssystem',
+  'visszatöltött beállítások': 'wiederhergestellte Einstellungen'
 };

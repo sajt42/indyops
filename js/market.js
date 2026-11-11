@@ -205,7 +205,6 @@ function bindBuySources(el, R) {
       const t = Number(i.dataset.manp),
         v = Number(i.value);
       setSettingIn('manPrice', t, i.value !== '' && v > 0 ? v : null);
-      LASTRENDER && LASTRENDER();
     })
   );
   const btn = el.querySelector('[data-mktsearch]');
@@ -215,9 +214,8 @@ function bindBuySources(el, R) {
     out.querySelectorAll('[data-mktpick]').forEach(b =>
       b.addEventListener('click', () => {
         const [t, l] = b.dataset.mktpick.split('|');
+        R.mkt = res; // the search result stays on the redrawn plan
         setSettingIn('buySrc', t, l ? Number(l) : null);
-        R.mkt = res;
-        LASTRENDER && LASTRENDER();
       })
     );
   };
@@ -238,6 +236,7 @@ function bindBuySources(el, R) {
 
 /* ---- Settings: regions to search, manual prices and picked sources ---- */
 let REGIONS = load('regions', null); // k-space region ids
+let REGIONS_FAILED = 0;
 async function ensureRegions() {
   if (!REGIONS) {
     const ids = await esi('/universe/regions/');
@@ -273,10 +272,14 @@ function renderMktSettings() {
     );
   };
   draw();
-  if (!REGIONS || REGIONS.some(r => !NAMES[r]))
+  // the region list is loaded once; after a failure it is tried again only after 5 minutes
+  if ((!REGIONS || REGIONS.some(r => !NAMES[r])) && Date.now() - REGIONS_FAILED > 5 * 60000)
     ensureRegions()
       .then(draw)
-      .catch(e => log('Régiók: ' + e.message));
+      .catch(e => {
+        REGIONS_FAILED = Date.now();
+        log('Régiók: ' + e.message);
+      });
   renderBuyLists();
 }
 function renderBuyLists() {
@@ -307,13 +310,11 @@ function renderBuyLists() {
   box.querySelectorAll('[data-unman]').forEach(b =>
     b.addEventListener('click', () => {
       setSettingIn('manPrice', b.dataset.unman, null);
-      renderBuyLists();
     })
   );
   box.querySelectorAll('[data-unsrc]').forEach(b =>
     b.addEventListener('click', () => {
       setSettingIn('buySrc', b.dataset.unsrc, null);
-      renderBuyLists();
     })
   );
 }

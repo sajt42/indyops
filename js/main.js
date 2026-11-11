@@ -21,7 +21,6 @@ document.addEventListener('click', e => {
 });
 $('#saveClientId').onclick = () => {
   setSetting('clientId', $('#clientIdInput').value.trim());
-  renderAll();
 };
 $('#addChar').onclick = startLogin;
 $('#cbSubmit').onclick = finishLogin;
@@ -147,20 +146,16 @@ $('#locList').addEventListener('change', () => {
       .filter(x => x.checked)
       .map(x => Number(x.dataset.loc))
   );
-  renderStock();
 });
 $('#locAll').onclick = () => {
   setSetting('locs', null);
-  renderLocList();
 };
 $('#locNone').onclick = () => {
   setSetting('locs', []);
-  renderLocList();
 };
 const bind = (sel, key, num) =>
   $(sel).addEventListener('change', e => {
     setSetting(key, num && e.target.value !== '' ? Number(e.target.value) : e.target.value);
-    renderSettings();
   });
 bind('#sStructME', 'structME', 1);
 bind('#sStructRes', 'structRes', 1);
@@ -175,20 +170,15 @@ bind('#sSystem', 'system', 0);
 bind('#sClientId', 'clientId', 0);
 $('#sProdLoc').addEventListener('change', e => {
   setSetting('prodLoc', e.target.value);
-  LASTRENDER && LASTRENDER();
 });
 $('#sWallet').addEventListener('change', e => {
   setSetting('wallet', e.target.checked);
-  renderChars();
 });
 $('#sParallel').addEventListener('change', e => {
   setSetting('parallel', e.target.checked);
-  renderSettings();
-  status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
 });
 $('#sParMode').addEventListener('change', e => {
   setSetting('parMode', e.target.value === 'speed' ? 'speed' : 'material');
-  status(T('Párhuzamos gyártás: a következő számolásnál lép életbe.'));
 });
 $('#sMktJumps').addEventListener('change', e => {
   const v = Math.round(Number(e.target.value));
@@ -199,12 +189,41 @@ $('#sMktHs').addEventListener('change', e => {
 });
 $('#sMarket2').addEventListener('change', e => {
   setSetting('market2', e.target.value ? Number(e.target.value) : '');
-  renderSettings();
-  refreshMarket2();
+});
+/* ---- what a setting change redraws ----
+ * Every stored setting change ends up here (onSetting), so the handlers above only store the value. Settings the
+ * calculation itself uses mark the open plan as out of date (a note with a recalculate button); the others redraw.
+ */
+const RECALC_SETTINGS = {
+  structME: 'struktúra ME bónusz',
+  buyOverride: 'gyártom / veszem',
+  parallel: 'párhuzamos gyártás',
+  parMode: 'párhuzamos gyártás',
+  locs: 'készlet helyszínei',
+  srcShips: 'hajók a nyersanyag-forrásokban',
+  system: 'gyártási rendszer'
+};
+const QUIET_SETTINGS = new Set(['lang', 'mktRegions', 'mktMaxJumps', 'mktHsOnly']);
+onSetting(key => {
+  if (QUIET_SETTINGS.has(key)) return;
+  if (key === 'market2') return refreshMarket2();
+  if (LASTPLAN && (key === '*' || RECALC_SETTINGS[key])) {
+    LASTPLAN.stale = LASTPLAN.stale || new Set();
+    LASTPLAN.stale.add(key === '*' ? T('visszatöltött beállítások') : T(RECALC_SETTINGS[key]));
+  }
+  if (['*', 'clientId', 'locNames', 'workChars', 'wallet', 'locs'].includes(key)) renderAll();
+  else renderSettings();
+  redrawSellerBoxes();
+  try {
+    LASTRENDER && LASTRENDER();
+  } catch (e) {
+    console.error(e);
+  }
 });
 // After the second market changed: load its owner (broker fee standing) and its prices for what is on screen,
 // then redraw every result that shows second-market columns.
 async function refreshMarket2() {
+  renderSettings();
   status(T('Második piac: {0}…', S.market2 ? m2Short() : T('nincs')));
   const types = new Set(SLROWS.map(r => r.o.t));
   if (LASTPLAN) LASTPLAN.trees.forEach(x => collectTypes(x.tree, types));
@@ -233,10 +252,6 @@ $('#sWorkChars').addEventListener('change', e => {
     .map(x => Number(x.dataset.wc));
   const all = CHARS.filter(c => DATA[c.id]).length;
   setSetting('workChars', ids.length && ids.length < all ? ids : null);
-  renderAll();
-  try {
-    LASTRENDER && LASTRENDER();
-  } catch (e) {}
 });
 $('#clearPrices').onclick = () => {
   PRICES = { at: 0, p: {} };
@@ -481,7 +496,6 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset && t.dataset.locname) {
     setSettingIn('locNames', t.dataset.locname, t.value.trim() || null);
-    renderAll();
   }
 });
 $('#unkEveref').addEventListener('click', async e => {

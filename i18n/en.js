@@ -752,8 +752,6 @@ window.I18N.en = {
   'Párhuzamos gyártás ({0}): {1}.': 'Parallel manufacturing ({0}): {1}.',
   'Többletanyag a sorban gyártáshoz képest: {0} ISK.': 'Extra material compared with one job after the other: {0} ISK.',
   'Nem kell hozzá több anyag.': 'It needs no extra material.',
-  'Párhuzamos gyártás: a következő számolásnál lép életbe.':
-    'Parallel manufacturing: takes effect with the next calculation.',
   'kézi ár': 'manual price',
   'highsec úton': 'by highsec route',
   innen: 'from here',
@@ -793,5 +791,15 @@ window.I18N.en = {
   Eladásra: 'For sale',
   'Legfeljebb {0} megtakarítás.': 'Up to {0} saved.',
   kell: 'need',
-  'A Jitánál nem olcsóbb a közelben: {0}': 'Not cheaper than Jita nearby: {0}'
+  'A Jitánál nem olcsóbb a közelben: {0}': 'Not cheaper than Jita nearby: {0}',
+  'A számolás óta megváltozott: {0}. Az eredmény ehhez már nem friss.':
+    'Changed since the calculation: {0}. The result does not reflect it yet.',
+  Újraszámolás: 'Recalculate',
+  'struktúra ME bónusz': 'structure ME bonus',
+  'gyártom / veszem': 'build / buy',
+  'párhuzamos gyártás': 'parallel manufacturing',
+  'készlet helyszínei': 'stock locations',
+  'hajók a nyersanyag-forrásokban': 'ships in material sources',
+  'gyártási rendszer': 'production system',
+  'visszatöltött beállítások': 'restored settings'
 };

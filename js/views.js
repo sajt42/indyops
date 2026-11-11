@@ -1061,6 +1061,8 @@ function renderResult(el, R, rerun) {
   const multi = R.trees.length > 1;
   const bl = [...R.buyList].sort((a, b) => b[1] * (buyPrice(b[0], b[1]) || 0) - a[1] * (buyPrice(a[0], a[1]) || 0));
   let h = resultKpis(R, P, free, multi);
+  if (R.stale && R.stale.size)
+    h = html`${h}<div class="notice"><p>${T('A számolás óta megváltozott: {0}. Az eredmény ehhez már nem friss.', [...R.stale].join(', '))} <button class="btn mini" data-rerun>${T('Újraszámolás')}</button></p></div>`;
   h = html`${h}${resultSystems(R)}`;
   R.warn.forEach(w => (h = html`${h}<div class="notice">${warnText(w)}</div>`));
   h = html`${h}${resultParallel(R)}`;
@@ -1074,6 +1076,8 @@ function renderResult(el, R, rerun) {
   h = html`${h}${resultTrees(R, multi)}`;
   setHtml(el, h);
   bindBuySources(el, R);
+  const rr = el.querySelector('[data-rerun]');
+  if (rr) rr.onclick = () => rerun();
   const cb = el.querySelector('[data-copybuy]');
   cb &&
     cb.addEventListener('click', () => {

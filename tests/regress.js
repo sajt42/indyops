@@ -110,7 +110,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -843,6 +843,30 @@ const ok = (c, msg) => {
     );
     T.setSetting('manPrice', {});
     T.setSetting('mktMaxJumps', before ?? 10);
+  }
+  // 28. a setting change redraws the open plan; settings the calculation uses mark it out of date
+  {
+    const el = d.createElement('div');
+    d.body.appendChild(el);
+    let reruns = 0;
+    T.setLast(R, () => T.showResult(el, R, () => reruns++));
+    const sme = T.S.structME;
+    T.setSettingIn('manPrice', 34, 1.11);
+    ok(
+      /kézi ár/.test(el.textContent) && !/A számolás óta megváltozott/.test(el.textContent),
+      'manual price: redrawn, still up to date'
+    );
+    T.setSetting('structME', 2);
+    ok(
+      /A számolás óta megváltozott: struktúra ME bónusz/.test(el.textContent),
+      'structure ME: plan marked out of date'
+    );
+    el.querySelector('[data-rerun]').click();
+    ok(reruns === 1, 'the note recalculates the plan');
+    T.setSettingIn('manPrice', 34, null);
+    T.setSetting('structME', sme ?? '');
+    R.stale = null;
+    T.setLast(null, null);
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

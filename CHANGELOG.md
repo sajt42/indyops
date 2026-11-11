@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.14.5 – 2026-11-11
+
+- Settings: every change redraws the open plan, the Settings tab and the seller tables from one place, instead of each handler doing it (or not). Settings the calculation itself uses (structure ME, build/buy, parallel manufacturing, stock locations, ships in material sources, system) mark the open plan as out of date, with a Recalculate button.
+- Fix: the region list for the market search was requested again on every redraw after a failure; it is now retried after 5 minutes.
+
 ## 1.14.4 – 2026-11-11
 
 - Code: settings are written only through setSetting / setSettingIn in core.js, which check the value against the settings schema (the same check a restored backup goes through), save it and notify listeners; 45 scattered writes are replaced and tests/lint.js fails on any other write. No change in what the app shows.

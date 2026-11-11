@@ -257,7 +257,6 @@ document.addEventListener('change', e => {
   if (!t.dataset || t.dataset.sbroker == null) return;
   const v = t.value.trim();
   setSettingIn('structBroker', t.dataset.sbroker, v === '' ? null : Number(v));
-  redrawSellerBoxes();
 });
 // redraws every "who should sell" table on the page (after a fee or a station owner became known)
 function redrawSellerBoxes() {
