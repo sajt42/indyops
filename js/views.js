@@ -437,6 +437,23 @@ function copiesOf(bpType) {
     .filter(b => b.t === bpType)
     .sort((a, b) => (b.r === -1) - (a.r === -1) || b.me - a.me || b.te - a.te);
 }
+// A project item's copies with the one the player picked (it.prefer = the blueprint's item id) first: the plan
+// uses it first and the others only when its runs run out. Without a pick, or when the pick is gone: best first.
+function itemCopies(it) {
+  const cp = copiesOf(it.bpType);
+  const i = it.prefer != null ? cp.findIndex(c => String(c.i) === String(it.prefer)) : -1;
+  return i > 0 ? [cp[i]].concat(cp.filter((_, k) => k !== i)) : cp;
+}
+const bpLabel = c =>
+  (c.r === -1 ? 'BPO' : 'BPC ' + c.r + ' run') +
+  ' · ME' +
+  c.me +
+  ' TE' +
+  c.te +
+  ' · ' +
+  charName(c.cid) +
+  ' · ' +
+  shortLoc(c.l);
 async function finishResult(R, firstBP) {
   const types = new Set();
   R.trees.forEach(x => collectTypes(x.tree, types));

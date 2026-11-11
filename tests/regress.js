@@ -109,7 +109,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -1045,6 +1045,56 @@ const ok = (c, msg) => {
         c.every(b => b.r !== -1) &&
         o.length + c.length === all.length,
       'BPO/BPC filter (' + [all.length, o.length, c.length] + ')'
+    );
+  }
+  {
+    // 37. a project item can use a worse blueprint first (e.g. a BPC that came with an order instead of the own BPO)
+    const bps = [
+      { i: 401, t: 688, me: 10, te: 20, r: -1, q: -1, l: 60003760, cid: 1 },
+      { i: 402, t: 688, me: 4, te: 8, r: 3, q: -2, l: 60003760, cid: 1 }
+    ];
+    T.setChars([{ id: 1, name: 'A', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
+    T.setData({ 1: { assets: [], bps, skills: {}, jobs: [], at: Date.now() } });
+    T.S.parallel = false;
+    const ic = T.itemCopies || (() => []);
+    const auto = ic({ bpType: 688, runs: 5 }),
+      pick = ic({ bpType: 688, runs: 5, prefer: '402' }),
+      gone = ic({ bpType: 688, runs: 5, prefer: '999' });
+    ok(
+      auto[0] && auto[0].i === 401 && pick[0] && pick[0].i === 402 && pick.length === 2 && gone[0] && gone[0].i === 401,
+      'picked blueprint first, best first without a pick or when the pick is gone'
+    );
+    const opt = { useStock: false, buildOwn: false, incoming: false, ore: false };
+    const R = pick.length ? await T.makeMulti([{ copies: pick, runs: 5 }], opt) : { jobs: [] };
+    const top = R.jobs.filter(j => j.top).map(j => j.bp.i + ':' + j.runs);
+    ok(
+      JSON.stringify(top) === '["402:3","401:2"]',
+      'the picked BPC is used up first, the rest on the BPO (' + top + ')'
+    );
+    const el = d.createElement('div');
+    if (T.bpPick) T.setHtml(el, T.bpPick({ bpType: 688, runs: 5, prefer: '999' }, 0, T.itemCopies({ bpType: 688 })));
+    ok(
+      el.querySelectorAll('option').length === 3 && /a választott BP nincs meg/.test(el.textContent),
+      'the picker lists the copies and says when the pick is gone'
+    );
+    const v = T.validateBackup({
+      app: 'indyops',
+      v: 1,
+      projects: [
+        {
+          id: 1,
+          name: 'x',
+          items: [
+            { bpType: 688, runs: 5, prefer: '402' },
+            { bpType: 688, runs: 1, prefer: '<b>' }
+          ]
+        }
+      ]
+    });
+    const its = v.d.projects[0] ? v.d.projects[0].items : [];
+    ok(
+      its[0] && its[0].prefer === '402' && its[1] && its[1].prefer === undefined,
+      'a backup keeps a valid pick and drops a bad one'
     );
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);

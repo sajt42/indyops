@@ -818,5 +818,12 @@ window.I18N.en = {
   Visszaveszem: 'Use it again',
   '{0} otthagyva (a Szállításnál kizártad)': '{0} left in place (you excluded it under Hauling)',
   '{0} run × {1} db': '{0} runs × {1}',
-  '{0} felesleg': '{0} spare'
+  '{0} felesleg': '{0} spare',
+  'Melyik BP-vel számoljon először': 'Which blueprint to use first',
+  'Ezzel a BP-vel számol először; a többit csak akkor, ha ennek elfogynak a runjai.':
+    'The plan uses this blueprint first, and the others only when its runs run out.',
+  'legjobb (automatikus)': 'best (automatic)',
+  'A kiválasztott BP már nincs meg (felhasználtad vagy átkerült). A legjobbal számolok.':
+    'The picked blueprint is gone (used up or moved). The plan uses the best one.',
+  'a választott BP nincs meg': 'picked BP is gone'
 };

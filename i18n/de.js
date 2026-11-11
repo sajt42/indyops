@@ -826,5 +826,12 @@ window.I18N.de = {
   Visszaveszem: 'Wieder verwenden',
   '{0} otthagyva (a Szállításnál kizártad)': '{0} zurückgelassen (unter Transport ausgeschlossen)',
   '{0} run × {1} db': '{0} Läufe × {1}',
-  '{0} felesleg': '{0} übrig'
+  '{0} felesleg': '{0} übrig',
+  'Melyik BP-vel számoljon először': 'Welcher Blueprint zuerst verwendet wird',
+  'Ezzel a BP-vel számol először; a többit csak akkor, ha ennek elfogynak a runjai.':
+    'Der Plan verwendet zuerst diesen Blueprint, die anderen erst, wenn seine Runs aufgebraucht sind.',
+  'legjobb (automatikus)': 'bester (automatisch)',
+  'A kiválasztott BP már nincs meg (felhasználtad vagy átkerült). A legjobbal számolok.':
+    'Der gewählte Blueprint ist nicht mehr da (aufgebraucht oder verschoben). Der Plan nimmt den besten.',
+  'a választott BP nincs meg': 'gewählter BP fehlt'
 };

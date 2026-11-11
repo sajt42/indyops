@@ -385,8 +385,11 @@ function validProjects(d, out, err) {
         continue;
       }
       const c = { runs: it.runs };
-      if (isNum(it.bpType)) c.bpType = it.bpType;
-      else {
+      if (isNum(it.bpType)) {
+        c.bpType = it.bpType;
+        // the blueprint (item id) the player picked to use first
+        if (/^\d+$/.test(String(it.prefer ?? ''))) c.prefer = String(it.prefer);
+      } else {
         c.invT1 = it.invT1;
         if (isNum(it.t2)) c.t2 = it.t2;
         c.dec = isNum(it.dec) ? it.dec : null;

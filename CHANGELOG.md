@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.0 – 2026-11-11
+
+- Projects: when you own several blueprints for an item, you can pick which one the plan uses first (e.g. a BPC that came with an order instead of your better BPO); the others are used only when its runs run out. Default stays the best one; the pick is kept in backups, and a note shows when the picked blueprint is gone.
+
 ## 1.17.0 – 2026-11-11
 
 - What pays? and Builds without buying: BP filter (all / BPO / BPC) for the product's own blueprint; components can still use any of your blueprints.

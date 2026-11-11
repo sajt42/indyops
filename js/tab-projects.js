@@ -61,6 +61,17 @@ function addToProject(item, newName, same) {
     else p.items.push(item);
   });
 }
+// With several own copies: which one the plan should use first (e.g. a BPC that came with an order instead of your better BPO).
+function bpPick(it, i, cp) {
+  if (cp.length < 2) return '';
+  const gone = it.prefer != null && !cp.some(c => String(c.i) === String(it.prefer));
+  return html`<div style="margin-top:4px"><select data-ipref="${i}" aria-label="${T('Melyik BP-vel számoljon először')}" title="${T('Ezzel a BP-vel számol először; a többit csak akkor, ha ennek elfogynak a runjai.')}"><option value="">${T('legjobb (automatikus)')}</option>${hjoin(
+    cp.map(
+      c => html`<option value="${c.i}" ${String(c.i) === String(it.prefer) ? 'selected' : ''}>${bpLabel(c)}</option>`
+    ),
+    ''
+  )}</select>${gone ? html` <span class="pill warn" title="${T('A kiválasztott BP már nincs meg (felhasználtad vagy átkerült). A legjobbal számolok.')}">${T('a választott BP nincs meg')}</span>` : ''}</div>`;
+}
 function bpTypeByName(n) {
   const b = allBPs().find(x => NAMES[x.t] === n);
   return b ? b.t : null;
@@ -97,7 +108,7 @@ function renderProjects() {
         }
         const cp = copiesOf(it.bpType);
         const runs = cp.reduce((s, c) => (c.r === -1 ? Infinity : s + c.r), 0);
-        return html`<tr><td>${NAMES[it.bpType] || it.bpType}</td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${cp.length ? cp.length + ' db · legjobb: ' + (cp[0].r === -1 ? 'BPO' : 'BPC') + ' ME' + cp[0].me + (runs !== Infinity ? ' · összesen ' + runs + ' run' + (runs < it.runs ? html` <span class="pill bad">kevés</span>` : '') : '') : html`<span class="pill bad">nincs saját példány</span>`}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
+        return html`<tr><td>${NAMES[it.bpType] || it.bpType}</td><td class="num"><input type="number" min="1" value="${it.runs}" data-iruns="${i}" style="width:80px"></td><td class="small">${cp.length ? cp.length + ' db · legjobb: ' + (cp[0].r === -1 ? 'BPO' : 'BPC') + ' ME' + cp[0].me + (runs !== Infinity ? ' · összesen ' + runs + ' run' + (runs < it.runs ? html` <span class="pill bad">kevés</span>` : '') : '') : html`<span class="pill bad">nincs saját példány</span>`}${bpPick(it, i, cp)}</td><td>${itemSrcSel(it, i)}</td><td><button class="btn mini" data-idel="${i}" aria-label="Tétel törlése">✕</button></td></tr>${itemSrcRow(it, i, p)}`;
       }),
       ''
     ) || html`<tr><td colspan="5" class="muted">Még nincs tétel.</td></tr>`
@@ -122,6 +133,16 @@ function renderProjects() {
         p.id,
         p => (p.items[Number(e.target.dataset.iruns)].runs = Math.max(1, Number(e.target.value) || 1))
       );
+      renderProjects();
+    })
+  );
+  ed.querySelectorAll('[data-ipref]').forEach(sel =>
+    sel.addEventListener('change', e => {
+      updateProject(p.id, p => {
+        const it = p.items[Number(e.target.dataset.ipref)];
+        if (e.target.value) it.prefer = e.target.value;
+        else delete it.prefer;
+      });
       renderProjects();
     })
   );
@@ -302,7 +323,7 @@ async function calcProjects(list) {
           if (!firstBP) firstBP = c1;
           continue;
         }
-        const copies = copiesOf(it.bpType);
+        const copies = itemCopies(it);
         if (!copies.length || !BPPROD[it.bpType]) {
           R.warn.push({
             txt: T('{0}: {1} – nincs saját példány vagy recept, kihagytam.', p.name, NAMES[it.bpType] || it.bpType)
