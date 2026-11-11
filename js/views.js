@@ -1191,7 +1191,9 @@ function madeNote(n) {
   const per = runs ? n.build.made / runs : 0;
   if (!(per > 1)) return '';
   const extra = n.build.made - (n.need - n.stock.reduce((s, x) => s + x.q, 0));
-  return html`<div class="small muted">${T('{0} run × {1} db', fmt(runs), fmt(per))}${extra > 0 ? ' · ' + T('{0} felesleg', fmt(extra)) : ''}</div>`;
+  // short in the cell (the column is narrow), the full sentence on hover
+  const full = T('{0} run × {1} db', fmt(runs), fmt(per)) + (extra > 0 ? ' · ' + T('{0} felesleg', fmt(extra)) : '');
+  return html`<div class="small muted" title="${full}" style="white-space:nowrap">${qtyShort(runs)}×${fmt(per)}${extra > 0 ? ' +' + qtyShort(extra) : ''}</div>`;
 }
 function treeRows(n, d, sys) {
   const st = n.stock.reduce((s, x) => s + x.q, 0);

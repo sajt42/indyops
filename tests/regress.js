@@ -1002,7 +1002,12 @@ const ok = (c, msg) => {
     const n = { t: 1, need: 270, stock: [{ l: 1, q: 268 }], build: { jobs: [{ r: 1 }], made: 3 } };
     const el = d.createElement('div');
     if (T.madeNote) T.setHtml(el, T.madeNote(n));
-    ok(/1 run × 3 db · 1 felesleg/.test(el.textContent), 'runs × pieces per run and the spare: ' + el.textContent);
+    const nd = el.firstElementChild;
+    ok(
+      !!nd && nd.textContent === '1×3 +1' && nd.title === '1 run × 3 db · 1 felesleg',
+      'runs × pieces per run and the spare, short in the cell, full on hover: ' +
+        (nd && nd.textContent + ' / ' + nd.title)
+    );
     const one = { t: 1, need: 5, stock: [], build: { jobs: [{ r: 5 }], made: 5 } };
     ok(!T.madeNote || String(T.madeNote(one)) === '', 'nothing extra when a run makes one piece');
   }

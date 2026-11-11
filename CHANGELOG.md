@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.16.2 – 2026-11-11
+
+- Material tree: the runs × pieces note under Build is short (e.g. “1×3 +1”) so the table fits a 1080p screen; the full text shows on hover.
+
 ## 1.16.1 – 2026-11-11
 
 - Material tree: when one run makes several pieces (e.g. 3 per run), the Build column shows runs × pieces per run and how many are spare.
