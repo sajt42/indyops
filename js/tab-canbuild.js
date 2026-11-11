@@ -6,6 +6,7 @@ async function runCanBuild() {
   setHtml(out, html`<div class="card muted">Receptek betöltése…</div>`);
   await indexBPProducts();
   const cat = $('#cbCat').value;
+  const kind = $('#cbKind').value;
   const byProd = new Map();
   for (const b of allBPs()) {
     const m = BPPROD[b.t];
@@ -22,7 +23,8 @@ async function runCanBuild() {
   for (const p of sel) {
     i++;
     status('számolás ' + i + '/' + sel.length);
-    const bp = ownedFor(p)[0];
+    const bp = ownedFor(p, kind)[0];
+    if (!bp) continue;
     try {
       await prefetchTree(p);
       await makePlan(bp, 1, opt);

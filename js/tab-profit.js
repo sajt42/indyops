@@ -28,6 +28,7 @@ async function runProfit() {
   setHtml(out, html`<div class="card muted">Receptek betöltése…</div>`);
   await indexBPProducts();
   const cat = $('#prCat').value;
+  const kind = $('#prKind').value;
   const byProd = new Map();
   for (const b of allBPs()) {
     const m = BPPROD[b.t];
@@ -44,7 +45,7 @@ async function runProfit() {
   for (const p of sel) {
     i++;
     status('anyagfák: ' + i + '/' + sel.length);
-    const copies = ownedFor(p);
+    const copies = ownedFor(p, kind);
     if (!copies.length) continue;
     const best = copies[0];
     try {

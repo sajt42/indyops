@@ -109,7 +109,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,showTab,shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -1023,6 +1023,29 @@ const ok = (c, msg) => {
       ok(opts.length > 1, tab + ': categories before calculating (' + opts.join(', ') + ')');
     }
     T.showTab('plan');
+  }
+  {
+    // 36. BPO / BPC filter on What pays? and Builds without buying
+    await T.indexBPProducts();
+    const prods = [
+      ...new Set(
+        T.allBPs()
+          .map(b => T.BPPROD && T.BPPROD[b.t] && T.BPPROD[b.t].prod)
+          .filter(Boolean)
+      )
+    ];
+    const all = prods.flatMap(p => T.ownedFor(p)),
+      o = prods.flatMap(p => T.ownedFor(p, 'bpo')),
+      c = prods.flatMap(p => T.ownedFor(p, 'bpc'));
+    ok(
+      !!d.querySelector('#prKind') &&
+        !!d.querySelector('#cbKind') &&
+        all.length &&
+        o.every(b => b.r === -1) &&
+        c.every(b => b.r !== -1) &&
+        o.length + c.length === all.length,
+      'BPO/BPC filter (' + [all.length, o.length, c.length] + ')'
+    );
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

@@ -17,9 +17,11 @@ async function indexBPProducts() {
   );
   status('kész');
 }
-function ownedFor(prodType) {
+// kind: '' (all), 'bpo' or 'bpc' – the What pays? / Builds without buying filter for the product's own blueprint
+const bpKindOk = (b, kind) => !kind || (kind === 'bpo') === (b.r === -1);
+function ownedFor(prodType, kind) {
   // own copies, best first
-  const list = allBPs().filter(b => BPPROD[b.t] && BPPROD[b.t].prod === prodType);
+  const list = allBPs().filter(b => BPPROD[b.t] && BPPROD[b.t].prod === prodType && bpKindOk(b, kind));
   return list.sort((a, b) => (b.r === -1) - (a.r === -1) || b.me - a.me || b.te - a.te);
 }
 /* stock pool: hangars + (optionally) ore + products of running jobs */

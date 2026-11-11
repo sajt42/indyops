@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.17.0 – 2026-11-11
+
+- What pays? and Builds without buying: BP filter (all / BPO / BPC) for the product's own blueprint; components can still use any of your blueprints.
+
 ## 1.16.3 – 2026-11-11
 
 - What pays? and Builds without buying: the category list is filled from your blueprints when the tab opens (and when character data changes), not only after the first calculation.
