@@ -421,7 +421,8 @@ function updateCopySelect() {
 
 /* ---- plan display ---- */
 let LASTPLAN = null,
-  LASTRENDER = null;
+  LASTRENDER = null,
+  LASTRERUN = null; // calculates the plan on screen again (after the character data changed)
 function getOpt() {
   return {
     buildOwn: $('#optBuildOwn').checked,
@@ -487,6 +488,7 @@ async function runPlan() {
     R.title = fmt(R.trees[0].made) + ' × ' + (NAMES[R.trees[0].tree.t] || '');
     LASTPLAN = R;
     LASTRENDER = () => showResult($('#planOut'), R, runPlan);
+    LASTRERUN = runPlan;
     LASTRENDER();
     renderMineNeed();
   } catch (e) {
@@ -1108,6 +1110,16 @@ function bbCell0(n, d, sys, up) {
   const cheaper = ub <= up;
   return html`<span class="${cheaper ? 'pos' : ''}">${isk(ub)}</span> / <span class="${cheaper ? '' : 'pos'}">${isk(up)}</span>`;
 }
+// where the unused stock of a material is (largest first, at most 4 places)
+function whyAt(at) {
+  const list = [...at].sort((a, b) => b[1] - a[1]);
+  const txt = list.slice(0, 4).map(([k, q]) => {
+    const [l, c] = k.split('|');
+    return shortLoc(Number(l)) + (c ? ' · ' + contLabel(Number(c)) : '') + ': ' + fmt(q);
+  });
+  if (list.length > 4) txt.push(T('és még {0} hely', list.length - 4));
+  return txt.join(', ');
+}
 function treeRows(n, d, sys) {
   const st = n.stock.reduce((s, x) => s + x.q, 0);
   const canToggle = d > 0 && ownedFor(n.t).length > 0;
@@ -1119,6 +1131,14 @@ function treeRows(n, d, sys) {
         : locName(x.l) + (x.c != null ? ' · ' + contLabel(x.c) : '') + (x.ore ? ' ' + T('(ércből)') : '')
   );
   const where = src.filter((v, i, a) => a.indexOf(v) === i).join(', ');
+  // stock that is there but this item may not take (see stockWhy)
+  const why = n.why
+    ? [
+        n.why.src && T('{0} nincs a nyersanyag-források között', fmt(n.why.src)),
+        n.why.resv && T('{0} másik projekt konténerében van', fmt(n.why.resv)),
+        n.why.plan && T('{0} a tervezőben nem számító helyen van', fmt(n.why.plan))
+      ].filter(Boolean)
+    : [];
   const mark = n.inv
     ? html`<span class="pill">invention</span> <span class="src">${T('{0}% esély · {1} kísérlet', fmt(n.inv.chance * 100, 1), n.inv.attempts % 1 ? T('átlag {0}', fmt(n.inv.attempts, 2)) : fmt(n.inv.attempts))}${n.inv.dec ? ' · ' + DECS[n.inv.dec].n : ''}</span>`
     : canToggle
@@ -1128,7 +1148,11 @@ function treeRows(n, d, sys) {
           ? html`<span class="pill ok">gyártom</span>`
           : ''
       : '';
-  let h = html`<tr ${canToggle ? html`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"` : ''}><td class="name" style="padding-left:${10 + d * 18}px">${NAMES[n.t] || n.t} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st ? fmt(st) : '–'}</td><td class="num">${n.build ? fmt(n.build.made) : '–'}</td><td class="num">${n.buy ? fmt(n.buy) : '–'}</td><td class="num small">${bbCell(n, d, sys)}</td><td class="src">${where}</td></tr>`;
+  let h = html`<tr ${canToggle ? html`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"` : ''}><td class="name" style="padding-left:${10 + d * 18}px">${NAMES[n.t] || n.t} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st ? fmt(st) : '–'}</td><td class="num">${n.build ? fmt(n.build.made) : '–'}</td><td class="num">${n.buy ? fmt(n.buy) : '–'}</td><td class="num small">${bbCell(n, d, sys)}</td><td class="src">${where}${
+    why.length
+      ? html`<div class="warnline">${T('Készletben még: {0}.', why.join('; '))} ${T('Itt: {0}.', whyAt(n.why.at))}</div>`
+      : ''
+  }</td></tr>`;
   n.ch.forEach(c => (h = html`${h}${treeRows(c, d + 1, sys)}`));
   return h;
 }

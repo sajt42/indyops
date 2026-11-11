@@ -61,7 +61,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.14.6',
+  version: '1.15.0',
   built: '2026-11-11',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -356,13 +356,28 @@ function removeChar(id) {
   CHARGEN[id] = charGen(id) + 1;
   store('chars', CHARS);
   store('data', DATA);
+  charDataChanged();
+}
+// fn() runs after the data of a character changed (refresh stored, character removed)
+const CHARDATA_LISTENERS = [];
+let DATA_RECALC_DELAY = 1500; // ms after the last data change before results are calculated again
+const onCharData = fn => CHARDATA_LISTENERS.push(fn);
+function charDataChanged() {
+  for (const fn of CHARDATA_LISTENERS)
+    try {
+      fn();
+    } catch (e) {
+      console.error(e);
+    }
 }
 // stores the result of a refresh started at generation gen: 'stale' if the character was removed meanwhile,
 // 'full' if the browser storage is full (the data stays in memory), otherwise 'saved'
 function setCharData(c, gen, d) {
   if (!charExists(c.id) || charGen(c.id) !== gen) return 'stale';
   DATA[c.id] = d;
-  return store('data', DATA) ? 'saved' : 'full';
+  const r = store('data', DATA) ? 'saved' : 'full';
+  charDataChanged();
+  return r;
 }
 // data of removed characters left behind by versions before 1.14.3
 if (Object.keys(DATA).some(id => !charExists(id))) {

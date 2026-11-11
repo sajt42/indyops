@@ -801,5 +801,11 @@ window.I18N.en = {
   'készlet helyszínei': 'stock locations',
   'hajók a nyersanyag-forrásokban': 'ships in material sources',
   'gyártási rendszer': 'production system',
-  'visszatöltött beállítások': 'restored settings'
+  'visszatöltött beállítások': 'restored settings',
+  '{0} nincs a nyersanyag-források között': '{0} not among the material sources',
+  '{0} másik projekt konténerében van': '{0} in a container of another project',
+  '{0} a tervezőben nem számító helyen van': '{0} at a location the planner does not count',
+  'Készletben még: {0}.': 'Still in stock: {0}.',
+  'Itt: {0}.': 'At: {0}.',
+  'és még {0} hely': 'and {0} more places'
 };

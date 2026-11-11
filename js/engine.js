@@ -251,11 +251,30 @@ function jobMaterialQty(q, runs, act, me, structME) {
   );
 }
 
+// When a material has to be bought although stock is left: how much of the remaining stock this item may not take,
+// and why. resv: in a container another project reserved; src: not among this project's or item's sources;
+// plan: not among the stock locations in Settings. Stock used earlier (by another item or project) is not left.
+function stockWhy(ctx, t, item) {
+  const ok = stockAllowed(ctx, item);
+  const pid = item && item.pid;
+  const sel = item && item.src && item.src.mode === 'sel';
+  const why = { resv: 0, src: 0, plan: 0, at: new Map() }; // at: 'location|container' -> quantity
+  for (const x of ctx.pool.get(t) || []) {
+    if (!(x.q > 0) || x.l === 'job' || x.l === 'surplus' || ok(x)) continue;
+    if (x.c != null && ctx.resv.has(x.c) && ctx.resv.get(x.c) !== pid) why.resv += x.q;
+    else if (sel) why.src += x.q;
+    else why.plan += x.q;
+    const k = x.l + '|' + (x.c ?? '');
+    why.at.set(k, (why.at.get(k) || 0) + x.q);
+  }
+  return why.resv || why.src || why.plan ? why : null;
+}
 async function planNode(ctx, t, need, depth, forced, item) {
   const n = { t, need, stock: [], build: null, buy: 0, ch: [], jobsRef: [] };
   if (depth > 0 && ctx.opt.useStock !== false) {
     n.stock = takeStock(ctx, t, need, item);
     need -= n.stock.reduce((s, x) => s + x.q, 0);
+    if (need > 0) n.why = stockWhy(ctx, t, item);
     for (const x of n.stock)
       if (x.l !== 'surplus' && x.l !== 'job') ctx.usedList.set(t, (ctx.usedList.get(t) || 0) + x.q);
   }

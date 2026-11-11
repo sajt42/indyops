@@ -336,6 +336,7 @@ async function calcProjects(list) {
     const body = document.createElement('div');
     out.append(head, body);
     LASTRENDER = () => showResult(body, R, () => calcProjects(list));
+    LASTRERUN = () => calcProjects(list);
     LASTRENDER();
     renderMineNeed();
   } catch (e) {

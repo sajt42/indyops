@@ -110,7 +110,7 @@ w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
     `;window.__t={SCH:SET_SCHEMA,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
-  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
+  get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
   d = w.document;
@@ -894,6 +894,54 @@ const ok = (c, msg) => {
     T.deleteProject(a.id);
     JSON.parse(keep).forEach(p => T.updateProject(T.createProject(p.name).id, q => Object.assign(q, p)));
     if (keepSel != null) T.selectProject(keepSel);
+  }
+  // 30. after the character data changed, the plan on screen is calculated again (once, after the last change)
+  {
+    T.setRecalcDelay(20);
+    let n = 0;
+    T.setLast(R, () => {});
+    T.setRerun(async () => n++);
+    T.charDataChanged();
+    T.charDataChanged();
+    T.charDataChanged();
+    await new Promise(r => setTimeout(r, 150));
+    ok(n === 1, 'one recalculation after three quick data changes (' + n + ')');
+    T.setLast(null, null);
+    T.setRerun(null);
+    T.charDataChanged();
+    await new Promise(r => setTimeout(r, 100));
+    ok(n === 1, 'nothing on screen: nothing recalculated');
+  }
+  // 31. bought although stock is left: the material tree says how much, why and where
+  {
+    T.setChars([{ id: 1, name: 'A', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
+    T.setData({
+      1: {
+        assets: [
+          { t: 34, q: 1000, l: 60003760, f: 'Hangar', c: null },
+          { t: 34, q: 5000, l: 60008494, f: 'Hangar', c: null }
+        ],
+        bps: [{ i: 401, t: 688, me: 10, te: 20, r: 5, q: -2, l: 60003760, cid: 1 }],
+        skills: { 3380: 5 },
+        jobs: [],
+        at: Date.now()
+      }
+    });
+    const bp = { i: 401, t: 688, me: 10, te: 20, r: 5, q: -2, l: 60003760, cid: 1 };
+    const item = { copies: [bp], runs: 1, src: { mode: 'sel', locs: [60003760], conts: [], excl: [] } };
+    const RR = await T.makeMulti([item], { useStock: true, buildOwn: false, incoming: false, ore: false });
+    const trit = RR.trees[0].tree.ch.find(c => c.t === 34);
+    ok(
+      trit && trit.buy > 0 && trit.why && trit.why.src === 5000 && trit.why.at.get('60008494|') === 5000,
+      'unused stock outside the sources is reported with its place (' +
+        JSON.stringify(trit && trit.why && { src: trit.why.src, at: [...trit.why.at] }) +
+        ')'
+    );
+    const el = d.createElement('div');
+    d.body.appendChild(el);
+    await T.finishResult(RR, bp);
+    T.renderResult(el, RR, () => {});
+    ok(/Készletben még: 5000 nincs a nyersanyag-források között\. Itt: /.test(el.textContent), 'and the tree shows it');
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

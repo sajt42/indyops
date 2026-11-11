@@ -180,6 +180,43 @@ $('#sMktHs').addEventListener('change', e => {
 $('#sMarket2').addEventListener('change', e => {
   setSetting('market2', e.target.value ? Number(e.target.value) : '');
 });
+/* ---- after the character data changed: calculate again what is on screen ----
+ * Lists and the stock are drawn from the current data anyway (renderAll). Calculated results (plan or project, What
+ * pays?, Invention, Research, Selling, Builds without buying, Reprocess, the mining scan) are run again, one after the
+ * other, a moment after the last change (refreshing all characters changes the data several times).
+ */
+const DATA_RECALC = [
+  ['plan', () => LASTPLAN && LASTRERUN, () => LASTRERUN()],
+  ['profit', () => PROFROWS.length, () => runProfit()],
+  ['invention', () => INVROWS.length, () => runInvention()],
+  ['research', () => RESROWS.length, () => runResearch()],
+  ['sales', () => SLROWS.length, () => runSales()],
+  ['canbuild', () => CBROWS.length, () => runCanBuild()],
+  ['reprocess', () => REP.rows, () => repLoad()],
+  ['mining', () => LASTSCAN, () => runScan()]
+];
+let dataRecalcTimer = null,
+  dataRecalcBusy = false;
+async function recalcAfterData() {
+  if (dataRecalcBusy) return void (dataRecalcTimer = setTimeout(recalcAfterData, 1500));
+  dataRecalcBusy = true;
+  try {
+    for (const [name, has, run] of DATA_RECALC) {
+      if (!has()) continue;
+      try {
+        await run();
+      } catch (e) {
+        log('Újraszámolás (' + name + '): ' + e.message);
+      }
+    }
+  } finally {
+    dataRecalcBusy = false;
+  }
+}
+onCharData(() => {
+  clearTimeout(dataRecalcTimer);
+  dataRecalcTimer = setTimeout(recalcAfterData, DATA_RECALC_DELAY);
+});
 /* ---- what a setting change redraws ----
  * Every stored setting change ends up here (onSetting), so the handlers above only store the value. Settings the
  * calculation itself uses mark the open plan as out of date (a note with a recalculate button); the others redraw.

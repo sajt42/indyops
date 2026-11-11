@@ -809,5 +809,11 @@ window.I18N.de = {
   'készlet helyszínei': 'Lagerorte',
   'hajók a nyersanyag-forrásokban': 'Schiffe in den Materialquellen',
   'gyártási rendszer': 'Fertigungssystem',
-  'visszatöltött beállítások': 'wiederhergestellte Einstellungen'
+  'visszatöltött beállítások': 'wiederhergestellte Einstellungen',
+  '{0} nincs a nyersanyag-források között': '{0} nicht unter den Materialquellen',
+  '{0} másik projekt konténerében van': '{0} im Container eines anderen Projekts',
+  '{0} a tervezőben nem számító helyen van': '{0} an einem Ort, den der Planer nicht zählt',
+  'Készletben még: {0}.': 'Noch im Bestand: {0}.',
+  'Itt: {0}.': 'Ort: {0}.',
+  'és még {0} hely': 'und {0} weitere Orte'
 };

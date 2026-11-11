@@ -21,7 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.14.6">
+<link rel="stylesheet" href="css/style.css?v=1.15.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -418,6 +418,7 @@
   <h3>A fülek</h3>
   <dl class="helpdl">
     <dt>Tervező</dt><dd>Egy blueprint teljes anyagfája: mi jön a készletből, mit gyártasz, mit veszel. Lent a bevásárlólista, a jobok (ki gyártsa), a karakterek terhelése, a szállítás és az anyagfa. A fában egy komponens sorára kattintva váltasz a „gyártom” és a „veszem” között. Az anyagokat alapból a Jitáról veszi. A bevásárlólistában tételenként kézi árat adhatsz meg (például ha piacon kívül veszed), vagy a „Hol vegyem olcsóbban?” gombbal kereshetsz olcsóbb helyet; amit kiválasztasz, azzal számol a terv és a szállítás is.</dd>
+    <dt>Frissítés után</dt><dd>Ha egy karakter adatai frissülnek (vagy törölsz egy karaktert), a listák és a készlet azonnal az új adatot mutatják, a kiszámolt eredmények (terv vagy projekt, Mit érdemes?, Invention, Kutatás, Eladás, Vásárlás nélkül, Reprocess, bányászat) pedig maguktól újraszámolódnak, röviddel az utolsó frissítés után. Ha olyan beállítást módosítasz, amit a számolás használ, a terv jelzi, hogy elavult, és egy gombbal újraszámolhatod. Ha egy anyagot a terv megvesz, pedig van belőle készlet, az anyagfa megmondja, mennyi van még, miért nem használja (nincs a nyersanyag-források között, másik projekt konténerében van, vagy a tervezőben nem számító helyen), és hol van.</dd>
     <dt>Hol vegyem?</dt><dd>A bevásárlólista „Hol vegyem olcsóbban?” gombja a Beállításokban kijelölt régiók eladási ordereit nézi végig. Tételenként megmutatja azokat a helyeket, ahol a Jitánál olcsóbb: hány ugrásra vannak a gyártási helytől (és highsec-e az út), mennyi kapható ott a szükséges mennyiségből, és ez átlagosan mennyibe kerül (az order book a legolcsóbbtól felfelé). Az „Innen veszem” gombbal választod ki; ami ott nem kapható, az a Jitáról jön. Ha a második piac játékos-struktúra, annak a piacát is nézi; struktúrában dokkolási jog kell. A kézi ár mindent felülír, és nem kerül a szállítási listába.</dd>
     <dt>Párhuzamos gyártás</dt><dd>Beállítások → Gyártás. Ha egy tételhez több blueprinted van (több BPC, több BPO vagy egy BPO-stack), a runok több, egyszerre futó jobra oszolhatnak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás alapidejű. „Kevesebb anyag” módban csak akkor bont, ha nem kell hozzá több anyag (az ME jobonként felfelé kerekít), „gyorsabb” módban annyira, amennyire lehet; a terv kiírja, mely tételek bomlottak szét és mennyi a többletanyag. A stackelt BPO-kat a játékban szét kell szedni.</dd>
     <dt>Projektek</dt><dd>Több tétel egyszerre, mint egy rendelés („3 Hurricane + 2 Maelstrom”). A kipipált projektek közös készletből számolnak, sorrendben: ami feljebb van, az kapja előbb az anyagot. A futó jobok termékei érkező készletként számítanak. Projektenként (vagy tételenként) kiválaszthatod, honnan vehet nyersanyagot: állomások, struktúrák vagy konkrét konténerek. Egy konténert le is foglalhatsz egy projektnek („csak ez a projekt”), ahhoz más projekt nem nyúl. A listában a konténerek (📦) és a hajók rakterei (🚀) a saját neved mellett a típusukkal látszanak; a hajók elrejthetők.</dd>
@@ -484,6 +485,7 @@
   <h3>The tabs</h3>
   <dl class="helpdl">
     <dt>Planner</dt><dd>The full material tree of one blueprint: what comes from stock, what you build, what you buy. Below: the shopping list, the jobs (who builds what), character workload, hauling and the tree itself. Click a component row in the tree to switch between building and buying it. Materials are bought in Jita by default. In the shopping list you can enter a manual price per item (for example when you buy outside the market), or look for a cheaper place with "Where to buy cheaper?"; the plan and the hauling use what you pick.</dd>
+    <dt>After a refresh</dt><dd>When a character's data is refreshed (or a character is removed), the lists and the stock show the new data at once, and the calculated results (plan or project, What pays?, Invention, Research, Selling, Builds without buying, Reprocess, mining) are calculated again by themselves, shortly after the last refresh. If you change a setting the calculation uses, the plan says it is out of date and offers to recalculate. If the plan buys a material although you have some in stock, the material tree says how much is left, why it is not used (not among the material sources, in another project's container, or at a location the planner does not count) and where it is.</dd>
     <dt>Where to buy</dt><dd>"Where to buy cheaper?" in the shopping list goes through the sell orders of the regions picked in Settings. For each item it shows the places that are cheaper than Jita: how many jumps they are from the production location (and whether the route is highsec), how much of the needed quantity is available there, and its average price (the order book from the cheapest up). Pick one with "Buy here"; what it lacks comes from Jita. If the second market is a player structure, its market is searched too; structures need docking rights. A manual price overrides everything and is left out of the haul list.</dd>
     <dt>Parallel manufacturing</dt><dd>Settings → Manufacturing. If you have more than one blueprint for an item (several BPCs, several BPOs or a stack of BPOs), the runs can be split into jobs that run at the same time. There are at most as many jobs as blueprints and free slots, and each job has at least one hour of base time. In "less material" mode it splits only when no extra material is needed (ME rounds up per job); in "more speed" mode as far as possible. The plan lists the items that were split and the extra material. Stacked BPOs have to be split in game.</dd>
     <dt>Projects</dt><dd>Several items at once, like an order ("3 Hurricane + 2 Maelstrom"). Ticked projects share one stock pool, in order: projects higher up get materials first. Output of running jobs counts as incoming stock. Per project (or per item) you can choose where materials may come from: stations, structures or specific containers. You can also reserve a container for one project (“this project only”) so no other project touches it. Containers (📦) and ship cargo holds (🚀) are listed with their type next to your name for them; ships can be hidden.</dd>
@@ -550,6 +552,7 @@
   <h3>Die Reiter</h3>
   <dl class="helpdl">
     <dt>Planer</dt><dd>Der vollständige Materialbaum eines Blueprints: was aus dem Bestand kommt, was du baust, was du kaufst. Darunter Einkaufsliste, Jobs (wer baut was), Auslastung der Charaktere, Transport und der Baum. Ein Klick auf eine Komponente im Baum wechselt zwischen Bauen und Kaufen. Materialien werden standardmäßig in Jita gekauft. In der Einkaufsliste kannst du pro Artikel einen manuellen Preis eintragen (zum Beispiel wenn du außerhalb des Markts kaufst) oder mit „Wo billiger kaufen?“ einen günstigeren Ort suchen; Plan und Transport rechnen mit deiner Wahl.</dd>
+    <dt>Nach einer Aktualisierung</dt><dd>Werden die Daten eines Charakters aktualisiert (oder ein Charakter entfernt), zeigen die Listen und der Bestand sofort die neuen Daten, und die berechneten Ergebnisse (Plan oder Projekt, Was lohnt sich?, Invention, Forschung, Verkauf, Ohne Einkauf, Reprocess, Bergbau) werden kurz nach der letzten Aktualisierung von selbst neu berechnet. Änderst du eine Einstellung, die die Berechnung verwendet, zeigt der Plan, dass er veraltet ist, und bietet die Neuberechnung an. Kauft der Plan ein Material, obwohl du Bestand hast, sagt der Materialbaum, wie viel noch da ist, warum es nicht verwendet wird (nicht unter den Materialquellen, im Container eines anderen Projekts oder an einem Ort, den der Planer nicht zählt) und wo es liegt.</dd>
     <dt>Wo kaufen?</dt><dd>„Wo billiger kaufen?“ in der Einkaufsliste geht die Verkaufsorders der in den Einstellungen gewählten Regionen durch. Für jeden Artikel zeigt es die Orte, die billiger als Jita sind: wie viele Sprünge vom Fertigungsort (und ob die Route Highsec ist), wie viel der benötigten Menge dort zu haben ist und zu welchem Durchschnittspreis (das Orderbuch vom billigsten an). Mit „Hier kaufen“ wählst du einen aus; was dort fehlt, kommt aus Jita. Ist der zweite Markt eine Spielerstruktur, wird auch ihr Markt durchsucht; Strukturen brauchen Andockrechte. Ein manueller Preis geht immer vor und kommt nicht in die Transportliste.</dd>
     <dt>Parallele Fertigung</dt><dd>Einstellungen → Fertigung. Hast du für einen Artikel mehrere Blueprints (mehrere BPCs, mehrere BPOs oder einen BPO-Stapel), können die Runs auf gleichzeitig laufende Jobs verteilt werden. Es gibt höchstens so viele Jobs wie Blueprints und freie Slots, und jeder Job hat mindestens eine Stunde Grundzeit. Im Modus „weniger Material“ wird nur geteilt, wenn kein Mehrmaterial nötig ist (ME rundet pro Job auf), im Modus „schneller“ so weit wie möglich. Der Plan zeigt, welche Artikel geteilt wurden und wie viel Mehrmaterial das kostet. Gestapelte BPOs müssen im Spiel getrennt werden.</dd>
     <dt>Projekte</dt><dd>Mehrere Positionen auf einmal, wie ein Auftrag („3 Hurricane + 2 Maelstrom“). Angehakte Projekte teilen sich einen Bestand, der Reihe nach: weiter oben stehende bekommen das Material zuerst. Ergebnisse laufender Jobs zählen als eingehender Bestand. Pro Projekt (oder pro Position) kannst du wählen, woher Material kommen darf: Stationen, Strukturen oder bestimmte Container. Einen Container kannst du auch für ein Projekt reservieren („nur dieses Projekt“), dann greift kein anderes Projekt darauf zu. Container (📦) und Schiffsfrachträume (🚀) stehen mit ihrem Typ neben deinem Namen dafür; Schiffe lassen sich ausblenden.</dd>
@@ -606,22 +609,22 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.14.6"></script>
-<script src="i18n/de.js?v=1.14.6"></script>
-<script src="js/core.js?v=1.14.6"></script>
-<script src="js/esi.js?v=1.14.6"></script>
-<script src="js/data.js?v=1.14.6"></script>
-<script src="js/market.js?v=1.14.6"></script>
-<script src="js/engine.js?v=1.14.6"></script>
-<script src="js/views.js?v=1.14.6"></script>
-<script src="js/tab-projects.js?v=1.14.6"></script>
-<script src="js/tab-profit.js?v=1.14.6"></script>
-<script src="js/tab-invention.js?v=1.14.6"></script>
-<script src="js/tab-research.js?v=1.14.6"></script>
-<script src="js/tab-sales.js?v=1.14.6"></script>
-<script src="js/tab-canbuild.js?v=1.14.6"></script>
-<script src="js/tab-mining.js?v=1.14.6"></script>
-<script src="js/repro.js?v=1.14.6"></script>
-<script src="js/main.js?v=1.14.6"></script>
+<script src="i18n/en.js?v=1.15.0"></script>
+<script src="i18n/de.js?v=1.15.0"></script>
+<script src="js/core.js?v=1.15.0"></script>
+<script src="js/esi.js?v=1.15.0"></script>
+<script src="js/data.js?v=1.15.0"></script>
+<script src="js/market.js?v=1.15.0"></script>
+<script src="js/engine.js?v=1.15.0"></script>
+<script src="js/views.js?v=1.15.0"></script>
+<script src="js/tab-projects.js?v=1.15.0"></script>
+<script src="js/tab-profit.js?v=1.15.0"></script>
+<script src="js/tab-invention.js?v=1.15.0"></script>
+<script src="js/tab-research.js?v=1.15.0"></script>
+<script src="js/tab-sales.js?v=1.15.0"></script>
+<script src="js/tab-canbuild.js?v=1.15.0"></script>
+<script src="js/tab-mining.js?v=1.15.0"></script>
+<script src="js/repro.js?v=1.15.0"></script>
+<script src="js/main.js?v=1.15.0"></script>
 </body>
 </html>

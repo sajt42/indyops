@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.15.0 – 2026-11-11
+
+- Projects and Planner: when a material is bought although there is stock left, the material tree says how much is left, why the plan does not use it (not among the material sources, in a container another project reserved, or at a location the planner does not count) and where it is.
+- After a character refresh (or removal) every calculated result on screen is calculated again by itself, shortly after the last refresh: plan or project, What pays?, Invention, Research, Selling, Builds without buying, Reprocess and the mining scan. Lists and stock already showed the new data.
+
 ## 1.14.6 – 2026-11-11
 
 - Code: projects change only through a few functions in tab-projects.js (create, update, select, delete, move, restore, add to project); What pays?, Invention and the event handlers call them instead of changing the project list directly, and tests/lint.js fails on direct changes elsewhere. New projects get unique ids even when created at the same moment. No change in what the app shows.

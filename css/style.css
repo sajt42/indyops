@@ -129,3 +129,4 @@ input.manp{width:90px}
 .haultab td{padding:3px 6px}
 .haulships{margin-top:8px;border-top:1px solid var(--line);padding-top:6px;overflow-wrap:anywhere}
 .mkttab tr.mkthead td{background:var(--panel2);padding-top:8px}
+.warnline{color:var(--warn);font-size:12px;margin-top:2px}
