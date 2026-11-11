@@ -428,7 +428,8 @@ function getOpt() {
     buildOwn: $('#optBuildOwn').checked,
     useStock: $('#optUseStock').checked,
     ore: $('#optOre').checked,
-    incoming: $('#optIncoming').checked
+    incoming: $('#optIncoming').checked,
+    leave: true // honours the stock places left out of the haul plan (S.leave)
   };
 }
 function copiesOf(bpType) {
@@ -597,6 +598,8 @@ function haulList(R) {
     return left.get(t);
   };
   const kinds = new Map(); // route -> Set('buy' | 'stock' | 'built')
+  const stockQ = new Map(); // route -> Map(type -> qty) of the stock part (what 'leave it there' would buy instead)
+  const dests = new Set(); // every place a job of this result runs at
   const add = (from, to, t, q, kind) => {
     if (!q || from == null || to == null || from === to) return;
     const k = from + '|' + to;
@@ -608,10 +611,15 @@ function haulList(R) {
       moves.set(k, m);
     }
     m.set(t, (m.get(t) || 0) + q);
+    if (kind === 'stock') {
+      if (!stockQ.has(k)) stockQ.set(k, new Map());
+      stockQ.get(k).set(t, (stockQ.get(k).get(t) || 0) + q);
+    }
   };
   const walk = n => {
     if (!n.build) return;
     const to = prodLocOf(n);
+    if (to != null) dests.add(to);
     for (const c of n.ch) {
       for (const x of c.stock) {
         if (x.l === 'surplus' || x.l === 'job') continue;
@@ -647,7 +655,7 @@ function haulList(R) {
     const m = sale.get(from);
     m.set(x.tree.t, (m.get(x.tree.t) || 0) + x.made);
   });
-  return { moves, sale, oreRoutes, kinds };
+  return { moves, sale, oreRoutes, kinds, stockQ, dests };
 }
 const volOf = t => (REFC.t[t] && REFC.t[t].vol) || 0;
 /* ---- ships and routes for hauling ---- */
@@ -825,10 +833,35 @@ function shipAdvice(R, key, vol, maxUnit) {
     .slice(0, 3);
   return html`<div class="small">${j == null ? T('Útvonal nem ismert.') + ' ' : j === 0 ? T('Ugyanabban a rendszerben.') + ' ' : html`<b>${T('{0} ugrás', j)}</b> (${rt.hs === false ? html`<span class="neg">${safety}</span>` : safety}). `}${best.map((o, i) => html`${i ? html`<br>` : ''}${o.n} <span class="muted">(${charName(o.cid)}, ${locName(o.l)}, ${T('raktér {0} m³', fmt(o.cap))})</span>: <b>${T('{0} forduló', o.trips)}</b>${o.pj ? ' · ' + T('előtte {0} ugrás üresen odáig', o.pj) : ''}${o.time != null ? ' · ' + T('kb. {0}', dur(o.time)) : ''}`)}</div>`;
 }
+// The stock part of one route: what buying it instead would cost, and a button to leave it where it is.
+function leaveLine(H, k) {
+  const sq = H.stockQ.get(k);
+  if (!sq) return '';
+  let cost = 0,
+    known = true;
+  for (const [t, q] of sq) {
+    const p = buyPrice(t, q);
+    if (p == null) known = false;
+    else cost += p * q;
+  }
+  return html`<div class="small leave">${T('A készletrész megvéve kb. {0}', known ? isk(cost) : '?')} <button class="btn mini" data-leave="${k}" title="${T('Ezt a készletet a terv ott hagyja, és a hiányt megveszi. A Szállítás alján visszaveheted.')}">${T('Hagyd ott, vedd meg')}</button></div>`;
+}
+// Places the player left out of the haul plan for this result's production places, each with a way back.
+function leftList(H) {
+  const keys = Object.keys(S.leave || {}).filter(k => S.leave[k] && H.dests.has(Number(k.split('|')[1])));
+  if (!keys.length) return '';
+  return html`<p class="small" style="margin-top:6px">${T('Otthagyott készlet (helyette veszem):')} ${hjoin(
+    keys.map(k => {
+      const [from, to] = k.split('|').map(Number);
+      return html`<span class="pill"><span title="${locName(from)}">${shortLoc(from)}</span> → <span title="${locName(to)}">${shortLoc(to)}</span> <button class="btn mini" data-unleave="${k}">${T('Visszaveszem')}</button></span>`;
+    }),
+    ' '
+  )}</p>`;
+}
 function renderHaul(R) {
   const H = haulList(R);
   if (!H.moves.size && !H.sale.size)
-    return html`<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>`;
+    return html`<h3>Szállítás</h3><p class="small muted">Semmit nem kell mozgatni: minden a gyártás helyén van.</p>${leftList(H)}`;
   let tot = 0;
   let h = html`<h3>Szállítás</h3><p class="small muted">Mit kell a gyártás helyére vinni. A gyártási helyszín a BP helye, vagy amit a Beállításokban megadsz. A térfogat csomagolt m³. A hajójavaslat a karaktereid hangárjában lévő hajókból választ, amit a tulajdonosuk vezetni tud, a raktér a skillbónuszokkal együtt számít. Az idő durva becslés: a hajó üres útja oda, ahol a rakomány van, utána a fordulók (megrakva oda, üresen vissza), ugrásonként a hajótípustól függően 50–180 mp, fordulónként dokkolással és pakolással 2 × 2 perc. Csak a cargo hold számít, az ore hold és a fittelt bővítők nem.</p><div class="haulgrid">`;
   for (const [k, m] of H.moves) {
@@ -853,14 +886,14 @@ function renderHaul(R) {
       H.oreRoutes.has(k)
         ? html`<div class="small muted">Az ásvány egy része ott még ércként van: vagy helyben reprocesszálod, vagy az ércet viszed (más térfogat).</div>`
         : ''
-    }<div class="haulships">${shipAdvice(R, k, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</div></div>`;
+    }${leaveLine(H, k)}<div class="haulships">${shipAdvice(R, k, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</div></div>`;
   }
   for (const [from, m] of H.sale) {
     const rows = [...m].map(([t, q]) => ({ t, q, v: q * volOf(t) }));
     const sum = rows.reduce((s, r) => s + r.v, 0);
     h = html`${h}<div class="haul"><div class="haulhead"><span class="pill">${T('Eladásra')}</span> <b title="${locName(from)}">${shortLoc(from)}</b> → <b>Jita</b> · <span class="mono">${fmt(sum)} m³</span></div><table class="haultab"><tbody>${rows.map(r => html`<tr><td>${NAMES[r.t] || r.t}</td><td class="num">${fmt(r.q)}</td><td class="num">${fmt(r.v)} m³</td></tr>`)}</tbody></table><div class="haulships">${shipAdvice(R, from + '|' + JITA_STATION, sum, Math.max(0, ...rows.map(r => volOf(r.t))))}</div></div>`;
   }
-  h = html`${h}</div>`;
+  h = html`${h}</div>${leftList(H)}`;
   if (tot)
     h = html`${h}<p class="small muted" style="margin-top:6px">Odaszállítás összesen: <span class="mono">${fmt(tot)} m³</span></p>`;
   return h;
@@ -1109,6 +1142,18 @@ function renderResult(el, R, rerun) {
         () => status('másolás nem sikerült')
       );
     });
+  el.querySelectorAll('[data-leave]').forEach(b =>
+    b.addEventListener('click', () => {
+      setSettingIn('leave', b.dataset.leave, true);
+      rerun();
+    })
+  );
+  el.querySelectorAll('[data-unleave]').forEach(b =>
+    b.addEventListener('click', () => {
+      setSettingIn('leave', b.dataset.unleave, null);
+      rerun();
+    })
+  );
   el.querySelectorAll('tr[data-toggle]').forEach(tr =>
     tr.addEventListener('click', () => {
       const t = Number(tr.dataset.toggle);
@@ -1163,7 +1208,8 @@ function treeRows(n, d, sys) {
     ? [
         n.why.src && T('{0} nincs a nyersanyag-források között', fmt(n.why.src)),
         n.why.resv && T('{0} másik projekt konténerében van', fmt(n.why.resv)),
-        n.why.plan && T('{0} a tervezőben nem számító helyen van', fmt(n.why.plan))
+        n.why.plan && T('{0} a tervezőben nem számító helyen van', fmt(n.why.plan)),
+        n.why.left && T('{0} otthagyva (a Szállításnál kizártad)', fmt(n.why.left))
       ].filter(Boolean)
     : [];
   const mark = n.inv

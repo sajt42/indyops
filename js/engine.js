@@ -70,7 +70,9 @@ function planContext(opt, pool, runsLeft) {
     jobs: [],
     warn: [],
     par: [], // parallel splits: {t, jobs, before, extra:[[type, qty]]}
-    structME: Number(S.structME || 0) / 100
+    structME: Number(S.structME || 0) / 100,
+    // stock places left out of the haul plan: 'from|to' keys (only where the caller asks for it)
+    leave: opt.leave ? new Set(Object.keys(S.leave || {}).filter(k => S.leave[k])) : null
   };
 }
 
@@ -84,7 +86,10 @@ function stockAllowed(ctx, item) {
 }
 
 // takes up to q of type t from the pool entries the item may use; returns what was taken
-function takeStock(ctx, t, q, item) {
+// stock the player chose to leave where it is instead of hauling it to 'to' (the place of the job that needs it)
+const leftThere = (ctx, x, to) => !!ctx.leave && to != null && ctx.leave.has(x.l + '|' + to);
+
+function takeStock(ctx, t, q, item, to) {
   const arr = ctx.pool.get(t);
   if (!arr) return [];
   const ok = stockAllowed(ctx, item);
@@ -92,7 +97,7 @@ function takeStock(ctx, t, q, item) {
   let rem = q;
   for (const x of arr) {
     if (rem <= 0) break;
-    if (!ok(x)) continue;
+    if (!ok(x) || leftThere(ctx, x, to)) continue;
     const k = Math.min(x.q, rem);
     if (k > 0) {
       x.q -= k;
@@ -253,28 +258,32 @@ function jobMaterialQty(q, runs, act, me, structME) {
 
 // When a material has to be bought although stock is left: how much of the remaining stock this item may not take,
 // and why. resv: in a container another project reserved; src: not among this project's or item's sources;
-// plan: not among the stock locations in Settings. Stock used earlier (by another item or project) is not left.
-function stockWhy(ctx, t, item) {
+// plan: not among the stock locations in Settings; left: at a place the player left out of the haul plan (S.leave).
+// Stock used earlier (by another item or project) is not left.
+function stockWhy(ctx, t, item, to) {
   const ok = stockAllowed(ctx, item);
   const pid = item && item.pid;
   const sel = item && item.src && item.src.mode === 'sel';
-  const why = { resv: 0, src: 0, plan: 0, at: new Map() }; // at: 'location|container' -> quantity
+  const why = { resv: 0, src: 0, plan: 0, left: 0, at: new Map() }; // at: 'location|container' -> quantity
   for (const x of ctx.pool.get(t) || []) {
-    if (!(x.q > 0) || x.l === 'job' || x.l === 'surplus' || ok(x)) continue;
-    if (x.c != null && ctx.resv.has(x.c) && ctx.resv.get(x.c) !== pid) why.resv += x.q;
+    if (!(x.q > 0) || x.l === 'job' || x.l === 'surplus') continue;
+    const left = ok(x) && leftThere(ctx, x, to);
+    if (ok(x) && !left) continue;
+    if (left) why.left += x.q;
+    else if (x.c != null && ctx.resv.has(x.c) && ctx.resv.get(x.c) !== pid) why.resv += x.q;
     else if (sel) why.src += x.q;
     else why.plan += x.q;
     const k = x.l + '|' + (x.c ?? '');
     why.at.set(k, (why.at.get(k) || 0) + x.q);
   }
-  return why.resv || why.src || why.plan ? why : null;
+  return why.resv || why.src || why.plan || why.left ? why : null;
 }
-async function planNode(ctx, t, need, depth, forced, item) {
+async function planNode(ctx, t, need, depth, forced, item, to) {
   const n = { t, need, stock: [], build: null, buy: 0, ch: [], jobsRef: [] };
   if (depth > 0 && ctx.opt.useStock !== false) {
-    n.stock = takeStock(ctx, t, need, item);
+    n.stock = takeStock(ctx, t, need, item, to);
     need -= n.stock.reduce((s, x) => s + x.q, 0);
-    if (need > 0) n.why = stockWhy(ctx, t, item);
+    if (need > 0) n.why = stockWhy(ctx, t, item, to);
     for (const x of n.stock)
       if (x.l !== 'surplus' && x.l !== 'job') ctx.usedList.set(t, (ctx.usedList.get(t) || 0) + x.q);
   }
@@ -312,7 +321,9 @@ async function planNode(ctx, t, need, depth, forced, item) {
     ctx.jobs.push(job);
     n.jobsRef.push(job);
   }
-  for (const [m, q] of matNeed) n.ch.push(await planNode(ctx, m, q, depth + 1, null, item));
+  // where the materials go: the same place the haul plan uses (prodLocOf)
+  const at = S.prodLoc ? Number(S.prodLoc) : jl[0] ? jl[0].c.l : null;
+  for (const [m, q] of matNeed) n.ch.push(await planNode(ctx, m, q, depth + 1, null, item, at));
   addSurplus(ctx, t, made - need);
   if (depth === 0) n.made = made;
   return n;

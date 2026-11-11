@@ -947,11 +947,38 @@ const ok = (c, msg) => {
     const R2 = await T.makeMulti([item], { useStock: true, buildOwn: false, incoming: false, ore: false });
     await T.finishResult(R2, bp);
     T.renderResult(el, R2, () => {});
-    const row = [...el.querySelectorAll('tr[data-toggle], tr')].find(tr => /^Tritanium/.test(tr.textContent.trim()) && tr.querySelector('td.src'));
+    const row = [...el.querySelectorAll('tr[data-toggle], tr')].find(
+      tr => /^Tritanium/.test(tr.textContent.trim()) && tr.querySelector('td.src')
+    );
     ok(
       row && /\(5000\)/.test(row.textContent) && /\(1000\)/.test(row.textContent),
       'quantity per source place: ' + (row && row.lastElementChild.textContent)
     );
+    // 33. remote stock can be left out of the haul plan: the plan then buys the shortfall, and it can be taken back
+    const key = '60008494|60003760';
+    ok(!!el.querySelector('[data-leave="' + key + '"]'), 'the stock route has a "leave it, buy instead" button');
+    const opt = { useStock: true, buildOwn: false, incoming: false, ore: false, leave: true };
+    const before = (await T.makeMulti([item], opt)).trees[0].tree.ch.find(c => c.t === 34);
+    T.setSettingIn('leave', key, true);
+    const R3 = await T.makeMulti([item], opt);
+    const t3 = R3.trees[0].tree.ch.find(c => c.t === 34);
+    ok(
+      t3.stock.every(x => x.l !== 60008494) && t3.buy === before.buy + 5000 && t3.why && t3.why.left === 5000,
+      'left stock is not taken but bought (' +
+        JSON.stringify({ buy: [before.buy, t3.buy], why: t3.why && t3.why.left }) +
+        ')'
+    );
+    const other = (await T.makeMulti([item], Object.assign({}, opt, { leave: false }))).trees[0].tree.ch.find(
+      c => c.t === 34
+    );
+    ok(other.buy === before.buy, 'callers without opt.leave (e.g. what can I build) are not affected');
+    await T.finishResult(R3, bp);
+    T.renderResult(el, R3, () => {});
+    ok(
+      !!el.querySelector('[data-unleave="' + key + '"]') && /5000 otthagyva/.test(el.textContent),
+      'the haul plan lists it with a way back, the tree says why it is bought'
+    );
+    T.setSettingIn('leave', key, null);
   }
   {
     // 32. haul time: the ship first flies empty to the cargo, then loaded there and empty back between trips, plus docking

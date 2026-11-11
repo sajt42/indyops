@@ -808,5 +808,13 @@ window.I18N.en = {
   'Készletben még: {0}.': 'Still in stock: {0}.',
   'Itt: {0}.': 'At: {0}.',
   'és még {0} hely': 'and {0} more places',
-  'előtte {0} ugrás üresen odáig': 'first {0} jumps empty to the pickup'
+  'előtte {0} ugrás üresen odáig': 'first {0} jumps empty to the pickup',
+  'otthagyott készlet': 'stock left in place',
+  'A készletrész megvéve kb. {0}': 'Buying the stock part instead: about {0}',
+  'Ezt a készletet a terv ott hagyja, és a hiányt megveszi. A Szállítás alján visszaveheted.':
+    'The plan leaves this stock where it is and buys the shortfall. You can take it back at the bottom of Hauling.',
+  'Hagyd ott, vedd meg': 'Leave it, buy instead',
+  'Otthagyott készlet (helyette veszem):': 'Stock left in place (bought instead):',
+  Visszaveszem: 'Use it again',
+  '{0} otthagyva (a Szállításnál kizártad)': '{0} left in place (you excluded it under Hauling)'
 };

@@ -61,7 +61,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.15.1',
+  version: '1.16.0',
   built: '2026-11-11',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -329,7 +329,8 @@ let S = Object.assign(
     system: '',
     skillChar: null,
     locs: null,
-    buyOverride: {}
+    buyOverride: {},
+    leave: {}
   },
   load('settings', {})
 );
@@ -427,6 +428,7 @@ const SET_SCHEMA = {
   parMode: 'str',
   srcShips: 'bool',
   buyOverride: 'mapBool',
+  leave: 'mapBool', // 'from|to' -> true: stock at 'from' is left there when it would be hauled to 'to'
   locNames: 'mapStr',
   structBroker: 'mapNum',
   repro: 'repro'

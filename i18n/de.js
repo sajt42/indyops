@@ -816,5 +816,13 @@ window.I18N.de = {
   'Készletben még: {0}.': 'Noch im Bestand: {0}.',
   'Itt: {0}.': 'Ort: {0}.',
   'és még {0} hely': 'und {0} weitere Orte',
-  'előtte {0} ugrás üresen odáig': 'vorher {0} Spr\u00fcnge leer zur Abholung'
+  'előtte {0} ugrás üresen odáig': 'vorher {0} Sprünge leer zur Abholung',
+  'otthagyott készlet': 'zurückgelassener Bestand',
+  'A készletrész megvéve kb. {0}': 'Den Bestandsteil stattdessen kaufen: etwa {0}',
+  'Ezt a készletet a terv ott hagyja, és a hiányt megveszi. A Szállítás alján visszaveheted.':
+    'Der Plan lässt diesen Bestand, wo er ist, und kauft den Fehlbestand. Unten bei Transport kannst du es rückgängig machen.',
+  'Hagyd ott, vedd meg': 'Dort lassen, stattdessen kaufen',
+  'Otthagyott készlet (helyette veszem):': 'Zurückgelassener Bestand (stattdessen gekauft):',
+  Visszaveszem: 'Wieder verwenden',
+  '{0} otthagyva (a Szállításnál kizártad)': '{0} zurückgelassen (unter Transport ausgeschlossen)'
 };

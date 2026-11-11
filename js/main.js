@@ -224,6 +224,7 @@ onCharData(() => {
 const RECALC_SETTINGS = {
   structME: 'struktúra ME bónusz',
   buyOverride: 'gyártom / veszem',
+  leave: 'otthagyott készlet',
   parallel: 'párhuzamos gyártás',
   parMode: 'párhuzamos gyártás',
   locs: 'készlet helyszínei',

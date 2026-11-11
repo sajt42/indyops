@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.16.0 – 2026-11-11
+
+- Hauling: every route that carries stock shows what buying that stock instead would cost, and a “Leave it, buy instead” button. The plan then leaves the stock at that place for jobs at that destination and buys the shortfall; “Use it again” at the bottom of Hauling undoes it. The material tree says how much was left in place.
+
 ## 1.15.1 – 2026-11-11
 
 - Hauling: the time estimate now includes the ship's empty flight to the cargo, the empty legs back between trips and docking/loading time; per-jump times are more realistic, and each ship option shows the empty positioning jumps.
