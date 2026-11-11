@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.16.1 – 2026-11-11
+
+- Material tree: when one run makes several pieces (e.g. 3 per run), the Build column shows runs × pieces per run and how many are spare.
+
 ## 1.16.0 – 2026-11-11
 
 - Hauling: every route that carries stock shows what buying that stock instead would cost, and a “Leave it, buy instead” button. The plan then leaves the stock at that place for jobs at that destination and buys the shortfall; “Use it again” at the bottom of Hauling undoes it. The material tree says how much was left in place.

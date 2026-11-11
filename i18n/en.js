@@ -816,5 +816,7 @@ window.I18N.en = {
   'Hagyd ott, vedd meg': 'Leave it, buy instead',
   'Otthagyott készlet (helyette veszem):': 'Stock left in place (bought instead):',
   Visszaveszem: 'Use it again',
-  '{0} otthagyva (a Szállításnál kizártad)': '{0} left in place (you excluded it under Hauling)'
+  '{0} otthagyva (a Szállításnál kizártad)': '{0} left in place (you excluded it under Hauling)',
+  '{0} run × {1} db': '{0} runs × {1}',
+  '{0} felesleg': '{0} spare'
 };

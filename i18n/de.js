@@ -824,5 +824,7 @@ window.I18N.de = {
   'Hagyd ott, vedd meg': 'Dort lassen, stattdessen kaufen',
   'Otthagyott készlet (helyette veszem):': 'Zurückgelassener Bestand (stattdessen gekauft):',
   Visszaveszem: 'Wieder verwenden',
-  '{0} otthagyva (a Szállításnál kizártad)': '{0} zurückgelassen (unter Transport ausgeschlossen)'
+  '{0} otthagyva (a Szállításnál kizártad)': '{0} zurückgelassen (unter Transport ausgeschlossen)',
+  '{0} run × {1} db': '{0} Läufe × {1}',
+  '{0} felesleg': '{0} übrig'
 };

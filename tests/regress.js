@@ -109,7 +109,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,shipAdvice,dur,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -996,6 +996,15 @@ const ok = (c, msg) => {
       el.textContent.includes('9 ugrás üresen') && el.textContent.includes('kb. ' + want),
       'haul time counts the empty flight and docking (' + want + '): ' + el.textContent
     );
+  }
+  {
+    // 34. a run that makes several pieces (3 per run): the build cell says how many runs and how many are left over
+    const n = { t: 1, need: 270, stock: [{ l: 1, q: 268 }], build: { jobs: [{ r: 1 }], made: 3 } };
+    const el = d.createElement('div');
+    if (T.madeNote) T.setHtml(el, T.madeNote(n));
+    ok(/1 run × 3 db · 1 felesleg/.test(el.textContent), 'runs × pieces per run and the spare: ' + el.textContent);
+    const one = { t: 1, need: 5, stock: [], build: { jobs: [{ r: 5 }], made: 5 } };
+    ok(!T.madeNote || String(T.madeNote(one)) === '', 'nothing extra when a run makes one piece');
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

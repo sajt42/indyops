@@ -1185,6 +1185,14 @@ function whyAt(at) {
   if (list.length > 4) txt.push(T('és még {0} hely', list.length - 4));
   return txt.join(', ');
 }
+// when a run makes more than one piece: how many runs of how many, and how many are left over
+function madeNote(n) {
+  const runs = n.build.jobs.reduce((s, j) => s + j.r, 0);
+  const per = runs ? n.build.made / runs : 0;
+  if (!(per > 1)) return '';
+  const extra = n.build.made - (n.need - n.stock.reduce((s, x) => s + x.q, 0));
+  return html`<div class="small muted">${T('{0} run × {1} db', fmt(runs), fmt(per))}${extra > 0 ? ' · ' + T('{0} felesleg', fmt(extra)) : ''}</div>`;
+}
 function treeRows(n, d, sys) {
   const st = n.stock.reduce((s, x) => s + x.q, 0);
   const canToggle = d > 0 && ownedFor(n.t).length > 0;
@@ -1221,7 +1229,7 @@ function treeRows(n, d, sys) {
           ? html`<span class="pill ok">gyártom</span>`
           : ''
       : '';
-  let h = html`<tr ${canToggle ? html`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"` : ''}><td class="name" style="padding-left:${10 + d * 18}px">${NAMES[n.t] || n.t} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st ? fmt(st) : '–'}</td><td class="num">${n.build ? fmt(n.build.made) : '–'}</td><td class="num">${n.buy ? fmt(n.buy) : '–'}</td><td class="num small">${bbCell(n, d, sys)}</td><td class="src">${where}${
+  let h = html`<tr ${canToggle ? html`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"` : ''}><td class="name" style="padding-left:${10 + d * 18}px">${NAMES[n.t] || n.t} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st ? fmt(st) : '–'}</td><td class="num">${n.build ? html`${fmt(n.build.made)}${madeNote(n)}` : '–'}</td><td class="num">${n.buy ? fmt(n.buy) : '–'}</td><td class="num small">${bbCell(n, d, sys)}</td><td class="src">${where}${
     why.length
       ? html`<div class="warnline">${T('Készletben még: {0}.', why.join('; '))} ${T('Itt: {0}.', whyAt(n.why.at))}</div>`
       : ''
