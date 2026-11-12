@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.19.2 – 2026-11-12
+
+- Timeline: the chart fits its box at normal zoom (the end was cut off); bar labels are cut to the bar with “…” instead of running over the next bar; the character name has its own line; time ticks sit on round hours (00, 06, 12, 18) with the date at midnight.
+
 ## 1.19.1 – 2026-11-12
 
 - Timeline: zoom with − / + or Ctrl + mouse wheel (around the pointer), up to ×64; the chart scrolls sideways while the character names stay in place; the time axis picks finer steps as you zoom in; “All” returns to the whole view.
