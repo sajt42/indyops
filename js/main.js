@@ -409,7 +409,9 @@ function validProjects(d, out, err) {
       items.push(c);
     }
     if (bad) err.push(T('„{0}” projekt: {1} hibás tétel', p.name, bad));
-    out.projects.push({ id: p.id, name: p.name, active: p.active !== false, items, src: cleanSrc(p.src) });
+    const q = { id: p.id, name: p.name, active: p.active !== false, items, src: cleanSrc(p.src) };
+    if (['off', 'material', 'speed'].includes(p.par)) q.par = p.par;
+    out.projects.push(q);
   }
 }
 function validChars(d, out, err) {

@@ -870,5 +870,18 @@ window.I18N.de = {
   Kicsinyítés: 'Verkleinern',
   Nagyítás: 'Vergrößern',
   Egész: 'Alles',
-  'Ctrl + görgő: nagyítás az egér körül': 'Strg + Mausrad: um den Zeiger zoomen'
+  'Ctrl + görgő: nagyítás az egér körül': 'Strg + Mausrad: um den Zeiger zoomen',
+  'Több saját példány esetén több jobra bontsa-e a runokat. A gyorsabb mód több anyagot is elfogad.':
+    'Ob die Runs bei mehreren eigenen Kopien auf mehrere Jobs verteilt werden. Der schnellere Modus nimmt auch mehr Material in Kauf.',
+  'alapbeállítás szerint ({0})': 'wie in den Einstellungen ({0})',
+  ki: 'aus',
+  'be – kevesebb anyag': 'an – weniger Material',
+  'be – gyorsabb': 'an – schneller',
+  'Párhuzamos gyártás: {0}.': 'Parallele Fertigung: {0}.',
+  '{0}: {1} jobban fut (párhuzamos gyártás: {2}), a leghosszabb kb. {3}. Gyorsabb módban {4} job, kb. {5}':
+    '{0}: läuft in {1} Job(s) (parallele Fertigung: {2}), der längste etwa {3}. Im schnelleren Modus {4} Jobs, etwa {5}',
+  '+{0} ISK anyag': '+{0} ISK Material',
+  'több anyag nélkül': 'ohne zusätzliches Material',
+  'Projektnél: Párhuzamos gyártás → be – gyorsabb; a Tervezőben: Beállítások.':
+    'Im Projekt: Parallele Fertigung → an – schneller; im Planer: Einstellungen.'
 };

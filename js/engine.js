@@ -71,7 +71,8 @@ function planContext(opt, pool, runsLeft) {
     usedList: new Map(),
     jobs: [],
     warn: [],
-    par: [], // parallel splits: {t, jobs, before, extra:[[type, qty]]}
+    par: [], // parallel splits: {t, jobs, before, extra:[[type, qty]], mode}
+    parHint: [], // items left in fewer jobs than they could run in: {t, mode, units, seq, alt}
     structME: Number(S.structME || 0) / 100,
     // stock places left out of the haul plan: 'from|to' keys (only where the caller asks for it)
     leave: opt.leave ? new Set(Object.keys(S.leave || {}).filter(k => S.leave[k])) : null
@@ -205,7 +206,7 @@ function materialsOf(jl, rec, act, structME) {
     for (const [t, q] of rec.m) m.set(t, (m.get(t) || 0) + jobMaterialQty(q, j.r, act, j.c.me, structME));
   return m;
 }
-function parallelRuns(ctx, copies, runsNeed, rec, act, seq) {
+function parallelRuns(ctx, copies, runsNeed, rec, act, seq, mode) {
   const units = bpUnits(ctx, copies);
   const byTime = Math.floor(((rec.t || 0) * runsNeed) / PAR_MIN_JOB_SECONDS);
   const kMax = Math.min(units.length, freeSlotsFor(act, rec), byTime, runsNeed);
@@ -214,7 +215,7 @@ function parallelRuns(ctx, copies, runsNeed, rec, act, seq) {
   for (let k = kMax; k >= 2; k--) {
     const p = spreadRuns(units, k, runsNeed);
     if (p.jl.length <= seq.jl.length) return null;
-    if (S.parMode === 'speed') return p;
+    if (mode === 'speed') return p;
     const mats = materialsOf(p.jl, rec, act, ctx.structME);
     if ([...mats].every(([t, q]) => q <= (base.get(t) || 0))) return p;
   }
@@ -223,19 +224,46 @@ function parallelRuns(ctx, copies, runsNeed, rec, act, seq) {
 
 // Spreads the needed runs over the copies; runs that fit nowhere go on the first copy marked short, with a warning.
 // With parallel manufacturing the split is recorded in ctx.par (extra material against the default allocation).
-function allocateRuns(ctx, t, copies, runsNeed, rec, act) {
+// Parallel manufacturing of an item: its project's setting ('off' | 'material' | 'speed'), or the one in Settings.
+function parModeOf(item) {
+  const p = item && item.par;
+  if (p === 'off' || p === 'material' || p === 'speed') return p;
+  return S.parallel ? (S.parMode === 'speed' ? 'speed' : 'material') : 'off';
+}
+function allocateRuns(ctx, t, copies, runsNeed, rec, act, item) {
   const seq = sequentialRuns(ctx, copies, runsNeed);
   let plan = seq;
-  if (S.parallel && rec) {
-    const p = parallelRuns(ctx, copies, runsNeed, rec, act, seq);
+  const mode = parModeOf(item);
+  // what the fastest split would be: shown when the setting keeps the item in fewer jobs
+  const alt = rec && mode !== 'speed' ? parallelRuns(ctx, copies, runsNeed, rec, act, seq, 'speed') : null;
+  if (mode !== 'off' && rec) {
+    const p = parallelRuns(ctx, copies, runsNeed, rec, act, seq, mode);
     if (p) {
       plan = p;
       const base = materialsOf(seq.jl, rec, act, ctx.structME);
       const extra = [...materialsOf(p.jl, rec, act, ctx.structME)]
         .map(([m, q]) => [m, q - (base.get(m) || 0)])
         .filter(([, q]) => q > 0);
-      ctx.par.push({ t, jobs: p.jl.length, before: seq.jl.length, extra });
+      ctx.par.push({ t, jobs: p.jl.length, before: seq.jl.length, extra, mode });
     }
+  }
+  if (alt && alt.jl.length > plan.jl.length) {
+    const base = materialsOf(plan.jl, rec, act, ctx.structME);
+    const extra = [...materialsOf(alt.jl, rec, act, ctx.structME)]
+      .map(([m, q]) => [m, q - (base.get(m) || 0)])
+      .filter(([, q]) => q > 0);
+    const longest = jl => Math.max(...jl.map(x => x.r * (1 - (x.c.te || 0) / 100)));
+    ctx.parHint.push({
+      t,
+      mode,
+      act,
+      time: rec.t || 0,
+      jobs: plan.jl.length,
+      alt: alt.jl.length,
+      runs: longest(plan.jl),
+      altRuns: longest(alt.jl),
+      extra
+    });
   }
   const used = new Map();
   for (const j of plan.jl) if (j.c.r !== -1) used.set(j.c, (used.get(j.c) || 0) + j.r);
@@ -301,7 +329,7 @@ async function planNode(ctx, t, need, depth, forced, item, to) {
   }
   const { meta, rec } = recipe;
   const act = meta.act;
-  const jl = allocateRuns(ctx, t, copies, Math.ceil(need / meta.qty), rec, act);
+  const jl = allocateRuns(ctx, t, copies, Math.ceil(need / meta.qty), rec, act, item);
   const made = jl.reduce((s, x) => s + x.r, 0) * meta.qty;
   n.build = { act, jobs: jl, made };
   const matNeed = new Map();
@@ -417,7 +445,15 @@ async function makeMulti(items, opt, shared) {
     if (it.inv) await addInvention(ctx, it, tree);
     trees.push({ item: it, tree, made: tree.made || 0 });
   }
-  return { trees, buyList: ctx.buyList, usedList: ctx.usedList, jobs: ctx.jobs, warn: ctx.warn, par: ctx.par };
+  return {
+    trees,
+    buyList: ctx.buyList,
+    usedList: ctx.usedList,
+    jobs: ctx.jobs,
+    warn: ctx.warn,
+    par: ctx.par,
+    parHint: ctx.parHint
+  };
 }
 const DECS = {
   34201: { n: 'Accelerant Decryptor', p: 1.2, me: 2, te: 10, runs: 1 },

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.20.0 – 2026-11-12
+
+- Projects: parallel manufacturing per project (as in Settings / off / less material / faster) in the project header; several projects calculated together each use their own. The result now says when an item could run in more jobs than its setting allows: how long the longest job is now, how long in faster mode, and the extra material.
+
 ## 1.19.2 – 2026-11-12
 
 - Timeline: the chart fits its box at normal zoom (the end was cut off); bar labels are cut to the bar with “…” instead of running over the next bar; the character name has its own line; time ticks sit on round hours (00, 06, 12, 18) with the date at midnight.

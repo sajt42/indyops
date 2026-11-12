@@ -97,7 +97,15 @@ function renderProjects() {
   }
   setHtml(
     ed,
-    html`<div class="row" style="justify-content:space-between"><label style="flex:1;min-width:200px">Projekt neve<input id="pName" value="${p.name}"></label><button class="btn" id="pDel">Projekt törlése</button></div>
+    html`<div class="row" style="justify-content:space-between"><label style="flex:1;min-width:200px">Projekt neve<input id="pName" value="${p.name}"></label><label>${T('Párhuzamos gyártás')}<select id="pPar" title="${T('Több saját példány esetén több jobra bontsa-e a runokat. A gyorsabb mód több anyagot is elfogad.')}">${hjoin(
+      [
+        ['', T('alapbeállítás szerint ({0})', parModeLabel(parModeOf(null)))],
+        ['off', T('ki')],
+        ['material', T('be – kevesebb anyag')],
+        ['speed', T('be – gyorsabb')]
+      ].map(([v, l]) => html`<option value="${v}" ${(p.par || '') === v ? 'selected' : ''}>${l}</option>`),
+      ''
+    )}</select></label><button class="btn" id="pDel">Projekt törlése</button></div>
   <div id="pDelConfirm" class="notice err" hidden><p>${T('Biztosan törlöd a(z) „{0}” projektet?', p.name)}</p><div class="row"><button class="btn primary" id="pDelYes">Igen, törlöm</button><button class="btn" id="pDelNo">Mégse</button></div></div>
   <h3>Tételek</h3><div class="tablewrap"><table><thead><tr><th>Blueprint</th><th class="num">Run</th><th>Saját példányok</th><th>Nyersanyag</th><th></th></tr></thead><tbody>${
     hjoin(
@@ -117,6 +125,13 @@ function renderProjects() {
   <div class="row" style="margin-top:10px"><label style="flex:1;min-width:220px">Új tétel (saját BP)<input id="pItemName" list="bpOptions" placeholder="pl. Hurricane Blueprint"></label><label>Run<input type="number" id="pItemRuns" min="1" value="1"></label><button class="btn" id="pItemAdd">Hozzáadás</button></div>
   <div class="row" style="margin-top:14px"><button class="btn primary" id="pCalc">Ennek a projektnek a számolása</button></div>`
   );
+  $('#pPar').addEventListener('change', e => {
+    updateProject(p.id, p => {
+      if (e.target.value) p.par = e.target.value;
+      else delete p.par;
+    });
+    renderProjects();
+  });
   $('#pName').addEventListener('change', e => {
     updateProject(p.id, p => (p.name = e.target.value.trim() || p.name));
     renderProjects();
@@ -302,7 +317,7 @@ async function calcProjects(list) {
     await indexBPProducts();
     const opt = Object.assign(getOpt(), { incoming: $('#pIncoming').checked });
     const shared = { pool: await buildPool(opt), runsLeft: new Map() };
-    const R = { trees: [], buyList: new Map(), usedList: new Map(), jobs: [], warn: [], par: [] };
+    const R = { trees: [], buyList: new Map(), usedList: new Map(), jobs: [], warn: [], par: [], parHint: [] };
     let firstBP = null;
     for (const p of list) {
       const items = [];
@@ -319,6 +334,7 @@ async function calcProjects(list) {
           }
           vi.src = src;
           vi.pid = p.id;
+          vi.par = p.par;
           items.push(vi);
           if (!firstBP) firstBP = c1;
           continue;
@@ -331,7 +347,7 @@ async function calcProjects(list) {
           continue;
         }
         await prefetchTree(BPPROD[it.bpType].prod);
-        items.push({ copies, runs: it.runs, label: p.name, src, pid: p.id });
+        items.push({ copies, runs: it.runs, label: p.name, src, pid: p.id, par: p.par });
         if (!firstBP) firstBP = copies[0];
       }
       if (!items.length) continue;
@@ -340,6 +356,7 @@ async function calcProjects(list) {
       R.jobs.push(...r.jobs);
       R.warn.push(...r.warn);
       R.par.push(...r.par);
+      R.parHint.push(...(r.parHint || []));
       for (const [t, q] of r.buyList) R.buyList.set(t, (R.buyList.get(t) || 0) + q);
       for (const [t, q] of r.usedList) R.usedList.set(t, (R.usedList.get(t) || 0) + q);
     }

@@ -714,7 +714,7 @@ const ok = (c, msg) => {
     d.body.appendChild(elp);
     T.renderResult(elp, R, () => {});
     ok(
-      /Párhuzamos gyártás \(gyorsabb\): .*1 → 3 job/.test(elp.textContent) && /Többletanyag/.test(elp.textContent),
+      /Párhuzamos gyártás: .*1 → 3 job \(gyorsabb\)/.test(elp.textContent) && /Többletanyag/.test(elp.textContent),
       'plan shows the split and the extra material'
     );
     const stack = [{ i: 310, t: 688, me: 10, te: 20, r: -1, q: 3, l: 60003760, cid: 1 }];
@@ -1148,6 +1148,51 @@ const ok = (c, msg) => {
     ok(Number(tl.querySelector('.tlscroll svg.tl').getAttribute('width')) === w1, 'whole view back');
     T.setSetting('tlActive', '');
     tl.remove();
+  }
+  {
+    // 39. parallel manufacturing per project: the project's setting wins over Settings, and the result says when an
+    // item could run in more jobs than its setting allows
+    const bps = [
+      { i: 501, t: 688, me: 10, te: 20, r: -1, q: -1, l: 60003760, cid: 1 },
+      { i: 502, t: 688, me: 4, te: 8, r: 10, q: -2, l: 60003760, cid: 1 },
+      { i: 503, t: 688, me: 4, te: 8, r: 10, q: -2, l: 60003760, cid: 1 }
+    ];
+    T.setChars([{ id: 1, name: 'A', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
+    T.setData({ 1: { assets: [], bps, skills: { 3387: 5, 24625: 5 }, jobs: [], at: Date.now() } });
+    T.S.parallel = false;
+    const opt = { useStock: false, buildOwn: false, incoming: false, ore: false };
+    const copies = T.itemCopies({ bpType: 688 });
+    const top = R => R.jobs.filter(j => j.top).length;
+    const R0 = await T.makeMulti([{ copies, runs: 30 }], opt);
+    const R1 = await T.makeMulti([{ copies, runs: 30, par: 'speed' }], opt);
+    T.S.parallel = true;
+    T.S.parMode = 'speed';
+    const R2 = await T.makeMulti([{ copies, runs: 30, par: 'off' }], opt);
+    T.S.parallel = false;
+    ok(
+      top(R0) === 1 && top(R1) > 1 && top(R2) === 1,
+      'project setting over Settings (' + [top(R0), top(R1), top(R2)] + ')'
+    );
+    ok(
+      (R0.parHint || []).some(h => h.t === R0.jobs[0].t && h.alt > 1) && !(R1.parHint || []).length,
+      'a hint when it could run in more jobs, none when it already does'
+    );
+    await T.finishResult(R0, copies[0]);
+    const el = d.createElement('div');
+    T.renderResult(el, R0, () => {});
+    ok(/Gyorsabb módban \d+ job/.test(el.textContent), 'the result shows the hint');
+    const v = T.validateBackup({
+      app: 'indyops',
+      v: 1,
+      projects: [
+        { id: 1, name: 'x', items: [], par: 'speed' },
+        { id: 2, name: 'y', items: [], par: 'x' }
+      ]
+    });
+    ok(
+      v.d.projects[0].par === 'speed' && v.d.projects[1].par === undefined,
+      'a backup keeps a valid setting, drops a bad one'
+    );
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

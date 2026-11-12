@@ -862,5 +862,18 @@ window.I18N.en = {
   Kicsinyítés: 'Zoom out',
   Nagyítás: 'Zoom in',
   Egész: 'All',
-  'Ctrl + görgő: nagyítás az egér körül': 'Ctrl + wheel: zoom around the pointer'
+  'Ctrl + görgő: nagyítás az egér körül': 'Ctrl + wheel: zoom around the pointer',
+  'Több saját példány esetén több jobra bontsa-e a runokat. A gyorsabb mód több anyagot is elfogad.':
+    'Whether to split the runs over several jobs when you own several copies. The faster mode accepts more material.',
+  'alapbeállítás szerint ({0})': 'as in Settings ({0})',
+  ki: 'off',
+  'be – kevesebb anyag': 'on – less material',
+  'be – gyorsabb': 'on – faster',
+  'Párhuzamos gyártás: {0}.': 'Parallel manufacturing: {0}.',
+  '{0}: {1} jobban fut (párhuzamos gyártás: {2}), a leghosszabb kb. {3}. Gyorsabb módban {4} job, kb. {5}':
+    '{0}: runs in {1} job(s) (parallel manufacturing: {2}), the longest about {3}. In faster mode {4} jobs, about {5}',
+  '+{0} ISK anyag': '+{0} ISK material',
+  'több anyag nélkül': 'no extra material',
+  'Projektnél: Párhuzamos gyártás → be – gyorsabb; a Tervezőben: Beállítások.':
+    'In a project: Parallel manufacturing → on – faster; in the Planner: Settings.'
 };

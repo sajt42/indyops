@@ -1025,27 +1025,45 @@ function resultSystems(R) {
   const syss = [...new Set(R.jobs.map(j => jobSysOf(j, R.sys)).filter(Boolean))];
   return html`<p class="small muted">${syss.length > 1 ? T('Gyártási rendszerek: {0}', syss.map(s => (NAMES[s] || s) + ((IDX.p[s] || {}).manufacturing != null ? ' (' + fmt(IDX.p[s].manufacturing * 100, 2) + '%)' : '')).join(', ')) : T('Gyártási rendszer: {0}', NAMES[syss[0] || R.sys] || syss[0] || R.sys || T('ismeretlen')) + ((IDX.p[syss[0] || R.sys] || {}).manufacturing != null ? ' · cost index ' + fmt(IDX.p[syss[0] || R.sys].manufacturing * 100, 2) + '%' : '')} · sales tax ${fmt(salesTax() * 100, 2)}% · broker ${fmt(brokerFee() * 100, 2)}%${bestSeller() ? ' · ' + T('eladó: {0}', charName(bestSeller().cid)) : ''}</p>${m2Hint()}`;
 }
-// parallel manufacturing: which items were split into more jobs, and the extra material against the default
+// parallel manufacturing: which items were split into more jobs (and the extra material), and which ones could run
+// in more jobs than their setting allows (with what that would save and cost)
+const parModeLabel = m => (m === 'speed' ? T('gyorsabb') : m === 'material' ? T('kevesebb anyag') : T('ki'));
 function resultParallel(R) {
-  if (!S.parallel) return '';
-  const par = R.par || [];
-  if (!par.length)
-    return html`<div class="notice"><p class="small">${T('Párhuzamos gyártás ({0}): egy tételt sem érdemes több jobra bontani (kevés blueprint, szabad slot vagy idő, vagy több anyag kellene).', parModeName())}</p></div>`;
-  let extra = 0;
-  const byType = new Map();
-  for (const p of par) {
-    for (const [t, q] of p.extra) extra += q * buyPrice(t);
-    const o = byType.get(p.t) || { before: 0, jobs: 0 };
-    o.before += p.before;
-    o.jobs += p.jobs;
-    byType.set(p.t, o);
+  const par = R.par || [],
+    hints = R.parHint || [];
+  if (!par.length && !hints.length) return '';
+  const parts = [];
+  if (par.length) {
+    let extra = 0;
+    const byType = new Map();
+    for (const p of par) {
+      for (const [t, q] of p.extra) extra += q * buyPrice(t);
+      const o = byType.get(p.t) || { before: 0, jobs: 0, mode: p.mode };
+      o.before += p.before;
+      o.jobs += p.jobs;
+      byType.set(p.t, o);
+    }
+    const list = [...byType]
+      .map(
+        ([t, o]) => T('{0}: {1} → {2} job', NAMES[t] || '#' + t, o.before, o.jobs) + ' (' + parModeLabel(o.mode) + ')'
+      )
+      .join(', ');
+    parts.push(
+      html`<p class="small">${T('Párhuzamos gyártás: {0}.', list)} ${extra > 0 ? T('Többletanyag a sorban gyártáshoz képest: {0} ISK.', isk(extra)) : T('Nem kell hozzá több anyag.')}</p>`
+    );
   }
-  const list = [...byType].map(([t, o]) => T('{0}: {1} → {2} job', NAMES[t] || '#' + t, o.before, o.jobs)).join(', ');
-  return html`<div class="notice"><p class="small">${T('Párhuzamos gyártás ({0}): {1}.', parModeName(), list)} ${
-    extra > 0 ? T('Többletanyag a sorban gyártáshoz képest: {0} ISK.', isk(extra)) : T('Nem kell hozzá több anyag.')
-  }</p></div>`;
+  for (const h of hints) {
+    // the longest job now, from the plan's own jobs of this type; the split scales it by the runs per job
+    const js = R.jobs.filter(j => j.t === h.t && j.act === h.act);
+    const now = Math.max(0, ...js.map(jobTime));
+    const alt = h.runs > 0 ? (now * h.altRuns) / h.runs : 0;
+    const extra = h.extra.reduce((s, [t, q]) => s + q * (buyPrice(t) || 0), 0);
+    parts.push(
+      html`<p class="small">${T('{0}: {1} jobban fut (párhuzamos gyártás: {2}), a leghosszabb kb. {3}. Gyorsabb módban {4} job, kb. {5}', NAMES[h.t] || '#' + h.t, h.jobs, parModeLabel(h.mode), dur(now), h.alt, dur(alt))}${extra > 0 ? ', ' + T('+{0} ISK anyag', isk(extra)) : ', ' + T('több anyag nélkül')}. <span class="muted">${T('Projektnél: Párhuzamos gyártás → be – gyorsabb; a Tervezőben: Beállítások.')}</span></p>`
+    );
+  }
+  return html`<div class="notice">${hjoin(parts, '')}</div>`;
 }
-const parModeName = () => (S.parMode === 'speed' ? T('gyorsabb') : T('kevesebb anyag'));
 function resultProducts(R, rows, multi) {
   let h = html`<h3>Termékenként</h3><div class="tablewrap"><table><thead><tr>${multi ? html`<th>Projekt</th>` : ''}<th>Termék</th><th class="num">Db</th><th class="num">Jita sell / db</th>${m2On() ? html`<th class="num">${m2Short()} sell / db</th>` : ''}<th class="num">Eladás díjak után</th><th class="num">Anyag</th><th class="num">Job</th><th class="num">Profit</th><th class="num">Fő job ideje</th></tr></thead><tbody>${rows.map(r => html`<tr>${multi ? html`<td>${r.x.item.label || ''}</td>` : ''}<td>${NAMES[r.p] || r.p}</td><td class="num">${fmt(r.x.made)}</td><td class="num">${isk(sell(r.p))}</td>${m2On() ? html`<td class="num">${m2Cell(sell(r.p), sell2(r.p))}</td>` : ''}<td class="num">${isk(r.net)}</td><td class="num">${isk(r.mat)}</td><td class="num">${isk(r.jc)}</td><td class="num ${r.unk ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${r.unk ? html`<span title="${T('Nincs ára valaminek ebben a tételben.')}">?</span>` : isk(r.profit)}</td><td class="num">${dur(r.tm)}</td></tr>`)}</tbody></table></div>`;
   if (multi)
