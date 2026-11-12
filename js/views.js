@@ -809,6 +809,27 @@ async function prepHaul(R) {
   R.haulSig = sig;
   return true;
 }
+// The player's ships that can carry this route's cargo, fastest first: trips and time (s; null when the route is
+// not known). Used by the haul plan and the timeline.
+function shipOptions(R, key, vol, maxUnit) {
+  const ctx = R.haulCtx;
+  if (!ctx || !vol) return [];
+  const rt = ctx.jumps[key];
+  const j = rt ? rt.n : null;
+  const ships = ctx.ships.filter(x => x.canFly && x.cap >= (maxUnit || 0));
+  const opts = ships.map(x => {
+    const trips = Math.ceil(vol / x.cap);
+    const per = JUMP_SEC[x.g] || 75;
+    // empty flight to the pickup point, then loaded legs and the empty legs back between them
+    const from = Number(key.split('|')[0]);
+    const pj = ctx.pos ? ctx.pos[x.l + '|' + from] : 0;
+    const jumpsAll = j == null || pj == null ? null : pj + (2 * trips - 1) * j;
+    const time = jumpsAll == null ? null : jumpsAll * per + trips * 2 * TRIP_END_SEC;
+    return Object.assign({ trips, time, pj }, x);
+  });
+  opts.sort((a, b) => (a.time ?? a.trips * 1e6) - (b.time ?? b.trips * 1e6) || a.trips - b.trips);
+  return opts;
+}
 function shipAdvice(R, key, vol, maxUnit) {
   const ctx = R.haulCtx;
   if (!ctx || !vol) return '';
@@ -828,17 +849,7 @@ function shipAdvice(R, key, vol, maxUnit) {
     return html`<div class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Nincs olyan saját hajó, amit a tulajdonosa vezetni tud.</div>`;
   if (!ships.length)
     return html`<div class="small muted">${j != null ? T('{0} ugrás', j) + ' (' + safety + '). ' : ''}Egy darab ${fmt(maxUnit)} m³: egyik vezethető hajód rakterébe sem fér bele. Ehhez freighter vagy contract (courier) kell.</div>`;
-  const opts = ships.map(x => {
-    const trips = Math.ceil(vol / x.cap);
-    const per = JUMP_SEC[x.g] || 75;
-    // empty flight to the pickup point, then loaded legs and the empty legs back between them
-    const from = Number(key.split('|')[0]);
-    const pj = ctx.pos ? ctx.pos[x.l + '|' + from] : 0;
-    const jumpsAll = j == null || pj == null ? null : pj + (2 * trips - 1) * j;
-    const time = jumpsAll == null ? null : jumpsAll * per + trips * 2 * TRIP_END_SEC;
-    return Object.assign({ trips, time, pj }, x);
-  });
-  opts.sort((a, b) => (a.time ?? a.trips * 1e6) - (b.time ?? b.trips * 1e6) || a.trips - b.trips);
+  const opts = shipOptions(R, key, vol, maxUnit);
   const seen = new Set();
   const best = opts
     .filter(o => {
@@ -1144,6 +1155,7 @@ function renderResult(el, R, rerun) {
   // the market search result spans the full width, under the shopping list and the jobs
   h = html`${h}<div class="mktout"></div>`;
   h = html`${h}${resultCharLoad(R)}`;
+  h = html`${h}<div class="tlbox">${renderTimeline(R)}</div>`;
   h = html`${h}${renderHaul(R)}`;
   h = html`${h}${resultTrees(R, multi)}`;
   setHtml(el, h);
@@ -1159,6 +1171,7 @@ function renderResult(el, R, rerun) {
         () => status('másolás nem sikerült')
       );
     });
+  bindTimeline(el, R);
   el.querySelectorAll('[data-leave]').forEach(b =>
     b.addEventListener('click', () => {
       setSettingIn('leave', b.dataset.leave, true);

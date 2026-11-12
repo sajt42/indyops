@@ -236,7 +236,17 @@ const RECALC_SETTINGS = {
   srcShips: 'hajók a nyersanyag-forrásokban',
   system: 'gyártási rendszer'
 };
-const QUIET_SETTINGS = new Set(['lang', 'mktRegions', 'mktMaxJumps', 'mktHsOnly']);
+// the timeline's own settings redraw only the timeline (bindTimeline)
+const QUIET_SETTINGS = new Set([
+  'lang',
+  'mktRegions',
+  'mktMaxJumps',
+  'mktHsOnly',
+  'tlStart',
+  'tlActive',
+  'tlBuyLead',
+  'slotRes'
+]);
 onSetting(key => {
   if (QUIET_SETTINGS.has(key)) return;
   if (key === 'market2') return refreshMarket2();

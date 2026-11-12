@@ -20,6 +20,7 @@ The scripts are classic (non-module) scripts. They load in this order from `inde
 | `js/market.js` | where to buy: manual prices, picked stations, regional sell-order search with jumps and order book depth | `buyParts`, `buyPrice`, `loadMarket`, `mktSearch`, `bindBuySources` |
 | `js/engine.js` | planning engine: material trees, BPC runs, invention, job systems, job cost and time | `makeMulti`, `planNode`, `addInvention`, `assignJobSys`, `jobCost`, `jobTime` |
 | `js/views.js` | paging and sorting, rendering of the Characters / Blueprints / Stock / Settings tabs, plan pipeline, character assignment, hauling | `renderAll`, `pageOf`, `sortTh`, `finishResult`, `assignChars`, `showResult`, `renderResult`, `prepHaul` |
+| `js/schedule.js` | timeline: a serial scheduler on real slots (running jobs, reserve, dependencies, haul lag, purchase lead time, one job per blueprint item, active hours) and its SVG Gantt chart | `scheduleJobs` (pure), `slotList`, `inWindow`, `timelineInput`, `renderTimeline`, `bindTimeline` |
 | `js/tab-projects.js` | Projects tab, incl. material sources | `renderProjects`, `calcProjects` |
 | `js/tab-profit.js` | What pays? (profit ranking) | `runProfit`, `renderProfit` |
 | `js/tab-invention.js` | Invention | `runInvention`, `renderInvention` |
@@ -91,6 +92,8 @@ showResult(el, R, rerun)             views.js    re-assigns characters, draws, r
   renderResult(el, R, rerun)                     pure rendering: planTotals + one function per section
   refreshHaul(R)                                 prepares hauling again only if the assignment changed
 ```
+
+- The timeline (`renderTimeline`, inside `renderResult`) does not change the plan either: `timelineInput` turns the result into jobs with durations (`jobTime`), dependencies from the tree (child jobs before the parent; haul time between places as lag; copy before invention), material arrival (`S.tlBuyLead` plus the best ship time of the routes into the place, from `shipOptions`), and usable slots per character and kind (`slotList`: running jobs hold a slot until they end, `S.slotRes` keeps some out). `scheduleJobs` places them in order (project order, then the longest chain ahead) at the earliest moment a slot and the blueprint item are free and, with `S.tlActive`, inside the daily window. Its settings (`tlStart`, `tlActive`, `tlBuyLead`, `slotRes`) are quiet: they redraw only the timeline.
 
 - `makeMulti` takes a shared stock pool (`buildPool`): hangars, optionally ore, and products of running jobs. A project's or item's material sources limit which pool entries it may take (`stockFilter`, `reservedMap`). The planner and projects also pass `opt.leave`: stock at a place the player left out of the haul plan (`S.leave`, keys `from|to`, set from the Hauling cards) is not taken for jobs at `to`; `planNode` passes each node's production place (the same one `prodLocOf` gives the haul plan) to its materials.
 - `allocateRuns` fills the copies one after the other by default. With parallel manufacturing (`S.parallel`, `S.parMode`) it spreads the runs over several blueprint items (`parallelRuns`), limited by the items, the free slots and a one-hour minimum per job; in "material" mode only when no material is added. Splits are listed in `R.par`. `assignChars` never moves two jobs onto the same blueprint item.

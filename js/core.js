@@ -61,8 +61,8 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.18.0',
-  built: '2026-11-11',
+  version: '1.19.0',
+  built: '2026-11-12',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
   clientId: 'b02779a9ea1c427bb46c9d70a697a4c7',
@@ -330,7 +330,11 @@ let S = Object.assign(
     skillChar: null,
     locs: null,
     buyOverride: {},
-    leave: {}
+    leave: {},
+    tlStart: '',
+    tlActive: '',
+    tlBuyLead: '',
+    slotRes: {}
   },
   load('settings', {})
 );
@@ -428,6 +432,10 @@ const SET_SCHEMA = {
   parMode: 'str',
   srcShips: 'bool',
   buyOverride: 'mapBool',
+  tlStart: 'str', // timeline: planned start ('' = now), datetime-local text
+  tlActive: 'str', // timeline: hours when jobs are started, 'from-to' ('' = any time)
+  tlBuyLead: 'numOrEmpty', // timeline: hours from deciding to buy until the goods can be hauled
+  slotRes: 'mapNum', // timeline: 'cid|m|r|s' -> slots kept out of the plan
   leave: 'mapBool', // 'from|to' -> true: stock at 'from' is left there when it would be hauled to 'to'
   locNames: 'mapStr',
   structBroker: 'mapNum',

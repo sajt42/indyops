@@ -1096,6 +1096,48 @@ const ok = (c, msg) => {
       its[0] && its[0].prefer === '402' && its[1] && its[1].prefer === undefined,
       'a backup keeps a valid pick and drops a bad one'
     );
+    // 38. timeline: drawn under the result, on real slots, with a running job holding a slot; its settings redraw it
+    T.setData({
+      1: {
+        assets: [],
+        bps,
+        skills: {},
+        jobs: [
+          {
+            act: 1,
+            bp: 688,
+            bpi: 9,
+            runs: 1,
+            start: new Date(Date.now() - 3600e3).toISOString(),
+            end: new Date(Date.now() + 21 * 86400e3).toISOString(),
+            loc: 60003760,
+            prod: 638,
+            st: 'active'
+          }
+        ],
+        at: Date.now()
+      }
+    });
+    await T.finishResult(R, pick[0]);
+    const tl = d.createElement('div');
+    d.body.appendChild(tl);
+    T.renderResult(tl, R, () => {});
+    const svg = tl.querySelector('.tlbox svg.tl');
+    ok(
+      !!svg && svg.querySelectorAll('.tl-bar').length === R.jobs.length,
+      'one bar per job (' + (svg && svg.querySelectorAll('.tl-bar').length) + '/' + R.jobs.length + ')'
+    );
+    ok(!!svg && svg.querySelectorAll('.tl-run').length === 1, 'the running job is on the timeline');
+    ok(/Kész: /.test(tl.querySelector('.tlbox').textContent), 'finish date shown');
+    const from = tl.querySelector('[data-tl="from"]');
+    from.value = '18';
+    from.dispatchEvent(new d.defaultView.Event('change'));
+    ok(
+      T.S.tlActive === '18-24' && /18–24 óra között/.test(tl.querySelector('.tlbox').textContent),
+      'active window set and redrawn: ' + T.S.tlActive
+    );
+    T.setSetting('tlActive', '');
+    tl.remove();
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

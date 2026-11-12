@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.19.0 – 2026-11-12
+
+- Timeline: under every plan and project result, a Gantt chart of the jobs on your characters' real slots. Running jobs hold a slot until they end; components come before the jobs that need them (with the haul time between places); bought and hauled materials arrive after a purchase lead time and the haul estimate; one blueprint item runs one job at a time. Shows the finish date, the critical path, and the assumptions used. Settings: start time, the hours you start jobs, purchase lead time, and slots kept for yourself per character.
+
 ## 1.18.0 – 2026-11-11
 
 - Projects: when you own several blueprints for an item, you can pick which one the plan uses first (e.g. a BPC that came with an order instead of your better BPO); the others are used only when its runs run out. Default stays the best one; the pick is kept in backups, and a note shows when the picked blueprint is gone.
