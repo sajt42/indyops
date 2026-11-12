@@ -1122,7 +1122,7 @@ const ok = (c, msg) => {
     const tl = d.createElement('div');
     d.body.appendChild(tl);
     T.renderResult(tl, R, () => {});
-    const svg = tl.querySelector('.tlbox svg.tl');
+    const svg = tl.querySelector('.tlbox .tlscroll svg.tl');
     ok(
       !!svg && svg.querySelectorAll('.tl-bar').length === R.jobs.length,
       'one bar per job (' + (svg && svg.querySelectorAll('.tl-bar').length) + '/' + R.jobs.length + ')'
@@ -1136,6 +1136,16 @@ const ok = (c, msg) => {
       T.S.tlActive === '18-24' && /18–24 óra között/.test(tl.querySelector('.tlbox').textContent),
       'active window set and redrawn: ' + T.S.tlActive
     );
+    // zoom: twice as wide, the labels stay outside the scrolling part
+    const w1 = Number(tl.querySelector('.tlscroll svg.tl').getAttribute('width'));
+    tl.querySelector('[data-tlzoom="in"]').click();
+    const w2 = Number(tl.querySelector('.tlscroll svg.tl').getAttribute('width'));
+    ok(
+      w2 > 1.9 * w1 && !!tl.querySelector('.tlwrap > svg.tl-labels'),
+      'zoom in doubles the chart, labels fixed (' + w1 + ' → ' + w2 + ')'
+    );
+    tl.querySelector('[data-tlzoom="fit"]').click();
+    ok(Number(tl.querySelector('.tlscroll svg.tl').getAttribute('width')) === w1, 'whole view back');
     T.setSetting('tlActive', '');
     tl.remove();
   }

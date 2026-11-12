@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.19.1 – 2026-11-12
+
+- Timeline: zoom with − / + or Ctrl + mouse wheel (around the pointer), up to ×64; the chart scrolls sideways while the character names stay in place; the time axis picks finer steps as you zoom in; “All” returns to the whole view.
+
 ## 1.19.0 – 2026-11-12
 
 - Timeline: under every plan and project result, a Gantt chart of the jobs on your characters' real slots. Running jobs hold a slot until they end; components come before the jobs that need them (with the haul time between places); bought and hauled materials arrive after a purchase lead time and the haul estimate; one blueprint item runs one job at a time. Shows the finish date, the critical path, and the assumptions used. Settings: start time, the hours you start jobs, purchase lead time, and slots kept for yourself per character.

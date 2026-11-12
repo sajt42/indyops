@@ -133,8 +133,10 @@ input.manp{width:90px}
 .haul .leave{margin-top:6px}
 
 /* timeline (Gantt) */
-.tlwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:4px}
-.tlwrap svg.tl{min-width:720px;display:block}
+.tlwrap{display:flex;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:4px}
+.tlwrap svg.tl{display:block;flex:none}
+.tlscroll{overflow-x:auto;flex:1;min-width:0}
+.tlzoom{margin:0 0 4px;gap:4px}
 .tl text{font:11px var(--f-body);fill:var(--fg)}
 .tl .tl-lab{font-weight:600}
 .tl .tl-small{font-size:10px;fill:var(--muted)}

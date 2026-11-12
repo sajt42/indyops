@@ -6,6 +6,10 @@
 // material tree, purchase lead time and haul estimates. renderTimeline() draws it as an SVG Gantt chart.
 
 const HOUR = 3600e3;
+// zoom of the timeline (1 = the whole plan fits), and the box width it was drawn for (0 = not measured yet)
+let TL_ZOOM = 1,
+  TL_WIDTH = 0;
+const TL_ZOOM_MAX = 64;
 
 // Start times may be limited to a daily window (when the player is online), e.g. { from: 18, to: 23 }; from > to
 // wraps past midnight. Returns the first moment at or after t inside the window (local time).
@@ -283,12 +287,16 @@ function renderTimeline(R, now = Date.now()) {
   );
   const end = Math.max(sch.end, inp.t0 + HOUR);
   const span = end - inp.t0;
-  const W = 1000,
-    LW = 190,
+  // the labels stay put on the left; the chart beside them is as wide as the box times the zoom, and scrolls
+  const LABW = 190,
     RH = 22,
-    TOP = 26;
-  const x = t => LW + ((Math.min(Math.max(t, inp.t0), end) - inp.t0) / span) * (W - LW - 10);
+    TOP = 26,
+    LW = 0;
+  const PW = Math.max(300, (TL_WIDTH || 1000) - LABW - 14) * TL_ZOOM;
+  const W = PW + 10;
+  const x = t => ((Math.min(Math.max(t, inp.t0), end) - inp.t0) / span) * PW;
   let rowsSvg = [],
+    labSvg = [],
     y = TOP;
   const items = (R.trees || []).map(x => x.item);
   const colorOf = j => 'tl-c' + (Math.max(0, items.indexOf(j.item)) % 6);
@@ -304,7 +312,7 @@ function renderTimeline(R, now = Date.now()) {
     for (const r of sch.rows.values()) if (r.lane === lane && r.s != null) used.add(r.slot);
     const rowOf = new Map([...used].sort((a, b) => a - b).map((s, i) => [s, i]));
     const free = n - used.size;
-    rowsSvg.push(
+    labSvg.push(
       html`<text x="4" y="${y + 15}" class="tl-lab">${charName(Number(cid))} · ${T(TL_KIND[k])}</text><text x="4" y="${y + 28}" class="tl-small">${n ? T('{0} slot', n) + (free > 0 ? ' · ' + T('{0} üres', free) : '') : T('nincs szabad slot')}</text>`
     );
     const nRows = Math.max(2, used.size);
@@ -345,7 +353,12 @@ function renderTimeline(R, now = Date.now()) {
   }
   // time axis
   const day = 24 * HOUR;
-  const step = span <= 2 * day ? 6 * HOUR : span <= 14 * day ? day : span <= 70 * day ? 7 * day : 30 * day;
+  // the smallest step that leaves room for its label
+  const pxPerMs = PW / span;
+  const step =
+    [HOUR, 2 * HOUR, 3 * HOUR, 6 * HOUR, 12 * HOUR, day, 2 * day, 7 * day, 14 * day, 30 * day].find(
+      s => s * pxPerMs >= 70
+    ) || 30 * day;
   const ticks = [];
   const first = new Date(inp.t0);
   first.setMinutes(0, 0, 0);
@@ -354,15 +367,20 @@ function renderTimeline(R, now = Date.now()) {
     const xx = x(t);
     const lab = new Date(t).toLocaleString(
       LOC(),
-      step >= day ? { month: '2-digit', day: '2-digit' } : { hour: '2-digit', minute: '2-digit' }
+      step >= day || new Date(t).getHours() === 0
+        ? { month: '2-digit', day: '2-digit' }
+        : { hour: '2-digit', minute: '2-digit' }
     );
     ticks.push(
       html`<line x1="${xx}" x2="${xx}" y1="${TOP - 4}" y2="${y}" class="tl-tick"></line><text x="${xx + 2}" y="${TOP - 8}" class="tl-small">${lab}</text>`
     );
   }
   const none = [...sch.rows.values()].filter(r => r.s == null).length;
-  const svg = html`<svg class="tl" viewBox="0 0 ${W} ${y + 4}" width="100%" role="img" aria-label="${T('Idővonal')}">${hjoin(ticks, '')}${hjoin(rowsSvg, '')}<line x1="${x(sch.end)}" x2="${x(sch.end)}" y1="${TOP - 4}" y2="${y}" class="tl-end"></line></svg>`;
-  return html`<h3>${T('Idővonal')}</h3>${timelineSummary(R, T0, sch, now, none)}<div class="tlwrap">${svg}</div>${timelineSettings(R)}`;
+  const H2 = y + 4;
+  const labels = html`<svg class="tl tl-labels" width="${LABW}" height="${H2}" viewBox="0 0 ${LABW} ${H2}">${hjoin(labSvg, '')}</svg>`;
+  const svg = html`<svg class="tl" width="${W}" height="${H2}" viewBox="0 0 ${W} ${H2}" role="img" aria-label="${T('Idővonal')}">${hjoin(ticks, '')}${hjoin(rowsSvg, '')}<line x1="${x(sch.end)}" x2="${x(sch.end)}" y1="${TOP - 4}" y2="${y}" class="tl-end"></line></svg>`;
+  const zoom = html`<div class="row tlzoom small"><button class="btn mini" data-tlzoom="out" title="${T('Kicsinyítés')}" ${TL_ZOOM <= 1 ? 'disabled' : ''}>−</button><button class="btn mini" data-tlzoom="in" title="${T('Nagyítás')}" ${TL_ZOOM >= TL_ZOOM_MAX ? 'disabled' : ''}>+</button><button class="btn mini" data-tlzoom="fit" ${TL_ZOOM === 1 ? 'disabled' : ''}>${T('Egész')}</button><span class="muted">${TL_ZOOM > 1 ? '×' + TL_ZOOM + ' · ' : ''}${T('Ctrl + görgő: nagyítás az egér körül')}</span></div>`;
+  return html`<h3>${T('Idővonal')}</h3>${timelineSummary(R, T0, sch, now, none)}${zoom}<div class="tlwrap">${labels}<div class="tlscroll">${svg}</div></div>${timelineSettings(R)}`;
 }
 
 function timelineSummary(R, T0, sch, now, none) {
@@ -408,12 +426,47 @@ function timelineSettings(R) {
 function bindTimeline(el, R) {
   const box = el.querySelector('.tlbox');
   if (!box) return;
-  const redraw = () => {
+  // keep: the settings panel open, and the time under the given point (fraction of the visible width) in place
+  const redraw = (keepAt = 0.5) => {
     const open = box.querySelector('details.tlset') && box.querySelector('details.tlset').open;
+    const sc = box.querySelector('.tlscroll');
+    const frac = sc && sc.scrollWidth ? (sc.scrollLeft + sc.clientWidth * keepAt) / sc.scrollWidth : 0;
     setHtml(box, renderTimeline(R));
     if (open) box.querySelector('details.tlset').open = true;
+    const sc2 = box.querySelector('.tlscroll');
+    if (sc2 && sc2.scrollWidth) sc2.scrollLeft = frac * sc2.scrollWidth - sc2.clientWidth * keepAt;
     bindTimeline(el, R);
   };
+  const zoomTo = (z, keepAt) => {
+    z = Math.min(TL_ZOOM_MAX, Math.max(1, z));
+    if (z === TL_ZOOM) return;
+    TL_ZOOM = z;
+    redraw(keepAt);
+  };
+  // drawn for another width (first time, or the window changed): draw again for this one
+  const wNow = box.clientWidth;
+  if (wNow && Math.abs(wNow - TL_WIDTH) > 4) {
+    TL_WIDTH = wNow;
+    return redraw();
+  }
+  box.querySelectorAll('[data-tlzoom]').forEach(b =>
+    b.addEventListener('click', () => {
+      const a = b.dataset.tlzoom;
+      zoomTo(a === 'fit' ? 1 : a === 'in' ? TL_ZOOM * 2 : TL_ZOOM / 2);
+    })
+  );
+  const sc = box.querySelector('.tlscroll');
+  if (sc)
+    sc.addEventListener(
+      'wheel',
+      e => {
+        if (!e.ctrlKey && !e.metaKey) return;
+        e.preventDefault();
+        const r = sc.getBoundingClientRect();
+        zoomTo(e.deltaY < 0 ? TL_ZOOM * 2 : TL_ZOOM / 2, r.width ? (e.clientX - r.left) / r.width : 0.5);
+      },
+      { passive: false }
+    );
   box.querySelectorAll('[data-tl]').forEach(inp =>
     inp.addEventListener('change', () => {
       const k = inp.dataset.tl;

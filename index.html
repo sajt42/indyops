@@ -21,7 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.19.0">
+<link rel="stylesheet" href="css/style.css?v=1.19.1">
 </head>
 <body>
 <header><div class="hwrap">
@@ -443,7 +443,7 @@
     <li><b>Saját készlet</b>: alapból piaci áron számít, mert el is adhatnád. A Tervezőben ez kikapcsolható („saját készlet ingyen”).</li>
     <li><b>Invention</b>: átlagos költség, vagyis a kísérletek ára osztva az eséllyel. Projektben a kísérletek száma felfelé kerekítve.</li>
     <li><b>Szállítás</b>: durva becslés az ugrások és a hajód raktere alapján: a hajó üres útja a rakományig, a fordulók és a dokkolás. Csak a cargo holddal számol. Ha egy távoli készlet nem éri meg a fuvart, a „Hagyd ott, vedd meg” gombbal a terv ott hagyja, és a hiányt megveszi; mellette látod, mennyibe kerülne megvenni. A Szállítás alján a „Visszaveszem” gombbal visszakapcsolhatod.</li>
-    <li><b>Idővonal</b>: mi mikor fut a karaktereid valódi slotjain. A futó jobok a lejártukig foglalnak egy slotot, a komponensek a szülő job előtt készülnek, a vásárolt és odaszállított anyag a beállított beszerzési idő és a fuvarbecslés után érkezik. Megmutatja a befejezés dátumát és a kritikus utat. Az „Idővonal beállításai” alatt megadhatod a kezdést (pl. holnap este), hogy hány órakor indítasz jobokat, a beszerzési időt, és karakterenként hány slotot tartasz meg magadnak. Ezek csak az idővonalat rajzolják újra.</li>
+    <li><b>Idővonal</b>: mi mikor fut a karaktereid valódi slotjain. A futó jobok a lejártukig foglalnak egy slotot, a komponensek a szülő job előtt készülnek, a vásárolt és odaszállított anyag a beállított beszerzési idő és a fuvarbecslés után érkezik. Megmutatja a befejezés dátumát és a kritikus utat. Az „Idővonal beállításai” alatt megadhatod a kezdést (pl. holnap este), hogy hány órakor indítasz jobokat, a beszerzési időt, és karakterenként hány slotot tartasz meg magadnak. Ezek csak az idővonalat rajzolják újra. A − / + gombokkal vagy Ctrl + görgővel nagyíthatsz (az egér körül), a nevek közben a helyükön maradnak, az „Egész” visszaáll a teljes nézetre.</li>
   </ul>
 
   <h3>Adatvédelem és engedélyek</h3>
@@ -511,7 +511,7 @@
     <li><b>Own stock</b>: valued at market price by default, since you could sell it. In the Planner you can switch this off ("own stock is free").</li>
     <li><b>Invention</b>: expected cost, i.e. the cost of the attempts divided by the chance. In projects the number of attempts is rounded up.</li>
     <li><b>Hauling</b>: a rough estimate from the jumps and your ship's cargo hold: the ship's empty flight to the cargo, the trips and docking. Only the cargo hold counts. When some remote stock is not worth the trip, “Leave it, buy instead” makes the plan leave it there and buy the shortfall; next to the button you see what buying it would cost. “Use it again” at the bottom of Hauling turns it back on.</li>
-    <li><b>Timeline</b>: what runs when on your characters' real slots. Running jobs hold a slot until they end, components are built before the job that needs them, and bought and hauled materials arrive after the purchase lead time and the haul estimate. It shows the finish date and the critical path. Under “Timeline settings” you set the start (e.g. tomorrow evening), the hours when you start jobs, the purchase lead time, and how many slots per character you keep for yourself. These only redraw the timeline.</li>
+    <li><b>Timeline</b>: what runs when on your characters' real slots. Running jobs hold a slot until they end, components are built before the job that needs them, and bought and hauled materials arrive after the purchase lead time and the haul estimate. It shows the finish date and the critical path. Under “Timeline settings” you set the start (e.g. tomorrow evening), the hours when you start jobs, the purchase lead time, and how many slots per character you keep for yourself. These only redraw the timeline. Zoom with − / + or Ctrl + mouse wheel (around the pointer); the names stay in place, and “All” goes back to the whole view.</li>
   </ul>
 
   <h3>Privacy and permissions</h3>
@@ -579,7 +579,7 @@
     <li><b>Eigener Bestand</b>: standardmäßig zum Marktpreis bewertet, denn du könntest ihn verkaufen. Im Planer abschaltbar („eigener Bestand kostenlos“).</li>
     <li><b>Invention</b>: Erwartungswert, also Kosten der Versuche geteilt durch die Chance. In Projekten wird die Zahl der Versuche aufgerundet.</li>
     <li><b>Transport</b>: grobe Schätzung aus den Sprüngen und dem Frachtraum deines Schiffs: der Leerflug des Schiffs zur Ladung, die Fahrten und das Docken. Nur der Frachtraum zählt. Lohnt sich ein entfernter Bestand nicht, lässt „Dort lassen, stattdessen kaufen“ ihn dort und kauft den Fehlbestand; neben dem Knopf steht, was der Kauf kosten würde. Unten bei Transport schaltet „Wieder verwenden“ ihn wieder ein.</li>
-    <li><b>Zeitplan</b>: was wann auf den echten Slots deiner Charaktere läuft. Laufende Jobs belegen einen Slot bis zu ihrem Ende, Komponenten werden vor dem Job gebaut, der sie braucht, und gekauftes und transportiertes Material kommt nach der Beschaffungszeit und der Transportschätzung. Er zeigt das Fertigdatum und den kritischen Pfad. Unter „Zeitplan-Einstellungen“ legst du den Start fest (z. B. morgen Abend), wann du Jobs startest, die Beschaffungszeit und wie viele Slots pro Charakter du für dich behältst. Das zeichnet nur den Zeitplan neu.</li>
+    <li><b>Zeitplan</b>: was wann auf den echten Slots deiner Charaktere läuft. Laufende Jobs belegen einen Slot bis zu ihrem Ende, Komponenten werden vor dem Job gebaut, der sie braucht, und gekauftes und transportiertes Material kommt nach der Beschaffungszeit und der Transportschätzung. Er zeigt das Fertigdatum und den kritischen Pfad. Unter „Zeitplan-Einstellungen“ legst du den Start fest (z. B. morgen Abend), wann du Jobs startest, die Beschaffungszeit und wie viele Slots pro Charakter du für dich behältst. Das zeichnet nur den Zeitplan neu. Mit − / + oder Strg + Mausrad zoomst du (um den Zeiger); die Namen bleiben stehen, „Alles“ zeigt wieder den ganzen Plan.</li>
   </ul>
 
   <h3>Datenschutz und Berechtigungen</h3>
@@ -614,23 +614,23 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.19.0"></script>
-<script src="i18n/de.js?v=1.19.0"></script>
-<script src="js/core.js?v=1.19.0"></script>
-<script src="js/esi.js?v=1.19.0"></script>
-<script src="js/data.js?v=1.19.0"></script>
-<script src="js/market.js?v=1.19.0"></script>
-<script src="js/engine.js?v=1.19.0"></script>
-<script src="js/views.js?v=1.19.0"></script>
-<script src="js/schedule.js?v=1.19.0"></script>
-<script src="js/tab-projects.js?v=1.19.0"></script>
-<script src="js/tab-profit.js?v=1.19.0"></script>
-<script src="js/tab-invention.js?v=1.19.0"></script>
-<script src="js/tab-research.js?v=1.19.0"></script>
-<script src="js/tab-sales.js?v=1.19.0"></script>
-<script src="js/tab-canbuild.js?v=1.19.0"></script>
-<script src="js/tab-mining.js?v=1.19.0"></script>
-<script src="js/repro.js?v=1.19.0"></script>
-<script src="js/main.js?v=1.19.0"></script>
+<script src="i18n/en.js?v=1.19.1"></script>
+<script src="i18n/de.js?v=1.19.1"></script>
+<script src="js/core.js?v=1.19.1"></script>
+<script src="js/esi.js?v=1.19.1"></script>
+<script src="js/data.js?v=1.19.1"></script>
+<script src="js/market.js?v=1.19.1"></script>
+<script src="js/engine.js?v=1.19.1"></script>
+<script src="js/views.js?v=1.19.1"></script>
+<script src="js/schedule.js?v=1.19.1"></script>
+<script src="js/tab-projects.js?v=1.19.1"></script>
+<script src="js/tab-profit.js?v=1.19.1"></script>
+<script src="js/tab-invention.js?v=1.19.1"></script>
+<script src="js/tab-research.js?v=1.19.1"></script>
+<script src="js/tab-sales.js?v=1.19.1"></script>
+<script src="js/tab-canbuild.js?v=1.19.1"></script>
+<script src="js/tab-mining.js?v=1.19.1"></script>
+<script src="js/repro.js?v=1.19.1"></script>
+<script src="js/main.js?v=1.19.1"></script>
 </body>
 </html>

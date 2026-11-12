@@ -858,5 +858,9 @@ window.I18N.en = {
   reakció: 'reaction',
   science: 'science',
   '{0} slot': '{0} slots',
-  '{0} üres': '{0} free'
+  '{0} üres': '{0} free',
+  Kicsinyítés: 'Zoom out',
+  Nagyítás: 'Zoom in',
+  Egész: 'All',
+  'Ctrl + görgő: nagyítás az egér körül': 'Ctrl + wheel: zoom around the pointer'
 };

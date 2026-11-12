@@ -866,5 +866,9 @@ window.I18N.de = {
   reakció: 'Reaktion',
   science: 'Science',
   '{0} slot': '{0} Slots',
-  '{0} üres': '{0} frei'
+  '{0} üres': '{0} frei',
+  Kicsinyítés: 'Verkleinern',
+  Nagyítás: 'Vergrößern',
+  Egész: 'Alles',
+  'Ctrl + görgő: nagyítás az egér körül': 'Strg + Mausrad: um den Zeiger zoomen'
 };
