@@ -10,6 +10,12 @@ const HOUR = 3600e3;
 let TL_ZOOM = 1,
   TL_WIDTH = 0;
 const TL_ZOOM_MAX = 64;
+// a label cut to fit a width (px), with an ellipsis; '' when not even a few letters fit. per: px per letter
+function fitText(s, px, per) {
+  const n = Math.floor(px / per);
+  if (n < 4) return '';
+  return s.length <= n ? s : s.slice(0, n - 1) + '…';
+}
 
 // Start times may be limited to a daily window (when the player is online), e.g. { from: 18, to: 23 }; from > to
 // wraps past midnight. Returns the first moment at or after t inside the window (local time).
@@ -292,7 +298,7 @@ function renderTimeline(R, now = Date.now()) {
     RH = 22,
     TOP = 26,
     LW = 0;
-  const PW = Math.max(300, (TL_WIDTH || 1000) - LABW - 14) * TL_ZOOM;
+  const PW = Math.max(300, (TL_WIDTH || 1000) - LABW - 34) * TL_ZOOM;
   const W = PW + 10;
   const x = t => ((Math.min(Math.max(t, inp.t0), end) - inp.t0) / span) * PW;
   let rowsSvg = [],
@@ -313,7 +319,7 @@ function renderTimeline(R, now = Date.now()) {
     const rowOf = new Map([...used].sort((a, b) => a - b).map((s, i) => [s, i]));
     const free = n - used.size;
     labSvg.push(
-      html`<text x="4" y="${y + 15}" class="tl-lab">${charName(Number(cid))} · ${T(TL_KIND[k])}</text><text x="4" y="${y + 28}" class="tl-small">${n ? T('{0} slot', n) + (free > 0 ? ' · ' + T('{0} üres', free) : '') : T('nincs szabad slot')}</text>`
+      html`<text x="4" y="${y + 15}" class="tl-lab">${fitText(charName(Number(cid)), LABW - 8, 7)}<title>${charName(Number(cid))}</title></text><text x="4" y="${y + 28}" class="tl-small">${T(TL_KIND[k])} · ${n ? T('{0} slot', n) + (free > 0 ? ' · ' + T('{0} üres', free) : '') : T('nincs szabad slot')}</text>`
     );
     const nRows = Math.max(2, used.size);
     for (let i = 0; i < nRows; i++)
@@ -346,7 +352,7 @@ function renderTimeline(R, now = Date.now()) {
         x2 = x(r.e);
       const label = (NAMES[j.t] || j.t) + ' ×' + j.runs;
       rowsSvg.push(
-        html`<g><rect x="${x1}" y="${yy}" width="${Math.max(2, x2 - x1)}" height="${RH - 6}" rx="2" class="tl-bar ${colorOf(j)}${sch.crit.has(id) ? ' tl-crit' : ''}"></rect>${x2 - x1 > 60 ? html`<text x="${x1 + 4}" y="${yy + 12}" class="tl-in">${label}</text>` : ''}<title>${label} · ${tlWhen(r.s)} → ${tlWhen(r.e)} (${dur((r.e - r.s) / 1000)})${r.why === 'slot' ? ' · ' + T('slotra vár') : r.why === 'bp' ? ' · ' + T('a BP másik jobban van') : r.why === 'mat' ? ' · ' + T('anyagra vár') : r.why === 'active' ? ' · ' + T('az aktív időszakra vár') : ''}${sch.crit.has(id) ? ' · ' + T('kritikus út') : ''}</title></g>`
+        html`<g><rect x="${x1}" y="${yy}" width="${Math.max(2, x2 - x1)}" height="${RH - 6}" rx="2" class="tl-bar ${colorOf(j)}${sch.crit.has(id) ? ' tl-crit' : ''}"></rect>${fitText(label, x2 - x1 - 8, 6) ? html`<text x="${x1 + 4}" y="${yy + 12}" class="tl-in">${fitText(label, x2 - x1 - 8, 6)}</text>` : ''}<title>${label} · ${tlWhen(r.s)} → ${tlWhen(r.e)} (${dur((r.e - r.s) / 1000)})${r.why === 'slot' ? ' · ' + T('slotra vár') : r.why === 'bp' ? ' · ' + T('a BP másik jobban van') : r.why === 'mat' ? ' · ' + T('anyagra vár') : r.why === 'active' ? ' · ' + T('az aktív időszakra vár') : ''}${sch.crit.has(id) ? ' · ' + T('kritikus út') : ''}</title></g>`
       );
     }
     y += nRows * RH + 6;
@@ -362,9 +368,12 @@ function renderTimeline(R, now = Date.now()) {
   const ticks = [];
   const first = new Date(inp.t0);
   first.setMinutes(0, 0, 0);
+  // ticks on round hours of the day (00, 06, 12…), so midnight gets its date
   if (step >= day) first.setHours(0);
+  else first.setHours(Math.floor(first.getHours() / (step / HOUR)) * (step / HOUR));
   for (let t = first.getTime() + step; t < end; t += step) {
     const xx = x(t);
+    if (t <= inp.t0 || xx > PW - 36) continue; // before the start, or no room for the label at the right edge
     const lab = new Date(t).toLocaleString(
       LOC(),
       step >= day || new Date(t).getHours() === 0

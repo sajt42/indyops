@@ -13,7 +13,7 @@ w.fetch = async () => ({
 });
 const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
-w.eval(code + `;window.__t={scheduleJobs,slotList,inWindow};`);
+w.eval(code + `;window.__t={scheduleJobs,slotList,inWindow,fitText};`);
 const T = w.__t;
 let checks = 0,
   fails = 0;
@@ -139,5 +139,13 @@ const rel = (r, id) => {
   const r = run([J('A', 5, { prio: 1 }), J('B', 1, { prio: 0 })], { '1|m': [day] });
   ok(rel(r, 'B')[0] === 0 && rel(r, 'A')[0] === 1, 'project order is the priority');
 }
+
+// 11. labels never run past their bar
+ok(
+  T.fitText('Core Temperature Regulator ×52', 60, 6) === 'Core Temp…',
+  'cut with an ellipsis: ' + T.fitText('Core Temperature Regulator ×52', 60, 6)
+);
+ok(T.fitText('Orca ×5', 200, 6) === 'Orca ×5', 'fits: unchanged');
+ok(T.fitText('Orca ×5', 20, 6) === '', 'too narrow: no label');
 
 console.log(`sched: ${checks - fails}/${checks} checks passed`);
