@@ -115,7 +115,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,setProfRows:a=>{PROFROWS=a},renderProfit,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -1238,6 +1238,29 @@ const ok = (c, msg) => {
       v.d.projects[0].par === 'speed' && v.d.projects[1].par === undefined,
       'a backup keeps a valid setting, drops a bad one'
     );
+  }
+  {
+    // 41. What pays? with more than 25 rows: the pager above the table is a pager, not its markup as text
+    const rows = Array.from({ length: 30 }, (_, i) => ({
+      name: 'Item ' + i,
+      best: { r: -1, me: 10, cid: 1, t: 688 },
+      runsLeft: null,
+      price: 1000,
+      perRun: 100 + i,
+      margin: 0.1,
+      pph: 10,
+      vol: 5,
+      pot: null,
+      noPrice: []
+    }));
+    T.setProfRows(rows);
+    T.renderProfit();
+    const out = d.querySelector('#prOut');
+    ok(
+      out.querySelectorAll('.pager').length === 2 && !/<div class="pager"/.test(out.textContent),
+      'What pays? pager above and below the table, no markup as text (' + out.querySelectorAll('.pager').length + ')'
+    );
+    T.setProfRows([]);
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

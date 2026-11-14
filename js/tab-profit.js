@@ -146,10 +146,10 @@ function renderProfit() {
   setHtml(
     out,
     html`${
-      (m2stale
+      m2stale
         ? html`<div class="notice"><p class="small">${T('A második piac megváltozott az utolsó számolás óta: a {0} oszlopok a következő számolásnál töltődnek ki.', m2Short())}</p></div>`
-        : '') + pg.html
-    }<div class="tablewrap"><table><thead><tr>${th('name', 'Termék')}<th>Legjobb saját BP</th>${th('price', 'Jita sell', 1)}${m2On() ? th('price2', m2Short() + ' sell', 1) : ''}${th('perRun', 'Profit / run', 1)}${m2On() ? th('perRun2', T('Profit / run') + ' · ' + m2Short(), 1) : ''}${th('margin', 'Margó', 1)}${th('pph', 'Profit / gyártási óra', 1)}${th('vol', 'Napi forgalom', 1)}${th('pot', 'Maradék runok értéke', 1)}<th></th></tr></thead><tbody>${
+        : ''
+    }${pg.html}<div class="tablewrap"><table><thead><tr>${th('name', 'Termék')}<th>Legjobb saját BP</th>${th('price', 'Jita sell', 1)}${m2On() ? th('price2', m2Short() + ' sell', 1) : ''}${th('perRun', 'Profit / run', 1)}${m2On() ? th('perRun2', T('Profit / run') + ' · ' + m2Short(), 1) : ''}${th('margin', 'Margó', 1)}${th('pph', 'Profit / gyártási óra', 1)}${th('vol', 'Napi forgalom', 1)}${th('pot', 'Maradék runok értéke', 1)}<th></th></tr></thead><tbody>${
       hjoin(
         rows.map(
           r =>

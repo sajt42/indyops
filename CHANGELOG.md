@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.22.1 – 2026-11-14
+
+- What pays?: with more than 25 rows the pager above the table showed its HTML as text; it is a pager again (broken since 1.13.2).
+
 ## 1.22.0 – 2026-11-14
 
 - Settings: a science location for invention, copying and ME/TE research: system (cost index), structure (Raitaru / Azbel / Sotiyo role bonus), rigs per activity for time and cost (T1 / T2, multiplied by the system security) and its own facility tax. The structure and rigs reduce the cost index part of the job cost and the job time (Invention, Projects, Timeline, Research); the success chance does not depend on the location. The manual “structure research bonus” field is replaced by this.
