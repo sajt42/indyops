@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.22.0 – 2026-11-14
+
+- Settings: a science location for invention, copying and ME/TE research: system (cost index), structure (Raitaru / Azbel / Sotiyo role bonus), rigs per activity for time and cost (T1 / T2, multiplied by the system security) and its own facility tax. The structure and rigs reduce the cost index part of the job cost and the job time (Invention, Projects, Timeline, Research); the success chance does not depend on the location. The manual “structure research bonus” field is replaced by this.
+
 ## 1.21.0 – 2026-11-14
 
 - Invention: every decryptor variant can be opened under its item (“▸ variants”), each with its own “+ project”; a Goal (profit/BPC, profit/run, runs/BPC, ME, cheapest invention) picks the variant in the item's row and the order. Category, name and decryptor filters before calculating, so less is calculated; after calculating they narrow the list at once (a wider filter asks for a new calculation). The “Without decryptor” column is gone (it is one of the variants now).

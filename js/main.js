@@ -159,7 +159,16 @@ const bind = (sel, key, num) =>
     setSetting(key, num && e.target.value !== '' ? Number(e.target.value) : e.target.value);
   });
 bind('#sStructME', 'structME', 1);
-bind('#sStructRes', 'structRes', 1);
+bind('#sSciSystem', 'sciSystem', 0);
+bind('#sSciStruct', 'sciStruct', 0);
+bind('#sSciTax', 'sciTax', 1);
+document
+  .querySelectorAll('[data-scirig]')
+  .forEach(sel =>
+    sel.addEventListener('change', () =>
+      setSettingIn('sciRigs', sel.dataset.scirig, sel.value === '' ? null : Number(sel.value))
+    )
+  );
 bind('#sStructTE', 'structTE', 1);
 bind('#sFacTax', 'facTax', 1);
 bind('#sScc', 'scc', 1);
@@ -238,6 +247,10 @@ onCharData(() => {
  */
 const RECALC_SETTINGS = {
   structME: 'struktúra ME bónusz',
+  sciSystem: 'science rendszer',
+  sciStruct: 'science struktúra',
+  sciRigs: 'science rigek',
+  sciTax: 'science adó',
   buyOverride: 'gyártom / veszem',
   leave: 'otthagyott készlet',
   parallel: 'párhuzamos gyártás',

@@ -132,3 +132,7 @@ showResult(el, R, rerun)             views.js    re-assigns characters, draws, r
 - every other scenario is a characterization test compared with `tests/golden/<name>.txt`.
 
 See the README for commands. Build with `node tools/bundle.mjs` before running them.
+
+## Science location
+
+Invention, copy and ME/TE research jobs (`SCI_ACTS`) can use their own location: `S.sciSystem` (cost index system; empty = as manufacturing), `S.sciStruct` (engineering complex role bonus, `STRUCT_ROLE`), `S.sciRigs` (`i|c|me|te` + `.t|.c` → tier 1/2, `RIG_PCT`, multiplied by the system security via `secMult`) and `S.sciTax`. `sciBonus(act, sys)` gives the time and cost reduction; `jobCost` applies the cost part to the index only (taxes are not reduced), `jobTime` applies the time part to invention and copy, and the Research tab uses the same for ME/TE research and copying. `jobSysOf` returns the science system for science jobs only. The success chance does not depend on the location.

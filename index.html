@@ -21,7 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%231b2329%22/%3E%3Cpath d=%22M32 10 51 21v22L32 54 13 43V21Z%22 fill=%22none%22 stroke=%22%23d9822b%22 stroke-width=%227%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%226.5%22 fill=%22%23d9822b%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.21.0">
+<link rel="stylesheet" href="css/style.css?v=1.22.0">
 </head>
 <body>
 <header><div class="hwrap">
@@ -321,7 +321,6 @@
       <div class="row">
         <label>Struktúra ME bónusz % <input type="number" step="0.1" id="sStructME"></label>
         <label>Struktúra időbónusz % <input type="number" step="0.1" id="sStructTE"></label>
-        <label>Struktúra kutatási bónusz % <input type="number" step="0.1" id="sStructRes"></label>
         <label>Létesítmény adó % <input type="number" step="0.01" id="sFacTax"></label>
         <label>SCC pótdíj % <input type="number" step="0.1" id="sScc"></label>
       </div>
@@ -335,6 +334,18 @@
         <label>Mód <select id="sParMode"><option value="material">kevesebb anyag</option><option value="speed">gyorsabb</option></select></label>
       </div>
       <p class="small muted" style="margin-top:6px">Ha egy tételhez több blueprinted van (több BPC, vagy több BPO, egy stackben is), a runok több jobra oszolhatnak, hogy egyszerre fussanak. Legfeljebb annyi job lesz, ahány blueprint és szabad slot van, és egy job legalább egy órás (alapidő). Kevesebb anyag: csak akkor bont, ha nem kell hozzá több anyag. Gyorsabb: annyi jobra bont, amennyire lehet; a többletanyagot a terv kiírja. A stackelt BPO-kat a játékban szét kell szedni.</p>
+    </div>
+    <div class="card">
+      <h2>Science helyszín</h2>
+      <p class="small muted">Invention, copy és ME/TE kutatás. Az esélyre a hely nem hat, csak a job költségére és idejére.</p>
+      <div class="row">
+        <label>Rendszer <input id="sSciSystem" placeholder="üresen: mint a gyártásnál"></label>
+        <label>Struktúra <select id="sSciStruct"><option value="npc">NPC állomás</option><option value="raitaru">Raitaru</option><option value="azbel">Azbel</option><option value="sotiyo">Sotiyo</option></select></label>
+        <label>Létesítmény adó % <input type="number" step="0.01" id="sSciTax"></label>
+      </div>
+      <div class="tablewrap" style="margin-top:8px"><table class="compact"><thead><tr><th>Rig</th><th title="Accelerator">Idő</th><th title="Cost Optimization">Költség</th></tr></thead><tbody><tr><td>Invention</td><td><select data-scirig="i.t"><option value="">nincs</option><option value="1">T1</option><option value="2">T2</option></select></td><td><select data-scirig="i.c"><option value="">nincs</option><option value="1">T1</option><option value="2">T2</option></select></td></tr><tr><td>Copy</td><td><select data-scirig="c.t"><option value="">nincs</option><option value="1">T1</option><option value="2">T2</option></select></td><td><select data-scirig="c.c"><option value="">nincs</option><option value="1">T1</option><option value="2">T2</option></select></td></tr><tr><td>ME kutatás</td><td><select data-scirig="me.t"><option value="">nincs</option><option value="1">T1</option><option value="2">T2</option></select></td><td><select data-scirig="me.c"><option value="">nincs</option><option value="1">T1</option><option value="2">T2</option></select></td></tr><tr><td>TE kutatás</td><td><select data-scirig="te.t"><option value="">nincs</option><option value="1">T1</option><option value="2">T2</option></select></td><td><select data-scirig="te.c"><option value="">nincs</option><option value="1">T1</option><option value="2">T2</option></select></td></tr></tbody></table></div>
+      <p class="small muted" style="margin-top:6px">Role bonus: Raitaru idő 15%, költség 3%; Azbel 20% / 4%; Sotiyo 30% / 5%. Rig (M-Set): idő T1 20%, T2 24%; költség T1 10%, T2 12%. Az L-Set optimization rig mindkettőt adja: állítsd be az időt és a költséget is. A rig bónusza a rendszer biztonságával szorzódik: highsec ×1, lowsec ×1,9, nullsec és WH ×2,1. A struktúra és a rig a cost index részét csökkenti, az adót nem.</p>
+      <p class="small" id="sSciInfo"></p>
     </div>
     <div class="card">
       <h2>Eladás és reprocess</h2>
@@ -439,7 +450,7 @@
     <dt>Blueprintek, Készlet</dt><dd>Az összes BP-d és tárgyad karakterenként és helyszínenként, szűrhetően. A hosszú listák lapozhatók (25–500 sor vagy mind). Minden listás oldalon (Blueprintek, Készlet, Mit érdemes?, Invention, Kutatás, Eladás, Vásárlás nélkül, Reprocess) a fejlécre kattintva rendezhetsz, újabb kattintásra fordított sorrendben.</dd>
     <dt>Bányászat</dt><dd>Illeszd be a Survey Scanner sorait: megmutatja, mennyi ásvány jön ki a karaktereid reprocess-skilljeivel, és mennyit fed le a legutóbbi terv hiányából.</dd>
     <dt>Reprocess</dt><dd>Végignézi a készletet, és kilistázza, mi reprocesszálható belőle (érc, ice, modulok, loot): mennyi anyag jön ki, melyik karakterrel a legjobb a hozam, és egyben eladva vagy szétszedve ér-e többet. Helyszínenként számol: NPC állomásnál az állomás saját hozamával, alapadójával és azzal, hogy van-e ott reprocessing (az ESI-ből), az adót karakterenként a standinggel csökkentve; Upwell struktúránál (Athanor, Tatara) a riggel, a rendszer biztonságával és az adóval, amit neked kell megadni. Az implantot az aktív klónból olvassa. Az értékeket Jita és a második piac szerint is mutatja. Kijelölhetsz egyenként vagy mindet, és összesíti, mennyit fed le a legutóbbi terv hiányából.</dd>
-    <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, második piac (eladáshoz és értékbecsléshez), hol vegyem (régiók, legnagyobb távolság, csak highsec), a kézi árak és a kiválasztott beszerzési helyek listája, kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
+    <dt>Beállítások</dt><dd>Struktúra-bónuszok, adók, a science helyszín (invention, copy és kutatás: rendszer, struktúra, rigek, adó; a struktúra és a rig a job költségét és idejét csökkenti, az esélyt nem), második piac (eladáshoz és értékbecsléshez), hol vegyem (régiók, legnagyobb távolság, csak highsec), a kézi árak és a kiválasztott beszerzési helyek listája, kik dolgozzanak (mely karakterek közül javasoljon gyártót, eladót, reprocesszálót), ismeretlen helyek elnevezése, helyszínek a tervezőhöz, mentés fájlba és visszatöltés.</dd>
   </dl>
 
   <h3>Hogyan számol?</h3>
@@ -507,7 +518,7 @@
     <dt>Blueprints, Stock</dt><dd>All your BPs and items per character and location, with filters. Long lists are paged (25–500 rows or all). On every list page (Blueprints, Stock, What pays?, Invention, Research, Selling, No-buy builds, Reprocess) click a header to sort, click again to reverse.</dd>
     <dt>Mining</dt><dd>Paste the rows of the Survey Scanner: it shows how many minerals you get with your characters' reprocessing skills and how much of your latest plan's shortfall the belt covers.</dd>
     <dt>Reprocess</dt><dd>Goes through your stock and lists what can be reprocessed (ore, ice, modules, loot): how much comes out, which character gets the best yield, and whether it's worth more sold as is or broken down. Each location counts separately: for NPC stations, the station's own yield, base tax and whether it offers reprocessing (from ESI), with the tax lowered per character by standing; for Upwell structures (Athanor, Tatara), rig, system security and tax, which you set yourself. The implant is read from your active clone. Values are shown for Jita and the second market. Select items one by one or all at once, and it sums up how much of your latest plan's shortfall they cover.</dd>
-    <dt>Settings</dt><dd>Structure bonuses, taxes, second market (for selling and valuation), where to buy (regions, maximum distance, highsec only), the list of manual prices and picked sources, who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
+    <dt>Settings</dt><dd>Structure bonuses, taxes, the science location (invention, copying and research: system, structure, rigs, tax; the structure and rigs reduce job cost and time, not the chance), second market (for selling and valuation), where to buy (regions, maximum distance, highsec only), the list of manual prices and picked sources, who does the work (which characters to pick builders, sellers and reprocessors from), naming unknown locations, locations for the planner, backup to file and restore.</dd>
   </dl>
 
   <h3>How does it calculate?</h3>
@@ -575,7 +586,7 @@
     <dt>Blueprints, Bestand</dt><dd>Alle deine BPs und Gegenstände pro Charakter und Ort, filterbar. Lange Listen sind seitenweise (25–500 Zeilen oder alle). Auf jeder Listenseite (Blueprints, Bestand, Was lohnt sich?, Invention, Forschung, Verkauf, Ohne Einkauf, Reprocess) sortierst du per Klick auf die Kopfzeile, erneuter Klick dreht die Reihenfolge.</dd>
     <dt>Mining</dt><dd>Füge die Zeilen aus dem Survey Scanner ein: zeigt, wie viele Mineralien du mit den Reprocessing-Skills deiner Charaktere bekommst und wie viel vom Bedarf deines letzten Plans der Belt deckt.</dd>
     <dt>Reprocess</dt><dd>Geht deinen Bestand durch und listet auf, was sich reprocessen lässt (Erz, Eis, Module, Loot): wie viel herauskommt, welcher Charakter die beste Ausbeute hat und ob es am Stück oder zerlegt mehr wert ist. Jeder Ort zählt einzeln: bei NPC-Stationen mit eigener Ausbeute, Grundsteuer und ob es dort Reprocessing gibt (aus ESI), die Steuer pro Charakter um das Standing gesenkt; bei Upwell-Strukturen (Athanor, Tatara) mit Rig, Systemsicherheit und Steuer, die du selbst einstellst. Das Implantat wird aus dem aktiven Klon gelesen. Werte werden für Jita und den zweiten Markt angezeigt. Wähle einzeln oder alles aus, dann wird zusammengefasst, wie viel vom Bedarf deines letzten Plans gedeckt ist.</dd>
-    <dt>Einstellungen</dt><dd>Strukturboni, Steuern, zweiter Markt (für Verkauf und Bewertung), wo kaufen (Regionen, maximale Entfernung, nur Highsec), die Liste der manuellen Preise und gewählten Bezugsorte, wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
+    <dt>Einstellungen</dt><dd>Strukturboni, Steuern, der Science-Standort (Invention, Kopieren und Forschung: System, Struktur, Rigs, Steuer; Struktur und Rigs senken Jobkosten und -zeit, nicht die Chance), zweiter Markt (für Verkauf und Bewertung), wo kaufen (Regionen, maximale Entfernung, nur Highsec), die Liste der manuellen Preise und gewählten Bezugsorte, wer arbeitet (aus welchen Charakteren Bauer, Verkäufer und Reprocesser gewählt werden), Benennen unbekannter Orte, Orte für den Planer, Sicherung in eine Datei und Wiederherstellung.</dd>
   </dl>
 
   <h3>Wie wird gerechnet?</h3>
@@ -621,23 +632,23 @@
   <p class="legal" data-noi18n>© 2014 CCP hf. All rights reserved. “EVE”, “EVE Online”, “CCP”, and all related logos and images are trademarks or registered trademarks of CCP hf.</p>
 </div></footer>
 
-<script src="i18n/en.js?v=1.21.0"></script>
-<script src="i18n/de.js?v=1.21.0"></script>
-<script src="js/core.js?v=1.21.0"></script>
-<script src="js/esi.js?v=1.21.0"></script>
-<script src="js/data.js?v=1.21.0"></script>
-<script src="js/market.js?v=1.21.0"></script>
-<script src="js/engine.js?v=1.21.0"></script>
-<script src="js/views.js?v=1.21.0"></script>
-<script src="js/schedule.js?v=1.21.0"></script>
-<script src="js/tab-projects.js?v=1.21.0"></script>
-<script src="js/tab-profit.js?v=1.21.0"></script>
-<script src="js/tab-invention.js?v=1.21.0"></script>
-<script src="js/tab-research.js?v=1.21.0"></script>
-<script src="js/tab-sales.js?v=1.21.0"></script>
-<script src="js/tab-canbuild.js?v=1.21.0"></script>
-<script src="js/tab-mining.js?v=1.21.0"></script>
-<script src="js/repro.js?v=1.21.0"></script>
-<script src="js/main.js?v=1.21.0"></script>
+<script src="i18n/en.js?v=1.22.0"></script>
+<script src="i18n/de.js?v=1.22.0"></script>
+<script src="js/core.js?v=1.22.0"></script>
+<script src="js/esi.js?v=1.22.0"></script>
+<script src="js/data.js?v=1.22.0"></script>
+<script src="js/market.js?v=1.22.0"></script>
+<script src="js/engine.js?v=1.22.0"></script>
+<script src="js/views.js?v=1.22.0"></script>
+<script src="js/schedule.js?v=1.22.0"></script>
+<script src="js/tab-projects.js?v=1.22.0"></script>
+<script src="js/tab-profit.js?v=1.22.0"></script>
+<script src="js/tab-invention.js?v=1.22.0"></script>
+<script src="js/tab-research.js?v=1.22.0"></script>
+<script src="js/tab-sales.js?v=1.22.0"></script>
+<script src="js/tab-canbuild.js?v=1.22.0"></script>
+<script src="js/tab-mining.js?v=1.22.0"></script>
+<script src="js/repro.js?v=1.22.0"></script>
+<script src="js/main.js?v=1.22.0"></script>
 </body>
 </html>

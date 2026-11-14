@@ -894,5 +894,27 @@ window.I18N.en = {
   'legjobb ME': 'best ME',
   'legolcsóbb invention': 'cheapest invention',
   'A kategória, a név és a decryptor szűkíti, mit számol: kevesebb tétel vagy egy decryptor sokkal gyorsabb. A Cél a számolás után is állítható: eldönti, melyik változat áll a tétel sorában, és mi szerint rendez.':
-    "Category, name and decryptor narrow what is calculated: fewer items or a single decryptor is much faster. The Goal can also be changed after calculating: it decides which variant stands in each item's row and the order."
+    "Category, name and decryptor narrow what is calculated: fewer items or a single decryptor is much faster. The Goal can also be changed after calculating: it decides which variant stands in each item's row and the order.",
+  'Science helyszín': 'Science location',
+  'Invention, copy és ME/TE kutatás. Az esélyre a hely nem hat, csak a job költségére és idejére.':
+    'Invention, copying and ME/TE research. The location does not change the chance, only job cost and time.',
+  Rendszer: 'System',
+  'üresen: mint a gyártásnál': 'empty: as for manufacturing',
+  Struktúra: 'Structure',
+  Rigek: 'Rigs',
+  'Idő (Accelerator)': 'Time (Accelerator)',
+  'Költség (Cost Optimization)': 'Cost (Cost Optimization)',
+  'Role bonus: Raitaru idő 15%, költség 3%; Azbel 20% / 4%; Sotiyo 30% / 5%. Rig (M-Set): idő T1 20%, T2 24%; költség T1 10%, T2 12%. Az L-Set optimization rig mindkettőt adja: állítsd be az időt és a költséget is. A rig bónusza a rendszer biztonságával szorzódik: highsec ×1, lowsec ×1,9, nullsec és WH ×2,1. A struktúra és a rig a cost index részét csökkenti, az adót nem.':
+    'Role bonus: Raitaru time 15%, cost 3%; Azbel 20% / 4%; Sotiyo 30% / 5%. Rig (M-Set): time T1 20%, T2 24%; cost T1 10%, T2 12%. An L-Set optimization rig gives both: set time and cost. The rig bonus is multiplied by the system security: highsec ×1, lowsec ×1.9, nullsec and WH ×2.1. The structure and rigs reduce the cost index part, not the tax.',
+  'idő −{0}%, költség −{1}%': 'time −{0}%, cost −{1}%',
+  '{0} (biztonság {1}, rig ×{2})': '{0} (security {1}, rig ×{2})',
+  'ismeretlen rendszer: {0}': 'unknown system: {0}',
+  'mint a gyártásnál; a rig szorzója a job rendszerének biztonságától függ (itt highsec-kel számolva)':
+    "as for manufacturing; the rig multiplier depends on the security of the job's system (shown here for highsec)",
+  'science rendszer': 'science system',
+  'science struktúra': 'science structure',
+  'science rigek': 'science rigs',
+  'science adó': 'science tax',
+  "Költség": "Cost",
+  "Rig": "Rig"
 };

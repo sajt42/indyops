@@ -61,7 +61,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.21.0',
+  version: '1.22.0',
   built: '2026-11-14',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
@@ -331,6 +331,10 @@ let S = Object.assign(
     locs: null,
     buyOverride: {},
     leave: {},
+    sciSystem: '',
+    sciStruct: 'npc',
+    sciRigs: {},
+    sciTax: '',
     tlStart: '',
     tlActive: '',
     tlBuyLead: '',
@@ -432,6 +436,10 @@ const SET_SCHEMA = {
   parMode: 'str',
   srcShips: 'bool',
   buyOverride: 'mapBool',
+  sciSystem: 'str', // science (invention, copy, research): system for the cost index ('' = as manufacturing)
+  sciStruct: 'str', // science structure: npc | raitaru | azbel | sotiyo (role bonus)
+  sciRigs: 'mapNum', // science rigs: 'i|c|me|te' + '.t' (time) or '.c' (cost) -> 1 (T1) or 2 (T2)
+  sciTax: 'numOrEmpty', // facility tax for science jobs ('' = the manufacturing one)
   tlStart: 'str', // timeline: planned start ('' = now), datetime-local text
   tlActive: 'str', // timeline: hours when jobs are started, 'from-to' ('' = any time)
   tlBuyLead: 'numOrEmpty', // timeline: hours from deciding to buy until the goods can be hauled

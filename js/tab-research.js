@@ -15,11 +15,11 @@ function bestLvl(id) {
   return { l: b, who };
 }
 function resMod(kind) {
-  // ME: Metallurgy, TE: Research, copy: Science; + Advanced Industry + structure
+  // ME: Metallurgy, TE: Research, copy: Science; + Advanced Industry (the structure and rigs: sciBonus, per system)
   const sk = kind === 'me' ? SK.metallurgy : kind === 'te' ? SK.research : SK.science;
   const a = bestLvl(sk),
     b = bestLvl(SK.advInd);
-  return { m: (1 - 0.05 * a.l) * (1 - 0.03 * b.l) * (1 - Number(S.structRes || 0) / 100), who: a.who, l: a.l };
+  return { m: (1 - 0.05 * a.l) * (1 - 0.03 * b.l), who: a.who, l: a.l };
 }
 let RESROWS = [];
 async function runResearch() {
@@ -48,19 +48,24 @@ async function runResearch() {
     if (!b) continue;
     const rec = b.m || b.r;
     if (!rec) continue;
-    const sys = sysCache[bp.l] !== undefined ? sysCache[bp.l] : (sysCache[bp.l] = await sysFor(bp));
+    const sys = sysCache[bp.l] !== undefined ? sysCache[bp.l] : (sysCache[bp.l] = await sciSysFor(bp));
+    const bME = sciBonus('rme', sys),
+      bTE = sciBonus('rte', sys),
+      bCP = sciBonus('c', sys);
     const ix = IDX.p[sys] || {};
     const eiv = rec.m.reduce((s, [m, q]) => s + (ADJ.p[m] || 0) * q, 0);
-    const fees = Number(S.facTax || 0) / 100 + Number(S.scc || 0) / 100;
+    const fees = sciTaxPct() / 100 + Number(S.scc || 0) / 100;
     const matVal = rec.m.reduce((s, [m, q]) => s + unitPrice(m) * q, 0);
     const lvlME = bp.me,
       lvlTE = Math.round(bp.te / 2);
     const step = (kind, L) => {
       const base = kind === 'me' ? b.rme : b.rte;
-      const t = ((base * RLM[L]) / 105) * (kind === 'me' ? mME.m : mTE.m);
+      const bn = kind === 'me' ? bME : bTE;
+      const t = ((base * RLM[L]) / 105) * (kind === 'me' ? mME.m : mTE.m) * (1 - bn.t);
       const c =
         ((eiv * 0.02 * RLM[L]) / 105) *
-        ((ix[kind === 'me' ? 'researching_material_efficiency' : 'researching_time_efficiency'] || 0) + fees);
+        ((ix[kind === 'me' ? 'researching_material_efficiency' : 'researching_time_efficiency'] || 0) * (1 - bn.c) +
+          fees);
       return { t, c };
     };
     let meT = 0,
@@ -79,9 +84,9 @@ async function runResearch() {
     }
     const nextME = lvlME < 10 ? step('me', lvlME + 1) : null;
     const saving = b.r ? 0 : matVal * 0.01; // reactions have no ME
-    const cpRun = b.ct * mCP.m;
+    const cpRun = b.ct * mCP.m * (1 - bCP.t);
     const lim = b.lim || 1;
-    const cpCost = eiv * 0.02 * ((ix.copying || 0) + fees);
+    const cpCost = eiv * 0.02 * ((ix.copying || 0) * (1 - bCP.c) + fees);
     const job = inJob(bp.i);
     RESROWS.push({
       bp,

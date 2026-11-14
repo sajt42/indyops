@@ -902,5 +902,27 @@ window.I18N.de = {
   'legjobb ME': 'bestes ME',
   'legolcsóbb invention': 'günstigste Invention',
   'A kategória, a név és a decryptor szűkíti, mit számol: kevesebb tétel vagy egy decryptor sokkal gyorsabb. A Cél a számolás után is állítható: eldönti, melyik változat áll a tétel sorában, és mi szerint rendez.':
-    'Kategorie, Name und Decryptor schränken ein, was berechnet wird: weniger Positionen oder ein einzelner Decryptor ist viel schneller. Das Ziel lässt sich auch nach der Berechnung ändern: es bestimmt, welche Variante in der Zeile steht, und die Reihenfolge.'
+    'Kategorie, Name und Decryptor schränken ein, was berechnet wird: weniger Positionen oder ein einzelner Decryptor ist viel schneller. Das Ziel lässt sich auch nach der Berechnung ändern: es bestimmt, welche Variante in der Zeile steht, und die Reihenfolge.',
+  'Science helyszín': 'Science-Standort',
+  'Invention, copy és ME/TE kutatás. Az esélyre a hely nem hat, csak a job költségére és idejére.':
+    'Invention, Kopieren und ME/TE-Forschung. Der Ort ändert nicht die Chance, nur Jobkosten und -zeit.',
+  Rendszer: 'System',
+  'üresen: mint a gyártásnál': 'leer: wie bei der Fertigung',
+  Struktúra: 'Struktur',
+  Rigek: 'Rigs',
+  'Idő (Accelerator)': 'Zeit (Accelerator)',
+  'Költség (Cost Optimization)': 'Kosten (Cost Optimization)',
+  'Role bonus: Raitaru idő 15%, költség 3%; Azbel 20% / 4%; Sotiyo 30% / 5%. Rig (M-Set): idő T1 20%, T2 24%; költség T1 10%, T2 12%. Az L-Set optimization rig mindkettőt adja: állítsd be az időt és a költséget is. A rig bónusza a rendszer biztonságával szorzódik: highsec ×1, lowsec ×1,9, nullsec és WH ×2,1. A struktúra és a rig a cost index részét csökkenti, az adót nem.':
+    'Rollenbonus: Raitaru Zeit 15 %, Kosten 3 %; Azbel 20 % / 4 %; Sotiyo 30 % / 5 %. Rig (M-Set): Zeit T1 20 %, T2 24 %; Kosten T1 10 %, T2 12 %. Ein L-Set-Optimization-Rig gibt beides: Zeit und Kosten einstellen. Der Rig-Bonus wird mit der Systemsicherheit multipliziert: Highsec ×1, Lowsec ×1,9, Nullsec und WH ×2,1. Struktur und Rigs senken den Cost-Index-Anteil, nicht die Steuer.',
+  'idő −{0}%, költség −{1}%': 'Zeit −{0} %, Kosten −{1} %',
+  '{0} (biztonság {1}, rig ×{2})': '{0} (Sicherheit {1}, Rig ×{2})',
+  'ismeretlen rendszer: {0}': 'unbekanntes System: {0}',
+  'mint a gyártásnál; a rig szorzója a job rendszerének biztonságától függ (itt highsec-kel számolva)':
+    'wie bei der Fertigung; der Rig-Multiplikator hängt von der Sicherheit des Jobsystems ab (hier für Highsec)',
+  'science rendszer': 'Science-System',
+  'science struktúra': 'Science-Struktur',
+  'science rigek': 'Science-Rigs',
+  'science adó': 'Science-Steuer',
+  "Költség": "Kosten",
+  "Rig": "Rig"
 };

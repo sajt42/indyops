@@ -87,7 +87,13 @@ w.fetch = async (u, o) => {
   if (u.includes('/industry/systems/'))
     return J([
       { solar_system_id: 30001, cost_indices: [{ activity: 'manufacturing', cost_index: 0.02 }] },
-      { solar_system_id: 30002, cost_indices: [{ activity: 'manufacturing', cost_index: 0.08 }] }
+      {
+        solar_system_id: 30002,
+        cost_indices: [
+          { activity: 'manufacturing', cost_index: 0.08 },
+          { activity: 'invention', cost_index: 0.05 }
+        ]
+      }
     ]);
   if ((m = u.match(/\/markets\/(\d+)\/orders\/\?order_type=sell&type_id=(\d+)/)))
     return J(mktOrders[m[1] + '|' + m[2]] || []);
@@ -109,7 +115,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -189,6 +195,45 @@ const ok = (c, msg) => {
     'production location override puts all jobs in its system'
   );
   T.S.prodLoc = '';
+
+  // 40. science location: structure role bonus and rigs (times the system security) cut invention time and the
+  // index part of its cost (not the tax); a science system overrides the job's own system for science jobs only
+  {
+    const ji = Object.assign({}, jA, { act: 'i', base: [[34, 1000]], time: 3600, runs: 1, cm: 1 });
+    const save = { facTax: T.S.facTax, scc: T.S.scc };
+    T.S.facTax = 0;
+    T.S.scc = 0;
+    const t0 = T.jobTime(ji),
+      c0 = T.jobCost(ji);
+    T.S.sciStruct = 'azbel';
+    T.S.sciRigs = { 'i.t': 2, 'i.c': 1 };
+    T.SYSSEC[30002] = 0.9;
+    const near = (a, b) => Math.abs(a - b) < 1e-9;
+    const b = T.sciBonus ? T.sciBonus('i', 30002) : { t: 0, c: 0 };
+    ok(
+      near(b.t, 1 - 0.8 * 0.76) && near(b.c, 1 - 0.96 * 0.9),
+      'highsec: Azbel + T2 time rig + T1 cost rig (' + [b.t, b.c] + ')'
+    );
+    ok(
+      c0 > 0 && near(T.jobCost(ji) / c0, 1 - b.c) && near(T.jobTime(ji) / t0, 1 - b.t),
+      'invention cost and time reduced'
+    );
+    T.SYSSEC[30002] = 0.3;
+    const bl = T.sciBonus ? T.sciBonus('i', 30002) : { t: 0 };
+    ok(near(bl.t, 1 - 0.8 * (1 - 0.24 * 1.9)), 'lowsec: rig ×1.9 (' + bl.t + ')');
+    T.S.facTax = 1;
+    const cTax = T.jobCost(ji);
+    T.S.sciTax = 0;
+    ok(cTax > T.jobCost(ji), 'science facility tax used instead of the manufacturing one');
+    T.S.sciTax = '';
+    T.SYSNAME['Sci'] = 30001;
+    T.S.sciSystem = 'Sci';
+    ok(T.jobSysOf(ji) === 30001 && T.jobSysOf(jA) === 30002, 'science system for science jobs only');
+    T.S.sciSystem = '';
+    T.S.sciStruct = 'npc';
+    T.S.sciRigs = {};
+    Object.assign(T.S, save);
+  }
 
   // 4. route safety: label highsec only if every system is highsec
   sec = { 30010: 0.9, 30011: 0.3, 30012: 0.8, 30020: 0.9, 30021: 0.6, 30022: 0.5 };

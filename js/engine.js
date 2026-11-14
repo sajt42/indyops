@@ -604,6 +604,7 @@ async function sysByName(n) {
 // so a job's system can be computed synchronously from the FINAL (post-assignment) BP location
 async function assignJobSys(jobs) {
   if (S.system) await sysByName(S.system);
+  if (S.sciSystem) await ensureSec(await sysByName(S.sciSystem));
   const types = new Set(jobs.map(j => j.bp && j.bp.t));
   const locs = new Set(
     allBPs()
@@ -618,8 +619,50 @@ async function assignJobSys(jobs) {
       await resolveLoc(l);
     } catch (e) {}
   }
+  // the security of science job systems sets the rig multiplier
+  for (const sys of new Set(jobs.filter(j => SCI_ACTS.has(j.act)).map(j => jobSysOf(j)))) await ensureSec(sys);
+}
+// ---- science location (invention, copy, ME/TE research): its own system, structure and rigs ----
+const SCI_ACTS = new Set(['i', 'c', 'rme', 'rte']);
+// Engineering complex role bonus (time %, ISK cost %), for manufacturing and science jobs
+const STRUCT_ROLE = { npc: { t: 0, c: 0 }, raitaru: { t: 15, c: 3 }, azbel: { t: 20, c: 4 }, sotiyo: { t: 30, c: 5 } };
+// science rigs (EVE Ref): M-Set accelerator time 20% (T1) / 24% (T2), M-Set cost optimization 10% / 12%;
+// an L-Set optimization rig gives both. Multiplied by the system's security: highsec 1, lowsec 1.9, null / WH 2.1.
+const RIG_PCT = { t: { 1: 20, 2: 24 }, c: { 1: 10, 2: 12 } };
+const secMult = sec => (sec == null || sec >= 0.45 ? 1 : sec > 0 ? 1.9 : 2.1);
+const sciKey = act => (act === 'rme' ? 'me' : act === 'rte' ? 'te' : act); // i, c, me, te
+// time and cost reduction (fractions) of a science job in system sys
+function sciBonus(act, sys) {
+  const st = STRUCT_ROLE[S.sciStruct] || STRUCT_ROLE.npc;
+  const m = secMult(SYSSEC[sys]);
+  const rig = k => (RIG_PCT[k][(S.sciRigs || {})[sciKey(act) + '.' + k]] || 0) * m;
+  return { t: 1 - (1 - st.t / 100) * (1 - rig('t') / 100), c: 1 - (1 - st.c / 100) * (1 - rig('c') / 100), m };
+}
+const sciTaxPct = () => (S.sciTax === '' || S.sciTax == null ? Number(S.facTax || 0) : Number(S.sciTax));
+// the system of the science location, when one is set (its name must be resolved first: assignJobSys / sciSysFor)
+const sciSysSet = () => (S.sciSystem && SYSNAME[S.sciSystem]) || null;
+async function sciSysFor(bp) {
+  if (S.sciSystem) {
+    const id = await sysByName(S.sciSystem);
+    if (id) {
+      await ensureSec(id);
+      return id;
+    }
+  }
+  const id = await sysFor(bp);
+  await ensureSec(id);
+  return id;
+}
+async function ensureSec(sys) {
+  if (sys == null || SYSSEC[sys] != null) return;
+  try {
+    const s = await esi('/universe/systems/' + sys + '/');
+    SYSSEC[sys] = s.security_status;
+    store('syssec', SYSSEC);
+  } catch (e) {}
 }
 function jobSysOf(j, fallback) {
+  if (SCI_ACTS.has(j.act) && sciSysSet()) return sciSysSet();
   if (S.system && SYSNAME[S.system]) return SYSNAME[S.system];
   const l = S.prodLoc ? Number(S.prodLoc) : j.bp && j.bp.l;
   const li = l != null ? LOCINFO[l] : null;
@@ -627,13 +670,24 @@ function jobSysOf(j, fallback) {
 }
 function jobCost(j, sysId) {
   const eiv = j.base.reduce((s, [m, q]) => s + (ADJ.p[m] || 0) * q, 0) * j.runs * (j.cm || 1);
-  const index = (IDX.p[jobSysOf(j, sysId)] || {})[ACT_IDX[j.act]] || 0;
+  const sys = jobSysOf(j, sysId);
+  const index = (IDX.p[sys] || {})[ACT_IDX[j.act]] || 0;
+  // science: the structure and rigs reduce the index part; taxes are not reduced
+  if (SCI_ACTS.has(j.act))
+    return eiv * (index * (1 - sciBonus(j.act, sys).c) + sciTaxPct() / 100 + Number(S.scc || 0) / 100);
   return eiv * (index + Number(S.facTax || 0) / 100 + Number(S.scc || 0) / 100);
 }
 function jobTime(j) {
   const c = j.who != null ? j.who : j.bp.cid;
-  if (j.act === 'i') return j.runs * j.time * (1 - 0.03 * lvlOf(c, SK.advInd));
-  if (j.act === 'c') return j.runs * j.time * (1 - 0.05 * lvlOf(c, SK.science)) * (1 - 0.03 * lvlOf(c, SK.advInd));
+  if (j.act === 'i') return j.runs * j.time * (1 - 0.03 * lvlOf(c, SK.advInd)) * (1 - sciBonus('i', jobSysOf(j)).t);
+  if (j.act === 'c')
+    return (
+      j.runs *
+      j.time *
+      (1 - 0.05 * lvlOf(c, SK.science)) *
+      (1 - 0.03 * lvlOf(c, SK.advInd)) *
+      (1 - sciBonus('c', jobSysOf(j)).t)
+    );
   const te = j.act === 'm' ? j.bp.te : 0;
   const sk =
     j.act === 'm' ? (1 - 0.04 * lvlOf(c, SK.industry)) * (1 - 0.03 * lvlOf(c, SK.advInd)) : 1 - 0.04 * lvlOf(c, 45746);

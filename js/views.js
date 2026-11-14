@@ -307,7 +307,14 @@ function renderLocList() {
 function renderSettings() {
   $('#sStructME').value = S.structME;
   $('#sWallet').checked = !!S.wallet;
-  $('#sStructRes').value = S.structRes || 0;
+  $('#sSciSystem').value = S.sciSystem || '';
+  $('#sSciStruct').value = STRUCT_ROLE[S.sciStruct] ? S.sciStruct : 'npc';
+  $('#sSciTax').value = S.sciTax ?? '';
+  $('#sSciTax').placeholder = fmt(Number(S.facTax || 0), 2);
+  document
+    .querySelectorAll('[data-scirig]')
+    .forEach(sel => (sel.value = String((S.sciRigs || {})[sel.dataset.scirig] || '')));
+  sciInfo().catch(() => {});
   $('#sStructTE').value = S.structTE;
   $('#sFacTax').value = S.facTax;
   $('#sScc').value = S.scc;
@@ -1286,4 +1293,30 @@ function treeRows(n, d, sys) {
   }</td></tr>`;
   n.ch.forEach(c => (h = html`${h}${treeRows(c, d + 1, sys)}`));
   return h;
+}
+// Settings: what the science location gives, per activity (the security of the set system; without one, highsec)
+async function sciInfo() {
+  const el = $('#sSciInfo');
+  if (!el) return;
+  let sys = null;
+  if (S.sciSystem) {
+    sys = await sysByName(S.sciSystem);
+    if (sys) await ensureSec(sys);
+  }
+  const sec = sys ? SYSSEC[sys] : null;
+  const parts = [
+    ['i', 'Invention'],
+    ['c', 'Copy'],
+    ['rme', T('ME kutatás')],
+    ['rte', T('TE kutatás')]
+  ].map(([a, n]) => {
+    const b = sciBonus(a, sys);
+    return n + ': ' + T('idő −{0}%, költség −{1}%', fmt(b.t * 100, 1), fmt(b.c * 100, 1));
+  });
+  const where = S.sciSystem
+    ? sys
+      ? T('{0} (biztonság {1}, rig ×{2})', S.sciSystem, sec != null ? fmt(sec, 2) : '?', fmt(secMult(sec), 1))
+      : T('ismeretlen rendszer: {0}', S.sciSystem)
+    : T('mint a gyártásnál; a rig szorzója a job rendszerének biztonságától függ (itt highsec-kel számolva)');
+  setHtml(el, html`${where}. ${parts.join(' · ')}`);
 }
