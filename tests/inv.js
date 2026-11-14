@@ -242,4 +242,32 @@ const T = w.__t;
       .map(r => r.textContent.replace(/\s+/g, ' ').trim())
       .join('\n     ')
   );
+  // invention list: every decryptor variant, the goal, and the filters before and after calculating
+  const io = d.querySelector('#ivOut');
+  const rowsTxt = () => [...io.querySelectorAll('tbody tr:not(.sub)')].map(r => r.cells[2].textContent.trim());
+  io.querySelector('[data-invopen]').click();
+  const subs = [...io.querySelectorAll('tbody tr.sub')];
+  console.log('INV variants:', subs.length, subs.every(r => r.querySelector('[data-invadd]')) ? 'each with + projekt' : 'MISSING add');
+  console.log('INV variant decryptors:', subs.map(r => r.cells[2].textContent.trim()).join(', '));
+  const set = (id, v, ev = 'input') => {
+    const el = d.querySelector(id);
+    el.value = v;
+    el.dispatchEvent(new d.defaultView.Event(ev));
+  };
+  set('#ivGoal', 'me', 'change');
+  console.log('INV goal ME:', rowsTxt().join(' | '));
+  set('#ivGoal', 'runs', 'change');
+  console.log('INV goal runs:', rowsTxt().join(' | '));
+  set('#ivGoal', 'profit', 'change');
+  set('#ivName', 'nothing like this');
+  console.log('INV name miss:', io.querySelectorAll('tbody tr').length, 'rows');
+  set('#ivName', 'raven');
+  console.log('INV name hit:', io.querySelectorAll('tbody tr:not(.sub)').length, 'rows');
+  set('#ivDec', '0');
+  console.log('INV only no decryptor (narrowing):', rowsTxt().join(' | '), '| recalc note:', /újra a Számolást/.test(io.textContent));
+  set('#ivDec', '34205');
+  await T.runInvention();
+  console.log('INV calculated with one decryptor:', io.querySelectorAll('[data-invopen]').length, 'variant buttons |', rowsTxt().join(' | '));
+  set('#ivDec', '');
+  console.log('INV wider than the calculation: recalc note:', /újra a Számolást/.test(io.textContent));
 })().catch(e => console.error('FAIL', e));

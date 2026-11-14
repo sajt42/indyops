@@ -16,7 +16,7 @@ IndyOps is a free, browser-only **EVE Online industry calculator and manufacturi
 - **Who builds what**: jobs are assigned by skills, job time and free slots, and the tool tells you when a BP has to be handed over.
 - **Parallel manufacturing** (optional): with several blueprints for one item, the runs can be split into jobs that run at the same time, either only when it needs no extra material or as far as blueprints and free slots allow.
 - **What pays?**: profit per run, margin, profit per build hour and daily market volume for every BP you own.
-- **Invention & T2**: chance from your skills, all 8 decryptors compared, invention cost per BPC; invention jobs, datacores and T1 copies included in projects.
+- **Invention & T2**: chance from your skills, all 8 decryptors compared (every variant visible, the shown one picked by a goal), filters by category, name and decryptor before calculating, invention cost per BPC; invention jobs, datacores and T1 copies included in projects.
 - **Research & copy**: time and cost of the next ME level, saving per run, payback, full ME10/TE20 time, copy time, science slots.
 - **Selling**: your market orders, who undercut you and the suggested new price; optional 30-day sales from wallet transactions; which character should sell (sales tax, broker fee with standings).
 - **Where to buy**: materials come from Jita by default; per item you can enter a manual price (bought outside the market) or search the sell orders of the regions you pick for cheaper stations, with jumps from your production location, highsec check and order book depth for the quantity you need.

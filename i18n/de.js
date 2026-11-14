@@ -883,5 +883,24 @@ window.I18N.de = {
   '+{0} ISK anyag': '+{0} ISK Material',
   'több anyag nélkül': 'ohne zusätzliches Material',
   'Projektnél: Párhuzamos gyártás → be – gyorsabb; a Tervezőben: Beállítások.':
-    'Im Projekt: Parallele Fertigung → an – schneller; im Planer: Einstellungen.'
+    'Im Projekt: Parallele Fertigung → an – schneller; im Planer: Einstellungen.',
+  'A szűrőnek egyik inventálható BP-d sem felel meg.': 'Keiner deiner inventierbaren Blueprints passt zum Filter.',
+  'A lista a legutóbbi számolásból szűr. Ehhez a szűrőhöz nyomd meg újra a Számolást.':
+    'Die Liste filtert die letzte Berechnung. Für diesen Filter drücke erneut Berechnen.',
+  '{0} változat': '{0} Varianten',
+  Decryptor: 'Decryptor',
+  nincs: 'keiner',
+  'A tétel sorában a Cél szerint legjobb változat áll; a „▸ változat” gombbal látod az összeset, mindegyiket külön projekthez adhatod. Az esélyt a legjobb skillű karaktered skilljeivel számolja (két science skill és az encryption skill). Az invention költsége átlagos értékre van számolva: datacore-ok, decryptor, invention job és T1 copy job, osztva az eséllyel. A T2 gyártás anyagköltsége a teljes anyagfával, piaci áron számít. A „+ projekt” egy BPC-nyi runt ad a projekthez azzal a decryptorral, amelyik sorában megnyomod.':
+    'In der Zeile jeder Position steht die beste Variante für das Ziel; „▸ Varianten“ zeigt alle, jede lässt sich einem Projekt hinzufügen. Die Chance nutzt die Skills deines besten Charakters (zwei Science-Skills und der Encryption-Skill). Die Invention-Kosten sind ein Mittelwert: Datacores, Decryptor, Invention-Job und T1-Kopierjob, geteilt durch die Chance. Die T2-Materialkosten nutzen den ganzen Materialbaum zu Marktpreisen. „+ Projekt“ fügt dem Projekt eine BPC an Runs mit dem Decryptor der Zeile hinzu, in der du es drückst.',
+  Kategória: 'Kategorie',
+  Név: 'Name',
+  Cél: 'Ziel',
+  'T2 vagy T1 név': 'T2- oder T1-Name',
+  'profit / BPC': 'Gewinn / BPC',
+  'profit / run': 'Gewinn / Run',
+  'legtöbb run / BPC': 'meiste Runs / BPC',
+  'legjobb ME': 'bestes ME',
+  'legolcsóbb invention': 'günstigste Invention',
+  'A kategória, a név és a decryptor szűkíti, mit számol: kevesebb tétel vagy egy decryptor sokkal gyorsabb. A Cél a számolás után is állítható: eldönti, melyik változat áll a tétel sorában, és mi szerint rendez.':
+    'Kategorie, Name und Decryptor schränken ein, was berechnet wird: weniger Positionen oder ein einzelner Decryptor ist viel schneller. Das Ziel lässt sich auch nach der Berechnung ändern: es bestimmt, welche Variante in der Zeile steht, und die Reihenfolge.'
 };

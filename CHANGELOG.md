@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.0 – 2026-11-14
+
+- Invention: every decryptor variant can be opened under its item (“▸ variants”), each with its own “+ project”; a Goal (profit/BPC, profit/run, runs/BPC, ME, cheapest invention) picks the variant in the item's row and the order. Category, name and decryptor filters before calculating, so less is calculated; after calculating they narrow the list at once (a wider filter asks for a new calculation). The “Without decryptor” column is gone (it is one of the variants now).
+
 ## 1.20.0 – 2026-11-12
 
 - Projects: parallel manufacturing per project (as in Settings / off / less material / faster) in the project header; several projects calculated together each use their own. The result now says when an item could run in more jobs than its setting allows: how long the longest job is now, how long in faster mode, and the extra material.

@@ -150,3 +150,5 @@ input.manp{width:90px}
 .tl .tl-crit{stroke:var(--fg);stroke-width:2}
 .tl .tl-c0{fill:#1f6fa8}.tl .tl-c1{fill:#2e8a57}.tl .tl-c2{fill:#8a4fbf}.tl .tl-c3{fill:#b7791f}.tl .tl-c4{fill:#c0392b}.tl .tl-c5{fill:#3b8a8a}
 .tlset{margin-top:6px}
+
+tr.sub td{background:var(--panel2);font-size:12px}

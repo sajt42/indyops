@@ -13,6 +13,7 @@ function showTab(t) {
   if (t === 'repro') renderRepro();
   if (t === 'profit') fillOwnCats($('#prCat'));
   if (t === 'canbuild') fillOwnCats($('#cbCat'));
+  if (t === 'inv') fillInvFilters();
 }
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-goto]');
@@ -109,6 +110,14 @@ $('#ivGo').onclick = () =>
     log(e.stack || e.message);
     status('kész');
   });
+// invention filters: they narrow the list on screen at once (a wider one needs a new calculation)
+fillInvDecs();
+['#ivCat', '#ivName', '#ivDec'].forEach(x => $(x).addEventListener('input', () => INVROWS.length && renderInvention()));
+$('#ivGoal').addEventListener('change', () => {
+  const g = invGoal();
+  SRT.inv = { f: g.f, d: g.d };
+  if (INVROWS.length) renderInvention();
+});
 $('#rsGo').onclick = () =>
   runResearch().catch(e => {
     setHtml($('#rsOut'), html`<div class="notice err"><p>${e.message}</p></div>`);
@@ -219,6 +228,7 @@ onCharData(() => {
   // new blueprints can bring new categories into the open tab's list
   if (!$('#tab-profit').hidden) fillOwnCats($('#prCat'));
   if (!$('#tab-canbuild').hidden) fillOwnCats($('#cbCat'));
+  if (!$('#tab-inv').hidden) fillInvFilters();
   clearTimeout(dataRecalcTimer);
   dataRecalcTimer = setTimeout(recalcAfterData, DATA_RECALC_DELAY);
 });

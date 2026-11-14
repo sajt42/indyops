@@ -875,5 +875,24 @@ window.I18N.en = {
   '+{0} ISK anyag': '+{0} ISK material',
   'több anyag nélkül': 'no extra material',
   'Projektnél: Párhuzamos gyártás → be – gyorsabb; a Tervezőben: Beállítások.':
-    'In a project: Parallel manufacturing → on – faster; in the Planner: Settings.'
+    'In a project: Parallel manufacturing → on – faster; in the Planner: Settings.',
+  'A szűrőnek egyik inventálható BP-d sem felel meg.': 'None of your inventable blueprints match the filter.',
+  'A lista a legutóbbi számolásból szűr. Ehhez a szűrőhöz nyomd meg újra a Számolást.':
+    'The list filters the last calculation. For this filter, press Calculate again.',
+  '{0} változat': '{0} variants',
+  Decryptor: 'Decryptor',
+  nincs: 'none',
+  'A tétel sorában a Cél szerint legjobb változat áll; a „▸ változat” gombbal látod az összeset, mindegyiket külön projekthez adhatod. Az esélyt a legjobb skillű karaktered skilljeivel számolja (két science skill és az encryption skill). Az invention költsége átlagos értékre van számolva: datacore-ok, decryptor, invention job és T1 copy job, osztva az eséllyel. A T2 gyártás anyagköltsége a teljes anyagfával, piaci áron számít. A „+ projekt” egy BPC-nyi runt ad a projekthez azzal a decryptorral, amelyik sorában megnyomod.':
+    "Each item's row shows the best variant for the Goal; “▸ variants” shows them all, and each can be added to a project. The chance uses the skills of your best character (two science skills and the encryption skill). The invention cost is an average: datacores, decryptor, invention job and T1 copy job, divided by the chance. T2 material cost uses the whole material tree at market prices. “+ project” adds one BPC worth of runs to the project with the decryptor of the row you press it in.",
+  Kategória: 'Category',
+  Név: 'Name',
+  Cél: 'Goal',
+  'T2 vagy T1 név': 'T2 or T1 name',
+  'profit / BPC': 'profit / BPC',
+  'profit / run': 'profit / run',
+  'legtöbb run / BPC': 'most runs / BPC',
+  'legjobb ME': 'best ME',
+  'legolcsóbb invention': 'cheapest invention',
+  'A kategória, a név és a decryptor szűkíti, mit számol: kevesebb tétel vagy egy decryptor sokkal gyorsabb. A Cél a számolás után is állítható: eldönti, melyik változat áll a tétel sorában, és mi szerint rendez.':
+    "Category, name and decryptor narrow what is calculated: fewer items or a single decryptor is much faster. The Goal can also be changed after calculating: it decides which variant stands in each item's row and the order."
 };

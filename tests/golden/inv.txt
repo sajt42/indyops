@@ -1,4 +1,4 @@
-INV: 28710Jita 1,75 BRaven BlueprintBPC 8 run · Pilot AAugmentation Decryptor18,0%100 / 627,1 M13,74 B1,37 B1,36 B40+ projekt
+INV: 28710Jita 1,75 B▸ 9 változatRaven BlueprintBPC 8 run · Pilot AAugmentation Decryptor18,0%100 / 627,1 M13,74 B1,37 B40+ projekt
 pList: Invention · 1 tétel▲▼
 pEdit: T2 BPC inventionAugmentation DecryptorT1: Raven Blueprint · BPC 8 runprojekt szerintsaját források✕
 PROJ KPIs: TermékInvention | Vásárolni kell2,15 B | Saját készlet értéke444,1 M | Job költség78,6 M | Eladás (Jita sell, díjak után)16,40 B | Profit13,72 B
@@ -16,3 +16,12 @@ TREE top: 28710 10–10–259,6 M / 1,75 B
      25887 192––19280,0 k
      34203 6––6400,0 k
      Raven gyártom10–10–139,8 M / 152,3 M
+INV variants: 9 each with + projekt
+INV variant decryptors: Augmentation Decryptor, Optimized Augmentation Decryptor, Attainment Decryptor, Parity Decryptor, Optimized Attainment Decryptor, Symmetry Decryptor, Accelerant Decryptor, Process Decryptor, nincs
+INV goal ME: Process Decryptor
+INV goal runs: Augmentation Decryptor
+INV name miss: 0 rows
+INV name hit: 1 rows
+INV only no decryptor (narrowing): nincs | recalc note: false
+INV calculated with one decryptor: 0 variant buttons | Process Decryptor
+INV wider than the calculation: recalc note: true
