@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.23.1 – 2026-11-15
+
+- Timeline: every work character is shown for each kind of job in the plan, also one that gets no job from this plan (with its running jobs and a “no job from this plan” note); since 1.23.0 such a character disappeared.
+
 ## 1.23.0 – 2026-11-15
 
 - Character assignment uses the timeline scheduler: each job goes to the character who finishes it first, with running jobs holding their slots until they end and jobs waiting for their components (products of running jobs arrive when those end). A blueprint stays with whoever holds it (or has an equal copy) unless another character finishes at least 10% and 1 hour sooner (adjustable under Settings → Who does the work?); a suggested hand-over says how much sooner. Following the plan no longer makes the next calculation suggest the opposite. The workload table's lead time comes from the same schedule.

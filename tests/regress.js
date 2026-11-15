@@ -115,7 +115,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,setProfRows:a=>{PROFROWS=a},renderProfit,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,renderTimeline,setProfRows:a=>{PROFROWS=a},renderProfit,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -1353,7 +1353,44 @@ const ok = (c, msg) => {
     T.assignChars([X4]);
     ok(
       X4.who === 2 && X4.gain > 2 * 86400e3,
-      'much sooner elsewhere: moves, who ' + X4.who + ' gain ' + Math.round((X4.gain || 0) / 3600e3) + ' h wait ' + X4.wait
+      'much sooner elsewhere: moves, who ' +
+        X4.who +
+        ' gain ' +
+        Math.round((X4.gain || 0) / 3600e3) +
+        ' h wait ' +
+        X4.wait
+    );
+  }
+  {
+    // 43. the timeline shows every work character, also one without a job from this plan (with its running jobs)
+    const L0 = 60003760;
+    const b = { i: 951, t: 688, cid: 1, l: L0, me: 0, te: 0, r: -1, q: -1 };
+    T.setChars([
+      { id: 1, name: 'A', refresh: 'x', access: 'x', exp: Date.now() + 1e9 },
+      { id: 2, name: 'B', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }
+    ]);
+    T.S.workChars = null;
+    const end = new Date(Date.now() + 5 * 3600e3).toISOString();
+    T.setData({
+      1: { assets: [], bps: [b], skills: { 3387: 1 }, jobs: [], at: Date.now() },
+      2: {
+        assets: [],
+        bps: [],
+        skills: { 3387: 1 },
+        jobs: [{ act: 1, st: 'active', runs: 1, bp: 689, prod: 1001, start: new Date().toISOString(), end }],
+        at: Date.now()
+      }
+    });
+    const j = { t: 1000, bp: b, runs: 1, act: 'm', time: 3600, rs: [], base: [], miss: [], item: {}, who: 1 };
+    const R = { jobs: [j], trees: [] };
+    const el = d.createElement('div');
+    T.setHtml(el, T.renderTimeline(R));
+    const labs = [...el.querySelectorAll('.tl-labels .tl-lab')].map(x => x.textContent);
+    ok(
+      labs.length === 2 &&
+        el.querySelectorAll('.tl-run').length === 1 &&
+        /ebből a tervből nincs jobja/.test(el.textContent),
+      'both characters, the idle one with its running job (' + labs + ')'
     );
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);

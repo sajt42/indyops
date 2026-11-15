@@ -305,6 +305,9 @@ function timelineInput(R, now, candsOf) {
   const lanes = new Set(
     R.jobs.flatMap(j => (cands.get(j) ? cands.get(j).map(c => c.lane) : [cidOf(j) + '|' + slotKey(j.act)]))
   );
+  // every work character shows for each kind of job in the plan, even without a job from it (its running jobs)
+  const kinds = new Set(R.jobs.map(j => slotKey(j.act)));
+  for (const c of workChars()) for (const k of kinds) lanes.add(c + '|' + k);
   const slots = {},
     running = [];
   for (const lane of lanes) {
@@ -384,6 +387,11 @@ function renderTimeline(R, now = Date.now()) {
     labSvg.push(
       html`<text x="4" y="${y + 15}" class="tl-lab">${fitText(charName(Number(cid)), LABW - 8, 7)}<title>${charName(Number(cid))}</title></text><text x="4" y="${y + 28}" class="tl-small">${T(TL_KIND[k])} · ${n ? T('{0} slot', n) + (free > 0 ? ' · ' + T('{0} üres', free) : '') : T('nincs szabad slot')}</text>`
     );
+    const mine = [...sch.rows.values()].some(r => r.lane === lane && r.s != null);
+    if (!mine)
+      labSvg.push(
+        html`<text x="4" y="${y + 41}" class="tl-small">${fitText(T('ebből a tervből nincs jobja'), LABW - 8, 5.5)}</text>`
+      );
     const nRows = Math.max(2, used.size);
     for (let i = 0; i < nRows; i++)
       rowsSvg.push(

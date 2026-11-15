@@ -61,7 +61,7 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.23.0',
+  version: '1.23.1',
   built: '2026-11-15',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
