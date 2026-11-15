@@ -61,8 +61,8 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.22.1',
-  built: '2026-11-14',
+  version: '1.23.0',
+  built: '2026-11-15',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
   clientId: 'b02779a9ea1c427bb46c9d70a697a4c7',
@@ -331,6 +331,8 @@ let S = Object.assign(
     locs: null,
     buyOverride: {},
     leave: {},
+    stickPct: 10,
+    stickH: 1,
     sciSystem: '',
     sciStruct: 'npc',
     sciRigs: {},
@@ -436,6 +438,8 @@ const SET_SCHEMA = {
   parMode: 'str',
   srcShips: 'bool',
   buyOverride: 'mapBool',
+  stickPct: 'numOrEmpty', // a blueprint moves to another character only if it ends this % sooner…
+  stickH: 'numOrEmpty', // …and at least this many hours sooner
   sciSystem: 'str', // science (invention, copy, research): system for the cost index ('' = as manufacturing)
   sciStruct: 'str', // science structure: npc | raitaru | azbel | sotiyo (role bonus)
   sciRigs: 'mapNum', // science rigs: 'i|c|me|te' + '.t' (time) or '.c' (cost) -> 1 (T1) or 2 (T2)

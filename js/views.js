@@ -307,6 +307,8 @@ function renderLocList() {
 function renderSettings() {
   $('#sStructME').value = S.structME;
   $('#sWallet').checked = !!S.wallet;
+  $('#sStickPct').value = S.stickPct ?? 10;
+  $('#sStickH').value = S.stickH ?? 1;
   $('#sSciSystem').value = S.sciSystem || '';
   $('#sSciStruct').value = STRUCT_ROLE[S.sciStruct] ? S.sciStruct : 'npc';
   $('#sSciTax').value = S.sciTax ?? '';
@@ -470,7 +472,7 @@ async function finishResult(R, firstBP) {
   await resolveNames(R.jobs.flatMap(j => j.miss.map(m => m[0])));
   R.sys = firstBP ? await sysFor(firstBP) : null;
   // order: first the final character/BP assignment, then systems and hauling
-  assignChars(R.jobs);
+  assignChars(R.jobs, R);
   await assignJobSys(R.jobs);
   await resolveNames([...new Set(R.jobs.map(j => jobSysOf(j, R.sys)).filter(Boolean))]);
   // purchase sources picked from the market search need their current orders
@@ -521,21 +523,14 @@ async function runPlan() {
     log(e.stack || e.message);
   }
 }
-function assignChars(jobs) {
-  // who does it: by skills, time and free slots, LPT scheduling
+// Who runs each job: the scheduler (schedule.js) places every job where it ends first, on real slots (running jobs
+// hold theirs until they end), after the jobs it needs. A blueprint stays with the character who holds it (or a
+// character with an equal copy) unless another one ends clearly sooner (Settings: stickPct, stickH), so following
+// the plan does not make the next calculation suggest the opposite. R: the result (dependencies); optional.
+function assignChars(jobs, R) {
   const cs = workChars();
   if (!cs.length) return;
-  const load = {},
-    cnt = {};
-  cs.forEach(c => {
-    load[c] = { m: 0, r: 0, s: 0 };
-    cnt[c] = { m: 0, r: 0, s: 0 };
-  });
-  const free = (c, k) => {
-    const sl = slotsOf(c),
-      bz = busyOf(c);
-    return Math.max(1, sl[k] - bz[k]);
-  };
+  R = R && R.jobs === jobs ? R : { jobs, trees: [] };
   const tFor = (j, c) => {
     const o = j.who;
     j.who = c;
@@ -548,46 +543,45 @@ function assignChars(jobs) {
     else j.bp0 = j.bp;
     j.who = null;
   });
-  // a blueprint item runs one job at a time: a job may move to another character's copy only if no other job uses it
-  const taken = new Set(jobs.map(j => j.bp.i).filter(i => i != null));
-  const order = jobs.slice().sort((a, b) => tFor(b, b.bp.cid) - tFor(a, a.bp.cid));
-  for (const j of order) {
+  const info = new Map();
+  const candsOf = j => {
     const rec = j.rs ? { rs: j.rs } : recOf(j.bp.t);
-    const k = slotKey(j.act);
     let cand = cs.filter(c => !missingSkills(c, rec).length);
     const noone = !cand.length;
     if (noone) cand = cs;
-    let best = null,
-      bv = Infinity;
-    const own = c => {
-      if (j.bp.virtual) return j.bp;
-      if (c === j.bp.cid) return j.bp;
-      return allBPs().find(
-        b => b.cid === c && b.t === j.bp.t && b.me >= j.bp.me && (b.r === -1 || b.r >= j.runs) && !taken.has(b.i)
-      );
-    };
+    // an invention job belongs to the character whose skills gave its chance
+    if (j.invInfo && cs.includes(j.invInfo.char)) cand = [j.invInfo.char];
+    info.set(j, { rec, noone });
+    const holder = j.bp.cid;
+    // per character: its own equal copy (nothing to move), and the job's blueprint moved to it
+    const out = [];
     for (const c of cand) {
-      const v =
-        (load[c][k] + tFor(j, c)) / free(c, k) - (own(c) ? 1 : 0) - (j.invInfo && j.invInfo.char === c ? 1e9 : 0);
-      if (v < bv) {
-        bv = v;
-        best = c;
+      if (j.bp.virtual) out.push({ cid: c, bp: Object.assign({}, j.bp, { cid: c }), move: false });
+      else if (c === holder) out.push({ cid: c, bp: j.bp, move: false });
+      else {
+        // every equal copy of its own: one in use by another job does not block a free one
+        allBPs()
+          .filter(b => b.cid === c && b.t === j.bp.t && b.me >= j.bp.me && (b.r === -1 || b.r >= j.runs))
+          .forEach(b => out.push({ cid: c, bp: Object.assign({}, b), move: false }));
+        out.push({ cid: c, bp: j.bp, move: true });
       }
     }
-    const mine = own(best);
-    if (mine && mine !== j.bp && !j.bp.virtual) {
-      j.bp = Object.assign({}, mine);
-      taken.add(mine.i);
-    }
-    if (j.bp.virtual) j.bp = Object.assign({}, j.bp, { cid: best });
-    j.who = best;
-    j.miss = missingSkills(best, rec);
-    j.noone = noone;
-    load[best][k] += tFor(j, best);
-    // more jobs than free slots: the rest waits for a running job to end (an estimate, not a scheduler)
-    cnt[best][k]++;
-    const realFree = slotsOf(best)[k] - busyOf(best)[k];
-    j.wait = cnt[best][k] > Math.max(0, realFree);
+    return out.map(x => Object.assign(x, { dur: tFor(j, x.cid) * 1000 }));
+  };
+  const TI = timelineInput(R, Date.now(), candsOf);
+  const sch = scheduleJobs(TI.inp);
+  for (const j of jobs) {
+    const job = TI.inp.jobs.find(q => q.id === TI.ids.get(j));
+    const r = sch.rows.get(job.id);
+    const c = job.cands[r && r.cand >= 0 ? r.cand : 0].src;
+    j.bp = c.bp;
+    j.who = c.cid;
+    j.miss = missingSkills(c.cid, info.get(j).rec);
+    j.noone = info.get(j).noone;
+    // starts later than it could because the character's slots are full (running or earlier jobs)
+    j.wait = !r || r.s == null || r.why === 'slot';
+    j.gain = r && r.gain ? r.gain : 0;
+    j.plan = r && r.s != null ? { s: r.s, e: r.e, t0: TI.inp.t0 } : null;
   }
 }
 // avg: optional Map type -> average purchase price over the whole shopping list (see buyAvgMap)
@@ -943,7 +937,7 @@ function buildUnit(n, sys) {
 // Shows a plan: recomputes the character assignment (work characters or slots may have changed), draws it,
 // and if the assignment changed since the haul context was prepared, prepares it again and redraws.
 function showResult(el, R, rerun) {
-  assignChars(R.jobs);
+  assignChars(R.jobs, R);
   renderResult(el, R, rerun);
   refreshHaul(R).then(fresh => {
     if (fresh && el.isConnected) renderResult(el, R, rerun);
@@ -1106,7 +1100,7 @@ function resultJobs(R, multi) {
     .reverse()
     .map(
       j =>
-        html`<tr><td>${NAMES[j.t] || j.t}${j.act === 'r' ? html` <span class="pill">reakció</span>` : ''}${j.act === 'i' ? html` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance * 100, 1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>` : ''}${j.act === 'c' ? html` <span class="pill">copy</span>` : ''}${multi && j.item && j.item.label ? html`<div class="src">${j.item.label}</div>` : ''}</td><td><b>${charName(j.who ?? j.bp.cid)}</b> ${j.wait ? html`<span class="pill warn" title="${T('Nincs szabad slot; a javaslat későbbi indítással számol, a várakozási időt nem tartalmazza.')}">${T('nincs szabad slot')}</span> ` : ''}${j.who != null && j.who !== j.bp.cid ? html`<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak', charName(j.bp.cid), charName(j.who))}</div>` : ''}${
+        html`<tr><td>${NAMES[j.t] || j.t}${j.act === 'r' ? html` <span class="pill">reakció</span>` : ''}${j.act === 'i' ? html` <span class="pill">invention</span><div class="src">esély ${fmt(j.invInfo.chance * 100, 1)}% · ${fmt(j.invInfo.runsPer)} run/BPC · ME${j.invInfo.me} TE${j.invInfo.te}</div>` : ''}${j.act === 'c' ? html` <span class="pill">copy</span>` : ''}${multi && j.item && j.item.label ? html`<div class="src">${j.item.label}</div>` : ''}</td><td><b>${charName(j.who ?? j.bp.cid)}</b> ${j.wait ? html`<span class="pill warn" title="${T('Most nincs szabad slotja: a job akkor indul, amikor egy futó vagy korábbi job véget ér (lásd az idővonalat).')}">${T('nincs szabad slot')}</span> ` : ''}${j.who != null && j.who !== j.bp.cid ? html`<span class="pill warn">BP átadása</span><div class="src">${T('most {0}-nál van → add át {1}-nak', charName(j.bp.cid), charName(j.who))}${j.gain ? ' · ' + T('így kb. {0}-val hamarabb kész', dur(j.gain / 1000)) : ''}</div>` : ''}${
           j.miss.length
             ? html`<span class="pill bad">hiányzó skill</span><div class="src">${hjoin(
                 j.miss.map(m => (NAMES[m[0]] || m[0]) + ' ' + m[2] + ' → ' + m[1]),
@@ -1132,8 +1126,12 @@ function resultCharLoad(R) {
     x[k]++;
     x['t' + k] += jt;
     if (j.miss.length) x.miss++;
+    if (j.plan) {
+      x.end = Math.max(x.end || 0, j.plan.e);
+      x.t0 = j.plan.t0;
+    }
   }
-  return html`<h3>Karakterek terhelése</h3><p class="small muted">Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél a szabad slotok és a gyártási idő alapján a leghamarabb elkészül. Egyenlő esetben marad annál, akinél a BP most van, vagy akinél ugyanilyen BP is van.</p><div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Gyártó job</th><th class="num">Szabad gyártó slot</th><th class="num">Reakció job</th><th class="num">Szabad reakció slot</th><th class="num">Science job</th><th class="num">Szabad science slot</th><th class="num">Össz. idő</th><th class="num">Becsült átfutás</th><th>Megjegyzés</th></tr></thead><tbody>${[
+  return html`<h3>Karakterek terhelése</h3><p class="small muted">Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél az idővonal szerint a leghamarabb elkészül: a futó jobok a lejártukig foglalják a slotot, és a job megvárja a komponenseit. A BP annál marad, akinél most van (vagy akinél ugyanilyen jó BP van), hacsak egy másik karakter nem végez érezhetően hamarabb (Beállítások → Kik dolgozzanak?). Így ha követed a javaslatot, a következő számolás nem mond mást. A becsült átfutás: a karakter utolsó jobjának vége az idővonalon.</p><div class="tablewrap"><table><thead><tr><th>Karakter</th><th class="num">Gyártó job</th><th class="num">Szabad gyártó slot</th><th class="num">Reakció job</th><th class="num">Szabad reakció slot</th><th class="num">Science job</th><th class="num">Szabad science slot</th><th class="num">Össz. idő</th><th class="num">Becsült átfutás</th><th>Megjegyzés</th></tr></thead><tbody>${[
     ...per
   ].map(([c, x]) => {
     const sl = slotsOf(c),
@@ -1141,12 +1139,8 @@ function resultCharLoad(R) {
     const fm = Math.max(0, sl.m - bz.m),
       fr = Math.max(0, sl.r - bz.r),
       fs = Math.max(0, sl.s - bz.s);
-    const wall = Math.max(
-      x.mx,
-      x.m ? x.tm / Math.max(1, fm) : 0,
-      x.r ? x.tr / Math.max(1, fr) : 0,
-      x.s ? x.ts / Math.max(1, fs) : 0
-    );
+    // lead time: when this character's last job ends on the timeline (the same schedule that assigned the jobs)
+    const wall = x.end ? (x.end - x.t0) / 1000 : 0;
     const notes = [];
     if (x.miss) notes.push(T('{0} jobhoz egyik karakternek sincs meg a skill', x.miss));
     if (x.m > fm) notes.push(T('több gyártó job, mint szabad slot: sorban kell futtatni'));

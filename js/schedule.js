@@ -38,8 +38,11 @@ function inWindow(t, win) {
  *  - a slot of its character and kind is free, and its blueprint is not in another job,
  *  - it is inside the active window, when there is one.
  * in: { t0, win, jobs: [{ id, lane: 'cid|k', bp, dur (ms), ready (ms), prio, deps: [{ id, lag }] }],
- *       slots: { 'cid|k': [free-from times, one per usable slot] } }
- * out: { rows: Map(id -> { s, e, lane, slot, why }), end, crit: Set(id) }  why: what decided the start. */
+ *       slots: { 'cid|k': [free-from times, one per usable slot] }, stick: { pct, ms } }
+ * A job may list cands: [{ lane, bp, dur, move }] instead of one lane: the characters that could run it. It goes
+ * where it ends first; a candidate that needs the blueprint moved (move) wins only when it ends at least
+ * stick.ms and stick.pct % of the staying candidate's lead time sooner.
+ * out: { rows: Map(id -> { s, e, lane, slot, why, cand, gain }), end, crit: Set(id) }  why: what decided the start. */
 function scheduleJobs(inp) {
   const byId = new Map(inp.jobs.map(j => [j.id, j]));
   // longest chain of work from a job to the end (its own duration included): long chains go first
@@ -74,25 +77,9 @@ function scheduleJobs(inp) {
   const bpFree = new Map(),
     bpLast = new Map(),
     slotLast = {}; // who held the slot / blueprint before: the critical path follows waits, too
-  const rows = new Map();
-  for (const j of order) {
-    let est = Math.max(inp.t0, j.ready || 0),
-      why = j.ready > inp.t0 ? 'mat' : 'start',
-      from = null;
-    for (const d of j.deps) {
-      const r = rows.get(d.id);
-      if (r && r.e + d.lag > est) {
-        est = r.e + d.lag;
-        why = 'dep';
-        from = d.id;
-      }
-    }
-    const lane = slots[j.lane] || [];
-    if (!lane.length) {
-      rows.set(j.id, { s: null, e: null, lane: j.lane, slot: -1, why: 'noslot' });
-      continue;
-    }
-    // the slot that lets it start first
+  // the earliest start of a job on one lane (its best slot), without taking it
+  const placeOn = (c, est, why) => {
+    const lane = slots[c.lane] || [];
     let best = -1,
       bs = Infinity,
       bwhy = why;
@@ -101,7 +88,7 @@ function scheduleJobs(inp) {
         w = why;
       for (let k = 0; k < 4; k++) {
         // the blueprint first: when both hold it back, the blueprint is the reason (a free slot would not help)
-        const bf = j.bp != null ? bpFree.get(j.bp) || 0 : 0;
+        const bf = c.bp != null ? bpFree.get(c.bp) || 0 : 0;
         if (bf > s) {
           s = bf;
           w = 'bp';
@@ -115,7 +102,7 @@ function scheduleJobs(inp) {
           s = a;
           w = w === 'start' ? 'active' : w;
         }
-        if (free <= s && (j.bp == null || (bpFree.get(j.bp) || 0) <= s)) break;
+        if (free <= s && (c.bp == null || (bpFree.get(c.bp) || 0) <= s)) break;
       }
       if (s < bs) {
         bs = s;
@@ -123,16 +110,63 @@ function scheduleJobs(inp) {
         bwhy = w;
       }
     });
-    const e = bs + j.dur;
-    const sk = j.lane + '#' + best;
-    const prev = bwhy === 'dep' ? from : bwhy === 'slot' ? slotLast[sk] : bwhy === 'bp' ? bpLast.get(j.bp) : null;
-    lane[best] = e;
-    slotLast[sk] = j.id;
-    if (j.bp != null) {
-      bpFree.set(j.bp, e);
-      bpLast.set(j.bp, j.id);
+    return { s: bs, e: bs + c.dur, slot: best, why: bwhy };
+  };
+  const rows = new Map();
+  for (const j of order) {
+    let est = Math.max(inp.t0, j.ready || 0),
+      why = j.ready > inp.t0 ? 'mat' : 'start',
+      from = null;
+    for (const d of j.deps) {
+      const r = rows.get(d.id);
+      if (r && r.e + d.lag > est) {
+        est = r.e + d.lag;
+        why = 'dep';
+        from = d.id;
+      }
     }
-    rows.set(j.id, { s: bs, e, lane: j.lane, slot: best, why: bwhy, from: prev ?? null });
+    // where it could run: its own lane, or (when assigning characters) each candidate's lane
+    const cands = j.cands || [{ lane: j.lane, bp: j.bp, dur: j.dur, move: false }];
+    const tries = cands.map(c => Object.assign(placeOn(c, est, why), { c }));
+    const ok = tries.filter(t => t.slot >= 0);
+    if (!ok.length) {
+      rows.set(j.id, { s: null, e: null, lane: cands[0].lane, slot: -1, why: 'noslot', cand: 0 });
+      continue;
+    }
+    // a blueprint moves to another character only when that finishes clearly sooner than staying
+    const minE = list => list.reduce((b, t) => (!b || t.e < b.e ? t : b), null);
+    const stay = minE(ok.filter(t => !t.c.move)),
+      move = minE(ok.filter(t => t.c.move));
+    let pick = stay || move,
+      gain = 0;
+    if (stay && move && move.e < stay.e) {
+      const need = Math.max(inp.stick ? inp.stick.ms : 0, inp.stick ? (inp.stick.pct / 100) * (stay.e - inp.t0) : 0);
+      if (stay.e - move.e >= need) {
+        pick = move;
+        gain = stay.e - move.e;
+      }
+    }
+    const c = pick.c,
+      sk = c.lane + '#' + pick.slot;
+    const prev =
+      pick.why === 'dep' ? from : pick.why === 'slot' ? slotLast[sk] : pick.why === 'bp' ? bpLast.get(c.bp) : null;
+    slots[c.lane][pick.slot] = pick.e;
+    slotLast[sk] = j.id;
+    if (c.bp != null) {
+      bpFree.set(c.bp, pick.e);
+      bpLast.set(c.bp, j.id);
+    }
+    rows.set(j.id, {
+      s: pick.s,
+      e: pick.e,
+      lane: c.lane,
+      slot: pick.slot,
+      why: pick.why,
+      from: prev ?? null,
+      cand: cands.indexOf(c),
+      gain, // how much sooner it ends on the other character (when the blueprint moves)
+      stayE: stay ? stay.e : null
+    });
   }
   let end = inp.t0,
     last = null;
@@ -196,7 +230,9 @@ function routeTimes(R) {
 }
 
 // The scheduler input of a result. now: the current time (ms).
-function timelineInput(R, now) {
+// The scheduler input of a result. now: the current time (ms). candsOf (optional, for assignChars): job -> the
+// characters that could run it, [{ cid, bp, dur (ms), move }]; without it each job runs where it is assigned.
+function timelineInput(R, now, candsOf) {
   const t0 = tlStart(now);
   const win = tlWindow();
   const lead = Math.max(0, Number(S.tlBuyLead) || 0) * HOUR;
@@ -232,6 +268,9 @@ function timelineInput(R, now) {
       const raw = c.buy > 0 || (c.stock || []).some(x => typeof x.l === 'number' && x.l !== to);
       if (raw && to != null && arrive.has(to))
         for (const q of mine) ready.set(q, Math.max(ready.get(q), t0 + arrive.get(to)));
+      // products of running jobs ('incoming' stock) arrive when those jobs end
+      for (const x of c.stock || [])
+        if (x.l === 'job' && x.end > t0) for (const q of mine) ready.set(q, Math.max(ready.get(q), x.end));
     }
     // invention needs its copy first
     const copy = mine.filter(j => j.act === 'c'),
@@ -247,8 +286,25 @@ function timelineInput(R, now) {
     };
     mark(x.tree);
   });
-  // slots: every character with a job here, plus its running jobs
-  const lanes = new Set(R.jobs.map(j => cidOf(j) + '|' + slotKey(j.act)));
+  const bpKey = bp => (bp && bp.i != null && !bp.virtual ? String(bp.i) : null);
+  const cands = new Map(
+    R.jobs.map(j => [
+      j,
+      candsOf
+        ? candsOf(j).map(c => ({
+            lane: c.cid + '|' + slotKey(j.act),
+            bp: bpKey(c.bp),
+            dur: c.dur,
+            move: c.move,
+            src: c
+          }))
+        : null
+    ])
+  );
+  // slots: every character with a job here (or that could take one), plus its running jobs
+  const lanes = new Set(
+    R.jobs.flatMap(j => (cands.get(j) ? cands.get(j).map(c => c.lane) : [cidOf(j) + '|' + slotKey(j.act)]))
+  );
   const slots = {},
     running = [];
   for (const lane of lanes) {
@@ -256,22 +312,29 @@ function timelineInput(R, now) {
     const ends = [];
     for (const x of (DATA[cid] && DATA[cid].jobs) || []) {
       if (jobKindOf(x.act) !== k || (x.st !== 'active' && x.st !== 'ready')) continue;
-      const e = x.st === 'ready' ? t0 : new Date(x.end).getTime();
+      const end = new Date(x.end).getTime();
+      const e = x.st === 'ready' || !isFinite(end) ? t0 : end;
       ends.push(e);
       running.push({ lane, s: new Date(x.start).getTime(), e, t: x.prod || x.bp, act: x.act });
     }
     slots[lane] = slotList(slotsOf(Number(cid))[k], (S.slotRes || {})[lane], ends, t0);
   }
-  const jobs = R.jobs.map(j => ({
-    id: ids.get(j),
-    lane: cidOf(j) + '|' + slotKey(j.act),
-    bp: j.bp && j.bp.i != null && !j.bp.virtual ? String(j.bp.i) : null,
-    dur: jobTime(j) * 1000,
-    ready: ready.get(j),
-    prio: prio.has(j) ? prio.get(j) : 99,
-    deps: deps.get(j)
-  }));
-  return { inp: { t0, win, jobs, slots }, ids, running, unknown, lead, routes };
+  const jobs = R.jobs.map(j => {
+    const c = cands.get(j);
+    return {
+      id: ids.get(j),
+      lane: cidOf(j) + '|' + slotKey(j.act),
+      bp: bpKey(j.bp),
+      dur: c && c.length ? c[0].dur : jobTime(j) * 1000,
+      cands: c || undefined,
+      ready: ready.get(j),
+      prio: prio.has(j) ? prio.get(j) : 99,
+      deps: deps.get(j)
+    };
+  });
+  const num = (v, d) => (v === '' || v == null || !isFinite(Number(v)) ? d : Math.max(0, Number(v)));
+  const stick = { pct: num(S.stickPct, 10), ms: num(S.stickH, 1) * HOUR };
+  return { inp: { t0, win, jobs, slots, stick }, ids, running, unknown, lead, routes };
 }
 
 // how long until a moment, in words (for the finish date)

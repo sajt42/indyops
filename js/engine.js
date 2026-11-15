@@ -47,7 +47,8 @@ async function buildPool(opt) {
           a = [];
           pool.set(j.prod, a);
         }
-        a.push({ l: 'job', cid: Number(cid), q });
+        // end: when it arrives (the timeline waits for it)
+        a.push({ l: 'job', cid: Number(cid), q, end: Date.parse(j.end) || null });
       }
     }
   }
@@ -105,7 +106,7 @@ function takeStock(ctx, t, q, item, to) {
     if (k > 0) {
       x.q -= k;
       rem -= k;
-      used.push({ l: x.l, cid: x.cid, q: k, ore: x.ore, c: x.c ?? null });
+      used.push({ l: x.l, cid: x.cid, q: k, ore: x.ore, c: x.c ?? null, end: x.end });
     }
   }
   return used;

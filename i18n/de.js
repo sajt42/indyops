@@ -923,6 +923,16 @@ window.I18N.de = {
   'science struktúra': 'Science-Struktur',
   'science rigek': 'Science-Rigs',
   'science adó': 'Science-Steuer',
-  "Költség": "Kosten",
-  "Rig": "Rig"
+  Költség: 'Kosten',
+  Rig: 'Rig',
+  'így kb. {0}-val hamarabb kész': 'so etwa {0} früher fertig',
+  'Most nincs szabad slotja: a job akkor indul, amikor egy futó vagy korábbi job véget ér (lásd az idővonalat).':
+    'Gerade kein freier Slot: der Job startet, wenn ein laufender oder früherer Job endet (siehe Zeitplan).',
+  'A BP annál a karakternél marad, akinél most van (vagy akinél ugyanilyen jó BP van), hacsak egy másik karakter nem végez vele érezhetően hamarabb. Mindkét feltételnek teljesülnie kell:':
+    'Ein Blueprint bleibt beim Charakter, der ihn hat (oder einen gleich guten), außer ein anderer ist deutlich früher fertig. Beide Bedingungen müssen gelten:',
+  'legalább ennyi %-kal hamarabb': 'mindestens so viel % früher',
+  'és legalább ennyi órával': 'und mindestens so viele Stunden',
+  'BP-átadás küszöbe': 'Schwelle für BP-Übergabe',
+  'Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél az idővonal szerint a leghamarabb elkészül: a futó jobok a lejártukig foglalják a slotot, és a job megvárja a komponenseit. A BP annál marad, akinél most van (vagy akinél ugyanilyen jó BP van), hacsak egy másik karakter nem végez érezhetően hamarabb (Beállítások → Kik dolgozzanak?). Így ha követed a javaslatot, a következő számolás nem mond mást. A becsült átfutás: a karakter utolsó jobjának vége az idővonalon.':
+    'Jeder Job geht an den Charakter mit den Skills, der ihn laut Zeitplan zuerst fertigstellt: laufende Jobs belegen ihren Slot bis zum Ende, und ein Job wartet auf seine Komponenten. Ein Blueprint bleibt bei dem, der ihn hat (oder einen gleich guten), außer ein anderer ist deutlich früher fertig (Einstellungen → Wer arbeitet?). Folgst du dem Vorschlag, sagt die nächste Berechnung nichts anderes. Geschätzte Durchlaufzeit: wann der letzte Job des Charakters im Zeitplan endet.'
 };

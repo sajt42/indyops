@@ -278,7 +278,17 @@ const ok = (c, msg) => {
       assets: [],
       bps,
       skills: {},
-      jobs: [{ act: 1, st: 'active', runs: 1, bp: 688, bpi: 999, loc: L }],
+      jobs: [
+        {
+          act: 1,
+          st: 'active',
+          runs: 1,
+          bp: 688,
+          bpi: 999,
+          loc: L,
+          end: new Date(Date.now() + 2 * 3600e3).toISOString()
+        }
+      ],
       at: Date.now()
     }
   });
@@ -1261,6 +1271,90 @@ const ok = (c, msg) => {
       'What pays? pager above and below the table, no markup as text (' + out.querySelectorAll('.pager').length + ')'
     );
     T.setProfRows([]);
+  }
+  {
+    // 42. character assignment on the timeline: following the plan does not make the next calculation say the
+    // opposite; a blueprint moves only when another character ends clearly sooner (10% and 1 h by default)
+    const L0 = 60003760;
+    const bp = (i, t, cid) => ({ i, t, cid, l: L0, me: 0, te: 0, r: -1, q: -1 });
+    const job = (t, b, h) => ({ t, bp: b, runs: 1, act: 'm', time: h * 3600, rs: [], base: [], miss: [], item: {} });
+    const chars = [
+      { id: 1, name: 'A', refresh: 'x', access: 'x', exp: Date.now() + 1e9 },
+      { id: 2, name: 'B', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }
+    ];
+    const sk = { 3387: 1, 3380: 4 };
+    const setD = (j1, s2) =>
+      T.setData({
+        1: {
+          assets: [],
+          bps: [bp(901, 688, 1), bp(902, 689, 1), bp(903, 689, 1)],
+          skills: sk,
+          jobs: j1,
+          at: Date.now()
+        },
+        2: { assets: [], bps: [], skills: s2 || sk, jobs: [], at: Date.now() }
+      });
+    T.setChars(chars);
+    T.S.workChars = null;
+    setD([]);
+    const Y1 = job(1001, bp(902, 689, 1), 10),
+      Y2 = job(1001, bp(903, 689, 1), 10),
+      X = job(1000, bp(901, 688, 1), 5);
+    const node = (t, jobs, ch, stock) => ({
+      t,
+      jobsRef: jobs,
+      build: { jobs },
+      stock: stock || [],
+      buy: 0,
+      ch: ch || []
+    });
+    const R1 = { jobs: [Y1, Y2, X], trees: [{ item: {}, tree: node(1000, [X], [node(1001, [Y1, Y2])]) }] };
+    T.assignChars(R1.jobs, R1);
+    ok(
+      [Y1, Y2, X].every(j => j.who === 1),
+      'plan: all on A (' + [Y1, Y2, X].map(j => j.who) + ')'
+    );
+    // follow it: the two components run on A, their products are incoming stock
+    const ends = [Y1, Y2].map(j => new Date(j.plan.e).toISOString());
+    setD(
+      ends.map(e => ({ act: 1, st: 'active', runs: 1, bp: 689, prod: 1001, start: new Date().toISOString(), end: e }))
+    );
+    const X2 = job(1000, bp(901, 688, 1), 5);
+    const R2 = {
+      jobs: [X2],
+      trees: [
+        {
+          item: {},
+          tree: node(1000, [X2], [node(1001, [], [], [{ l: 'job', cid: 1, q: 2, end: Date.parse(ends[1]) }])])
+        }
+      ]
+    };
+    T.assignChars(R2.jobs, R2);
+    ok(X2.who === 1 && !X2.gain, 'after following the plan the blueprint stays (who ' + X2.who + ')');
+    // B a little faster (Industry 5 vs 4: 4%): stays
+    setD([], { 3387: 1, 3380: 5 });
+    const X3 = job(1000, bp(901, 688, 1), 5);
+    T.assignChars([X3]);
+    ok(X3.who === 1, 'slightly faster elsewhere: the blueprint stays (who ' + X3.who + ')');
+    // A's slots busy for 3 days: moves, with how much sooner
+    const busy = new Date(Date.now() + 3 * 86400e3).toISOString();
+    setD(
+      [0, 1].map(() => ({
+        act: 1,
+        st: 'active',
+        runs: 1,
+        bp: 689,
+        prod: 1001,
+        start: new Date().toISOString(),
+        end: busy
+      }))
+    );
+    const X4 = job(1000, bp(901, 688, 1), 5);
+    T.assignChars([X4]);
+    ok(
+      X4.who === 2 && X4.gain > 2 * 86400e3,
+      'much sooner elsewhere: moves, who ' + X4.who + ' gain ' + Math.round((X4.gain || 0) / 3600e3) + ' h wait ' + X4.wait
+    );
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

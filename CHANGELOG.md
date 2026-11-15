@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.23.0 – 2026-11-15
+
+- Character assignment uses the timeline scheduler: each job goes to the character who finishes it first, with running jobs holding their slots until they end and jobs waiting for their components (products of running jobs arrive when those end). A blueprint stays with whoever holds it (or has an equal copy) unless another character finishes at least 10% and 1 hour sooner (adjustable under Settings → Who does the work?); a suggested hand-over says how much sooner. Following the plan no longer makes the next calculation suggest the opposite. The workload table's lead time comes from the same schedule.
+
 ## 1.22.1 – 2026-11-14
 
 - What pays?: with more than 25 rows the pager above the table showed its HTML as text; it is a pager again (broken since 1.13.2).

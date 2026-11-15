@@ -159,6 +159,8 @@ const bind = (sel, key, num) =>
     setSetting(key, num && e.target.value !== '' ? Number(e.target.value) : e.target.value);
   });
 bind('#sStructME', 'structME', 1);
+bind('#sStickPct', 'stickPct', 1);
+bind('#sStickH', 'stickH', 1);
 bind('#sSciSystem', 'sciSystem', 0);
 bind('#sSciStruct', 'sciStruct', 0);
 bind('#sSciTax', 'sciTax', 1);
@@ -247,6 +249,8 @@ onCharData(() => {
  */
 const RECALC_SETTINGS = {
   structME: 'struktúra ME bónusz',
+  stickPct: 'BP-átadás küszöbe',
+  stickH: 'BP-átadás küszöbe',
   sciSystem: 'science rendszer',
   sciStruct: 'science struktúra',
   sciRigs: 'science rigek',

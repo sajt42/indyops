@@ -136,3 +136,7 @@ See the README for commands. Build with `node tools/bundle.mjs` before running t
 ## Science location
 
 Invention, copy and ME/TE research jobs (`SCI_ACTS`) can use their own location: `S.sciSystem` (cost index system; empty = as manufacturing), `S.sciStruct` (engineering complex role bonus, `STRUCT_ROLE`), `S.sciRigs` (`i|c|me|te` + `.t|.c` → tier 1/2, `RIG_PCT`, multiplied by the system security via `secMult`) and `S.sciTax`. `sciBonus(act, sys)` gives the time and cost reduction; `jobCost` applies the cost part to the index only (taxes are not reduced), `jobTime` applies the time part to invention and copy, and the Research tab uses the same for ME/TE research and copying. `jobSysOf` returns the science system for science jobs only. The success chance does not depend on the location.
+
+## Character assignment
+
+`assignChars(jobs, R)` uses the timeline scheduler: `timelineInput(R, now, candsOf)` gives each job its candidates (every capable work character: the holder's blueprint, each equal own copy, or the job's blueprint moved to that character, `move`), and `scheduleJobs` places it where it ends first. A candidate that needs a blueprint moved wins only if it ends at least `S.stickH` hours and `S.stickPct` % of the staying lead time sooner; its gain is shown with the hand-over. Running jobs hold their slots until they end, and products of running jobs (incoming stock, with `end`) are ready when those jobs end, so the plan after starting its jobs matches the plan before. `j.plan` (start, end) feeds the character workload table.
