@@ -207,13 +207,25 @@ function renderInvention() {
   // the numbers of one variant (shared by the item row and its variant rows)
   const cells = r => {
     const unsure = r.noPrice.length > 0;
-    return html`<td class="small">${r.dec ? DECS[r.dec].n : T('nincs')}</td><td class="num">${fmt(r.info.chance * 100, 1)}%</td><td class="num">${fmt(r.info.runsPer)}</td><td class="num">${r.info.me} / ${r.info.te}</td><td class="num">${isk(r.invCost)}</td><td class="num ${unsure ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${unsure ? '? ' : ''}${isk(r.profit)}</td><td class="num">${isk(r.perRun)}</td>`;
+    // who invents: the character with the best chance; every character's chance and skills on hover
+    const per = (r.info.per || [])
+      .map(
+        p =>
+          charName(p.cid) +
+          ': ' +
+          fmt(p.chance * 100, 1) +
+          '% (' +
+          p.skills.map(([sk, l]) => (NAMES[sk] || sk) + ' ' + l).join(', ') +
+          ')'
+      )
+      .join(' · ');
+    return html`<td class="small">${r.dec ? DECS[r.dec].n : T('nincs')}</td><td class="num" title="${per}">${fmt(r.info.chance * 100, 1)}%${r.info.char != null ? html`<div class="src">${charName(r.info.char)}</div>` : ''}</td><td class="num">${fmt(r.info.runsPer)}</td><td class="num">${r.info.me} / ${r.info.te}</td><td class="num">${isk(r.invCost)}</td><td class="num ${unsure ? '' : r.profit >= 0 ? 'pos' : 'neg'}">${unsure ? '? ' : ''}${isk(r.profit)}</td><td class="num">${isk(r.perRun)}</td>`;
   };
   const body = pg.rows.map(g => {
     const r = g.best;
     const unsure = r.noPrice.length > 0;
     const open = INVOPEN.has(g.k);
-    const head = html`<tr><td>${NAMES[r.prod] || r.prod}${r.price ? html`<div class="src">Jita ${isk(r.price)}${m2On() && sell2(r.prod) ? ' · ' + m2Short() + ' ' + isk(sell2(r.prod)) : ''}</div>` : ''}${r.price ? '' : html` <span class="pill warn">nincs Jita ár</span>`}${unsure ? html`<div class="src">${T('Nincs Jita ára: {0}', r.noPrice.map(t => NAMES[t] || t).join(', '))}</div>` : ''}${g.vars.length > 1 ? html`<div><button class="btn mini" data-invopen="${g.k}">${open ? '▾' : '▸'} ${T('{0} változat', g.vars.length)}</button></div>` : ''}</td><td class="small">${NAMES[r.t1] || r.t1}<br>${r.copy.r === -1 ? 'BPO' : 'BPC ' + r.copy.r + ' run'} · ${charName(r.copy.cid)}</td>${cells(r)}<td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}</td><td>${add(r)}</td></tr>`;
+    const head = html`<tr><td>${NAMES[r.prod] || r.prod}${r.price ? html`<div class="src">Jita ${isk(r.price)}${m2On() && sell2(r.prod) ? ' · ' + m2Short() + ' ' + isk(sell2(r.prod)) : ''}</div>` : ''}${r.price ? '' : html` <span class="pill warn">nincs Jita ár</span>`}${unsure ? html`<div class="src">${T('Nincs Jita ára: {0}', r.noPrice.map(t => NAMES[t] || t).join(', '))}</div>` : ''}${g.vars.length > 1 ? html`<div><button class="btn mini" data-invopen="${g.k}">${open ? '▾' : '▸'} ${T('{0} változat', g.vars.length)}</button></div>` : ''}</td><td class="small">${NAMES[r.t1] || r.t1}<br>${r.copy.r === -1 ? 'BPO' : 'BPC ' + r.copy.r + ' run'} · ${charName(r.copy.cid)}${r.info.char != null && r.info.char !== r.copy.cid ? html`<div><span class="pill warn" title="${T('Az inventáláshoz a T1 BPC-nek annál a karakternél kell lennie, aki inventál.')}">${T('a T1 BP {0}-nál van → másolatot vagy BP-t kell átadni {1}-nak', charName(r.copy.cid), charName(r.info.char))}</span></div>` : ''}</td>${cells(r)}<td class="num">${fmt(r.vol, r.vol < 10 ? 1 : 0)}</td><td>${add(r)}</td></tr>`;
     if (!open) return head;
     const subs = g.vars.map(
       v => html`<tr class="sub"><td class="small muted">↳</td><td></td>${cells(v)}<td></td><td>${add(v)}</td></tr>`

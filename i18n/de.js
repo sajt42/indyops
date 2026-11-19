@@ -935,5 +935,9 @@ window.I18N.de = {
   'BP-átadás küszöbe': 'Schwelle für BP-Übergabe',
   'Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél az idővonal szerint a leghamarabb elkészül: a futó jobok a lejártukig foglalják a slotot, és a job megvárja a komponenseit. A BP annál marad, akinél most van (vagy akinél ugyanilyen jó BP van), hacsak egy másik karakter nem végez érezhetően hamarabb (Beállítások → Kik dolgozzanak?). Így ha követed a javaslatot, a következő számolás nem mond mást. A becsült átfutás: a karakter utolsó jobjának vége az idővonalon.':
     'Jeder Job geht an den Charakter mit den Skills, der ihn laut Zeitplan zuerst fertigstellt: laufende Jobs belegen ihren Slot bis zum Ende, und ein Job wartet auf seine Komponenten. Ein Blueprint bleibt bei dem, der ihn hat (oder einen gleich guten), außer ein anderer ist deutlich früher fertig (Einstellungen → Wer arbeitet?). Folgst du dem Vorschlag, sagt die nächste Berechnung nichts anderes. Geschätzte Durchlaufzeit: wann der letzte Job des Charakters im Zeitplan endet.',
-  'ebből a tervből nincs jobja': 'kein Job aus diesem Plan'
+  'ebből a tervből nincs jobja': 'kein Job aus diesem Plan',
+  'Az inventáláshoz a T1 BPC-nek annál a karakternél kell lennie, aki inventál.':
+    'Die T1-BPC muss beim Charakter sein, der inventiert.',
+  'a T1 BP {0}-nál van → másolatot vagy BP-t kell átadni {1}-nak':
+    'der T1-BP ist bei {0} → eine Kopie oder den BP an {1} übergeben'
 };

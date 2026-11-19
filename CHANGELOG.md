@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.24.0 – 2026-11-19
+
+- Invention: under the chance it shows which character it used (the one with the best skills); hovering shows every character's chance and its levels in the three skills that count. When the T1 BP is with another character, the row says to hand a copy or the BP over.
+
 ## 1.23.1 – 2026-11-15
 
 - Timeline: every work character is shown for each kind of job in the plan, also one that gets no job from this plan (with its running jobs and a “no job from this plan” note); since 1.23.0 such a character disappeared.

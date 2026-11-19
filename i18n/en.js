@@ -927,5 +927,9 @@ window.I18N.en = {
   'BP-átadás küszöbe': 'blueprint hand-over threshold',
   'Minden jobot annak a karakternek ajánl, akinek megvannak a skilljei, és akinél az idővonal szerint a leghamarabb elkészül: a futó jobok a lejártukig foglalják a slotot, és a job megvárja a komponenseit. A BP annál marad, akinél most van (vagy akinél ugyanilyen jó BP van), hacsak egy másik karakter nem végez érezhetően hamarabb (Beállítások → Kik dolgozzanak?). Így ha követed a javaslatot, a következő számolás nem mond mást. A becsült átfutás: a karakter utolsó jobjának vége az idővonalon.':
     "Each job goes to the character who has the skills and, on the timeline, finishes it first: running jobs hold their slot until they end, and a job waits for its components. A blueprint stays with whoever holds it now (or has an equally good one) unless another character finishes clearly sooner (Settings → Who does the work?). So if you follow the suggestion, the next calculation does not say otherwise. Estimated lead time: when the character's last job ends on the timeline.",
-  'ebből a tervből nincs jobja': 'no job from this plan'
+  'ebből a tervből nincs jobja': 'no job from this plan',
+  'Az inventáláshoz a T1 BPC-nek annál a karakternél kell lennie, aki inventál.':
+    'The T1 BPC has to be with the character who invents.',
+  'a T1 BP {0}-nál van → másolatot vagy BP-t kell átadni {1}-nak':
+    'the T1 BP is with {0} → hand a copy or the BP to {1}'
 };

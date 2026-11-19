@@ -247,7 +247,11 @@ const T = w.__t;
   const rowsTxt = () => [...io.querySelectorAll('tbody tr:not(.sub)')].map(r => r.cells[2].textContent.trim());
   io.querySelector('[data-invopen]').click();
   const subs = [...io.querySelectorAll('tbody tr.sub')];
-  console.log('INV variants:', subs.length, subs.every(r => r.querySelector('[data-invadd]')) ? 'each with + projekt' : 'MISSING add');
+  console.log(
+    'INV variants:',
+    subs.length,
+    subs.every(r => r.querySelector('[data-invadd]')) ? 'each with + projekt' : 'MISSING add'
+  );
   console.log('INV variant decryptors:', subs.map(r => r.cells[2].textContent.trim()).join(', '));
   const set = (id, v, ev = 'input') => {
     const el = d.querySelector(id);
@@ -264,10 +268,31 @@ const T = w.__t;
   set('#ivName', 'raven');
   console.log('INV name hit:', io.querySelectorAll('tbody tr:not(.sub)').length, 'rows');
   set('#ivDec', '0');
-  console.log('INV only no decryptor (narrowing):', rowsTxt().join(' | '), '| recalc note:', /újra a Számolást/.test(io.textContent));
+  console.log(
+    'INV only no decryptor (narrowing):',
+    rowsTxt().join(' | '),
+    '| recalc note:',
+    /újra a Számolást/.test(io.textContent)
+  );
   set('#ivDec', '34205');
   await T.runInvention();
-  console.log('INV calculated with one decryptor:', io.querySelectorAll('[data-invopen]').length, 'variant buttons |', rowsTxt().join(' | '));
+  console.log(
+    'INV calculated with one decryptor:',
+    io.querySelectorAll('[data-invopen]').length,
+    'variant buttons |',
+    rowsTxt().join(' | ')
+  );
   set('#ivDec', '');
   console.log('INV wider than the calculation: recalc note:', /újra a Számolást/.test(io.textContent));
+  // who invents: name under the chance, every character's chance on hover, a note when the T1 BP is elsewhere
+  set('#ivDec', '');
+  await T.runInvention();
+  const r0 = io.querySelector('tbody tr:not(.sub)');
+  console.log(
+    'INV inventor:',
+    r0.cells[3].querySelector('.src') ? r0.cells[3].querySelector('.src').textContent : 'MISSING',
+    '| hover:',
+    r0.cells[3].title || 'MISSING'
+  );
+  console.log('INV hand-over note:', !!r0.cells[1].querySelector('.pill'));
 })().catch(e => console.error('FAIL', e));

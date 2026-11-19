@@ -1,4 +1,4 @@
-INV: 28710Jita 1,75 B▸ 9 változatRaven BlueprintBPC 8 run · Pilot AAugmentation Decryptor18,0%100 / 627,1 M13,74 B1,37 B40+ projekt
+INV: 28710Jita 1,75 B▸ 9 változatRaven BlueprintBPC 8 run · Pilot AAugmentation Decryptor18,0%Pilot A100 / 627,1 M13,74 B1,37 B40+ projekt
 pList: Invention · 1 tétel▲▼
 pEdit: T2 BPC inventionAugmentation DecryptorT1: Raven Blueprint · BPC 8 runprojekt szerintsaját források✕
 PROJ KPIs: TermékInvention | Vásárolni kell2,15 B | Saját készlet értéke444,1 M | Job költség78,6 M | Eladás (Jita sell, díjak után)16,40 B | Profit13,72 B
@@ -25,3 +25,5 @@ INV name hit: 1 rows
 INV only no decryptor (narrowing): nincs | recalc note: false
 INV calculated with one decryptor: 0 variant buttons | Process Decryptor
 INV wider than the calculation: recalc note: true
+INV inventor: Pilot A | hover: Pilot A: 18,0% (High Energy Physics 4, Caldari Starship Engineering 4, Caldari Encryption Methods 4) · Pilot B: 13,2% (High Energy Physics 0, Caldari Starship Engineering 0, Caldari Encryption Methods 0)
+INV hand-over note: false

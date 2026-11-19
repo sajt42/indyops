@@ -496,6 +496,12 @@ function invInfo(t1bp, dec, pi = 0) {
     me: 2 + (d ? d.me : 0),
     te: 4 + (d ? d.te : 0),
     char: best,
+    // every work character's chance and its levels in the skills that count (for the tooltip)
+    per: cs.map(c => ({
+      cid: c,
+      chance: invChance(c, inv, dec, pi),
+      skills: Object.keys(inv.rs || {}).map(sk => [Number(sk), lvlOf(c, sk)])
+    })),
     t2bp: inv.p[pi][0],
     pi
   };
