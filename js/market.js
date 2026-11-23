@@ -6,10 +6,12 @@
  * 2. a station picked from the market search (S.buySrc[type] = station id): as much as its sell orders give,
  *    cheapest first; the rest comes from the default source
  * 3. default: Jita (buyAt)
+ * Mined (S.mineSel[type], ticked on the shopping list): price 0, not hauled.
  */
 const MKT = {}; // type -> { at, orders: [{l, sys, p, v}] } sell orders in the picked regions (memory only)
 const MKT_TTL = 10 * 60000;
 const mktRegions = () => (Array.isArray(S.mktRegions) ? S.mktRegions.map(Number).filter(Boolean) : [JITA_REGION]);
+const mined = t => !!(S.mineSel && S.mineSel[t]);
 const manPrice = t => {
   const v = S.manPrice && S.manPrice[t];
   return v > 0 ? v : null;
@@ -29,6 +31,7 @@ function fillFrom(orders, q) {
 }
 // where q units of t come from: [{l, q, p, src}] (l null: manual, not hauled)
 function buyParts(t, q) {
+  if (mined(t)) return [{ l: null, q, p: 0, src: 'mine' }];
   const mp = manPrice(t);
   if (mp) return [{ l: null, q, p: mp, src: 'manual' }];
   const parts = [];
@@ -48,6 +51,7 @@ function buyParts(t, q) {
 }
 // unit price of buying t: the average over q units when q is given, otherwise the price of the first source
 function buyPrice(t, q) {
+  if (mined(t)) return 0;
   if (!q) {
     const mp = manPrice(t);
     if (mp) return mp;
@@ -119,7 +123,7 @@ function planHome(R) {
 }
 // candidate stations per material, cheaper than Jita and within the jump limit: {t, q, jita, cands:[{l, sys, q, p, save, n, hs}]}
 async function mktSearch(R) {
-  const bl = [...R.buyList].filter(([t]) => !manPrice(t));
+  const bl = [...R.buyList].filter(([t]) => !manPrice(t) && !mined(t));
   await loadMarket(
     bl.map(([t]) => t),
     true

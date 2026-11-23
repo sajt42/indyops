@@ -115,7 +115,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,renderTimeline,setProfRows:a=>{PROFROWS=a},renderProfit,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,buyPrice,buyParts,setOreData:a=>{OREDATA=a},renderTimeline,setProfRows:a=>{PROFROWS=a},renderProfit,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -1392,6 +1392,45 @@ const ok = (c, msg) => {
         /ebből a tervből nincs jobja/.test(el.textContent),
       'both characters, the idle one with its running job (' + labs + ')'
     );
+  }
+  {
+    // 44. "I mine it" on the shopping list: the row stays with a * and price 0, not hauled, and the box below
+    // says how much of which ore; switching an ore off takes another
+    const bps = [{ i: 601, t: 688, me: 10, te: 20, r: -1, q: -1, l: 60003760, cid: 1 }];
+    T.setChars([{ id: 1, name: 'A', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
+    T.setData({ 1: { assets: [], bps, skills: {}, jobs: [], at: Date.now() } });
+    const opt = { useStock: false, buildOwn: false, incoming: false, ore: false };
+    const it = { copies: T.itemCopies({ bpType: 688 }), runs: 1 };
+    const R = await T.makeMulti([it], opt);
+    const m = [...R.buyList.keys()][0];
+    T.setOreData([
+      { t: 9001, n: 'Test Ore', tm: [[m, 10]], vol: 0.1, p: 1, rs: null },
+      { t: 9002, n: 'Other Ore', tm: [[m, 5]], vol: 0.1, p: 1, rs: null }
+    ]);
+    await T.finishResult(R, it.copies[0]);
+    const el = d.createElement('div');
+    d.body.appendChild(el);
+    T.renderResult(el, R, () => {});
+    const box = el.querySelector('[data-minesel="' + m + '"]');
+    ok(!!box && !box.checked, 'tick box on a minable row');
+    box.checked = true;
+    box.dispatchEvent(new d.defaultView.Event('change'));
+    T.renderResult(el, R, () => {});
+    const row = el.querySelector('[data-minesel="' + m + '"]').closest('tr');
+    ok(/\*/.test(row.cells[1].textContent) && T.buyPrice(m, 10) === 0, 'stays on the list with * and price 0');
+    ok(
+      /Test Ore/.test(el.textContent) && !T.buyParts(m, 10).some(x => x.l != null),
+      'mining box with the best ore, not hauled'
+    );
+    el.querySelector('[data-mineoff="9001"]').click();
+    T.renderResult(el, R, () => {});
+    ok(
+      /Other Ore/.test(el.textContent) && !!el.querySelector('[data-mineon="9001"]'),
+      'ore switched off, the other one used, can be switched back'
+    );
+    T.setSettingIn('mineSel', m, null);
+    T.setSettingIn('mineOff', 9001, null);
+    el.remove();
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

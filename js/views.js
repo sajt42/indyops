@@ -467,6 +467,12 @@ async function finishResult(R, firstBP) {
   const types = new Set();
   R.trees.forEach(x => collectTypes(x.tree, types));
   await resolveNames([...types]);
+  // which shopping list rows can be ticked "I mine it" (cached after the first time)
+  try {
+    await ensureOreData();
+  } catch (e) {
+    log('Érc adatok: ' + e.message);
+  }
   await ensurePrices([...types]);
   await Promise.all([...types].map(t => refGet('t', t).catch(() => null)));
   await resolveNames(R.jobs.flatMap(j => j.miss.map(m => m[0])));
@@ -967,7 +973,7 @@ function planTotals(R, free, fees) {
   const unkOf = tree => {
     const u = new Set();
     const scan = n => {
-      if (n.buy > 0 && !buyPrice(n.t)) u.add(n.t);
+      if (n.buy > 0 && !buyPrice(n.t) && !mined(n.t)) u.add(n.t);
       if (!free && n.stock.some(x => x.l !== 'surplus' && x.l !== 'job' && x.q > 0) && !unitPrice(n.t)) u.add(n.t);
       n.ch.forEach(scan);
     };
@@ -1080,19 +1086,24 @@ function resultShopping(bl) {
     const mp = manPrice(t);
     const parts = buyParts(t, q);
     const picked = S.buySrc && S.buySrc[t];
-    return html`<tr><td>${NAMES[t] || t}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : html`<span class="pill warn">nincs ár</span>`}</td><td class="small" data-noi18n>${buyFromText(t, q)}${
+    const mn = mined(t);
+    // a material that comes out of an ore can be ticked "I mine it": * and price 0
+    const tick = minable(t)
+      ? html`<input type="checkbox" data-minesel="${t}" ${mn ? 'checked' : ''} title="${T('Ezt bányászom (0 árral számol)')}" aria-label="${T('Ezt bányászom')}">`
+      : '';
+    return html`<tr><td>${tick}</td><td>${NAMES[t] || t}${mn ? ' *' : ''}</td><td class="num">${fmt(q)}</td><td class="num">${unitPrice(t) ? isk(unitPrice(t)) : html`<span class="pill warn">nincs ár</span>`}</td><td class="small" data-noi18n>${buyFromText(t, q)}${
       picked && !mp && !parts.some(x => x.src === 'market')
         ? html`<div class="src">${T('a kiválasztott helyen most nincs eladó')}</div>`
         : ''
-    }</td><td class="num">${p ? isk(p) : '–'}</td><td class="num">${p ? isk(q * p) : '–'}</td><td><input type="number" min="0" step="0.01" class="manp" data-manp="${t}" value="${mp ?? ''}" placeholder="${T('kézi ár')}" aria-label="${T('Kézi ár, ISK / db')}"></td></tr>`;
+    }</td><td class="num">${p || mn ? isk(p) : '–'}</td><td class="num">${p || mn ? isk(q * p) : '–'}</td><td><input type="number" min="0" step="0.01" class="manp" data-manp="${t}" value="${mp ?? ''}" placeholder="${T('kézi ár')}" aria-label="${T('Kézi ár, ISK / db')}"></td></tr>`;
   };
-  return html`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th><th>Honnan</th><th class="num">Egységár</th><th class="num">Összesen</th><th>Kézi ár</th></tr></thead><tbody>${
-    hjoin(bl.map(row), '') || html`<tr><td colspan="7" class="pos">Semmit nem kell venni, minden megvan.</td></tr>`
+  return html`<div class="grid2" style="margin-top:12px"><div><h3>Bevásárlólista</h3><div class="tablewrap"><table><thead><tr><th title="${T('Bányászom')}">⛏</th><th>Tárgy</th><th class="num">Mennyiség</th><th class="num">Jita sell</th><th>Honnan</th><th class="num">Egységár</th><th class="num">Összesen</th><th>Kézi ár</th></tr></thead><tbody>${
+    hjoin(bl.map(row), '') || html`<tr><td colspan="8" class="pos">Semmit nem kell venni, minden megvan.</td></tr>`
   }</tbody></table></div>
-  ${bl.some(([t, q]) => !buyPrice(t, q)) ? html`<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs ára, ezért a profit nem számolható. Adj meg kézi árat, vagy keress forrást.</p>` : ''}
+  ${bl.some(([t, q]) => !buyPrice(t, q) && !mined(t)) ? html`<p class="small" style="margin-top:6px;color:var(--warn)">Néhány tételnek nincs ára, ezért a profit nem számolható. Adj meg kézi árat, vagy keress forrást.</p>` : ''}
   <p class="small muted" style="margin-top:6px"><button class="btn" data-copybuy>Lista másolása (multibuy formátum)</button> ${
     bl.length ? html`<button class="btn" data-mktsearch>Hol vegyem olcsóbban?</button>` : ''
-  }</p><p class="small muted">A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi.</p></div>`;
+  }</p><p class="small muted">A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi. A ⛏ oszlopban jelöld, amit bányászni akarsz: az a listán marad *-gal, 0 árral, és alatta látod, miből mennyit kell fúrni.</p>${renderMinePlan(bl)}</div>`;
 }
 function resultJobs(R, multi) {
   return html`<div><h3>Gyártási jobok</h3><div class="tablewrap"><table><thead><tr><th>Mit</th><th>Ki gyártja</th><th>Melyik BP</th><th class="num">Run</th><th class="num">Idő</th><th class="num">Job költség</th></tr></thead><tbody>${R.jobs
@@ -1179,12 +1190,16 @@ function renderResult(el, R, rerun) {
   h = html`${h}${resultTrees(R, multi)}`;
   setHtml(el, h);
   bindBuySources(el, R);
+  bindMinePlan(el);
   const rr = el.querySelector('[data-rerun]');
   if (rr) rr.onclick = () => rerun();
   const cb = el.querySelector('[data-copybuy]');
   cb &&
     cb.addEventListener('click', () => {
-      const txt = bl.map(([t, q]) => (NAMES[t] || t) + '\t' + q).join('\n');
+      const txt = bl
+        .filter(([t]) => !mined(t))
+        .map(([t, q]) => (NAMES[t] || t) + '\t' + q)
+        .join('\n');
       navigator.clipboard.writeText(txt).then(
         () => status('lista vágólapon'),
         () => status('másolás nem sikerült')

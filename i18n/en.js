@@ -931,5 +931,25 @@ window.I18N.en = {
   'Az inventáláshoz a T1 BPC-nek annál a karakternél kell lennie, aki inventál.':
     'The T1 BPC has to be with the character who invents.',
   'a T1 BP {0}-nál van → másolatot vagy BP-t kell átadni {1}-nak':
-    'the T1 BP is with {0} → hand a copy or the BP to {1}'
+    'the T1 BP is with {0} → hand a copy or the BP to {1}',
+  'ezért: {0}': 'for: {0}',
+  'Ezt az ércet nem akarom fúrni': 'I do not want to mine this ore',
+  Bányászat: 'Mining',
+  Mód: 'Mode',
+  'Hozam (m³/s)': 'Yield (m³/s)',
+  'Ezekhez nincs bekapcsolt érc: {0}.': 'No ore switched on gives: {0}.',
+  Érc: 'Ore',
+  Egység: 'Units',
+  Idő: 'Time',
+  Összesen: 'Total',
+  'Kikapcsolva:': 'Switched off:',
+  Visszakapcsolom: 'Switch it back on',
+  'simple: anyagonként az az érc, amelyik m³-enként a legtöbbet adja belőle (a melléktermék nem számít be). smart: a legkevesebb m³-t adó keverék, a melléktermékek is beszámítanak. A hozam a Bányászat fül szerinti reprocess-hozammal számol. A ✕ kikapcsolja az ércet, ha azt nem akarod fúrni.':
+    'simple: per material the ore that gives most of it per m³ (by-products do not count). smart: the mix with the least m³, by-products count. Uses the reprocessing yield of the Mining tab. ✕ switches an ore off if you do not want to mine it.',
+  'Ezt bányászom (0 árral számol)': 'I mine this (counted at price 0)',
+  'Ezt bányászom': 'I mine this',
+  Bányászom: 'I mine it',
+  'A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi. A ⛏ oszlopban jelöld, amit bányászni akarsz: az a listán marad *-gal, 0 árral, és alatta látod, miből mennyit kell fúrni.':
+    'A manual price (ISK / unit) overrides the market price everywhere, for example when you buy outside the market; such an item is not in the haul list. “Where to buy cheaper?” looks at the sell orders in the regions picked in Settings. Tick in the ⛏ column what you want to mine: it stays on the list with a * at price 0, and below you see how much of which ore to mine.',
+  'Érc adatok: ': 'Ore data: '
 };

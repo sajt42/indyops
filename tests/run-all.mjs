@@ -12,6 +12,7 @@ const ALL = [
   'lint',
   'regress',
   'sched',
+  'minesolve',
   'xss',
   'help',
   'repro',
@@ -54,7 +55,7 @@ for (const t of tests) {
   if (r.status !== 0) out += '\nFAIL (exit ' + r.status + ')';
   let bad = /FAIL|TypeError|ReferenceError|SyntaxError/.test(out),
     why = bad ? 'error' : '';
-  if (!bad && !['lint', 'regress', 'sched', 'xss'].includes(t)) {
+  if (!bad && !['lint', 'regress', 'sched', 'minesolve', 'xss'].includes(t)) {
     const g = 'golden/' + t + '.txt',
       n = norm(out);
     if (process.env.UPDATE_GOLDEN || !existsSync(g)) writeFileSync(g, n);

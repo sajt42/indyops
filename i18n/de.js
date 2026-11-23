@@ -939,5 +939,25 @@ window.I18N.de = {
   'Az inventáláshoz a T1 BPC-nek annál a karakternél kell lennie, aki inventál.':
     'Die T1-BPC muss beim Charakter sein, der inventiert.',
   'a T1 BP {0}-nál van → másolatot vagy BP-t kell átadni {1}-nak':
-    'der T1-BP ist bei {0} → eine Kopie oder den BP an {1} übergeben'
+    'der T1-BP ist bei {0} → eine Kopie oder den BP an {1} übergeben',
+  'ezért: {0}': 'für: {0}',
+  'Ezt az ércet nem akarom fúrni': 'Dieses Erz will ich nicht abbauen',
+  Bányászat: 'Mining',
+  Mód: 'Modus',
+  'Hozam (m³/s)': 'Ertrag (m³/s)',
+  'Ezekhez nincs bekapcsolt érc: {0}.': 'Kein eingeschaltetes Erz liefert: {0}.',
+  Érc: 'Erz',
+  Egység: 'Einheiten',
+  Idő: 'Zeit',
+  Összesen: 'Gesamt',
+  'Kikapcsolva:': 'Ausgeschaltet:',
+  Visszakapcsolom: 'Wieder einschalten',
+  'simple: anyagonként az az érc, amelyik m³-enként a legtöbbet adja belőle (a melléktermék nem számít be). smart: a legkevesebb m³-t adó keverék, a melléktermékek is beszámítanak. A hozam a Bányászat fül szerinti reprocess-hozammal számol. A ✕ kikapcsolja az ércet, ha azt nem akarod fúrni.':
+    'simple: pro Material das Erz, das pro m³ am meisten davon liefert (Nebenprodukte zählen nicht). smart: die Mischung mit den wenigsten m³, Nebenprodukte zählen. Nutzt den Reprocessing-Ertrag des Mining-Tabs. ✕ schaltet ein Erz aus, wenn du es nicht abbauen willst.',
+  'Ezt bányászom (0 árral számol)': 'Baue ich ab (mit Preis 0 gerechnet)',
+  'Ezt bányászom': 'Baue ich ab',
+  Bányászom: 'Ich baue ab',
+  'A kézi ár (ISK / db) mindenhol felülírja a piaci árat, például ha piacon kívül veszed; az ilyen tétel nem kerül a szállítási listába. A „Hol vegyem olcsóbban?” a Beállításokban kijelölt régiók eladási ordereit nézi. A ⛏ oszlopban jelöld, amit bányászni akarsz: az a listán marad *-gal, 0 árral, és alatta látod, miből mennyit kell fúrni.':
+    'Ein manueller Preis (ISK / Stück) ersetzt überall den Marktpreis, etwa wenn du außerhalb des Markts kaufst; so ein Posten kommt nicht in die Transportliste. „Wo günstiger kaufen?“ sieht sich die Verkaufsorders in den in den Einstellungen gewählten Regionen an. Hake in der ⛏-Spalte an, was du abbauen willst: es bleibt mit * und Preis 0 auf der Liste, und darunter siehst du, wie viel von welchem Erz abzubauen ist.',
+  'Érc adatok: ': 'Erzdaten: '
 };

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.26.0 – 2026-11-23
+
+- Mining from the shopping list: tick minerals and moon materials in the ⛏ column. They stay on the list with a * at price 0 (not in the cost, the multibuy copy or hauling), and a Mining box below shows how many units and m³ of which ore to mine and how long at your yield (m³/s). Mode: simple (per material the ore with the most of it per m³) or smart (the mix with the least m³, by-products counted). ✕ switches off an ore you do not want to mine.
+
 ## 1.25.1 – 2026-11-23
 
 - Reverted the 1.25.0 mining plan (marking in the material tree, ore selector); it will come back in a simpler form from the shopping list.
