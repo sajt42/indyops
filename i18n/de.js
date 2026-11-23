@@ -939,31 +939,5 @@ window.I18N.de = {
   'Az inventáláshoz a T1 BPC-nek annál a karakternél kell lennie, aki inventál.':
     'Die T1-BPC muss beim Charakter sein, der inventiert.',
   'a T1 BP {0}-nál van → másolatot vagy BP-t kell átadni {1}-nak':
-    'der T1-BP ist bei {0} → eine Kopie oder den BP an {1} übergeben',
-  '(melléktermék)': '(Nebenprodukt)',
-  'A felesleg értéke (Jita): {0}': 'Wert des Überschusses (Jita): {0}',
-  'A „bányászom”-ra állított anyagok ércben: a jelölt ércekből ennyit kell kibányászni, hogy reprocess után meglegyen (a Bányászat fül hozamával: alaphozam, skillek).':
-    'Die auf „ich baue ab“ gestellten Materialien als Erz: so viel der gewählten Erze muss abgebaut werden, damit sie nach dem Reprocessing da sind (mit dem Ertrag des Bergbau-Tabs: Grundertrag, Skills).',
-  Anyag: 'Material',
-  'Bányászati terv': 'Bergbauplan',
-  Cél: 'Ziel',
-  Egység: 'Einheiten',
-  'Ezekhez nincs kijelölt érc: {0}.': 'Kein gewähltes Erz liefert: {0}.',
-  Felesleg: 'Überschuss',
-  'Hozam (m³/óra, összesen)': 'Ertrag (m³/Stunde, gesamt)',
-  Idő: 'Zeit',
-  Kell: 'Benötigt',
-  Kijön: 'Ergibt',
-  'Vedd ki azokat, amelyek nincsenek ott, ahol bányászol. A változatok (pl. Concentrated, Dense) többet adnak egységenként.':
-    'Nimm die heraus, die es dort nicht gibt, wo du abbaust. Die Varianten (z. B. Concentrated, Dense) geben mehr pro Einheit.',
-  db: 'Stk.',
-  'legkevesebb felesleg': 'wenigster Überschuss',
-  'legkevesebb m³': 'wenigste m³',
-  Érc: 'Erz',
-  'Ércek ({0} / {1} kijelölve)': 'Erze ({0} / {1} gewählt)',
-  Összesen: 'Gesamt',
-  'Kattints: veszem / bányászom': 'Klick: kaufen / ich baue ab',
-  '⛏ bányászom': '⛏ ich baue ab',
-  veszem: 'kaufen',
-  bányászom: 'ich baue ab'
+    'der T1-BP ist bei {0} → eine Kopie oder den BP an {1} übergeben'
 };

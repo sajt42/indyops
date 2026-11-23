@@ -317,16 +317,7 @@ async function calcProjects(list) {
     await indexBPProducts();
     const opt = Object.assign(getOpt(), { incoming: $('#pIncoming').checked });
     const shared = { pool: await buildPool(opt), runsLeft: new Map() };
-    const R = {
-      trees: [],
-      buyList: new Map(),
-      mineList: new Map(),
-      usedList: new Map(),
-      jobs: [],
-      warn: [],
-      par: [],
-      parHint: []
-    };
+    const R = { trees: [], buyList: new Map(), usedList: new Map(), jobs: [], warn: [], par: [], parHint: [] };
     let firstBP = null;
     for (const p of list) {
       const items = [];
@@ -367,7 +358,6 @@ async function calcProjects(list) {
       R.par.push(...r.par);
       R.parHint.push(...(r.parHint || []));
       for (const [t, q] of r.buyList) R.buyList.set(t, (R.buyList.get(t) || 0) + q);
-      for (const [t, q] of r.mineList || []) R.mineList.set(t, (R.mineList.get(t) || 0) + q);
       for (const [t, q] of r.usedList) R.usedList.set(t, (R.usedList.get(t) || 0) + q);
     }
     if (!R.trees.length) {

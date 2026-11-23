@@ -438,8 +438,7 @@ function getOpt() {
     useStock: $('#optUseStock').checked,
     ore: $('#optOre').checked,
     incoming: $('#optIncoming').checked,
-    leave: true, // honours the stock places left out of the haul plan (S.leave)
-    mine: true // materials marked "I mine it" (S.mineMark) go to the mining plan
+    leave: true // honours the stock places left out of the haul plan (S.leave)
   };
 }
 function copiesOf(bpType) {
@@ -468,12 +467,6 @@ async function finishResult(R, firstBP) {
   const types = new Set();
   R.trees.forEach(x => collectTypes(x.tree, types));
   await resolveNames([...types]);
-  // which materials can be mined (the "I mine it" switch in the tree); cached after the first time
-  try {
-    await ensureOreData();
-  } catch (e) {
-    log('Érc adatok: ' + e.message);
-  }
   await ensurePrices([...types]);
   await Promise.all([...types].map(t => refGet('t', t).catch(() => null)));
   await resolveNames(R.jobs.flatMap(j => j.miss.map(m => m[0])));
@@ -595,8 +588,6 @@ function assignChars(jobs, R) {
 function nodeCost(n, free, avg) {
   // material cost of a tree: purchases + own stock
   let c = n.buy * ((avg && avg.get(n.t)) ?? buyPrice(n.t));
-  // mined materials still count at their market value (what they would sell for)
-  if (n.mine) c += n.mine * unitPrice(n.t);
   if (!free) c += n.stock.filter(x => x.l !== 'surplus' && x.l !== 'job').reduce((s, x) => s + x.q, 0) * unitPrice(n.t);
   n.ch.forEach(ch => (c += nodeCost(ch, free, avg)));
   return c;
@@ -1179,8 +1170,6 @@ function renderResult(el, R, rerun) {
   h = html`${h}${resultParallel(R)}`;
   h = html`${h}${resultProducts(R, P.rows, multi)}`;
   h = html`${h}${resultShopping(bl)}`;
-  if (R.mineList && R.mineList.size)
-    h = html`${h}<div class="minebox" style="margin-top:12px">${renderMinePlan(R)}</div>`;
   h = html`${h}${resultJobs(R, multi)}`;
   // the market search result spans the full width, under the shopping list and the jobs
   h = html`${h}<div class="mktout"></div>`;
@@ -1202,15 +1191,6 @@ function renderResult(el, R, rerun) {
       );
     });
   bindTimeline(el, R);
-  bindMinePlan(el, R);
-  el.querySelectorAll('[data-mine]').forEach(b =>
-    b.addEventListener('click', e => {
-      e.stopPropagation();
-      const t = Number(b.dataset.mine);
-      setSettingIn('mineMark', t, S.mineMark && S.mineMark[t] ? null : true);
-      rerun();
-    })
-  );
   el.querySelectorAll('[data-leave]').forEach(b =>
     b.addEventListener('click', () => {
       setSettingIn('leave', b.dataset.leave, true);
@@ -1299,10 +1279,8 @@ function treeRows(n, d, sys) {
         : n.build
           ? html`<span class="pill ok">gyártom</span>`
           : ''
-      : (n.buy > 0 || n.mine > 0) && minable(n.t)
-        ? html`<button class="btn mini ${n.mine ? 'on' : ''}" data-mine="${n.t}" title="${T('Kattints: veszem / bányászom')}">${n.mine ? T('⛏ bányászom') : T('veszem')}</button>`
-        : '';
-  let h = html`<tr ${canToggle ? html`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"` : ''}><td class="name" style="padding-left:${10 + d * 18}px">${NAMES[n.t] || n.t} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st ? fmt(st) : '–'}</td><td class="num">${n.build ? html`${fmt(n.build.made)}${madeNote(n)}` : '–'}</td><td class="num">${n.buy ? fmt(n.buy) : n.mine ? html`⛏ ${fmt(n.mine)}` : '–'}</td><td class="num small">${bbCell(n, d, sys)}</td><td class="src">${where}${
+      : '';
+  let h = html`<tr ${canToggle ? html`data-toggle="${n.t}" style="cursor:pointer" title="Kattints: gyártom / veszem"` : ''}><td class="name" style="padding-left:${10 + d * 18}px">${NAMES[n.t] || n.t} ${mark}</td><td class="num">${fmt(n.need)}</td><td class="num">${st ? fmt(st) : '–'}</td><td class="num">${n.build ? html`${fmt(n.build.made)}${madeNote(n)}` : '–'}</td><td class="num">${n.buy ? fmt(n.buy) : '–'}</td><td class="num small">${bbCell(n, d, sys)}</td><td class="src">${where}${
     why.length
       ? html`<div class="warnline">${T('Készletben még: {0}.', why.join('; '))} ${T('Itt: {0}.', whyAt(n.why.at))}</div>`
       : ''

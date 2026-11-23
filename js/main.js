@@ -249,7 +249,6 @@ onCharData(() => {
  */
 const RECALC_SETTINGS = {
   structME: 'struktúra ME bónusz',
-  mineMark: 'bányászom',
   stickPct: 'BP-átadás küszöbe',
   stickH: 'BP-átadás küszöbe',
   sciSystem: 'science rendszer',
@@ -266,9 +265,6 @@ const RECALC_SETTINGS = {
 };
 // the timeline's own settings redraw only the timeline (bindTimeline)
 const QUIET_SETTINGS = new Set([
-  'mineOff',
-  'mineGoal',
-  'mineRate',
   'lang',
   'mktRegions',
   'mktMaxJumps',

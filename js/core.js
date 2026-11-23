@@ -61,8 +61,8 @@ const LANGS = {
 const APP = {
   dataVersion: 3,
   name: 'IndyOps',
-  version: '1.25.0',
-  built: '2026-11-23',
+  version: '1.24.0',
+  built: '2026-11-19',
   repo: 'sajt42/indyops',
   home: 'https://sajt42.github.io/indyops/',
   clientId: 'b02779a9ea1c427bb46c9d70a697a4c7',
@@ -331,10 +331,6 @@ let S = Object.assign(
     locs: null,
     buyOverride: {},
     leave: {},
-    mineMark: {},
-    mineOff: {},
-    mineGoal: 'm3',
-    mineRate: '',
     stickPct: 10,
     stickH: 1,
     sciSystem: '',
@@ -442,10 +438,6 @@ const SET_SCHEMA = {
   parMode: 'str',
   srcShips: 'bool',
   buyOverride: 'mapBool',
-  mineMark: 'mapBool', // materials marked "I mine it" (not bought; mining plan)
-  mineOff: 'mapBool', // ores switched off in the mining plan
-  mineGoal: 'str', // mining plan goal: m3 (least to mine) | waste (least surplus)
-  mineRate: 'numOrEmpty', // total mining yield, m³ per hour (time estimate)
   stickPct: 'numOrEmpty', // a blueprint moves to another character only if it ends this % sooner…
   stickH: 'numOrEmpty', // …and at least this many hours sooner
   sciSystem: 'str', // science (invention, copy, research): system for the cost index ('' = as manufacturing)
