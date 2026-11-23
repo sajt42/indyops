@@ -931,5 +931,31 @@ window.I18N.en = {
   'Az inventáláshoz a T1 BPC-nek annál a karakternél kell lennie, aki inventál.':
     'The T1 BPC has to be with the character who invents.',
   'a T1 BP {0}-nál van → másolatot vagy BP-t kell átadni {1}-nak':
-    'the T1 BP is with {0} → hand a copy or the BP to {1}'
+    'the T1 BP is with {0} → hand a copy or the BP to {1}',
+  '(melléktermék)': '(by-product)',
+  'A felesleg értéke (Jita): {0}': 'Value of the surplus (Jita): {0}',
+  'A „bányászom”-ra állított anyagok ércben: a jelölt ércekből ennyit kell kibányászni, hogy reprocess után meglegyen (a Bányászat fül hozamával: alaphozam, skillek).':
+    "The materials set to “I mine it”, as ore: this much of the selected ores has to be mined to get them after reprocessing (with the Mining tab's yield: base yield, skills).",
+  Anyag: 'Material',
+  'Bányászati terv': 'Mining plan',
+  Cél: 'Goal',
+  Egység: 'Units',
+  'Ezekhez nincs kijelölt érc: {0}.': 'No selected ore gives: {0}.',
+  Felesleg: 'Surplus',
+  'Hozam (m³/óra, összesen)': 'Yield (m³/hour, total)',
+  Idő: 'Time',
+  Kell: 'Needed',
+  Kijön: 'Comes out',
+  'Vedd ki azokat, amelyek nincsenek ott, ahol bányászol. A változatok (pl. Concentrated, Dense) többet adnak egységenként.':
+    'Untick the ones not present where you mine. The variants (e.g. Concentrated, Dense) give more per unit.',
+  db: 'pcs',
+  'legkevesebb felesleg': 'least surplus',
+  'legkevesebb m³': 'least m³',
+  Érc: 'Ore',
+  'Ércek ({0} / {1} kijelölve)': 'Ores ({0} / {1} selected)',
+  Összesen: 'Total',
+  'Kattints: veszem / bányászom': 'Click: buy / I mine it',
+  '⛏ bányászom': '⛏ I mine it',
+  veszem: 'buy',
+  bányászom: 'I mine it'
 };

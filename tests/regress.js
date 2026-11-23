@@ -115,7 +115,7 @@ const code = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).
 w.localStorage.setItem('indyops.settings', JSON.stringify({ lang: 'hu' }));
 w.eval(
   code +
-    `;window.__t={SCH:SET_SCHEMA,renderTimeline,setProfRows:a=>{PROFROWS=a},renderProfit,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
+    `;window.__t={SCH:SET_SCHEMA,setOreData:a=>{OREDATA=a},renderTimeline,setProfRows:a=>{PROFROWS=a},renderProfit,sciBonus:typeof sciBonus==='function'?sciBonus:null,get SYSSEC(){return SYSSEC},get SYSNAME(){return SYSNAME},jobTime,itemCopies:typeof itemCopies==='function'?itemCopies:null,bpPick:typeof bpPick==='function'?bpPick:null,showTab,ownedFor,allBPs,get BPPROD(){return BPPROD},shipAdvice,dur,madeNote:typeof madeNote==='function'?madeNote:null,get PROJ(){return PROJ},makeBackup,prepHaul,setProj:a=>{PROJ=a},esi,jobSysOf,setTimeouts:(t,b)=>{ESI_TIMEOUT=t;ESI_BACKOFF=b},get ROUTES(){return ROUTES},makePlan,makeMulti,showResult,refreshHaul,indexBPProducts,ensurePrices,finishResult,renderResult,ensureRoute,haulList,assignChars,accessToken,validateBackup,priceFail,jobCost,assignJobSys,
   get PRICES(){return PRICES},get IDX(){return IDX},get ADJ(){return ADJ},get S(){return S},setData:d=>{DATA=d},setChars:c=>{CHARS=c},names:NAMES,LI:LOCINFO,SYSSEC,brokerFeeOf,brokerExplain,CORPFAC,ensureOwners,stationOwner,assignChars,html,raw,setHtml,esc,netOfFees,buyParts,buyPrice,loadMarket,mktSearch,MKT,setSetting,setSettingIn,onSetting,setLast:(p,r)=>{LASTPLAN=p;LASTRENDER=r},createProject,updateProject,addToProject,moveProject,deleteProject,selectProject,get PROJ(){return PROJ},get SELP(){return SELP},charDataChanged,setRerun:f=>{LASTRERUN=f},setRecalcDelay:ms=>{DATA_RECALC_DELAY=ms},sellerHtml,setSales:r=>{SLROWS=r},refreshMarket2,get PROFM2(){return PROFM2}};`
 );
 const T = w.__t,
@@ -1392,6 +1392,32 @@ const ok = (c, msg) => {
         /ebből a tervből nincs jobja/.test(el.textContent),
       'both characters, the idle one with its running job (' + labs + ')'
     );
+  }
+  {
+    // 44. "I mine it": a marked material leaves the shopping list for the mining plan; the tree has the switch
+    const bps = [{ i: 601, t: 688, me: 10, te: 20, r: -1, q: -1, l: 60003760, cid: 1 }];
+    T.setChars([{ id: 1, name: 'A', refresh: 'x', access: 'x', exp: Date.now() + 1e9 }]);
+    T.setData({ 1: { assets: [], bps, skills: {}, jobs: [], at: Date.now() } });
+    const opt = { useStock: false, buildOwn: false, incoming: false, ore: false, mine: true };
+    const it = { copies: T.itemCopies({ bpType: 688 }), runs: 1 };
+    const R0 = await T.makeMulti([it], opt);
+    const m = [...R0.buyList.keys()][0];
+    T.setOreData([{ t: 9001, n: 'Test Ore', tm: [[m, 10]], vol: 0.1, p: 1, rs: null }]);
+    T.setSettingIn('mineMark', m, true);
+    const R1 = await T.makeMulti([it], opt);
+    const R2 = await T.makeMulti([it], Object.assign({}, opt, { mine: false }));
+    ok(
+      !R1.buyList.has(m) && R1.mineList.get(m) === R0.buyList.get(m) && R2.buyList.has(m),
+      'marked material mined, not bought (only where asked)'
+    );
+    await T.finishResult(R1, it.copies[0]);
+    const el = d.createElement('div');
+    T.renderResult(el, R1, () => {});
+    ok(
+      !!el.querySelector('[data-mine="' + m + '"]') && /Test Ore/.test(el.querySelector('.minebox').textContent),
+      'tree switch and mining plan with the ore'
+    );
+    T.setSettingIn('mineMark', m, null);
   }
   console.log(`regress: ${checks - fails}/${checks} checks passed`);
 })().catch(e => console.error('FAIL', e));

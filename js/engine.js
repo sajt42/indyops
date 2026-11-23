@@ -69,6 +69,7 @@ function planContext(opt, pool, runsLeft) {
     resv: reservedMap(),
     filters: new Map(), // per item: which stock entries it may take
     buyList: new Map(),
+    mineList: new Map(), // materials marked "I mine it": type -> qty (instead of buying)
     usedList: new Map(),
     jobs: [],
     warn: [],
@@ -324,6 +325,12 @@ async function planNode(ctx, t, need, depth, forced, item, to) {
   const wantBuild = depth === 0 || (ctx.opt.buildOwn && copies.length && S.buyOverride[t] !== true);
   const recipe = wantBuild && copies.length ? await recipeOf(copies, depth) : null;
   if (!recipe) {
+    // marked "I mine it" (planner and projects): not bought, goes to the mining plan
+    if (ctx.opt.mine && S.mineMark && S.mineMark[t]) {
+      n.mine = need;
+      ctx.mineList.set(t, (ctx.mineList.get(t) || 0) + need);
+      return n;
+    }
     n.buy = need;
     ctx.buyList.set(t, (ctx.buyList.get(t) || 0) + need);
     return n;
@@ -449,6 +456,7 @@ async function makeMulti(items, opt, shared) {
   return {
     trees,
     buyList: ctx.buyList,
+    mineList: ctx.mineList,
     usedList: ctx.usedList,
     jobs: ctx.jobs,
     warn: ctx.warn,

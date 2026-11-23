@@ -12,6 +12,7 @@ const ALL = [
   'lint',
   'regress',
   'sched',
+  'minesolve',
   'xss',
   'help',
   'repro',
@@ -40,7 +41,7 @@ const norm = s =>
   s
     .replace(/\d{4}\. \d{2}\. \d{2}\.( \d{1,2}:\d{2}(:\d{2})?)?/g, '<DATE>')
     .replace(/\b\d{1,2}\. \d{1,2}\. (?=\d{1,2}:\d{2})/g, '') // month. day. in front of a time (not today)
-  .replace(/\b\d{1,2}:\d{2}(:\d{2})?\b/g, '<TIME>')
+    .replace(/\b\d{1,2}:\d{2}(:\d{2})?\b/g, '<TIME>')
     .replace(/\b1\d{12}\b/g, '<EPOCH>')
     .replace(/len \d+/g, 'len <N>')
     .replace(/\bv\d+\.\d+\.\d+\b(?<!v1\.0\.0)/g, 'v<VER>')
@@ -54,7 +55,7 @@ for (const t of tests) {
   if (r.status !== 0) out += '\nFAIL (exit ' + r.status + ')';
   let bad = /FAIL|TypeError|ReferenceError|SyntaxError/.test(out),
     why = bad ? 'error' : '';
-  if (!bad && !['lint', 'regress', 'sched', 'xss'].includes(t)) {
+  if (!bad && !['lint', 'regress', 'sched', 'minesolve', 'xss'].includes(t)) {
     const g = 'golden/' + t + '.txt',
       n = norm(out);
     if (process.env.UPDATE_GOLDEN || !existsSync(g)) writeFileSync(g, n);
