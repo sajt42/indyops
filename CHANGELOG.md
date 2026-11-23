@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.25.1 – 2026-11-23
+
+- Reverted the 1.25.0 mining plan (marking in the material tree, ore selector); it will come back in a simpler form from the shopping list.
+
+## 1.25.0 – 2026-11-23
+
+- Mining plan: in the material tree, mineral and moon material rows can be switched from “buy” to “⛏ I mine it”. Such materials leave the shopping list (they stay in the cost at market value) and go to a mining plan under the result: the ore mix to mine to get them after reprocessing, for least m³ or least surplus (switch), from the ores you allow, with units, m³, by-products and surplus value, and an optional time estimate from your total yield (m³/hour). Survey Scan / Moon Analysis limits and location filtering come in the next steps.
+
 ## 1.24.0 – 2026-11-19
 
 - Invention: under the chance it shows which character it used (the one with the best skills); hovering shows every character's chance and its levels in the three skills that count. When the T1 BP is with another character, the row says to hand a copy or the BP over.
